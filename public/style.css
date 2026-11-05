@@ -1,0 +1,77 @@
+/* public/style.css
+   Semua gaya Kedai ChATA ada di berkas ini (desain.md DS7): CSS ditulis sendiri,
+   tanpa CDN, tanpa Bootstrap/Tailwind/Google Fonts, font bawaan sistem.
+   DSN.01: hanya dasar (warna, font, ukuran). Komponen menyusul di DSN.02 sampai DSN.05. */
+
+/* Warna di satu tempat (desain.md bagian 4.1). Nilai awal; final dicek di HP sungguhan.
+   Mau ganti warna di seluruh aplikasi: ubah nilainya di sini saja. */
+:root {
+    --marun-sangat-gelap: #3b0a14; /* bilah atas, navigasi bawah, kartu sampul */
+    --marun: #6b1020; /* tombol aksi utama, judul penting */
+    --emas-terang: #e2b84a; /* menu aktif, ikon aktif, lencana */
+    --emas-redup: #b8923a; /* menu tidak aktif, garis tipis */
+    --krem: #fff8ec; /* latar isi */
+    --teks-gelap: #2a1a1a; /* teks isi di latar krem */
+    --teks-terang: #fff4dc; /* teks di atas marun */
+
+    /* Ukuran dasar (DS8): teks isi sekitar 16 sampai 18 px, tombol minimal sekitar 48 px */
+    --ukuran-teks: 17px;
+    --tinggi-tombol: 48px;
+}
+
+/* Hitung lebar termasuk isian dan pinggir, supaya tidak melebar keluar layar HP kecil */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    /* Cegah peramban HP mengubah ukuran teks sendiri */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 16px;
+    background: var(--krem);
+    color: var(--teks-gelap);
+    /* Font bawaan sistem (tanpa Google Fonts) */
+    font-family:
+        system-ui,
+        -apple-system,
+        "Segoe UI",
+        Roboto,
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
+    font-size: var(--ukuran-teks);
+    line-height: 1.5;
+}
+
+/* Judul: marun, supaya terbaca di latar krem (emas tidak dipakai untuk teks di latar terang, DS3) */
+h1,
+h2,
+h3 {
+    color: var(--marun);
+    line-height: 1.25;
+}
+
+h1 {
+    font-size: 1.6rem;
+    margin: 0 0 12px;
+}
+
+p {
+    margin: 0 0 12px;
+}
+
+/* Tombol dan isian: cukup besar untuk jempol (DS8). Gaya lengkap tombol menyusul di DSN.04 */
+button,
+input,
+select,
+textarea {
+    font: inherit;
+    min-height: var(--tinggi-tombol);
+}
