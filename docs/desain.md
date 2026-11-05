@@ -195,7 +195,7 @@ Dikerjakan **setelah `fondasi.md` dan sebelum `akun.md`**, karena layar pertama 
 
 **Saran giliran berikutnya:** DSN.04 (kartu, tombol utama/sekunder/berbahaya, isian, daftar, lencana status; Low-Risk). Gaya ditambah di `style.css`; halaman contoh tetap di `index.html` agar `sw.js` tidak perlu disentuh. Lampirkan `AGENTS.md` + `desain.md` + versi terbaru `public/style.css` dan `public/index.html`. Sebelum push, cek tiga hal anti-nyasar. Logout GitHub dan Supabase di profil browser setelah selesai.
 
-### Handoff #3 | 2026-11-05 | [nama PIC]
+### Handoff #3 | 2026-11-05 | [Fren]
 
 **Tugas selesai:** DSN.04 dan DSN.05 (tinggal dicentang di sheet).
 
