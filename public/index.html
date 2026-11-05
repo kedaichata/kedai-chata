@@ -10,7 +10,22 @@
         <!-- Semua gaya aplikasi ada di satu berkas: style.css (tanpa CDN) -->
         <link rel="stylesheet" href="style.css" />
     </head>
-    <body>
+    <body class="ruang-navbawah">
+        <!-- DSN.03 (halaman contoh): bilah atas, judul di kiri dan tombol Segarkan di kanan (belum ada fungsi). -->
+        <header class="bilah-atas">
+            <div class="bilah-atas__judul">Pesan</div>
+            <button
+                type="button"
+                class="bilah-atas__segarkan"
+                aria-label="Segarkan"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <polyline points="23 4 23 10 17 10" />
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                </svg>
+            </button>
+        </header>
+
         <!-- DSN.02 (halaman contoh): wordmark besar dan kecil. Sementara; layar Masuk (AKN.05) menggantikannya nanti. -->
         <img
             class="wordmark wordmark--besar"
@@ -36,6 +51,112 @@
             sebentar lagi.
         </p>
         <p id="status-sistem"></p>
+
+        <!-- DSN.03 (halaman contoh): navigasi bawah per peran (DS10). Menu belum bisa diketuk berpindah layar. -->
+        <h2>Contoh navigasi per peran</h2>
+
+        <p class="contoh-label">Penjaga</p>
+        <nav class="navbawah navbawah--contoh" aria-label="Menu penjaga">
+            <a class="navbawah__item" href="#antrean" aria-current="page">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 7v5l3 2" />
+                </svg>
+                <span>Antrean</span>
+            </a>
+            <a class="navbawah__item" href="#akun-penjaga">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+                </svg>
+                <span>Akun</span>
+            </a>
+        </nav>
+
+        <p class="contoh-label">Owner</p>
+        <nav class="navbawah navbawah--contoh" aria-label="Menu owner">
+            <a class="navbawah__item" href="#order-masuk" aria-current="page">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 13l3-8h10l3 8v6H4v-6z" />
+                    <path d="M4 13h5l1 2h4l1-2h5" />
+                </svg>
+                <span>Order Masuk</span>
+            </a>
+            <a class="navbawah__item" href="#semua-order">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 6h11M9 12h11M9 18h11" />
+                    <circle cx="4.5" cy="6" r="1" />
+                    <circle cx="4.5" cy="12" r="1" />
+                    <circle cx="4.5" cy="18" r="1" />
+                </svg>
+                <span>Semua Order</span>
+            </a>
+            <a class="navbawah__item" href="#buat-order">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 8v8M8 12h8" />
+                </svg>
+                <span>Buat Order</span>
+            </a>
+            <a class="navbawah__item" href="#menu">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 3v6a2 2 0 0 0 4 0V3M8 3v18" />
+                    <path d="M17 21V3c-2.5 1.5-3.5 4.5-3.5 8H17" />
+                </svg>
+                <span>Menu</span>
+            </a>
+            <a class="navbawah__item" href="#lainnya">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle
+                        cx="5"
+                        cy="12"
+                        r="1.6"
+                        fill="currentColor"
+                        stroke="none"
+                    />
+                    <circle
+                        cx="12"
+                        cy="12"
+                        r="1.6"
+                        fill="currentColor"
+                        stroke="none"
+                    />
+                    <circle
+                        cx="19"
+                        cy="12"
+                        r="1.6"
+                        fill="currentColor"
+                        stroke="none"
+                    />
+                </svg>
+                <span>Lainnya</span>
+            </a>
+        </nav>
+
+        <!-- Navigasi Customer yang menempel di bawah layar (ini yang sebenarnya dipakai di aplikasi) -->
+        <nav class="navbawah" aria-label="Menu customer">
+            <a class="navbawah__item" href="#pesan" aria-current="page">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 8h14l-1 12H6L5 8z" />
+                    <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+                </svg>
+                <span>Pesan</span>
+            </a>
+            <a class="navbawah__item" href="#pesanan-saya">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="5" y="3" width="14" height="18" rx="2" />
+                    <path d="M9 8h6M9 12h6M9 16h4" />
+                </svg>
+                <span>Pesanan Saya</span>
+            </a>
+            <a class="navbawah__item" href="#akun">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+                </svg>
+                <span>Akun</span>
+            </a>
+        </nav>
 
         <!-- Pengaturan publik (URL project dan kunci publishable) -->
         <script src="config.js"></script>

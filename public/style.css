@@ -114,3 +114,128 @@ textarea {
 .contoh-sampul__nama {
     font-weight: 700;
 }
+
+/* ------------------------------------------------------------------
+   DSN.03: Bilah atas dan navigasi bawah (desain.md DS4, DS9, DS10)
+   Bilah atas: judul layar di kiri, tombol Segarkan di kanan (tanpa timer).
+   Navigasi bawah: ikon dan tulisan, emas terang tebal + garis penanda untuk
+   menu aktif, emas redup untuk menu lain. Menu per peran disusun di HTML/JS
+   layar masing-masing; gayanya sama.
+   ------------------------------------------------------------------ */
+
+/* Beri ruang di bawah isi supaya tidak tertutup navigasi bawah yang menempel */
+.ruang-navbawah {
+    padding-bottom: 96px;
+}
+
+.bilah-atas {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 56px;
+    /* Margin minus meniadakan padding 16px di body, supaya bilah penuh selebar layar */
+    margin: -16px -16px 16px;
+    padding: 0 8px 0 16px;
+    background: var(--marun-sangat-gelap);
+    color: var(--teks-terang);
+}
+
+.bilah-atas__judul {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.bilah-atas__segarkan {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--tinggi-tombol);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--emas-terang);
+    cursor: pointer;
+}
+
+.bilah-atas__segarkan:active {
+    background: rgba(226, 184, 74, 0.18);
+}
+
+.bilah-atas__segarkan svg {
+    width: 26px;
+    height: 26px;
+}
+
+.navbawah {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    display: flex;
+    background: var(--marun-sangat-gelap);
+    border-top: 1px solid var(--emas-redup);
+}
+
+.navbawah__item {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2px;
+    padding: 6px 2px 8px;
+    /* Garis penanda menu aktif ada di atas item; transparan bila tidak aktif */
+    border-top: 3px solid transparent;
+    color: var(--emas-redup);
+    font-size: 0.8rem;
+    line-height: 1.15;
+    text-align: center;
+    text-decoration: none;
+}
+
+.navbawah__item[aria-current="page"] {
+    color: var(--emas-terang);
+    font-weight: 700;
+    border-top-color: var(--emas-terang);
+}
+
+.navbawah__item:focus-visible,
+.bilah-atas__segarkan:focus-visible {
+    outline: 2px solid var(--emas-terang);
+    outline-offset: -2px;
+}
+
+.navbawah svg,
+.bilah-atas svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.navbawah svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Hanya untuk halaman contoh DSN.03: menampilkan navigasi peran lain tanpa menempel di layar */
+.navbawah--contoh {
+    position: static;
+    margin: 0 0 16px;
+    border: 1px solid var(--emas-redup);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.contoh-label {
+    margin: 0 0 6px;
+    font-weight: 700;
+}
