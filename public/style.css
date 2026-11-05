@@ -550,3 +550,87 @@ a.daftar__item:active {
     gap: 8px;
     margin: 0 0 16px;
 }
+
+/* ------------------------------------------------------------------
+   DSN.05: Keadaan khusus (desain.md DS13): memuat, kosong, galat, offline
+   Satu bentuk dasar .keadaan: ikon di atas, judul, keterangan, tombol opsional.
+   Pesan Bahasa Indonesia sehari-hari, tanpa galat mentah. Tidak hanya warna:
+   selalu ada ikon dan tulisan (DS11).
+   ------------------------------------------------------------------ */
+.keadaan {
+    margin: 0 0 16px;
+    padding: 32px 16px;
+    background: var(--putih);
+    border: 1px solid var(--garis-tipis);
+    border-radius: 12px;
+    text-align: center;
+}
+
+.keadaan__ikon {
+    display: block;
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 12px;
+    fill: none;
+    stroke: var(--marun);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.keadaan__judul {
+    margin: 0 0 6px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--marun);
+}
+
+.keadaan__ket {
+    margin: 0 auto 16px;
+    max-width: 32ch;
+    color: var(--teks-samar);
+}
+
+/* Tombol di dalam keadaan: tidak melebar penuh di layar lebar */
+.keadaan .tombol {
+    max-width: 280px;
+    margin: 0 auto;
+}
+
+/* Keterangan terakhir tanpa tombol: tidak perlu jarak bawah ekstra */
+.keadaan__ket:last-child {
+    margin-bottom: 0;
+}
+
+/* Galat: ikon dan judul merah, tetap ada tulisan penjelas */
+.keadaan--galat .keadaan__ikon {
+    stroke: var(--bahaya);
+}
+
+.keadaan--galat .keadaan__judul {
+    color: var(--bahaya);
+}
+
+/* Memuat: lingkaran berputar dari CSS (tanpa gambar) */
+.putaran {
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 12px;
+    border: 4px solid var(--garis-tipis);
+    border-top-color: var(--marun);
+    border-radius: 50%;
+    animation: putar 0.9s linear infinite;
+}
+
+@keyframes putar {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Pengguna yang mematikan animasi di HP: putaran berhenti, tulisan "Sedang memuat" tetap ada */
+@media (prefers-reduced-motion: reduce) {
+    .putaran {
+        animation: none;
+    }
+}
