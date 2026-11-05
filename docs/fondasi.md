@@ -200,3 +200,18 @@ Berkas public/lib/supabase.js adalah salinan @supabase/supabase-js versi 2.119.0
 - Belum ada fungsi yang di-deploy. Uji pertama `kedai` dengan token login asli tetap SEC-33 (`security.md`).
 
 **Saran giliran berikutnya:** FND.08 (`manifest.json`, ikon sementara per F14, `sw.js` network first). Berisiko, butuh "OK" ketua; jelaskan dampaknya dulu. Daftarkan semua berkas aplikasi (termasuk `lib/supabase.js`) di cache `sw.js`. Lampirkan `AGENTS.md` + `fondasi.md` + versi terbaru `public/index.html` dan `public/config.js`.
+
+### 2026-11-05: Hasil FND.08 (PWA) dan tes update ditunda
+
+**Berkas:** `public/manifest.json`, `public/sw.js`, `public/img/icon-192.png`, `public/img/icon-512.png` (baru); `public/index.html` (ditambah pendaftaran `sw.js`, kode lama tidak diubah). Commit `4b36033` di `main`.
+
+**Rincian:**
+
+- Ikon sementara: huruf "C" emas di lingkaran marun, latar marun sangat gelap sampai ke tepi (F14, DS6). Disempurnakan di DSN.06.
+- `manifest.json`: nama "Kedai ChATA", nama pendek "ChATA", warna latar dan bilah atas `#3B0A14`, `start_url` dan `scope` `./`. Tiap ikon didaftarkan untuk `any` dan `maskable`.
+- `sw.js`: network first, hanya GET dari domain sendiri, panggilan Supabase tidak disentuh. Nama cache `chata-v1`; naikkan angkanya bila daftar cache berubah. Daftar cache: `./`, `index.html`, `config.js`, `lib/supabase.js`, `manifest.json`, kedua ikon. **`style.css` belum ada; didaftarkan di DSN.01.** Penanganan push menyusul di `notifikasi.md`.
+- Hati-hati: bila satu berkas di daftar cache hilang atau salah nama, pemasangan `sw.js` gagal seluruhnya.
+
+**Hasil tes:** dipasang di layar utama HP Android (Brave), terbuka layar penuh, bilah atas marun. Terbuka offline: lulus di Chrome Mac (DevTools, kotak Offline) dan di HP Android (mode pesawat dan Wi-Fi mati). Peringatan DevTools soal screenshot manifest ("Richer PWA Install UI") bersifat opsional dan diabaikan.
+
+**Belum dites:** versi baru muncul di HP setelah update. Dibuktikan di push berikutnya yang menyentuh berkas aplikasi (misalnya DSN.01), bukan lewat perubahan buatan.
