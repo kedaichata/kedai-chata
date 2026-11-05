@@ -1,0 +1,41 @@
+# Penerbitan folder public/ ke GitHub Pages (Kedai ChATA)
+# Berjalan otomatis tiap ada push ke cabang main, dan bisa dijalankan manual dari tab Actions.
+name: Terbitkan ke GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Izin minimal yang dibutuhkan untuk menerbitkan Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Satu penerbitan pada satu waktu; yang baru menggantikan yang lama
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Ambil isi repo
+        uses: actions/checkout@v4
+
+      - name: Atur Pages
+        uses: actions/configure-pages@v5
+
+      - name: Unggah folder public/
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Terbitkan
+        id: deployment
+        uses: actions/deploy-pages@v4
