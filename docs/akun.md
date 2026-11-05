@@ -171,4 +171,27 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 
 ---
 
-_(belum ada blok)_
+### Handoff #1 | 2026-11-05 | [ketua]
+
+**Tugas:** AKN.01 dan AKN.02 (pengaturan Auth dan SMTP di dashboard Supabase). Keduanya selesai.
+
+**File yang diubah:** tidak ada. Semua perubahan dilakukan di dashboard Supabase akun ketua.
+
+**Hasil:**
+
+- AKN.01: Confirm email mati. Panjang minimal password 8. Password requirements dikosongkan. Secure password change mati (lihat keputusan baru).
+- AKN.02: Custom SMTP aktif dengan Gmail khusus proyek (Sender name "Kedai ChATA", host smtp.gmail.com, port 465). App password hanya diketik di dashboard. Rate limit email 30 per jam dan interval 60 detik per user, tidak diubah (cukup untuk skala warung). Site URL dan Redirect URLs berisi alamat GitHub Pages ChATA (hasil FND.06), tidak diubah.
+
+**Keputusan baru (menggantikan bunyi "dicek" di AKN.01, bagian 4 dokumen ini, dan security.md aturan 17 serta SEC-28):**
+
+- Secure password change sengaja dibiarkan MATI atas keputusan ketua.
+- Alasan: ganti password sudah memakai login ulang dengan password lama (AK11), jadi sesi selalu baru. Bila dinyalakan, customer ber-email asal-asalan (AK2) bisa mentok karena kode verifikasi tidak sampai.
+- Dampak: tidak ada pagar tambahan di sisi Supabase untuk sesi lama. Bisa dinyalakan lagi kapan saja.
+- Untuk SEC-28 yang diperiksa: Confirm email mati, minimal password 8, Secure password change mati.
+
+**Belum beres:**
+
+- Email dari Gmail tim belum pernah benar-benar terkirim. Uji kirim lewat link reset password dari dashboard (SEC-24), setelah akun uji ada. Bila gagal, curigai app password atau alamat Gmail yang salah ketik.
+- Catatan keputusan di atas belum ditempel ke `docs/security.md` bagian 7. Tempel blok pendek di bawah.
+
+**Saran giliran berikutnya:** AKN.03 (migration tabel pengaturan, profil, alamat, staf, hak, RLS, fungsi pembuat profil). High-Risk, butuh OK ketua. Lampirkan AGENTS.md, akun.md, database.md, security.md, dan isi supabase/migrations/ bila sudah ada.

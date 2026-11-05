@@ -128,4 +128,8 @@ Tes dilakukan di production dengan **akun, nomor WA, dan alamat dummy** (`AGENTS
 
 ---
 
-_(belum ada blok)_
+### 2026-11-05: Aturan 17 dan SEC-28, Secure password change mati
+
+- Keputusan ketua: "Secure password change" mati. Ini bertentangan dengan aturan 17 dan SEC-28 yang menyebut "dicek"; yang paling akhir menang.
+- SEC-28 memeriksa: Confirm email mati, panjang minimal password 8, Secure password change mati.
+- Alasan: ganti password memakai login ulang dengan password lama (akun.md AK11); verifikasi email berisiko mentok bagi customer ber-email asal-asalan.
