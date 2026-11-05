@@ -133,6 +133,133 @@
             </a>
         </nav>
 
+        <!-- DSN.04 (halaman contoh): komponen dasar. Data di bawah ini dummy. Tombol belum berfungsi. -->
+        <h2>Contoh komponen</h2>
+
+        <p class="contoh-label">Lencana status</p>
+        <div class="contoh-lencana">
+            <span class="lencana lencana--menunggu">Menunggu</span>
+            <span class="lencana lencana--disetujui">Disetujui</span>
+            <span class="lencana lencana--diproses">Diproses</span>
+            <span class="lencana lencana--siap">Diantar</span>
+            <span class="lencana lencana--selesai">Selesai</span>
+            <span class="lencana lencana--ditolak">Ditolak</span>
+            <span class="lencana lencana--dibatalkan">Dibatalkan</span>
+        </div>
+
+        <p class="contoh-label">Kartu order</p>
+        <div class="kartu">
+            <div class="kartu-order__atas">
+                <span class="kartu-order__nomor">#1042</span>
+                <span class="lencana lencana--menunggu">Menunggu</span>
+            </div>
+            <p class="kartu-order__baris">Bu Contoh (anak: Adi)</p>
+            <p class="kartu-order__baris">Minta diantar jam 11.15</p>
+            <div class="kartu-order__bawah">
+                <span>Diantar &middot; Rp 25.000</span>
+                <span class="tanda-catatan">Catatan baru</span>
+            </div>
+            <div class="baris-tombol">
+                <button type="button" class="tombol tombol--bahaya">
+                    Tolak
+                </button>
+                <button type="button" class="tombol tombol--utama">
+                    Setujui
+                </button>
+            </div>
+        </div>
+
+        <p class="contoh-label">Kartu biasa</p>
+        <div class="kartu">
+            <h3 class="kartu__judul">Nasi Ayam Goreng</h3>
+            <p class="kartu__isi">Rp 15.000</p>
+        </div>
+
+        <p class="contoh-label">Tombol</p>
+        <button type="button" class="tombol tombol--utama">Aksi utama</button>
+        <div class="baris-tombol">
+            <button type="button" class="tombol tombol--sekunder">
+                Aksi sekunder
+            </button>
+            <button type="button" class="tombol tombol--bahaya">
+                Batalkan
+            </button>
+        </div>
+        <div class="baris-tombol">
+            <button type="button" class="tombol tombol--utama" disabled>
+                Nonaktif
+            </button>
+        </div>
+
+        <p class="contoh-label" style="margin-top: 16px">Isian</p>
+        <div class="isian">
+            <label class="isian__label" for="contoh-nama">Nama</label>
+            <input
+                class="isian__kolom"
+                id="contoh-nama"
+                type="text"
+                placeholder="Contoh: Bu Contoh"
+            />
+            <p class="isian__bantuan">Nama ini tampil di order.</p>
+        </div>
+        <div class="isian isian--galat">
+            <label class="isian__label" for="contoh-wa">Nomor WA</label>
+            <input
+                class="isian__kolom"
+                id="contoh-wa"
+                type="tel"
+                value="0812"
+            />
+            <p class="isian__galat">Nomor terlalu pendek.</p>
+        </div>
+        <div class="isian">
+            <label class="isian__label" for="contoh-catatan">Catatan</label>
+            <textarea
+                class="isian__kolom"
+                id="contoh-catatan"
+                placeholder="Contoh: tanpa sambal"
+            ></textarea>
+        </div>
+
+        <p class="contoh-label">Daftar (bisa digulir)</p>
+        <ul class="daftar daftar--gulir">
+            <li class="daftar__item">
+                <div class="daftar__utama">
+                    <span class="daftar__nama">Nasi Ayam Goreng</span>
+                    <span class="daftar__ket">Tersedia</span>
+                </div>
+                <span class="daftar__nilai">Rp 15.000</span>
+            </li>
+            <li class="daftar__item">
+                <div class="daftar__utama">
+                    <span class="daftar__nama">Nasi Telur Dadar</span>
+                    <span class="daftar__ket">Tersedia</span>
+                </div>
+                <span class="daftar__nilai">Rp 10.000</span>
+            </li>
+            <li class="daftar__item">
+                <div class="daftar__utama">
+                    <span class="daftar__nama">Mie Goreng</span>
+                    <span class="daftar__ket">Habis</span>
+                </div>
+                <span class="daftar__nilai">Rp 12.000</span>
+            </li>
+            <li class="daftar__item">
+                <div class="daftar__utama">
+                    <span class="daftar__nama">Es Teh Manis</span>
+                    <span class="daftar__ket">Tersedia</span>
+                </div>
+                <span class="daftar__nilai">Rp 4.000</span>
+            </li>
+            <li class="daftar__item">
+                <div class="daftar__utama">
+                    <span class="daftar__nama">Es Jeruk</span>
+                    <span class="daftar__ket">Tersedia</span>
+                </div>
+                <span class="daftar__nilai">Rp 5.000</span>
+            </li>
+        </ul>
+
         <!-- Navigasi Customer yang menempel di bawah layar (ini yang sebenarnya dipakai di aplikasi) -->
         <nav class="navbawah" aria-label="Menu customer">
             <a class="navbawah__item" href="#pesan" aria-current="page">

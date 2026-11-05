@@ -167,7 +167,7 @@ Dikerjakan **setelah `fondasi.md` dan sebelum `akun.md`**, karena layar pertama 
 
 **Saran giliran berikutnya:** DSN.02 (wordmark HTML/CSS per DS5 dan halaman contoh yang menampilkannya; Low-Risk). Gaya wordmark ditambah di `style.css`, bukan di berkas lain. Bila halaman contoh berupa **berkas baru** di `public/`, berkas itu wajib didaftarkan di daftar cache `sw.js` dan nama cache dinaikkan ke `chata-v3` (menyentuh `sw.js`, butuh "OK" ketua); bila halaman contoh ditaruh di `index.html`, `sw.js` tidak perlu disentuh. Lampirkan `AGENTS.md` + `desain.md` + versi terbaru `public/style.css` dan `public/index.html` (+ `public/sw.js` bila berkas baru). Sebelum push, cek tiga hal anti-nyasar. Logout GitHub dan Supabase di profil browser setelah selesai.
 
-### Handoff #2 | 2026-11-05 | [Ketua]
+### Handoff #2 | 2026-11-05 | [RAC]
 
 **Tugas selesai:** DSN.02 dan DSN.03 (tinggal dicentang di sheet).
 

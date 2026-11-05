@@ -239,3 +239,314 @@ textarea {
     margin: 0 0 6px;
     font-weight: 700;
 }
+
+/* ------------------------------------------------------------------
+   DSN.04: Komponen dasar (desain.md bagian 4.3, DS11, DS12)
+   Kartu, tombol (utama, sekunder, berbahaya), isian, daftar, lencana status.
+   Warna tetap dari variabel di :root; hanya dua warna tambahan di bawah ini
+   (merah untuk tombol berbahaya dan pesan galat; DS12).
+   ------------------------------------------------------------------ */
+:root {
+    --bahaya: #a31d1d; /* tombol berbahaya dan pesan galat (bukan marun, supaya tidak tertukar) */
+    --putih: #ffffff; /* latar kartu dan isian di atas krem */
+    --garis-tipis: rgba(184, 146, 58, 0.45); /* garis tipis dari emas redup */
+    --teks-samar: #5a4545; /* teks bantuan, tetap terbaca di latar krem */
+}
+
+/* ---- Kartu: pinggir bulat, satu isi pokok per kartu ---- */
+.kartu {
+    margin: 0 0 12px;
+    padding: 16px;
+    background: var(--putih);
+    border: 1px solid var(--garis-tipis);
+    border-radius: 12px;
+}
+
+.kartu__judul {
+    margin: 0 0 4px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--marun);
+}
+
+.kartu__isi {
+    margin: 0;
+}
+
+/* Kartu order: nomor + lencana di baris atas, lalu pemesan, jam, tipe, total */
+.kartu-order__atas {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 0 0 6px;
+}
+
+.kartu-order__nomor {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--marun);
+}
+
+.kartu-order__baris {
+    margin: 0 0 2px;
+}
+
+.kartu-order__bawah {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 10px 0 0;
+    font-weight: 700;
+}
+
+/* Tanda "Catatan baru": emas terang di atas marun gelap (terbaca) */
+.tanda-catatan {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--marun-sangat-gelap);
+    color: var(--emas-terang);
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+/* ---- Tombol: tinggi minimal 48 px, lebar penuh agar mudah diketuk (DS8) ---- */
+.tombol {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: var(--tinggi-tombol);
+    padding: 0 20px;
+    border: 2px solid var(--marun);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--marun);
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Aksi utama (Setujui, Pesan, Masuk): isian marun */
+.tombol--utama {
+    background: var(--marun);
+    color: var(--teks-terang);
+}
+
+.tombol--utama:active {
+    background: var(--marun-sangat-gelap);
+    border-color: var(--marun-sangat-gelap);
+}
+
+/* Aksi sekunder: berpinggir marun */
+.tombol--sekunder:active {
+    background: rgba(107, 16, 32, 0.1);
+}
+
+/* Aksi berbahaya (Tolak, Batalkan): berpinggir merah, teks jelas, BUKAN isian (DS12) */
+.tombol--bahaya {
+    border-color: var(--bahaya);
+    color: var(--bahaya);
+}
+
+.tombol--bahaya:active {
+    background: rgba(163, 29, 29, 0.1);
+}
+
+.tombol:disabled,
+.tombol[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.tombol:focus-visible {
+    outline: 3px solid var(--emas-terang);
+    outline-offset: 2px;
+}
+
+/* Beberapa tombol sejajar (misalnya Tolak di kiri, Setujui di kanan) */
+.baris-tombol {
+    display: flex;
+    gap: 8px;
+    margin: 12px 0 0;
+}
+
+.baris-tombol .tombol {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 8px;
+}
+
+/* ---- Isian: label jelas di atas, isian besar ---- */
+.isian {
+    margin: 0 0 16px;
+}
+
+.isian__label {
+    display: block;
+    margin: 0 0 6px;
+    font-weight: 700;
+}
+
+.isian__kolom {
+    display: block;
+    width: 100%;
+    min-height: var(--tinggi-tombol);
+    padding: 10px 12px;
+    border: 2px solid var(--emas-redup);
+    border-radius: 10px;
+    background: var(--putih);
+    color: var(--teks-gelap);
+}
+
+textarea.isian__kolom {
+    min-height: 96px;
+    resize: vertical;
+}
+
+.isian__kolom:focus {
+    outline: none;
+    border-color: var(--marun);
+    box-shadow: 0 0 0 3px rgba(226, 184, 74, 0.6);
+}
+
+.isian__bantuan {
+    margin: 6px 0 0;
+    font-size: 0.9rem;
+    color: var(--teks-samar);
+}
+
+/* Isian bermasalah: pinggir merah + pesan tulisan (bukan hanya warna, DS11) */
+.isian--galat .isian__kolom {
+    border-color: var(--bahaya);
+}
+
+.isian__galat {
+    margin: 6px 0 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--bahaya);
+}
+
+/* ---- Daftar: baris-baris dalam satu bingkai, bisa digulir ---- */
+.daftar {
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+    background: var(--putih);
+    border: 1px solid var(--garis-tipis);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.daftar--gulir {
+    max-height: 240px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.daftar__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 56px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--garis-tipis);
+    color: inherit;
+    text-decoration: none;
+}
+
+.daftar__item:last-child {
+    border-bottom: 0;
+}
+
+a.daftar__item:active {
+    background: rgba(226, 184, 74, 0.2);
+}
+
+.daftar__item:focus-visible {
+    outline: 3px solid var(--emas-terang);
+    outline-offset: -3px;
+}
+
+.daftar__utama {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.daftar__nama {
+    display: block;
+    font-weight: 700;
+}
+
+.daftar__ket {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--teks-samar);
+}
+
+.daftar__nilai {
+    flex: 0 0 auto;
+    font-weight: 700;
+    color: var(--marun);
+}
+
+/* ---- Lencana status: selalu tulisan + warna (DS11); warna dari desain.md 4.2 ---- */
+.lencana {
+    display: inline-block;
+    flex: 0 0 auto;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+.lencana--menunggu {
+    background: #ffd9a8; /* oranye */
+    color: #7a3d00;
+}
+
+.lencana--disetujui {
+    background: #cfe3ff; /* biru */
+    color: #0f3d7a;
+}
+
+.lencana--diproses {
+    background: #f1d77a; /* kuning tua */
+    color: #5c4300;
+}
+
+.lencana--siap {
+    background: #d6f0c8; /* hijau muda: Diantar, Siap diambil, Siap disajikan */
+    color: #1f5a14;
+}
+
+.lencana--selesai {
+    background: #2e7d32; /* hijau */
+    color: #ffffff;
+}
+
+.lencana--ditolak {
+    background: #f6d0d0; /* merah pucat */
+    color: #8a1f1f;
+}
+
+.lencana--dibatalkan {
+    background: #dddad5; /* abu-abu */
+    color: #4a4640;
+}
+
+/* Hanya untuk halaman contoh DSN.04: jarak antar lencana contoh */
+.contoh-lencana {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 16px;
+}
