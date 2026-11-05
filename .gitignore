@@ -1,0 +1,18 @@
+# .gitignore — Kedai ChATA
+# Repo ini PUBLIC: berkas di bawah ini tidak boleh ikut ter-push.
+
+# Berkas sampah bawaan Mac
+.DS_Store
+
+# Dibuat Supabase CLI, mencatat project yang terakhir dituju (aturan F7)
+supabase/.temp
+
+# Berkas rahasia (kunci, token, password)
+.env
+.env.*
+*.pem
+*.key
+
+# Hasil ekspor data (memuat data pelanggan) dan lembar kerja tim
+*.csv
+*.xlsx

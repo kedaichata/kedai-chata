@@ -1,0 +1,139 @@
+/docs/fondasi.md
+
+# 🧱 fondasi.md: Repo, Supabase, Terbit Online, PWA Dasar, dan Pagar Anti-Nyasar
+
+> **Versi 1.3 (5 Nov 2026), hasil sesi strategi (final untuk sesi kode).** Perubahan 1.3: flag deploy per fungsi (F12, FND.07), keterangan kunci lama (bagian 6). Perubahan 1.2: kunci Supabase baru, publishable dan secret (F9, FND.03). Perubahan 1.1: pustaka Supabase disimpan sebagai salinan di `public/lib/` (F9); logo dan ikon sementara (F14, FND.08); cache mencakup semua berkas aplikasi (F10). Dokumen fitur pertama; dokumen fitur lain bergantung pada ini.
+> **Status:** F1 sampai F13 disepakati ketua (sesi strategi 4 Nov 2026). Butir bertanda **(bawaan)** adalah pilihan penulis yang tidak ditanyakan satu per satu; ketua boleh mengubahnya sebelum dikerjakan. Belum ada yang dikerjakan.
+> **Cara pakai sesi kode:** lampirkan **`AGENTS.md` + berkas ini saja**. Kerjakan langkah di bagian 5 satu per satu. Sesi kode **tidak merapikan atau menulis ulang berkas ini**; hanya menambah blok di bagian 9 bila ada kejadian di lapangan.
+> **Berkas yang diminta AI di awal sesi** (sebut nama dan alasan sekaligus, jangan menebak isinya): sesuai langkah yang dikerjakan, yaitu versi terbaru `public/index.html`, `public/config.js`, `public/sw.js`, `public/manifest.json`, `.gitignore`, atau `.github/workflows/pages.yml`.
+> **Tanpa kode dan tanpa isi SQL.** Detail yang sudah ditangani GitHub atau Supabase tidak ditulis ulang.
+> **Selisih:** `AGENTS.md` menang atas berkas ini. Yang paling akhir menang.
+
+---
+
+## 1. Tujuan
+
+Menyiapkan **tempat berdiri** untuk semua fitur lain. Hasil akhir:
+
+1. Repo GitHub (public) milik akun ketua, dengan struktur folder yang benar dan **pagar anti-nyasar** di laptop bersama.
+2. Project Supabase cloud (gratis) milik akun ketua, siap dipakai, dengan alat terminal (CLI) terpasang untuk deploy fungsi.
+3. Halaman awal "Kedai ChATA" **terbuka online** di alamat GitHub Pages dan otomatis ter-update tiap ada perubahan di repo.
+4. Aplikasi bisa **dipasang di layar utama HP** (PWA) dan versi baru muncul setelah update.
+
+Belum ada login atau order. Halaman awal cukup berisi judul dan teks sederhana.
+
+---
+
+## 2. Keputusan
+
+| No  | Keputusan                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Dasar                                                                                                                                                                             |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F1  | **Satu akun GitHub (milik ketua), satu repo public, tanpa branch.** Satu laptop Mac (milik adik ketua) dipakai bersama, **serial**: satu orang per giliran.                                                                                                                                                                                                                                                                                                                                                       | Keputusan ketua 4 Nov 2026.                                                                                                                                                       |
+| F2  | Struktur folder: `public/` (isi aplikasi, termasuk `img/`), `docs/`, `supabase/` (isi `migrations/`, `templates/`, `functions/`), ditambah `.github/workflows/` untuk penerbitan. **Tanpa `archive/`.**                                                                                                                                                                                                                                                                                                           | Pola proyek adik; `archive/` dibuang karena tidak ada fase penilaian md.                                                                                                          |
+| F3  | **Terbit lewat GitHub Pages dengan GitHub Actions.** Satu berkas `.github/workflows/pages.yml` menerbitkan folder `public/`; di Settings repo, sumber Pages diatur ke "GitHub Actions".                                                                                                                                                                                                                                                                                                                           | GitHub Pages "dari cabang" hanya bisa root atau `/docs`, bukan `public/`.                                                                                                         |
+| F4  | Semua path **relatif** terhadap `public/`, tidak diawali `/`. Nama berkas gambar dan kode: **huruf kecil semua, tanpa spasi**.                                                                                                                                                                                                                                                                                                                                                                                    | Alamat terbit berbentuk `akun.github.io/repo/`; GitHub Pages membedakan huruf besar dan kecil, Mac tidak.                                                                         |
+| F5  | **Berkas masuk ke GitHub lewat terminal** (cek `git status`, lalu `git add .`, `commit`, `push`), **dengan pagar anti-nyasar F6**. Kode dari AI tetap **dicopas dari berkas yang dikirim AI**, bukan ditulis langsung di editor.                                                                                                                                                                                                                                                                                  | `AGENTS.md` bagian 2 dan 8.                                                                                                                                                       |
+| F6  | **Pagar anti-nyasar (git).** Repo ChATA di folder terpisah dari repo adik. Nama dan **email commit (noreply GitHub milik ketua) diatur khusus di repo ini**, bukan global. Cara masuk GitHub memakai **kunci SSH khusus proyek ini**. Sebelum tiap push cek folder, `git remote -v`, dan email commit; salah satu tidak cocok = jangan push.                                                                                                                                                                      | Laptop sudah login ke akun adik; `AGENTS.md` bagian 8.                                                                                                                            |
+| F7  | **Email commit memakai alamat privat bawaan GitHub (noreply)**, bukan email pribadi. Cek `git status` sebelum `git add .` supaya tidak ada berkas rahasia atau `supabase/.temp` yang ikut. **`.gitignore` wajib memuat `supabase/.temp`** dan berkas rahasia lain.                                                                                                                                                                                                                                                | Repo public; `security.md` aturan 7. `supabase/.temp` dibuat CLI dan mencatat project yang terakhir dituju.                                                                       |
+| F8  | **Supabase cloud, paket gratis**, dibuat di **akun Supabase ketua** (bukan akun adik), dibuka di **profil browser terpisah atau jendela privat**. **Wilayah server: Singapura** (nama persis dicek di dashboard saat memilih; sulit diubah setelah dibuat).                                                                                                                                                                                                                                                       | `AGENTS.md` bagian 3 dan 8.                                                                                                                                                       |
+| F9  | `public/config.js` hanya berisi **URL project, kunci publishable Supabase (`sb_publishable_...`; kunci `anon` lama tidak dipakai), dan kunci publik VAPID** (kunci VAPID masuk di `notifikasi.md`). Kunci **secret** (`sb_secret_...`) tidak pernah masuk `config.js` atau repo; hanya dibaca `kedai` dari variabel lingkungan fungsi. Pustaka Supabase disimpan sebagai **salinan berkas di `public/lib/` dengan versi dipatok** (bukan dimuat dari CDN, bukan "latest"), supaya aplikasi tetap terbuka offline. | `security.md` aturan 7.                                                                                                                                                           |
+| F10 | **PWA:** nama aplikasi **"Kedai ChATA"**, nama pendek (di bawah ikon HP) **"ChATA"**. `sw.js` strategi **network first**; hanya menangani berkas aplikasi dari domain sendiri (GET) dan kejadian push; **tidak meng-cache panggilan ke Supabase**. Tiap berkas aplikasi baru (JS, `style.css`, pustaka di `lib/`, ikon) wajib didaftarkan di daftar cache `sw.js`.                                                                                                                                                | `security.md` aturan 11; `AGENTS.md` bagian 7.                                                                                                                                    |
+| F11 | Alamat GitHub Pages didaftarkan di URL Auth Supabase (Site URL dan Redirect URLs) **segera setelah alamat online ada**.                                                                                                                                                                                                                                                                                                                                                                                           | Syarat login dan link reset password di versi online (SEC-24).                                                                                                                    |
+| F12 | **Deploy Edge Function lewat terminal** dengan urutan aman di `AGENTS.md` bagian 8 (token sementara milik ketua, `--project-ref` dari `config.js`, dilarang `supabase login`/`link`/`projects list`). Perintah: `supabase functions deploy <nama> --use-api --project-ref ...`, ditambah `--no-verify-jwt` **hanya untuk `bersihkan`** (`kedai` memakai pengecekan token bawaan platform; `AGENTS.md` bagian 7).                                                                                                  | Pola proyek adik; `--use-api` supaya tidak butuh Docker. Flag per fungsi: keputusan ketua 5 Nov 2026 (sebelumnya `--no-verify-jwt` untuk semua hanya mengikuti pola proyek adik). |
+| F13 | **Satu environment saja: production (bawaan).** SQL disalin ke `supabase/migrations/` dulu, dijalankan manual di SQL Editor. Dilarang: Docker, VPS, self-host, setup lokal Supabase, **migration CLI**. Folder kosong diberi `.gitkeep`. **Rutin membuka aplikasi** (terutama saat libur sekolah/warung tutup) karena project gratis dijeda otomatis bila sekitar 1 minggu tanpa aktivitas.                                                                                                                       | Pola proyek adik; aturan project gratis Supabase.                                                                                                                                 |
+| F14 | **Logo asli ChATA ada tetapi berkasnya belum ketemu** (disimpan keluarga). Sementara dipakai **wordmark** (tulisan "Kedai ChATA" bergaya logo dari HTML/CSS, `desain.md` DS5) dan **ikon PWA sementara** (DS6). Langkah PWA **tidak menunggu** berkas logo; bila berkas asli ketemu (disarankan minimal 512 px), cukup menukar berkas di `public/img/` tanpa mengubah kode.                                                                                                                                       | Keputusan ketua 4 Nov 2026 (logo asli belum ketemu).                                                                                                                              |
+
+---
+
+## 3. Prasyarat
+
+Dokumen pertama, jadi tanpa prasyarat dari dokumen lain. Yang disiapkan manusia: akun GitHub dan akun Supabase **milik ketua** (boleh login Supabase lewat GitHub) dengan email ketua, laptop Mac bersama dengan internet, dan komitmen bahwa **email, password, token, dan kunci rahasia tidak ditulis di chat, md, atau repo.**
+
+---
+
+## 4. Yang dibuat
+
+| Komponen                      | Isi                                                                                                                                                                       |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repo GitHub                   | Public; `AGENTS.md` di root; `docs/` berisi md; kerangka folder dengan `.gitkeep`; `.gitignore` (F7).                                                                     |
+| Pengaturan git di Mac         | Folder terpisah, nama dan email noreply khusus repo, SSH khusus, kebiasaan cek tiga hal sebelum push (F6).                                                                |
+| `public/index.html`           | Halaman awal "Kedai ChATA": judul dan teks singkat Bahasa Indonesia; memuat `config.js`, salinan pustaka Supabase (versi dipatok, di `public/lib/`), dan `manifest.json`. |
+| `public/config.js`            | URL project dan kunci publishable saja (F9).                                                                                                                              |
+| `public/manifest.json`, ikon  | Nama, nama pendek, warna, ikon (F10, F14). Ikon di `public/img/`.                                                                                                         |
+| `public/sw.js`                | Service worker network first (F10). Berisiko, butuh "OK" ketua. Penanganan push ditambah di `notifikasi.md`.                                                              |
+| `.github/workflows/pages.yml` | Penerbitan folder `public/` (F3). Berisiko, butuh "OK" ketua.                                                                                                             |
+| Project Supabase              | Dibuat lewat dashboard; yang dicatat ke repo hanya URL project dan kunci publishable.                                                                                     |
+| Supabase CLI di Mac           | Dipakai hanya untuk deploy fungsi dengan urutan aman (F12).                                                                                                               |
+
+**Alur setelah fondasi jadi:** ubah berkas → `git status` → cek tiga hal (F6) → `git add .` → `commit` → `push` → GitHub menerbitkan otomatis (sekitar 1 sampai 2 menit) → buka alamat aplikasi → versi terbaru muncul di HP.
+
+---
+
+## 5. Urutan pekerjaan (untuk TODO sheet, prefix FND)
+
+Satu langkah per giliran. Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua. **Semua langkah dipandu penuh** (AI menyebut buka apa, klik apa, hasil yang benar).
+
+1. **FND.01** Akun GitHub ketua dan repo public, kerangka folder dengan `.gitkeep`, `.gitignore` (F7), `AGENTS.md` dan md di `docs/`.
+2. **FND.02 ⚠️** Git di Mac: folder terpisah, nama dan **email noreply GitHub** (dipandu mencarinya di pengaturan GitHub), kunci SSH khusus, cek anti-nyasar (F6), push pertama.
+3. **FND.03** Akun Supabase ketua (profil browser terpisah) dan project Singapura. Catat **hanya** URL project dan kunci publishable. Pakai sistem kunci API baru (publishable dan secret), bukan kunci lama `anon`/`service_role`; bila dashboard menampilkan tombol "Create new API keys", buat dulu.
+4. **FND.04** `public/index.html`, `public/config.js`, dan salinan pustaka Supabase di `public/lib/` (versi dipatok).
+5. **FND.05 ⚠️** `.github/workflows/pages.yml` dan sumber Pages "GitHub Actions". Hasil benar: halaman awal terbuka di alamat GitHub Pages.
+6. **FND.06 ⚠️** Daftarkan alamat GitHub Pages di URL Auth Supabase (F11).
+7. **FND.07 ⚠️** Pasang atau cek Supabase CLI di Mac, dan latih urutan deploy aman (F12) dengan satu perintah baca-saja. Token tidak ditempel ke chat. Ingat: `kedai` dan `bersihkan` beda flag; uji pertama `kedai` dengan token login asli adalah SEC-33 (`security.md`).
+8. **FND.08 ⚠️** PWA: `manifest.json`, ikon sementara (F14; cara membuatnya dipandu AI saat langkahnya tiba), `sw.js` network first. Hasil benar: bisa dipasang di HP, update muncul, berkas aplikasi terbuka offline.
+9. **FND.09** Cek repo bersih dari rahasia, data pribadi, dan `supabase/.temp` (SEC-23), termasuk riwayat commit.
+10. **FND.10** Catat batas free tier terbaru dari situs resmi Supabase ke catatan susulan `AGENTS.md` bila ada selisih dari bagian 4.
+
+---
+
+## 6. Aturan yang paling sering terlanggar
+
+| Aturan                                                                                                                                            | Akibat bila dilanggar                                                                                       |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Push tanpa cek folder, `git remote -v`, dan email commit                                                                                          | Kode ChATA nyasar ke repo adik, atau email adik/pribadi terlihat di riwayat publik.                         |
+| Memakai nama dan email git **global** laptop                                                                                                      | Commit tercatat atas nama adik.                                                                             |
+| Menjalankan `supabase login`, `link`, atau `projects list` di Mac bersama                                                                         | Mengacaukan login CLI milik adik; deploy bisa nyasar ke project lain.                                       |
+| Deploy tanpa `--project-ref` dari `config.js`                                                                                                     | Fungsi terpasang di project yang salah.                                                                     |
+| Menyeragamkan flag deploy: `--no-verify-jwt` ke `kedai`, atau melepasnya dari `bersihkan`                                                         | Ke `kedai`: lapis pertama hilang. Dari `bersihkan`: penjadwal ditolak platform karena rahasianya bukan JWT. |
+| `supabase/.temp` ikut ter-push                                                                                                                    | Informasi project ikut ke repo public.                                                                      |
+| Membiarkan sesi GitHub/Supabase ketua terbuka di laptop bersama                                                                                   | Orang lain di laptop itu bisa mengubah project.                                                             |
+| Path diawali `/` atau nama berkas berhuruf besar/spasi                                                                                            | Gambar dan skrip gagal termuat di versi online, padahal jalan di Mac.                                       |
+| Berkas aplikasi di luar `public/`                                                                                                                 | Tidak ikut terbit.                                                                                          |
+| `git add .` tanpa `git status` dulu                                                                                                               | Berkas rahasia atau sampah ikut terunggah ke repo public.                                                   |
+| Menaruh kunci secret Supabase (`sb_secret_...`), kunci privat VAPID, password, token CLI, email atau nomor pribadi di repo, `config.js`, md, chat | Repo public: kunci bocor; harus diganti di Supabase.                                                        |
+| Memakai kunci lama `anon`/`service_role` (kunci panjang berawalan `eyJ`)                                                                          | Supabase sedang menghentikannya (jadwal di `AGENTS.md` bagian 3); aplikasi bisa tiba-tiba berhenti bekerja. |
+| Pustaka tanpa versi dipatok, atau dimuat dari CDN (bukan salinan di `lib/`)                                                                       | Aplikasi bisa rusak sendiri saat pustaka diperbarui.                                                        |
+| `sw.js` meng-cache panggilan ke Supabase                                                                                                          | Data order bisa tampil usang atau salah.                                                                    |
+| Berkas aplikasi baru (JS, CSS, pustaka, ikon) tidak didaftarkan di cache `sw.js`                                                                  | Aplikasi offline bisa setengah rusak tanpa langsung ketahuan.                                               |
+| Mengubah `sw.js`, `config.js`, atau `pages.yml` tanpa penjelasan dan "OK"                                                                         | Aplikasi tidak terbit atau HP menyimpan versi rusak.                                                        |
+| Memakai Docker, atau migration CLI (misal `supabase db push`)                                                                                     | Dilarang; SQL dijalankan manual di SQL Editor, deploy fungsi pakai `--use-api`.                             |
+
+---
+
+## 7. Dampak dan pembatalan
+
+- **`pages.yml` salah:** aplikasi tidak terbit; tidak ada data hilang. Perbaiki berkasnya, push ulang.
+- **`sw.js` salah:** HP bisa menyimpan versi rusak. Network first mengurangi risikonya; perbaiki dan push ulang, versi baru menggantikan setelah dibuka lagi.
+- **Salah push ke repo lain:** laporkan segera ke ketua. Bila berisi rahasia, rahasianya **diganti**, bukan sekadar dihapus dari riwayat.
+- **Token CLI bocor:** cabut dan buat baru di dashboard Supabase.
+- **Kunci secret Supabase bocor:** buat kunci secret baru di dashboard, ganti di fungsi, lalu hapus yang bocor (`security.md` bagian 5).
+- **Project salah wilayah:** sulit diubah; paling aman membuat project baru sebelum ada data.
+- **Project dijeda otomatis:** buka dashboard Supabase dan lanjutkan (restore). Data tidak hilang selama masih dalam masa pemulihan yang diumumkan Supabase.
+
+---
+
+## 8. Ditunda
+
+- Domain sendiri (alamat bawaan GitHub Pages dipakai dulu).
+- Lingkungan uji terpisah (satu environment production dipakai dulu; free tier mengizinkan lebih dari satu project, bisa dipertimbangkan lewat catatan susulan).
+- Pemantauan otomatis (cukup rutin membuka aplikasi dan dashboard).
+
+---
+
+## 9. Catatan Susulan dan Handoff (append-only, hanya di sesi kode)
+
+> Tempel blok baru di bawah garis ini. Format: `### YYYY-MM-DD: topik` atau `### Handoff #N | tanggal | nama PIC`. Yang paling akhir menang.
+
+---
+
+_(belum ada blok)_
