@@ -253,3 +253,16 @@ Berkas public/lib/supabase.js adalah salinan @supabase/supabase-js versi 2.119.0
 - Uji pertama `kedai` dengan token login asli (SEC-33) menunggu fungsinya ada.
 
 **Saran giliran berikutnya:** DSN.01 (berisiko, butuh "OK" ketua; jelaskan dampaknya dulu). Warna, font sistem, dan ukuran dasar di `public/style.css`, semua gaya di satu berkas tanpa CDN. Daftarkan `style.css` di cache `sw.js`. Lampirkan `AGENTS.md` + `desain.md` + versi terbaru `public/sw.js` dan `public/index.html`. Sebelum push apa pun, cek tiga hal anti-nyasar. Logout GitHub dan Supabase di profil browser setelah selesai.
+
+### 2026-11-05: Tes update versi baru di HP lulus (bukti dari DSN.01)
+
+Tes "versi baru muncul di HP setelah update", yang ditunda di catatan FND.08 dan Handoff #4, sudah dilakukan lewat push DSN.01 (commit `1f61971`, workflow Pages hijau 40 detik). Yang paling akhir menang: butir ini **tidak lagi "belum dites"**.
+
+**Hasil:**
+
+- Online: aplikasi yang sudah terpasang di layar utama HP Android memuat tampilan baru (latar krem, judul marun) tanpa hapus data peramban dan tanpa pasang ulang.
+- Offline (mode pesawat): tampilan tetap sama. `style.css` ikut tersimpan di cache.
+
+**Perubahan terkait:** nama cache di `sw.js` naik dari `chata-v1` ke `chata-v2`, dan `style.css` sudah masuk daftar cache (rincian di `docs/desain.md`, DSN.01). Daftar cache sekarang: `./`, `index.html`, `config.js`, `lib/supabase.js`, `manifest.json`, `style.css`, kedua ikon.
+
+Bukti diperiksa di chat dan tidak disimpan.

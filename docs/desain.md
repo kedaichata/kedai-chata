@@ -147,4 +147,22 @@ Dikerjakan **setelah `fondasi.md` dan sebelum `akun.md`**, karena layar pertama 
 
 ---
 
-_(belum ada blok)_
+### Handoff #1 | 2026-11-05 | [Ketua]
+
+**Tugas selesai:** DSN.01 (tinggal dicentang di sheet). Butir sheet "Tes update muncul di HP" (tertunda dari FND.08) juga terbukti lulus lewat push ini dan bisa dicentang.
+
+**File yang diubah:** `public/style.css` (baru), `public/index.html` (ditambah satu komentar dan satu `<link>` ke `style.css`; kode lama tidak diubah), `public/sw.js` (nama cache `chata-v1` jadi `chata-v2`, dan `style.css` masuk daftar cache; kode lain tidak diubah). Satu commit `1f61971` di `main`. Tiga cek anti-nyasar lolos sebelum push. Workflow Pages hijau (40 detik).
+
+**Isi `style.css`:** warna di variabel `:root` sesuai desain.md bagian 4.1 (marun sangat gelap, marun, emas terang, emas redup, krem, teks gelap, teks terang), font bawaan sistem, teks isi 17 px, tinggi minimal tombol dan isian 48 px, latar krem, judul marun. Belum ada komponen.
+
+**Keputusan baru:** tidak ada. `index.html` ikut diubah karena `style.css` belum tersambung ke halaman; itu bagian dari DSN.01.
+
+**Hasil tes:** tampilan benar di Chrome Mac. Di HP Android, aplikasi terpasang di layar utama memuat tampilan baru tanpa hapus data dan tanpa pasang ulang (update muncul). Dengan mode pesawat tampilan tetap sama (`style.css` ada di cache). Bukti diperiksa di chat dan tidak disimpan. Catatan: status "belum dites" di `docs/fondasi.md` (catatan FND.08 dan Handoff #4) sudah tidak berlaku; yang paling akhir menang.
+
+**Belum beres:**
+
+- Nilai warna masih titik awal. Keterbacaan emas dan marun di HP sungguhan dicek lengkap di DSN.07.
+- Ikon PWA masih sementara; disempurnakan di DSN.06.
+- Komponen (wordmark, bilah, kartu, tombol, lencana, keadaan khusus) belum ada; itu DSN.02 sampai DSN.05.
+
+**Saran giliran berikutnya:** DSN.02 (wordmark HTML/CSS per DS5 dan halaman contoh yang menampilkannya; Low-Risk). Gaya wordmark ditambah di `style.css`, bukan di berkas lain. Bila halaman contoh berupa **berkas baru** di `public/`, berkas itu wajib didaftarkan di daftar cache `sw.js` dan nama cache dinaikkan ke `chata-v3` (menyentuh `sw.js`, butuh "OK" ketua); bila halaman contoh ditaruh di `index.html`, `sw.js` tidak perlu disentuh. Lampirkan `AGENTS.md` + `desain.md` + versi terbaru `public/style.css` dan `public/index.html` (+ `public/sw.js` bila berkas baru). Sebelum push, cek tiga hal anti-nyasar. Logout GitHub dan Supabase di profil browser setelah selesai.
