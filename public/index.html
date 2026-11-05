@@ -40,5 +40,18 @@
                           ").";
             })();
         </script>
+        <script>
+            // Mendaftarkan service worker (sw.js) supaya aplikasi bisa dipasang dan terbuka offline.
+            // Path relatif (tanpa awalan /) supaya jalan di GitHub Pages.
+            if ("serviceWorker" in navigator) {
+                window.addEventListener("load", function () {
+                    navigator.serviceWorker
+                        .register("sw.js")
+                        .catch(function () {
+                            // Gagal mendaftar tidak boleh mengganggu halaman; aplikasi tetap jalan tanpa offline.
+                        });
+                });
+            }
+        </script>
     </body>
 </html>
