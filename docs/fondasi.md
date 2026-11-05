@@ -179,3 +179,24 @@ Berkas public/lib/supabase.js adalah salinan @supabase/supabase-js versi 2.119.0
 - URL project Supabase kini sudah tercatat di `config.js` (menyelesaikan catatan "belum beres" Handoff #1).
 
 **Saran giliran berikutnya:** FND.05 (`.github/workflows/pages.yml` + sumber Pages "GitHub Actions"), butuh "OK" ketua. Jelaskan dampaknya dulu (sudah dibahas di chat sebelumnya, belum disetujui). Sebelum push, cek tiga hal lagi. Logout GitHub dan Supabase di profil Chrome setelah selesai.
+
+### Handoff #3 | 2026-11-05 | [Ketua]
+
+**Tugas selesai:** FND.05, FND.06, FND.07 (tinggal dicentang di sheet).
+
+**File yang diubah:** `.github/workflows/pages.yml` (baru) dan `docs/fondasi.md` (blok Handoff #2 ditempel; judul Handoff #1 jadi `[Ketua]`, kosmetik). Dua commit di `main`: 5d016dd (catatan Handoff #2) dan e675c56 (workflow penerbitan). Tiga cek anti-nyasar lolos sebelum push. Push memakai kunci SSH ChATA.
+
+**Keputusan baru:**
+
+- Alamat aplikasi: https://kedaichata.github.io/kedai-chata/. Sumber Pages diatur ke GitHub Actions; workflow "Terbitkan ke GitHub Pages" berjalan tiap push ke `main` (19 detik, hijau). Halaman awal terbuka dan menampilkan "Sistem siap.".
+- Site URL Supabase diganti dari bawaan (localhost:3000) ke alamat di atas, dan alamat yang sama jadi satu-satunya Redirect URL. Dicek dengan refresh: nilai tersimpan (F11).
+- Supabase CLI 2.121.0 sudah terpasang di Mac; tidak diupdate (brew upgrade dilarang, tawaran v3.0.0 diabaikan).
+- Token CLI `chata-deploy-5nov`: akses Project hanya ke kedaichata, hak Edge Functions = Read-write, semua hak lain None (termasuk Edge Function Secrets), kedaluwarsa 31 Mar 2027. Alasan masa berlaku panjang: keputusan ketua, supaya tidak bikin ulang di versi 2 dan 3. Token disimpan di penyimpanan aman ketua, tidak di Mac. Preset "Full access" sengaja tidak dipakai (membuka database, kunci API, anggota organisasi).
+- Latihan baca-saja `supabase functions list --project-ref "$PROJECT_REF"` berhasil (tabel kosong). Token dibersihkan dari Terminal (dicek `[]`). Dashboard Supabase dan GitHub sudah logout.
+
+**Belum beres:**
+
+- `manifest.json` belum ada (peringatan kecil di konsol); `sw.js` dan daftar cache belum ada. Keduanya di FND.08.
+- Belum ada fungsi yang di-deploy. Uji pertama `kedai` dengan token login asli tetap SEC-33 (`security.md`).
+
+**Saran giliran berikutnya:** FND.08 (`manifest.json`, ikon sementara per F14, `sw.js` network first). Berisiko, butuh "OK" ketua; jelaskan dampaknya dulu. Daftarkan semua berkas aplikasi (termasuk `lib/supabase.js`) di cache `sw.js`. Lampirkan `AGENTS.md` + `fondasi.md` + versi terbaru `public/index.html` dan `public/config.js`.
