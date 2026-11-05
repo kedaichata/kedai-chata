@@ -194,3 +194,31 @@ Dikerjakan **setelah `fondasi.md` dan sebelum `akun.md`**, karena layar pertama 
 - Tulisan menu bawah sekitar 13 px; dicek lengkap di DSN.07. Tampilan di layar lebar (laptop) belum dibahas; baru dilihat sekali di Chrome, selebihnya HP.
 
 **Saran giliran berikutnya:** DSN.04 (kartu, tombol utama/sekunder/berbahaya, isian, daftar, lencana status; Low-Risk). Gaya ditambah di `style.css`; halaman contoh tetap di `index.html` agar `sw.js` tidak perlu disentuh. Lampirkan `AGENTS.md` + `desain.md` + versi terbaru `public/style.css` dan `public/index.html`. Sebelum push, cek tiga hal anti-nyasar. Logout GitHub dan Supabase di profil browser setelah selesai.
+
+### Handoff #3 | 2026-11-05 | [nama PIC]
+
+**Tugas selesai:** DSN.04 dan DSN.05 (tinggal dicentang di sheet).
+
+**File yang diubah:**
+
+- DSN.04 (commit `24bacc2`): `public/style.css`, `public/index.html`, `docs/desain.md` (hanya ganti nama PIC).
+- DSN.05 (commit `8200625`): `public/style.css`, `public/index.html`.
+- `sw.js` tidak disentuh (cache tetap `chata-v3`). Kode lama tidak ada yang dihapus; semuanya tambahan.
+
+**Isi:**
+
+- DSN.04: kartu, kartu order, tombol (utama, sekunder, berbahaya, nonaktif), isian (normal dan galat), daftar (bisa digulir), tujuh lencana status, tanda "Catatan baru". Empat variabel warna tambahan di `style.css`: `--bahaya`, `--putih`, `--garis-tipis`, `--teks-samar`.
+- DSN.05: bentuk dasar `.keadaan` untuk Memuat, Kosong, Galat, dan Offline; lingkaran putar `.putaran` (berhenti bila HP mengurangi animasi). Pesan Bahasa Indonesia, tanpa galat mentah.
+- Halaman contoh di `index.html` bertambah "Contoh komponen" dan "Contoh keadaan khusus" (data dummy, statis).
+
+**Keputusan baru:** Offline dibuat sebagai blok layar penuh seperti keadaan lain (pita tipis bisa dipertimbangkan saat ada JS). Empat warna tambahan di atas dipilih penulis kode, alasan belum tercatat dari ketua.
+
+**Hasil tes:** Di HP Android (terpasang di layar utama): update muncul tanpa hapus data, tampilan DSN.04 dan DSN.05 sesuai deskripsi; mode pesawat dites untuk DSN.04 dan tampilan tetap utuh. Bukti diperiksa di chat dan tidak disimpan.
+
+**Belum beres:**
+
+- `.contoh-sampul` masih ada; ketua belum memutuskan dipakai atau dibuang (Handoff #2).
+- Halaman contoh sementara, digantikan layar Masuk (AKN.05). Tombol dan menu belum berfungsi; belum ada JS yang mendeteksi offline atau memuat data (menyusul di layar yang butuh).
+- Warna lencana masih titik awal; tulisan lencana dan bantuan sekitar 14 sampai 15 px, dicek lengkap di DSN.07.
+
+**Saran giliran berikutnya:** DSN.06 (ikon PWA 192 dan 512 px dari logo asli). Logo 500 px, kurang dari 512; bahas dulu caranya. Menyentuh `sw.js` bila daftar cache berubah, jadi butuh "OK" ketua. Lampirkan `AGENTS.md` + `desain.md` + `public/sw.js` + `public/manifest.json`. Sebelum push, cek tiga hal anti-nyasar.
