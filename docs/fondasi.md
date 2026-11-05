@@ -155,3 +155,7 @@ Satu langkah per giliran. Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 - URL project Supabase belum dicatat dengan pasti (jangan menebak dari screenshot; ambil lewat tombol **Copy** di dashboard).
 
 **Saran giliran berikutnya:** FND.04 (`public/index.html`, `public/config.js`, salinan pustaka Supabase di `public/lib/` dengan versi dipatok). Butuh URL project dari tombol Copy dan aba-aba "gas". Sebelum push apa pun, cek tiga hal (folder `CHATA`, `git remote -v` ke `kedaichata`, email commit noreply `kedaichata`). Logout GitHub dan Supabase di profil Chrome setelah selesai.
+
+### 2026-11-05: Pustaka Supabase versi 2.119.0
+
+Berkas public/lib/supabase.js adalah salinan @supabase/supabase-js versi 2.119.0 (build UMD, dist/umd/supabase.js). Diunduh manual oleh ketua dari jsDelivr karena sesi AI tidak bisa mengunduh dari npm. Nama berkas sengaja tanpa nomor versi; bila diganti, catat versi barunya di sini. Alasan memilih versi terbaru: permintaan adik ketua (nomor tetap dipatok sesuai F9).

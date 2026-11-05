@@ -1,0 +1,44 @@
+<!--public/index.html -->
+<!doctype html>
+<html lang="id">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Kedai ChATA</title>
+        <!-- Semua path relatif (tanpa awalan /) supaya jalan di GitHub Pages -->
+        <link rel="manifest" href="manifest.json" />
+    </head>
+    <body>
+        <h1>Kedai ChATA</h1>
+        <p>
+            Aplikasi order Kedai ChATA sedang disiapkan. Silakan kembali
+            sebentar lagi.
+        </p>
+        <p id="status-sistem"></p>
+
+        <!-- Pengaturan publik (URL project dan kunci publishable) -->
+        <script src="config.js"></script>
+        <!-- Salinan pustaka Supabase, versi dipatok, disimpan di public/lib/ (bukan dari CDN) -->
+        <script src="lib/supabase.js"></script>
+        <script>
+            // Pengecekan awal saja: memastikan config dan pustaka termuat. Tidak memanggil server.
+            (function () {
+                var el = document.getElementById("status-sistem");
+                var configAda = !!(
+                    window.KEDAI_CONFIG && window.KEDAI_CONFIG.SUPABASE_URL
+                );
+                var pustakaAda = !!(
+                    window.supabase && window.supabase.createClient
+                );
+                el.textContent =
+                    configAda && pustakaAda
+                        ? "Sistem siap."
+                        : "Sistem belum lengkap (config: " +
+                          (configAda ? "ok" : "belum") +
+                          ", pustaka: " +
+                          (pustakaAda ? "ok" : "belum") +
+                          ").";
+            })();
+        </script>
+    </body>
+</html>
