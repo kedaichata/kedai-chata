@@ -187,4 +187,9 @@ Angka yang bisa berubah **tidak ditulis mati di kode** (`AGENTS.md` bagian 1). N
 
 ---
 
-_(belum ada blok)_
+### 2026-11-05: Format nama berkas migration
+
+- Nama migration memakai tanggal: `YYYYMMDD_nama.sql` (contoh `20261105_akun.sql`), dengan pembatalannya `YYYYMMDD_nama_batal.sql` di folder yang sama. Bila ada dua migration di hari yang sama, tambah `_02` (contoh `20261105_02_menu.sql`).
+- Ini menggantikan "diawali nomor urut" di bagian 6 butir 1 (yang paling akhir menang). Format tahun-bulan-hari dipilih supaya urutan alfabet sama dengan urutan waktu. Keputusan PIC di sesi kode; alasan dari ketua belum tercatat.
+- Urutan migration tetap mengikuti bagian 6 butir 7 (AKN.03, MNU.01, ORD.01, FTO.01, NTF.02, BTN.01).
+- Query cek baca-saja per migration disimpan di `supabase/templates/` dengan nama `YYYYMMDD_nama_cek.sql` (contoh `20261105_akun_cek.sql`), karena dijalankan berulang dan tanpa data nyata.

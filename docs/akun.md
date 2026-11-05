@@ -195,3 +195,30 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 - Catatan keputusan di atas belum ditempel ke `docs/security.md` bagian 7. Tempel blok pendek di bawah.
 
 **Saran giliran berikutnya:** AKN.03 (migration tabel pengaturan, profil, alamat, staf, hak, RLS, fungsi pembuat profil). High-Risk, butuh OK ketua. Lampirkan AGENTS.md, akun.md, database.md, security.md, dan isi supabase/migrations/ bila sudah ada.
+
+### Handoff #2 | 2026-11-05 | [RAC]
+
+**Tugas:** AKN.03 (migration akun). Selesai, sudah di-push.
+
+**File yang diubah (semuanya baru):**
+
+- `supabase/migrations/20261105_akun.sql`
+- `supabase/migrations/20261105_akun_batal.sql`
+- `supabase/templates/20261105_akun_cek.sql`
+  **Hasil:** empat tabel (`pengaturan`, `profil`, `alamat`, `staf`), RLS aktif tanpa policy, hak `service_role` sesuai `database.md` bagian 3 tanpa DELETE, baris awal `alamat_maks` = 5, dan fungsi `public.buat_profil(p_id, p_nama, p_wa, p_alias, p_alamat)` yang atomik (profil dan alamat pertama sekaligus). Dijalankan di SQL Editor atas OK ketua. Query cek baca-saja lulus semua (RLS, tanpa policy, hak tabel, hak fungsi, pengaturan); ini bukti SEC-04, diperiksa di chat dan tidak disimpan.
+
+**Keputusan baru:**
+
+- Nomor WA disimpan seragam `628...` (angka saja). Input boleh diawali `+62`, `62`, atau `08`; hanya nomor seluler (setelah awalan harus `8`). Nomor yang sama boleh dipakai beberapa akun. Ini perincian AK8 (butir bawaan); belum ditanyakan satu per satu ke ketua.
+- `buat_profil` menolak akun yang punya baris di tabel `staf` (staf tidak punya profil customer, AK4).
+- Kode galat `buat_profil` untuk dipetakan `kedai` ke pesan aman: `id_kosong`, `nama_tidak_valid`, `wa_tidak_valid`, `alias_tidak_valid`, `alamat_tidak_valid`, `pengaturan_rusak`, `akun_staf`, `profil_sudah_ada`.
+- Format nama migration berubah (lihat blok 2). Disepakati PIC di sesi ini, belum dikonfirmasi ketua.
+  **Belum beres:**
+
+- **Selisih dengan AK16 (usulan, belum diputuskan ketua):** AK16 menyebut `kedai` versi pertama membawa enam aksi akun, padahal fungsi SQL baru ada `buat_profil`. Usulan: AKN.04 berisi rangka `kedai`, cek token dua lapis, CORS, dan aksi `status` serta `daftar_profil`. Aksi `alamat_simpan` dan `alamat_nonaktif` ditambah di AKN.07, `ganti_nama` dan `ganti_wa` di AKN.08, masing-masing dengan migration kecil dan OK ketua. Alternatifnya satu migration kedua sekarang untuk keempat fungsi itu.
+- SEC-03 versi penuh (akses langsung dari HP dengan kunci publishable) belum dites; masuk AKN.11.
+- Uji kirim email dari Gmail tim (SEC-24) masih menunggu akun uji (dari Handoff #1).
+- Catatan koreksi: Handoff #1 menyebut blok "Secure password change mati" belum ditempel ke `security.md`; ternyata sudah ada di `security.md` bagian 7.
+  **Saran giliran berikutnya:** AKN.04 (Edge Function `kedai` versi pertama). High-Risk, butuh OK ketua. Yang perlu disiapkan sebelum mulai: (1) keputusan ketua soal scope di atas, (2) alamat GitHub Pages untuk daftar asal CORS, (3) konfirmasi FND.07 beres, (4) kunci secret baru (`sb_secret_...`) dibuat dan disimpan ketua sebagai secret fungsi di dashboard, bukan di kode, chat, atau md. Lampirkan `AGENTS.md`, `akun.md`, `database.md`, `security.md`, `public/config.js`, dan isi `supabase/migrations/` terbaru; folder `supabase/functions/` saat ini hanya berisi `.gitkeep`.
+
+---
