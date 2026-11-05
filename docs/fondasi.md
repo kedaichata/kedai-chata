@@ -136,7 +136,7 @@ Satu langkah per giliran. Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 
 ---
 
-### Handoff #1 | 2026-11-05 | Ketua
+### Handoff #1 | 2026-11-05 | [Ketua]
 
 **Tugas selesai:** FND.01, FND.02, FND.03 (tinggal dicentang di sheet).
 
@@ -159,3 +159,23 @@ Satu langkah per giliran. Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 ### 2026-11-05: Pustaka Supabase versi 2.119.0
 
 Berkas public/lib/supabase.js adalah salinan @supabase/supabase-js versi 2.119.0 (build UMD, dist/umd/supabase.js). Diunduh manual oleh ketua dari jsDelivr karena sesi AI tidak bisa mengunduh dari npm. Nama berkas sengaja tanpa nomor versi; bila diganti, catat versi barunya di sini. Alasan memilih versi terbaru: permintaan adik ketua (nomor tetap dipatok sesuai F9).
+
+### Handoff #2 | 2026-11-05 | [Ketua]
+
+**Tugas selesai:** FND.04 (sudah dicentang di sheet).
+
+**File yang diubah:** `public/config.js`, `public/index.html`, `public/lib/supabase.js` (baru), dan `docs/fondasi.md` (blok catatan versi pustaka). Sudah di-push ke `main`, commit 1475870. Tiga cek anti-nyasar lolos sebelum push.
+
+**Keputusan baru:**
+
+- `config.js` memakai satu objek global `window.KEDAI_CONFIG` dengan dua isian: `SUPABASE_URL` dan `SUPABASE_PUBLISHABLE_KEY`. Isian VAPID publik nanti ditambah di objek yang sama (notifikasi.md). Alasan nama ini belum tercatat.
+- `index.html` punya satu baris status kecil: "Sistem siap." bila config dan pustaka termuat. Dipakai sebagai cek cepat, tidak memanggil server.
+- Pustaka Supabase 2.119.0 diunduh manual oleh ketua dari jsDelivr karena sesi AI tidak bisa mengunduh dari npm (detail di catatan 2026-11-05 di atas).
+
+**Belum beres:**
+
+- `manifest.json` belum ada, jadi konsol browser memberi peringatan kecil; selesai di FND.08.
+- `lib/supabase.js` dan berkas aplikasi lain belum masuk daftar cache `sw.js`; dikerjakan di FND.08.
+- URL project Supabase kini sudah tercatat di `config.js` (menyelesaikan catatan "belum beres" Handoff #1).
+
+**Saran giliran berikutnya:** FND.05 (`.github/workflows/pages.yml` + sumber Pages "GitHub Actions"), butuh "OK" ketua. Jelaskan dampaknya dulu (sudah dibahas di chat sebelumnya, belum disetujui). Sebelum push, cek tiga hal lagi. Logout GitHub dan Supabase di profil Chrome setelah selesai.
