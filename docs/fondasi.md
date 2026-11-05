@@ -231,3 +231,25 @@ Berkas public/lib/supabase.js adalah salinan @supabase/supabase-js versi 2.119.0
 - Ikon masih sementara; disempurnakan di DSN.06.
 
 **Saran giliran berikutnya:** FND.09 (P0, bukti wajib): cek repo bersih dari rahasia, data pribadi, dan `supabase/.temp`, termasuk riwayat commit (SEC-23). Lampirkan `AGENTS.md` + `fondasi.md` + `security.md`. Sebelum push apa pun, cek tiga hal (folder `CHATA`, `git remote -v` ke `kedaichata`, email commit noreply `kedaichata`). Logout GitHub dan Supabase di profil browser setelah selesai.
+
+### Handoff #5 | 2026-11-05 | [Ketua]
+
+**Tugas selesai:** FND.09 dan FND.10 (tinggal dicentang di sheet). Dengan ini seluruh urutan FND.01 sampai FND.10 selesai.
+
+**File yang diubah:** tidak ada. Dua tugas ini hanya pemeriksaan baca-saja, jadi tidak ada commit dan tidak ada push. Tiga cek anti-nyasar lolos sebelum pemeriksaan (folder `CHATA`, remote `kedaichata`, email commit noreply `kedaichata`). Satu-satunya perubahan adalah blok catatan ini yang ditempel ke `docs/fondasi.md`.
+
+**Hasil:**
+
+- FND.09 (SEC-23): lulus, repo bersih. Pencarian di berkas dan seluruh riwayat commit tidak menemukan kunci secret, token CLI, kunci lama `eyJ`, kunci privat, pola nomor HP, atau email asli. `supabase/.temp` tidak pernah masuk riwayat. Kata "password" hanya muncul sebagai teks aturan di md dan kode pustaka `supabase.js`. `config.js` hanya memuat URL project dan kunci publishable. Bukti diperiksa di chat dan tidak disimpan.
+- FND.10: batas free tier di situs resmi Supabase (dicek 5 Nov 2026) sama dengan `AGENTS.md` bagian 4, jadi tidak ada catatan susulan yang perlu ditambah ke `AGENTS.md`.
+
+**Keputusan baru:** tidak ada.
+
+**Belum beres (bukan utang fondasi, ikut pekerjaan berikutnya):**
+
+- Tes "versi baru muncul di HP setelah update" belum dilakukan; dibuktikan di push berikutnya yang menyentuh berkas aplikasi (misalnya DSN.01). Butir sheet "Tes update muncul di HP" perlu ditambah bila belum ada.
+- `style.css` belum ada dan belum masuk cache `sw.js`. Didaftarkan di DSN.01 dan nama cache `chata-v1` dinaikkan (butuh "OK" ketua).
+- Ikon masih sementara; disempurnakan di DSN.06.
+- Uji pertama `kedai` dengan token login asli (SEC-33) menunggu fungsinya ada.
+
+**Saran giliran berikutnya:** DSN.01 (berisiko, butuh "OK" ketua; jelaskan dampaknya dulu). Warna, font sistem, dan ukuran dasar di `public/style.css`, semua gaya di satu berkas tanpa CDN. Daftarkan `style.css` di cache `sw.js`. Lampirkan `AGENTS.md` + `desain.md` + versi terbaru `public/sw.js` dan `public/index.html`. Sebelum push apa pun, cek tiga hal anti-nyasar. Logout GitHub dan Supabase di profil browser setelah selesai.
