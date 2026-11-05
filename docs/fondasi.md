@@ -136,4 +136,22 @@ Satu langkah per giliran. Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 
 ---
 
-_(belum ada blok)_
+### Handoff #1 | 2026-11-05 | Ketua
+
+**Tugas selesai:** FND.01, FND.02, FND.03 (tinggal dicentang di sheet).
+
+**File yang diubah:** semuanya baru. Repo `kedaichata/kedai-chata` (public) berisi `AGENTS.md`, 12 md di `docs/`, `.gitignore`, dan empat `.gitkeep` (`public/`, `supabase/functions`, `supabase/migrations`, `supabase/templates`). Push pertama sukses (commit fb4b817); penulis commit `kedaichata` dengan email noreply GitHub. Project Supabase `kedaichata` jadi, status Healthy, wilayah Singapura.
+
+**Keputusan baru:**
+
+- Akun Supabase didaftarkan lewat **Gmail ketua** (bukan login GitHub), di profil Chrome terpisah. Memenuhi F8 (akun milik ketua). Alasan tidak memakai login GitHub: pilihan ketua, mengikuti pola adik.
+- Mac bersama sudah punya kunci SSH adik (`id_rsa`). Kunci ChATA dibuat dengan nama berbeda (`id_ed25519_chata`, ber-passphrase) dan diarahkan hanya lewat `core.sshCommand` **lokal** di folder CHATA. `~/.ssh/config` tidak diubah dan tidak boleh diubah tanpa "OK". Jangan pakai `--global`.
+- `.gitignore` memuat: `.DS_Store`, `supabase/.temp`, `.env`, `.env.*`, `*.pem`, `*.key`, `*.csv`, `*.xlsx`.
+- Form project Supabase: **Enable Data API** dicentang, **Automatically expose new tables** tidak dicentang, **Enable automatic RLS** dicentang. Alasan: sejalan dengan prinsip "tabel tertutup total" (`database.md` bagian 3); dokumen belum menyebut kotak ini secara eksplisit. Bisa diubah lagi di pengaturan project.
+- Sistem kunci baru dipakai: kunci publishable (`sb_publishable_...`) sudah dilihat. Kunci secret belum dibuka dan tidak boleh ditempel ke chat.
+
+**Belum beres:**
+
+- URL project Supabase belum dicatat dengan pasti (jangan menebak dari screenshot; ambil lewat tombol **Copy** di dashboard).
+
+**Saran giliran berikutnya:** FND.04 (`public/index.html`, `public/config.js`, salinan pustaka Supabase di `public/lib/` dengan versi dipatok). Butuh URL project dari tombol Copy dan aba-aba "gas". Sebelum push apa pun, cek tiga hal (folder `CHATA`, `git remote -v` ke `kedaichata`, email commit noreply `kedaichata`). Logout GitHub dan Supabase di profil Chrome setelah selesai.
