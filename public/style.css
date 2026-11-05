@@ -75,3 +75,42 @@ textarea {
     font: inherit;
     min-height: var(--tinggi-tombol);
 }
+
+/* ------------------------------------------------------------------
+   DSN.02: Wordmark (desain.md DS5)
+   Memakai logo asli di img/chata-logo.png (bulat, latar transparan).
+   Mau tukar logo: ganti berkas di public/img/ dengan nama yang sama.
+   Dua ukuran: besar (layar Masuk dan Daftar), kecil (kartu sampul).
+   ------------------------------------------------------------------ */
+.wordmark {
+    display: block;
+    height: auto;
+    max-width: 100%;
+}
+
+.wordmark--besar {
+    width: 160px;
+    margin: 8px auto 16px;
+}
+
+.wordmark--kecil {
+    width: 48px;
+    margin: 0;
+}
+
+/* Hanya untuk halaman contoh DSN.02: memperlihatkan wordmark kecil di atas marun gelap.
+   Komponen kartu sampul yang sebenarnya dibuat nanti (DSN.04). */
+.contoh-sampul {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    margin: 0 0 16px;
+    border-radius: 12px;
+    background: var(--marun-sangat-gelap);
+    color: var(--teks-terang);
+}
+
+.contoh-sampul__nama {
+    font-weight: 700;
+}
