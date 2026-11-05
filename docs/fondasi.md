@@ -215,3 +215,19 @@ Berkas public/lib/supabase.js adalah salinan @supabase/supabase-js versi 2.119.0
 **Hasil tes:** dipasang di layar utama HP Android (Brave), terbuka layar penuh, bilah atas marun. Terbuka offline: lulus di Chrome Mac (DevTools, kotak Offline) dan di HP Android (mode pesawat dan Wi-Fi mati). Peringatan DevTools soal screenshot manifest ("Richer PWA Install UI") bersifat opsional dan diabaikan.
 
 **Belum dites:** versi baru muncul di HP setelah update. Dibuktikan di push berikutnya yang menyentuh berkas aplikasi (misalnya DSN.01), bukan lewat perubahan buatan.
+
+### Handoff #4 | 2026-11-05 | [Ketua]
+
+**Tugas selesai:** FND.08 (sudah dicentang di sheet). Rincian dan hasil tes ada di catatan 2026-11-05 tepat di atas.
+
+**File yang diubah:** `public/manifest.json`, `public/sw.js`, `public/img/icon-192.png`, `public/img/icon-512.png` (semua baru); `public/index.html` (ditambah pendaftaran `sw.js`); `docs/fondasi.md` (catatan susulan). Commit `4b36033` (aplikasi) dan `28aeea6` (catatan) di `main`. Tiga cek anti-nyasar lolos sebelum tiap push.
+
+**Keputusan baru:** tidak ada. Hanya penundaan tes "update muncul di HP" ke push berikutnya yang menyentuh berkas aplikasi (tercatat di atas).
+
+**Belum beres:**
+
+- Tes update versi baru muncul di HP belum dilakukan. Butir sheet: "Tes update muncul di HP" (perlu ditambah ke sheet bila belum).
+- `style.css` belum ada dan belum masuk cache `sw.js`. Saat DSN.01, daftarkan di `sw.js` dan naikkan nama cache `chata-v1` (butuh "OK" ketua).
+- Ikon masih sementara; disempurnakan di DSN.06.
+
+**Saran giliran berikutnya:** FND.09 (P0, bukti wajib): cek repo bersih dari rahasia, data pribadi, dan `supabase/.temp`, termasuk riwayat commit (SEC-23). Lampirkan `AGENTS.md` + `fondasi.md` + `security.md`. Sebelum push apa pun, cek tiga hal (folder `CHATA`, `git remote -v` ke `kedaichata`, email commit noreply `kedaichata`). Logout GitHub dan Supabase di profil browser setelah selesai.
