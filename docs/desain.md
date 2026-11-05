@@ -222,3 +222,29 @@ Dikerjakan **setelah `fondasi.md` dan sebelum `akun.md`**, karena layar pertama 
 - Warna lencana masih titik awal; tulisan lencana dan bantuan sekitar 14 sampai 15 px, dicek lengkap di DSN.07.
 
 **Saran giliran berikutnya:** DSN.06 (ikon PWA 192 dan 512 px dari logo asli). Logo 500 px, kurang dari 512; bahas dulu caranya. Menyentuh `sw.js` bila daftar cache berubah, jadi butuh "OK" ketua. Lampirkan `AGENTS.md` + `desain.md` + `public/sw.js` + `public/manifest.json`. Sebelum push, cek tiga hal anti-nyasar.
+
+### Handoff #4 | 2026-11-05 | [KEN]
+
+**Tugas selesai:** DSN.06 dan DSN.07 (tinggal dicentang di sheet). Dengan ini seluruh DSN (01 sampai 07) tuntas.
+
+**File yang diubah:** `public/img/icon-192.png` dan `public/img/icon-512.png` (ditimpa, nama sama). Commit `2c7770a` (versi pertama) dan satu commit susulan untuk versi logo lebih kecil (hash belum dicatat). `sw.js` dan `manifest.json` tidak disentuh (cache tetap `chata-v3`); tidak butuh "OK" ketua. Tiga cek anti-nyasar lolos sebelum push pertama.
+
+**Isi:** ikon PWA dibuat dari logo asli (`chata-logo.png`, 500 px) di atas kanvas marun `#3B0A14`, logo di tengah dengan diameter sekitar 54% dari kanvas. Logo tidak ditarik membesar. Menggantikan ikon sementara huruf "C" dari FND.08.
+
+**Keputusan baru:**
+
+- Ikon `any` dan `maskable` memakai satu gambar yang sama (keputusan ketua di chat). Alasan: paling sederhana dan tidak menambah berkas yang harus didaftarkan di `sw.js` dan `manifest.json`.
+- Ukuran logo 54%, bukan 78% (ruang aman standar). Versi 78% terpotong di HP ketua. Alasan ukuran tepat 54% belum tercatat dari ketua; dipilih penulis kode dari simulasi potongan sekitar 60% tengah.
+
+**Temuan di lapangan:** pemasangan lewat **Brave** hanya membuat pintasan biasa (ada lencana Brave di ikon) dan memotong ikon lebih dalam, sehingga logo terpotong walau ukurannya sudah aman. Pemasangan lewat **Chrome** menampilkan ikon utuh. Di layar Install Chrome dan Brave ikon terlihat benar; yang terpotong hanya ikon pintasan Brave. Ikon di layar utama HP yang sudah terpasang tidak berganti sendiri: hapus lalu pasang ulang.
+
+**Hasil tes:** DSN.06: ikon utuh di layar utama Android (dipasang lewat Chrome). DSN.07: di HP ketua, teks isi, menu bawah (termasuk menu Owner lima item), emas di marun, tujuh lencana status, tombol, isian (normal dan galat), daftar bisa digulir, dan keadaan khusus (Memuat, Galat, Offline) terbaca jelas, tidak ada yang meluber atau terpotong. Bukti diperiksa di chat dan tidak disimpan.
+
+**Belum beres:**
+
+- `.contoh-sampul` di `index.html` dan `style.css`: ketua belum memutuskan dipakai atau dibuang (Handoff #2 dan #3). Penghapusan kode butuh "OK" dan satu blok keputusan.
+- Halaman contoh di `index.html` masih sementara; digantikan layar Masuk (AKN.05). Tombol dan menu belum berfungsi (belum ada JS).
+- Tombol "Aksi sekunder" (pinggir marun) dan "Batalkan" (pinggir merah) cukup mirip warnanya; tulisannya jelas jadi dianggap lulus. Perhatikan saat Setujui/Tolak dipakai di layar order (DS12); bila ada salah tekan, tambahkan pembeda (ikon atau pinggir lebih tebal).
+- Tampilan di layar lebar (laptop) belum dibahas, baru dilihat sekali di Chrome Mac. Ikon dites di HP ketua saja, belum di HP anggota lain atau pelanggan.
+
+**Saran giliran berikutnya:** mulai `akun.md` (prefix AKN). AKN.01 dan AKN.02 (pengaturan Auth dan SMTP di dashboard) berisiko tinggi (P0) dan butuh "OK" ketua; siapkan ringkasan untuk diteruskan lewat WA bila yang bertugas bukan ketua. Lampirkan `AGENTS.md` + `akun.md` + `database.md` + `security.md` + versi terbaru `public/index.html`, `public/style.css`, dan `public/sw.js`. Sebelum push, cek tiga hal anti-nyasar. Logout GitHub dan Supabase di profil browser setelah selesai.
