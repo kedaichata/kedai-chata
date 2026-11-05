@@ -166,3 +166,31 @@ Dikerjakan **setelah `fondasi.md` dan sebelum `akun.md`**, karena layar pertama 
 - Komponen (wordmark, bilah, kartu, tombol, lencana, keadaan khusus) belum ada; itu DSN.02 sampai DSN.05.
 
 **Saran giliran berikutnya:** DSN.02 (wordmark HTML/CSS per DS5 dan halaman contoh yang menampilkannya; Low-Risk). Gaya wordmark ditambah di `style.css`, bukan di berkas lain. Bila halaman contoh berupa **berkas baru** di `public/`, berkas itu wajib didaftarkan di daftar cache `sw.js` dan nama cache dinaikkan ke `chata-v3` (menyentuh `sw.js`, butuh "OK" ketua); bila halaman contoh ditaruh di `index.html`, `sw.js` tidak perlu disentuh. Lampirkan `AGENTS.md` + `desain.md` + versi terbaru `public/style.css` dan `public/index.html` (+ `public/sw.js` bila berkas baru). Sebelum push, cek tiga hal anti-nyasar. Logout GitHub dan Supabase di profil browser setelah selesai.
+
+### Handoff #2 | 2026-11-05 | [Ketua]
+
+**Tugas selesai:** DSN.02 dan DSN.03 (tinggal dicentang di sheet).
+
+**File yang diubah:**
+
+- DSN.02 (commit `fe81f6a`): `public/img/chata-logo.png` (baru), `public/style.css`, `public/index.html`, `public/sw.js` (nama cache `chata-v2` jadi `chata-v3`, logo masuk daftar cache; kode lain tidak diubah).
+- DSN.03 (commit `b2cec93`): `public/style.css`, `public/index.html`. `sw.js` tidak disentuh.
+- Kode lama tidak ada yang dihapus; semuanya tambahan.
+
+**Isi:** komponen wordmark besar dan kecil dari logo asli, bilah atas (judul + tombol Segarkan), navigasi bawah per peran dengan ikon SVG langsung di HTML (tanpa pustaka ikon atau CDN). `index.html` untuk sementara berisi halaman contoh: wordmark, navigasi Customer yang menempel di bawah, dan contoh navigasi Penjaga dan Owner yang statis.
+
+**Keputusan baru:**
+
+- Logo asli (ditemukan ibu ketua) dipakai sebagai gambar di komponen wordmark, bukan wordmark HTML/CSS. Ini bertentangan dengan kalimat awal DS5 ("dibuat dari HTML dan CSS"); DS5 sendiri membolehkan tukar bila logo ketemu, dan yang paling akhir menang. "OK" ketua untuk perubahan `sw.js` diberikan di chat.
+- Tidak ada keputusan soal kartu sampul (lihat "Belum beres").
+
+**Hasil tes:** Actions hijau di kedua commit. Di HP Android (aplikasi terpasang di layar utama): update muncul tanpa hapus data, dan tampilan tetap sama dalam mode pesawat. Tulisan menu bawah terbaca nyaman di HP ketua. Bukti diperiksa di chat dan tidak disimpan.
+
+**Belum beres:**
+
+- Blok `.contoh-sampul` (bilah marun berisi wordmark kecil) masih ada di `index.html` dan `style.css`. Itu tambahan penulis kode untuk memperlihatkan wordmark kecil, bukan keputusan ketua; kartu sampul di desain.md (DS2) berstatus (bawaan). Ketua belum memutuskan dipakai atau tidak. Diputuskan saat atau setelah DSN.04; bila dibuang, penghapusan kode butuh "OK" dan dicatat satu blok keputusan.
+- Halaman contoh di `index.html` sementara; digantikan layar Masuk (AKN.05). Tombol Segarkan dan menu belum berfungsi (belum ada JS).
+- Logo 500 px, kurang sedikit dari 512 px yang dibutuhkan ikon PWA; diurus di DSN.06.
+- Tulisan menu bawah sekitar 13 px; dicek lengkap di DSN.07. Tampilan di layar lebar (laptop) belum dibahas; baru dilihat sekali di Chrome, selebihnya HP.
+
+**Saran giliran berikutnya:** DSN.04 (kartu, tombol utama/sekunder/berbahaya, isian, daftar, lencana status; Low-Risk). Gaya ditambah di `style.css`; halaman contoh tetap di `index.html` agar `sw.js` tidak perlu disentuh. Lampirkan `AGENTS.md` + `desain.md` + versi terbaru `public/style.css` dan `public/index.html`. Sebelum push, cek tiga hal anti-nyasar. Logout GitHub dan Supabase di profil browser setelah selesai.
