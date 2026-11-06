@@ -10,333 +10,255 @@
         <!-- Semua gaya aplikasi ada di satu berkas: style.css (tanpa CDN) -->
         <link rel="stylesheet" href="style.css" />
     </head>
-    <body class="ruang-navbawah">
-        <!-- DSN.03 (halaman contoh): bilah atas, judul di kiri dan tombol Segarkan di kanan (belum ada fungsi). -->
-        <header class="bilah-atas">
-            <div class="bilah-atas__judul">Pesan</div>
-            <button
-                type="button"
-                class="bilah-atas__segarkan"
-                aria-label="Segarkan"
-            >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <polyline points="23 4 23 10 17 10" />
-                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-                </svg>
-            </button>
-        </header>
-
-        <!-- DSN.02 (halaman contoh): wordmark besar dan kecil. Sementara; layar Masuk (AKN.05) menggantikannya nanti. -->
-        <img
-            class="wordmark wordmark--besar"
-            src="img/chata-logo.png"
-            width="500"
-            height="500"
-            alt="Kedai ChATA"
-        />
-        <div class="contoh-sampul">
-            <img
-                class="wordmark wordmark--kecil"
-                src="img/chata-logo.png"
-                width="500"
-                height="500"
-                alt=""
-            />
-            <span class="contoh-sampul__nama">Kedai ChATA</span>
-        </div>
-
-        <h1>Kedai ChATA</h1>
-        <p>
-            Aplikasi order Kedai ChATA sedang disiapkan. Silakan kembali
-            sebentar lagi.
-        </p>
-        <p id="status-sistem"></p>
-
-        <!-- DSN.03 (halaman contoh): navigasi bawah per peran (DS10). Menu belum bisa diketuk berpindah layar. -->
-        <h2>Contoh navigasi per peran</h2>
-
-        <p class="contoh-label">Penjaga</p>
-        <nav class="navbawah navbawah--contoh" aria-label="Menu penjaga">
-            <a class="navbawah__item" href="#antrean" aria-current="page">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M12 7v5l3 2" />
-                </svg>
-                <span>Antrean</span>
-            </a>
-            <a class="navbawah__item" href="#akun-penjaga">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="12" cy="8" r="4" />
-                    <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
-                </svg>
-                <span>Akun</span>
-            </a>
-        </nav>
-
-        <p class="contoh-label">Owner</p>
-        <nav class="navbawah navbawah--contoh" aria-label="Menu owner">
-            <a class="navbawah__item" href="#order-masuk" aria-current="page">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M4 13l3-8h10l3 8v6H4v-6z" />
-                    <path d="M4 13h5l1 2h4l1-2h5" />
-                </svg>
-                <span>Order Masuk</span>
-            </a>
-            <a class="navbawah__item" href="#semua-order">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M9 6h11M9 12h11M9 18h11" />
-                    <circle cx="4.5" cy="6" r="1" />
-                    <circle cx="4.5" cy="12" r="1" />
-                    <circle cx="4.5" cy="18" r="1" />
-                </svg>
-                <span>Semua Order</span>
-            </a>
-            <a class="navbawah__item" href="#buat-order">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M12 8v8M8 12h8" />
-                </svg>
-                <span>Buat Order</span>
-            </a>
-            <a class="navbawah__item" href="#menu">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M6 3v6a2 2 0 0 0 4 0V3M8 3v18" />
-                    <path d="M17 21V3c-2.5 1.5-3.5 4.5-3.5 8H17" />
-                </svg>
-                <span>Menu</span>
-            </a>
-            <a class="navbawah__item" href="#lainnya">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <circle
-                        cx="5"
-                        cy="12"
-                        r="1.6"
-                        fill="currentColor"
-                        stroke="none"
-                    />
-                    <circle
-                        cx="12"
-                        cy="12"
-                        r="1.6"
-                        fill="currentColor"
-                        stroke="none"
-                    />
-                    <circle
-                        cx="19"
-                        cy="12"
-                        r="1.6"
-                        fill="currentColor"
-                        stroke="none"
-                    />
-                </svg>
-                <span>Lainnya</span>
-            </a>
-        </nav>
-
-        <!-- DSN.04 (halaman contoh): komponen dasar. Data di bawah ini dummy. Tombol belum berfungsi. -->
-        <h2>Contoh komponen</h2>
-
-        <p class="contoh-label">Lencana status</p>
-        <div class="contoh-lencana">
-            <span class="lencana lencana--menunggu">Menunggu</span>
-            <span class="lencana lencana--disetujui">Disetujui</span>
-            <span class="lencana lencana--diproses">Diproses</span>
-            <span class="lencana lencana--siap">Diantar</span>
-            <span class="lencana lencana--selesai">Selesai</span>
-            <span class="lencana lencana--ditolak">Ditolak</span>
-            <span class="lencana lencana--dibatalkan">Dibatalkan</span>
-        </div>
-
-        <p class="contoh-label">Kartu order</p>
-        <div class="kartu">
-            <div class="kartu-order__atas">
-                <span class="kartu-order__nomor">#1042</span>
-                <span class="lencana lencana--menunggu">Menunggu</span>
-            </div>
-            <p class="kartu-order__baris">Bu Contoh (anak: Adi)</p>
-            <p class="kartu-order__baris">Minta diantar jam 11.15</p>
-            <div class="kartu-order__bawah">
-                <span>Diantar &middot; Rp 25.000</span>
-                <span class="tanda-catatan">Catatan baru</span>
-            </div>
-            <div class="baris-tombol">
-                <button type="button" class="tombol tombol--bahaya">
-                    Tolak
-                </button>
-                <button type="button" class="tombol tombol--utama">
-                    Setujui
-                </button>
-            </div>
-        </div>
-
-        <p class="contoh-label">Kartu biasa</p>
-        <div class="kartu">
-            <h3 class="kartu__judul">Nasi Ayam Goreng</h3>
-            <p class="kartu__isi">Rp 15.000</p>
-        </div>
-
-        <p class="contoh-label">Tombol</p>
-        <button type="button" class="tombol tombol--utama">Aksi utama</button>
-        <div class="baris-tombol">
-            <button type="button" class="tombol tombol--sekunder">
-                Aksi sekunder
-            </button>
-            <button type="button" class="tombol tombol--bahaya">
-                Batalkan
-            </button>
-        </div>
-        <div class="baris-tombol">
-            <button type="button" class="tombol tombol--utama" disabled>
-                Nonaktif
-            </button>
-        </div>
-
-        <p class="contoh-label" style="margin-top: 16px">Isian</p>
-        <div class="isian">
-            <label class="isian__label" for="contoh-nama">Nama</label>
-            <input
-                class="isian__kolom"
-                id="contoh-nama"
-                type="text"
-                placeholder="Contoh: Bu Contoh"
-            />
-            <p class="isian__bantuan">Nama ini tampil di order.</p>
-        </div>
-        <div class="isian isian--galat">
-            <label class="isian__label" for="contoh-wa">Nomor WA</label>
-            <input
-                class="isian__kolom"
-                id="contoh-wa"
-                type="tel"
-                value="0812"
-            />
-            <p class="isian__galat">Nomor terlalu pendek.</p>
-        </div>
-        <div class="isian">
-            <label class="isian__label" for="contoh-catatan">Catatan</label>
-            <textarea
-                class="isian__kolom"
-                id="contoh-catatan"
-                placeholder="Contoh: tanpa sambal"
-            ></textarea>
-        </div>
-
-        <p class="contoh-label">Daftar (bisa digulir)</p>
-        <ul class="daftar daftar--gulir">
-            <li class="daftar__item">
-                <div class="daftar__utama">
-                    <span class="daftar__nama">Nasi Ayam Goreng</span>
-                    <span class="daftar__ket">Tersedia</span>
+    <body>
+        <!-- AKN.05: layar akun. Satu layar tampil dalam satu waktu; akun.js yang mengatur mana yang tampil.
+             Halaman contoh DSN.02 sampai DSN.05 digantikan layar ini (OK ketua). -->
+        <main id="aplikasi">
+            <!-- Memuat (DS13) -->
+            <section id="layar-memuat">
+                <div class="keadaan" role="status">
+                    <div class="putaran" aria-hidden="true"></div>
+                    <p class="keadaan__judul">Sedang memuat...</p>
                 </div>
-                <span class="daftar__nilai">Rp 15.000</span>
-            </li>
-            <li class="daftar__item">
-                <div class="daftar__utama">
-                    <span class="daftar__nama">Nasi Telur Dadar</span>
-                    <span class="daftar__ket">Tersedia</span>
+            </section>
+
+            <!-- Masuk -->
+            <section id="layar-masuk" hidden>
+                <img
+                    class="wordmark wordmark--besar"
+                    src="img/chata-logo.png"
+                    width="500"
+                    height="500"
+                    alt="Kedai ChATA"
+                />
+                <h1>Masuk</h1>
+                <form id="form-masuk" novalidate>
+                    <div class="isian" id="isian-masuk-email">
+                        <label class="isian__label" for="masuk-email"
+                            >Email</label
+                        >
+                        <input
+                            class="isian__kolom"
+                            id="masuk-email"
+                            name="email"
+                            type="email"
+                            inputmode="email"
+                            autocomplete="username"
+                            autocapitalize="none"
+                            spellcheck="false"
+                        />
+                        <p class="isian__galat" hidden></p>
+                    </div>
+                    <div class="isian" id="isian-masuk-password">
+                        <label class="isian__label" for="masuk-password"
+                            >Password</label
+                        >
+                        <input
+                            class="isian__kolom"
+                            id="masuk-password"
+                            name="password"
+                            type="password"
+                            autocomplete="current-password"
+                        />
+                        <p class="isian__galat" hidden></p>
+                    </div>
+                    <div class="isian" id="masuk-galat-bungkus" hidden>
+                        <p
+                            class="isian__galat"
+                            id="masuk-galat"
+                            role="alert"
+                        ></p>
+                    </div>
+                    <button
+                        type="submit"
+                        class="tombol tombol--utama"
+                        id="tombol-masuk"
+                    >
+                        Masuk
+                    </button>
+                </form>
+                <div class="baris-tombol">
+                    <button
+                        type="button"
+                        class="tombol tombol--sekunder"
+                        id="ke-daftar"
+                    >
+                        Belum punya akun? Daftar
+                    </button>
                 </div>
-                <span class="daftar__nilai">Rp 10.000</span>
-            </li>
-            <li class="daftar__item">
-                <div class="daftar__utama">
-                    <span class="daftar__nama">Mie Goreng</span>
-                    <span class="daftar__ket">Habis</span>
+            </section>
+
+            <!-- Daftar (AK2: kalimat email aktif) -->
+            <section id="layar-daftar" hidden>
+                <img
+                    class="wordmark wordmark--besar"
+                    src="img/chata-logo.png"
+                    width="500"
+                    height="500"
+                    alt="Kedai ChATA"
+                />
+                <h1>Daftar</h1>
+                <form id="form-daftar" novalidate>
+                    <div class="isian" id="isian-daftar-email">
+                        <label class="isian__label" for="daftar-email"
+                            >Email</label
+                        >
+                        <input
+                            class="isian__kolom"
+                            id="daftar-email"
+                            name="email"
+                            type="email"
+                            inputmode="email"
+                            autocomplete="username"
+                            autocapitalize="none"
+                            spellcheck="false"
+                        />
+                        <p class="isian__bantuan">
+                            Pakai email yang aktif, dipakai bila lupa password.
+                        </p>
+                        <p class="isian__galat" hidden></p>
+                    </div>
+                    <div class="isian" id="isian-daftar-password">
+                        <label class="isian__label" for="daftar-password"
+                            >Password</label
+                        >
+                        <input
+                            class="isian__kolom"
+                            id="daftar-password"
+                            name="password"
+                            type="password"
+                            autocomplete="new-password"
+                        />
+                        <p class="isian__bantuan">
+                            Minimal 8 karakter, hanya huruf dan angka.
+                        </p>
+                        <p class="isian__galat" hidden></p>
+                    </div>
+                    <div class="isian" id="daftar-galat-bungkus" hidden>
+                        <p
+                            class="isian__galat"
+                            id="daftar-galat"
+                            role="alert"
+                        ></p>
+                    </div>
+                    <button
+                        type="submit"
+                        class="tombol tombol--utama"
+                        id="tombol-daftar"
+                    >
+                        Daftar
+                    </button>
+                </form>
+                <div class="baris-tombol">
+                    <button
+                        type="button"
+                        class="tombol tombol--sekunder"
+                        id="ke-masuk"
+                    >
+                        Sudah punya akun? Masuk
+                    </button>
                 </div>
-                <span class="daftar__nilai">Rp 12.000</span>
-            </li>
-            <li class="daftar__item">
-                <div class="daftar__utama">
-                    <span class="daftar__nama">Es Teh Manis</span>
-                    <span class="daftar__ket">Tersedia</span>
+            </section>
+
+            <!-- Layar sementara setelah masuk: diganti layar sebenarnya di langkah berikutnya -->
+            <section id="layar-sementara" hidden>
+                <header class="bilah-atas">
+                    <div class="bilah-atas__judul">Beranda sementara</div>
+                    <button
+                        type="button"
+                        class="bilah-atas__segarkan"
+                        id="tombol-segarkan"
+                        aria-label="Segarkan"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <polyline points="23 4 23 10 17 10" />
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                        </svg>
+                    </button>
+                </header>
+                <div class="kartu">
+                    <h2 class="kartu__judul">Selamat datang</h2>
+                    <p class="kartu__isi" id="sapaan"></p>
+                    <p class="isian__bantuan" id="catatan-profil" hidden></p>
                 </div>
-                <span class="daftar__nilai">Rp 4.000</span>
-            </li>
-            <li class="daftar__item">
-                <div class="daftar__utama">
-                    <span class="daftar__nama">Es Jeruk</span>
-                    <span class="daftar__ket">Tersedia</span>
+                <p class="isian__bantuan">
+                    Layar ini sementara. Layar utama menyusul di langkah
+                    berikutnya.
+                </p>
+                <div class="baris-tombol">
+                    <button
+                        type="button"
+                        class="tombol tombol--sekunder"
+                        id="tombol-keluar"
+                    >
+                        Keluar
+                    </button>
                 </div>
-                <span class="daftar__nilai">Rp 5.000</span>
-            </li>
-        </ul>
+            </section>
 
-        <!-- DSN.05 (halaman contoh): keadaan khusus. Hanya tampilan statis; belum ada JS yang mendeteksi offline atau memuat data. -->
-        <h2>Contoh keadaan khusus</h2>
+            <!-- Galat (DS13): teks diisi akun.js lewat textContent -->
+            <section id="layar-galat" hidden>
+                <div class="keadaan keadaan--galat" role="alert">
+                    <svg
+                        class="keadaan__ikon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path d="M12 3L2 21h20L12 3z" />
+                        <path d="M12 10v5M12 18v.01" />
+                    </svg>
+                    <p class="keadaan__judul">Ada masalah</p>
+                    <p class="keadaan__ket" id="galat-ket"></p>
+                    <button
+                        type="button"
+                        class="tombol tombol--utama"
+                        id="galat-ulang"
+                    >
+                        Coba lagi
+                    </button>
+                </div>
+                <div class="baris-tombol">
+                    <button
+                        type="button"
+                        class="tombol tombol--sekunder"
+                        id="galat-keluar"
+                    >
+                        Keluar
+                    </button>
+                </div>
+            </section>
 
-        <p class="contoh-label">Memuat</p>
-        <div class="keadaan" role="status">
-            <div class="putaran" aria-hidden="true"></div>
-            <p class="keadaan__judul">Sedang memuat...</p>
-        </div>
+            <!-- Offline (DS13) -->
+            <section id="layar-offline" hidden>
+                <div class="keadaan" role="status">
+                    <svg
+                        class="keadaan__ikon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path d="M2 8.8a15 15 0 0 1 20 0" />
+                        <path d="M5 12.5a10 10 0 0 1 14 0" />
+                        <path d="M8.5 16a5 5 0 0 1 7 0" />
+                        <path d="M12 19.5v.01" />
+                        <path d="M3 3l18 18" />
+                    </svg>
+                    <p class="keadaan__judul">Tidak ada internet</p>
+                    <p class="keadaan__ket">
+                        Aplikasi tetap bisa dibuka, tetapi masuk dan memesan
+                        butuh internet. Sambungkan internet lalu coba lagi.
+                    </p>
+                    <button
+                        type="button"
+                        class="tombol tombol--sekunder"
+                        id="offline-ulang"
+                    >
+                        Coba lagi
+                    </button>
+                </div>
+            </section>
 
-        <p class="contoh-label">Kosong</p>
-        <div class="keadaan">
-            <svg class="keadaan__ikon" viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="5" y="3" width="14" height="18" rx="2" />
-                <path d="M9 8h6M9 12h6M9 16h4" />
-            </svg>
-            <p class="keadaan__judul">Belum ada pesanan</p>
-            <p class="keadaan__ket">Pesanan yang dibuat akan muncul di sini.</p>
-        </div>
-
-        <p class="contoh-label">Galat</p>
-        <div class="keadaan keadaan--galat" role="alert">
-            <svg class="keadaan__ikon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 3L2 21h20L12 3z" />
-                <path d="M12 10v5M12 18v.01" />
-            </svg>
-            <p class="keadaan__judul">Ada masalah</p>
-            <p class="keadaan__ket">
-                Data belum bisa dimuat. Coba lagi sebentar lagi.
-            </p>
-            <button type="button" class="tombol tombol--utama">
-                Coba lagi
-            </button>
-        </div>
-
-        <p class="contoh-label">Offline</p>
-        <div class="keadaan" role="status">
-            <svg class="keadaan__ikon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M2 8.8a15 15 0 0 1 20 0" />
-                <path d="M5 12.5a10 10 0 0 1 14 0" />
-                <path d="M8.5 16a5 5 0 0 1 7 0" />
-                <path d="M12 19.5v.01" />
-                <path d="M3 3l18 18" />
-            </svg>
-            <p class="keadaan__judul">Tidak ada internet</p>
-            <p class="keadaan__ket">
-                Aplikasi tetap bisa dibuka, tetapi masuk dan memesan butuh
-                internet. Sambungkan internet lalu coba lagi.
-            </p>
-            <button type="button" class="tombol tombol--sekunder">
-                Coba lagi
-            </button>
-        </div>
-
-        <!-- Navigasi Customer yang menempel di bawah layar (ini yang sebenarnya dipakai di aplikasi) -->
-        <nav class="navbawah" aria-label="Menu customer">
-            <a class="navbawah__item" href="#pesan" aria-current="page">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M5 8h14l-1 12H6L5 8z" />
-                    <path d="M9 8V6a3 3 0 0 1 6 0v2" />
-                </svg>
-                <span>Pesan</span>
-            </a>
-            <a class="navbawah__item" href="#pesanan-saya">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <rect x="5" y="3" width="14" height="18" rx="2" />
-                    <path d="M9 8h6M9 12h6M9 16h4" />
-                </svg>
-                <span>Pesanan Saya</span>
-            </a>
-            <a class="navbawah__item" href="#akun">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="12" cy="8" r="4" />
-                    <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
-                </svg>
-                <span>Akun</span>
-            </a>
-        </nav>
+            <p id="status-sistem" class="isian__bantuan"></p>
+        </main>
 
         <!-- Pengaturan publik (URL project dan kunci publishable) -->
         <script src="config.js"></script>
@@ -362,6 +284,8 @@
                           ").";
             })();
         </script>
+        <!-- Logika layar Daftar, Masuk, Keluar (AKN.05) -->
+        <script src="akun.js"></script>
         <script>
             // Mendaftarkan service worker (sw.js) supaya aplikasi bisa dipasang dan terbuka offline.
             // Path relatif (tanpa awalan /) supaya jalan di GitHub Pages.
