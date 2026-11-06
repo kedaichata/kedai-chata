@@ -455,3 +455,40 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 5. Dari handoff sebelumnya masih berlaku: SEC-03 versi penuh, tes staf 403, ganti password dari akun staf, dan akun uji (termasuk yang berisi email asli milik tim) dibersihkan di `LNC.01`.
 
 **Saran giliran berikutnya:** AKN.10 (SQL template tambah/nonaktifkan staf dan prosedur ketua; 1 akun owner dan 1 akun penjaga uji). High-Risk (P0), butuh penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md`, `akun.md`, `database.md`, `security.md`, dan isi `supabase/migrations/`.
+
+### Handoff #10 | 2026-11-06 | [FREN]
+
+**Tugas:** AKN.10 (SQL template tambah/nonaktifkan staf dan prosedur ketua; 1 akun owner dan 1 akun penjaga uji). "OK" ketua sudah diberikan. Butir AKN.10 sudah dicentang di sheet; catatan tambahan di sheet dipegang tim.
+
+**File yang diubah (semua baru, di `supabase/templates/`):**
+
+- `20261106_staf_tambah.sql`: tambah staf (isian: ID akun, nama tampilan, peran), diisi di dashboard saja. Menolak bila ID tidak ada di Auth, akun sudah punya profil customer (AK4), atau sudah ada di `staf` (tidak menimpa).
+- `20261106_staf_nonaktif.sql`: `aktif = false` pada satu baris staf aktif. Tanpa DELETE.
+- `20261106_staf_cek.sql`: query cek baca-saja (daftar dan ringkasan staf, staf tanpa profil customer, RLS dan policy, hak tabel `staf`). Nama dan email tidak ditampilkan, ID hanya 8 karakter, jadi aman ditempel ke chat.
+
+**Hasil:** Template tambah dijalankan di SQL Editor untuk 1 owner uji dan 1 penjaga uji (Success). Query cek lulus semua: 1 owner dan 1 penjaga aktif, 0 staf yang punya profil customer, RLS aktif tanpa policy, `service_role` hanya SELECT, `anon` dan `authenticated` nol, tanpa DELETE. Bukti diperiksa di chat dan tidak disimpan.
+
+**Keputusan baru:**
+
+- Template tambah dan nonaktifkan staf tetap di `supabase/templates/`, bukan `migrations/` (keputusan ketua; catatan ketua: yang sifatnya membuat tabel atau fungsi di `migrations/`, query cek di `templates/`).
+- Nilai peran tetap `owner` dan `penjaga`. Peran `staf` ditolak `staf_peran_cek`, dan `staf` sudah dipakai sebagai istilah payung (owner dan penjaga). Bila yang tidak enak dibaca adalah tampilan layar, ubah labelnya di layar (DSN), bukan nilai di database. Keputusan ketua.
+- Template tambah sengaja tidak menimpa baris yang sudah ada (bawaan penulis, belum ditanyakan satu per satu ke ketua).
+
+**Akun uji saat ini (7 akun, data dummy):**
+
+- Staf, dibuat 6 Nov dengan email milik PIC (label `+owner` dan `+staf`): label `+owner` = **owner uji**, label `+staf` = **penjaga uji**. Peran ditentukan baris di `staf`, bukan dari email.
+- Customer: 4 akun berdomain example.com (tidak bisa menerima email) dan 1 akun dengan email milik adik ketua (bisa menerima email). Statusnya customer karena tidak ada di tabel `staf` (dibuktikan query cek); isi profil dan alamat tiap akun belum didata.
+- Akun uji dibersihkan di `LNC.01` (termasuk yang berisi email asli milik tim).
+
+**Kejadian di lapangan (bahan belajar):**
+
+1. Reset password akun owner uji dan penjaga uji lewat "Send password recovery" berhasil, tes alur staf pertama. Email recovery pertama masuk **Spam**; email berikutnya masuk inbox setelah pengirim ditandai "Bukan spam" (dugaan, belum dipastikan). Staf asli perlu diingatkan cek Spam. Belum ditulis sebagai Catatan Susulan.
+2. Setelah membuat password baru lewat link, PIC menutup tab sehingga tidak diketahui apakah langsung masuk ke aplikasi atau diminta login. Bisa dicek saat login pertama di AKN.11.
+
+**Belum beres:**
+
+1. Template nonaktifkan staf belum pernah dijalankan. Sengaja ditunda ke SEC-26 (staf nonaktif dibalas 403 di panggilan berikutnya), dijalankan paling akhir karena akunnya jadi tak terpakai.
+2. Belum ada template aktifkan kembali staf (`akun.md` belum membahasnya). Butir baru yang perlu ditambah ke sheet: "Template aktifkan kembali staf".
+3. Dari handoff sebelumnya masih berlaku: tes di HP Android, SEC-03 versi penuh, tes staf 403, dan ganti password dari akun staf (tombol Akun di layar sementara baru muncul untuk customer, jadi jalur staf mungkin perlu menunggu layar utama).
+
+**Saran giliran berikutnya:** AKN.11 (sesi tes akun, bukti wajib). Lampirkan `AGENTS.md`, `akun.md`, `security.md`, dan `akun-test.md` (dibuat di sesi tes). Customer kedua tidak perlu dibuat karena sudah ada 5 akun customer; cek dulu minimal 2 di antaranya punya profil dan alamat. Urutan: tes staf (login, 403 aksi customer), tes "milik orang lain" dengan dua customer, SEC-03 versi penuh, lalu SEC-26 (nonaktifkan lalu aktifkan kembali) paling akhir.
