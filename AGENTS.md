@@ -167,7 +167,7 @@ Laptop Mac yang dipakai adalah milik adik ketua dan **sudah login ke akun GitHub
 
 Tes dilakukan langsung di production dengan **akun, nomor WA, dan alamat dummy**.
 
-1. **Low-Risk** (tampilan, layout, CSS, teks): cukup _visual sanity check_. Bila ada glitch kecil, langsung perbaiki.
+1. **Low-Risk** (tampilan, layout, CSS, teks): cukup _visual sanity check_. Bila ada glitch kecil, langsung perbaiki. Test UI tidak harus menempel bukti tangkapan layar, cukup konfirmasi hasilnya
 2. **High-Risk** (login, peran, RLS, fungsi SQL, Edge Function, order, setuju/tolak, catatan, foto, push, pembersihan, `sw.js`): tes teliti dan terstruktur. Keamanan dan data pelanggan **wajib ada bukti** (hasil query atau balasan server); tanpa bukti jangan diberi lulus. **Bukti diperiksa bersama di chat saat sesi tes lalu tidak disimpan**: tidak masuk md, repo, atau tempat lain (menjaga md tetap ramping dan bebas data pribadi).
 3. **Prioritas temuan:** P0 (data pelanggan, login, peran, keamanan, harga, status order) wajib dites dan langsung dilaporkan bila gagal. P1 (fitur pendukung) dilaporkan satu baris. P2 (tampilan, teks) dites sekilas. Ragu yang menyangkut data atau akses akun: anggap P0.
 4. **Tes awal ringan:** satu akun per peran (customer, owner, penjaga) sudah cukup; tambah satu customer kedua untuk tes "tidak bisa melihat milik orang lain".

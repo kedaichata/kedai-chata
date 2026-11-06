@@ -378,3 +378,43 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 6. Akun uji (`test03`, `test04`, dan data dummy; nama `test04` sekarang `test 04 sec` atau `test 04 baru`) dibersihkan di `LNC.01`. SEC-24 dan SEC-03 versi penuh masih menunggu, seperti di Handoff #4 sampai #6. Form dan layar masih melebar penuh di layar lebar (dari Handoff #4).
 
 **Saran giliran berikutnya:** **08b: ganti password** (AK11): layar di menu Akun dengan isian password lama dan password baru; aplikasi login ulang dengan password lama dulu, baru mengganti lewat Supabase Auth; aturan password baru sama dengan AK3 (huruf dan angka, minimal 8). Tanpa migration dan tanpa aksi `kedai` baru, tetapi menyentuh login, jadi High-Risk (P0): butuh penjelasan dampak dan "OK" ketua, dan `sw.js` tidak berubah bila hanya menambah isi `akunmenu.js` dan `index.html`. Cek dulu catatan "Secure password change mati" di `security.md` bagian 7 dan `akun.md` Handoff awal. Setelah itu tes 8 yang tersisa (poin 2 di atas). Lampirkan `AGENTS.md`, `akun.md`, `database.md`, `security.md`, `public/index.html`, `public/akun.js`, `public/profil.js`, `public/alamat.js`, `public/akunmenu.js`, `public/sw.js`, `public/style.css`, `supabase/functions/kedai/index.ts`, dan isi `supabase/migrations/`.
+
+### 2026-11-06: tes layar 08a tuntas (ganti nama dan ganti WA)
+
+- Dua tes yang tersisa di Handoff #7 poin 2 sudah dijalankan dan **lulus**: (1) nama 2 huruf dan nomor WA `12345` ditolak di layar dengan pesan merah di bawah kolom, tanpa panggilan ke server (tab Network tidak mencatat panggilan `kedai` baru setelah tombol Simpan ditekan); (2) setelah Keluar lalu masuk lagi, layar Akun tidak menyisakan isian WA, pesan sukses, atau pesan galat, dan kolom Nama terisi dari server.
+- Dites di Brave di Mac (DevTools mode HP) dengan akun dan data dummy. Bukti diperiksa di chat dan tidak disimpan.
+- Poin 2 di "Belum beres" Handoff #7 dianggap beres. Yang masih berlaku dari Handoff #7: 08b ganti password belum dimulai (butir AKN.08 belum selesai), tes staf (403) menunggu akun owner uji (AKN.10, digabung ke AKN.11), belum dites di HP Android, dan tampilan pesan sukses yang kecil (P2).
+
+### Handoff #8 | 2026-11-06 | [RAC]
+
+**Tugas:** AKN.08 bagian **08b** (ganti password, AK11) dan penutupan tes layar 08a dari Handoff #7. Kode selesai, sudah di-push (commit [5db707e], Actions hijau). Tanpa migration, tanpa perubahan `kedai`, `sw.js` tidak berubah. "OK" ketua untuk 08b sudah diberikan.
+
+**File yang diubah (hanya menambah, tidak ada baris lama dihapus):**
+
+- `public/akun.js`: pembantu `gantiPassword(lama, baru)`, dibagikan lewat `window.KedaiAkun`.
+- `public/akunmenu.js`: logika form ganti password; isian password dikosongkan saat layar dibuka dan saat Keluar.
+- `public/index.html`: kartu "Ganti password" (password lama, password baru) di layar Akun.
+
+**Hasil:**
+
+- Alur: ambil email dari sesi login di HP (tidak disimpan), login ulang dengan password lama, baru `updateUser` password baru lewat Supabase Auth. Aturan password baru sama dengan AK3 (huruf dan angka, 8 sampai 72 karakter), dicek di HP; Supabase tetap yang memutuskan.
+- Pesan galat aman Bahasa Indonesia: "Password lama salah.", "Password baru harus berbeda dari password lama.", pesan aturan password, pesan terlalu sering, offline, dan pesan umum. Galat mentah tidak ditampilkan.
+- Tes di GitHub Pages (Brave, mode HP, akun dummy; bukti diperiksa di chat dan tidak disimpan), **lulus**:
+  1. Password lama salah ditolak ("Password lama salah."); hanya panggilan `token` (400), tidak ada panggilan `user`, password tidak berubah.
+  2. Password baru 6 karakter dan password bersimbol ditolak di HP tanpa panggilan ke server.
+  3. Ganti berhasil (`token` 200 lalu `user` 200); password lama ditolak saat masuk, password baru diterima (dikonfirmasi PIC).
+- Tes layar 08a dari Handoff #7 poin 2 (isian tidak valid di layar, Keluar mengosongkan layar Akun) sudah lulus dan dianggap beres.
+
+**Keputusan baru** (bawaan penulis, belum ditanyakan satu per satu ke ketua; ketua hanya menyetujui ringkasan rencana):
+
+- Secure password change tetap mati (keputusan ketua sebelumnya, `security.md` bagian 7); 08b memang dirancang tanpa verifikasi email.
+- Ganti password di layar Akun hanya bisa dibuka customer, karena tombol Akun di layar sementara hanya muncul untuk customer. Owner dan penjaga mendapat akses lewat menu Lainnya saat layar utama dibuat (AK11 berlaku untuk semua peran).
+- Dua isian password tanpa kolom "ulangi password baru".
+
+**Belum beres:**
+
+1. Ganti password dari akun staf belum dites (menunggu akun owner uji AKN.10, digabung ke AKN.11), begitu juga tes staf 403 untuk `ganti_nama`, `ganti_wa`, dan aksi alamat.
+2. Belum dites di HP Android. Semua tes di Brave di Mac (mode HP).
+3. Dari handoff sebelumnya: SEC-24 (uji kirim email Gmail tim) dan SEC-03 versi penuh masih menunggu akun uji; akun uji dibersihkan di `LNC.01`; tulisan sukses di layar Akun kecil dan abu-abu (P2); form masih melebar penuh di layar lebar.
+
+**Saran giliran berikutnya:** AKN.09 (layar Buat password baru dari link reset, dan tautan "Lupa password?" dengan petunjuk, AK12). Menyentuh login (P0), butuh "OK" ketua. Kemungkinan `sw.js` tidak berubah bila hanya menambah isi berkas yang ada. Kalau ada berkas JS baru, wajib masuk daftar cache `sw.js` (butuh "OK"). SEC-24 bisa sekalian dites begitu akun uji dengan email asli milik tim ada. Lampirkan `AGENTS.md`, `akun.md`, `security.md`, `public/index.html`, `public/akun.js`, `public/akunmenu.js`, `public/sw.js`, `public/style.css`, dan `public/config.js`.
