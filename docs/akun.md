@@ -286,3 +286,27 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 - SEC-24 (uji kirim email Gmail tim) menunggu akun uji dengan email asli milik tim; akun uji AKN.05 memakai domain contoh dan tidak menerima email. SEC-03 versi penuh masuk AKN.11. Akun uji dibersihkan di `LNC.01`.
 
 **Saran giliran berikutnya:** AKN.06 (layar Lengkapi profil: nama, nomor WA, alamat pertama, dengan kalimat penjelasan nomor WA). Aksi `daftar_profil` dan fungsi `buat_profil` sudah ada, jadi kemungkinan tanpa migration baru: kerjanya di layar dan `akun.js` (layar muncul saat `status` mengembalikan `profil` kosong). High-Risk (P0, data pelanggan), tes teliti dengan bukti dan data dummy. Berkas JS baru wajib didaftarkan di `sw.js` (butuh "OK" ketua). Lampirkan `AGENTS.md`, `akun.md`, `security.md`, `public/index.html`, `public/akun.js`, `public/sw.js`, `public/style.css`, dan `supabase/functions/kedai/index.ts`.
+
+### Handoff #5 | 2026-11-06 | EMIR
+
+**Tugas:** AKN.06 (layar Lengkapi profil: nama, nomor WA, alamat pertama, dengan kalimat penjelasan nomor WA). Selesai dan sudah di-push. "OK" ketua untuk perubahan `sw.js` sudah diberikan.
+
+**File yang diubah:** `public/profil.js` (baru, 153 baris), `public/akun.js` (426 baris; hanya menambah), `public/index.html` (section `layar-profil` dan tag script `profil.js` setelah `akun.js`), `public/sw.js` (`profil.js` masuk daftar cache, `chata-v4` jadi `chata-v5`). `style.css` dan `kedai` tidak disentuh. Tanpa migration baru.
+
+**Hasil:** Customer yang belum punya profil melihat layar Lengkapi profil (4 isian, tombol Simpan dan Keluar) setelah daftar atau masuk. Simpan memanggil aksi `daftar_profil`, lalu `status` dimuat ulang dan layar sementara menampilkan "Profil Anda sudah lengkap". Pengujian dilakukan di Brave di Mac (DevTools mode HP) dengan akun dan data dummy; lulus: akun baru melihat layar profil (balasan `status`: `customer`, `profil: null`), validasi isian kosong dan WA tidak valid ditolak di HP tanpa panggilan server, tutup tab lalu masuk lagi tanpa simpan memunculkan layar profil lagi (AK6), simpan berhasil (`{"ok":true}`), Keluar mengosongkan isian, login ulang akun yang sudah punya profil tidak melihat layar profil. Bukti diperiksa di chat dan tidak disimpan.
+
+**Keputusan baru:**
+
+- Logika layar ditaruh di berkas terpisah `profil.js` (pilihan PIC) supaya `akun.js` tetap di bawah ~500 baris. Konsekuensinya `sw.js` berubah (OK ketua).
+- `akun.js` membuka layar lewat `window.KedaiProfil.tampil()` dan membagikan pembantu lewat `window.KedaiAkun` (dibekukan). Urutan script wajib: `akun.js`, lalu `profil.js`. `panggilKedai(aksi, data)` kini menerima isian; kunci `aksi` selalu dari parameter.
+- Layar profil hanya muncul bila `peran === "customer"` DAN `profil` kosong. Staf selalu punya `profil: null`, jadi syarat peran wajib.
+- Bawaan penulis, belum ditanyakan satu per satu ke ketua: spasi dan tanda hubung di nomor WA dibuang sebelum dikirim; pagar WA di HP longgar (+62/62/08, lalu 8, total panjang wajar), server yang memutuskan; kolom Nama alamat tidak diisi otomatis; balasan 409 (`profil_sudah_ada`) dianggap beres dan lanjut muat status; WA dan alamat dikosongkan dari form setelah simpan dan saat Keluar; galat dari server tampil sebagai satu pesan di atas tombol (bukan per kolom).
+- Teks "Profil belum lengkap..." di `isiSementara` (`akun.js`) kini tidak pernah tampil, tetapi dibiarkan (tidak dihapus tanpa perintah).
+
+**Belum beres:**
+
+- Tes staf tidak melihat layar profil dan `daftar_profil` dari staf dibalas 403 ditunda sampai akun owner uji ada (AKN.10); digabung ke AKN.11.
+- Belum dites di HP Android. Layar sementara bersifat sementara. Form masih melebar penuh di layar lebar (dari Handoff #4).
+- SEC-24 (uji kirim email Gmail tim) dan SEC-03 versi penuh masih menunggu, seperti di Handoff #4. Akun uji AKN.05 dan AKN.06 dibersihkan di `LNC.01`.
+
+**Saran giliran berikutnya:** AKN.07 (buku alamat). High-Risk (P0, data pelanggan). Butuh migration kecil (fungsi SQL atomik simpan dan nonaktifkan alamat, cek kepemilikan dan batas `alamat_maks`) dan aksi `alamat_simpan` serta `alamat_nonaktif` di `kedai`, dengan deploy ulang `kedai` tanpa `--no-verify-jwt`. Butuh penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md`, `akun.md`, `database.md`, `security.md`, `public/index.html`, `public/akun.js`, `public/profil.js`, `public/sw.js`, `public/style.css`, `supabase/functions/kedai/index.ts`, dan isi `supabase/migrations/`.
