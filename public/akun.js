@@ -63,6 +63,8 @@
   // Hanya dipakai untuk tahu jenis link; nilai token tidak dipakai dan tidak dicatat.
   var modeRecovery = false;
   var linkGalat = false;
+  // Token dari link hanya untuk dibandingkan di memori dengan token sesi; tidak dicatat dan dikosongkan setelah dipakai.
+  var tokenLink = "";
   try {
     var HASH_AWAL = window.location.hash || "";
     var PARAM_HASH = new URLSearchParams(
@@ -70,6 +72,7 @@
     );
     modeRecovery =
       PARAM_HASH.get("type") === "recovery" && !!PARAM_HASH.get("access_token");
+    tokenLink = PARAM_HASH.get("access_token") || "";
     linkGalat = !!(PARAM_HASH.get("error") || PARAM_HASH.get("error_code"));
   } catch (err) {
     modeRecovery = false;
@@ -598,7 +601,15 @@
       .getSession()
       .then(function (h) {
         var sesi = h && h.data ? h.data.session : null;
-        if (sesi && pulihTerbukti) {
+        // Sesi dianggap berasal dari link bila Supabase mengirim PASSWORD_RECOVERY, ATAU token sesi
+        // sama dengan token di alamat tadi. Event bisa datang sesudah getSession selesai (terlambat),
+        // jadi perbandingan token yang menentukan, tidak bergantung waktu.
+        var dariLink =
+          !!sesi &&
+          (pulihTerbukti ||
+            (tokenLink !== "" && sesi.access_token === tokenLink));
+        tokenLink = "";
+        if (dariLink) {
           bersihkanAlamat();
           bersihkanGalatReset();
           el("resetpw-password").value = "";
