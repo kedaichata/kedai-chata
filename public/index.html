@@ -268,6 +268,104 @@
                 </div>
             </section>
 
+            <!-- Buku alamat (AKN.07, AK9): hanya customer. Logika di alamat.js. Dua tampilan: daftar dan form -->
+            <section id="layar-alamat" hidden>
+                <div id="alamat-daftar-bungkus">
+                    <h1>Buku alamat</h1>
+                    <p class="isian__bantuan" id="alamat-ringkas"></p>
+                    <p
+                        class="isian__galat"
+                        id="alamat-daftar-galat"
+                        role="alert"
+                        hidden
+                    ></p>
+                    <div id="alamat-daftar-isi"></div>
+                    <p class="isian__bantuan" id="alamat-batas-ket" hidden></p>
+                    <div class="baris-tombol">
+                        <button
+                            type="button"
+                            class="tombol tombol--utama"
+                            id="alamat-tambah"
+                        >
+                            Tambah alamat
+                        </button>
+                    </div>
+                    <div class="baris-tombol">
+                        <button
+                            type="button"
+                            class="tombol tombol--sekunder"
+                            id="alamat-kembali"
+                        >
+                            Kembali
+                        </button>
+                    </div>
+                </div>
+                <div id="alamat-form-bungkus" hidden>
+                    <h1 id="alamat-form-judul">Tambah alamat</h1>
+                    <form id="form-alamat" novalidate>
+                        <div class="isian" id="isian-alamat-alias">
+                            <label class="isian__label" for="alamat-alias"
+                                >Nama alamat</label
+                            >
+                            <input
+                                class="isian__kolom"
+                                id="alamat-alias"
+                                name="alias"
+                                type="text"
+                                maxlength="30"
+                                autocomplete="off"
+                            />
+                            <p class="isian__bantuan">
+                                Nama singkat untuk alamat ini, misalnya Rumah
+                                atau Sekolah anak 1.
+                            </p>
+                            <p class="isian__galat" hidden></p>
+                        </div>
+                        <div class="isian" id="isian-alamat-isi">
+                            <label class="isian__label" for="alamat-isi"
+                                >Alamat antar</label
+                            >
+                            <textarea
+                                class="isian__kolom"
+                                id="alamat-isi"
+                                name="isi"
+                                maxlength="200"
+                                autocomplete="off"
+                            ></textarea>
+                            <p class="isian__bantuan">
+                                Untuk antar ke sekolah, tulis nama sekolah,
+                                kelas, dan nama anak. Contoh: SD X, kelas 3B,
+                                a.n. Budi.
+                            </p>
+                            <p class="isian__galat" hidden></p>
+                        </div>
+                        <div class="isian" id="alamat-galat-bungkus" hidden>
+                            <p
+                                class="isian__galat"
+                                id="alamat-galat"
+                                role="alert"
+                            ></p>
+                        </div>
+                        <button
+                            type="submit"
+                            class="tombol tombol--utama"
+                            id="tombol-alamat-simpan"
+                        >
+                            Simpan
+                        </button>
+                    </form>
+                    <div class="baris-tombol">
+                        <button
+                            type="button"
+                            class="tombol tombol--sekunder"
+                            id="alamat-batal"
+                        >
+                            Batal
+                        </button>
+                    </div>
+                </div>
+            </section>
+
             <!-- Layar sementara setelah masuk: diganti layar sebenarnya di langkah berikutnya -->
             <section id="layar-sementara" hidden>
                 <header class="bilah-atas">
@@ -293,6 +391,16 @@
                     Layar ini sementara. Layar utama menyusul di langkah
                     berikutnya.
                 </p>
+                <div class="baris-tombol">
+                    <button
+                        type="button"
+                        class="tombol tombol--utama"
+                        id="tombol-buku-alamat"
+                        hidden
+                    >
+                        Buku alamat
+                    </button>
+                </div>
                 <div class="baris-tombol">
                     <button
                         type="button"
@@ -396,6 +504,8 @@
         <script src="akun.js"></script>
         <!-- Layar Lengkapi profil (AKN.06); harus setelah akun.js karena memakai window.KedaiAkun -->
         <script src="profil.js"></script>
+        <!-- Layar Buku alamat (AKN.07); harus setelah akun.js karena memakai window.KedaiAkun -->
+        <script src="alamat.js"></script>
         <script>
             // Mendaftarkan service worker (sw.js) supaya aplikasi bisa dipasang dan terbuka offline.
             // Path relatif (tanpa awalan /) supaya jalan di GitHub Pages.

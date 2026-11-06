@@ -1,6 +1,7 @@
 // supabase/functions/kedai/index.ts
 // AKN.04: Edge Function `kedai` versi pertama (opsi A).
 // Aksi yang ada: `status` dan `daftar_profil`. Aksi lain ditambah di langkah berikutnya.
+// AKN.07: ditambah `alamat_simpan` dan `alamat_nonaktif` (buku alamat, akun.md AK9).
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -256,6 +257,127 @@ async function aksiDaftarProfil(
 }
 
 // ------------------------------------------------------------
+// Aksi: alamat_simpan dan alamat_nonaktif (customer) (AKN.07, AK9)
+// ID pemilik selalu dari token. ID alamat dari aplikasi tidak dipercaya:
+// fungsi SQL mengecek kepemilikannya (SEC-09). Balasan sukses memuat daftar
+// alamat aktif terbaru supaya aplikasi tidak perlu memanggil `status` lagi.
+// ------------------------------------------------------------
+
+const REGEX_UUID =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Kode galat fungsi SQL alamat_simpan dan alamat_nonaktif -> status dan pesan aman (AK14)
+const PETA_GALAT_ALAMAT: Record<string, [number, string]> = {
+  alias_tidak_valid: [400, "Nama alamat harus 3 sampai 30 karakter."],
+  alamat_tidak_valid: [400, "Isi alamat harus 10 sampai 200 karakter."],
+  alamat_penuh: [
+    409,
+    "Jumlah alamat sudah mencapai batas. Nonaktifkan salah satu dulu.",
+  ],
+  alamat_terakhir: [409, "Minimal harus ada satu alamat aktif."],
+  alamat_tidak_ditemukan: [404, "Alamat tidak ditemukan."],
+  profil_tidak_ada: [400, "Lengkapi profil dulu."],
+};
+
+// Daftar alamat aktif milik sendiri (kueri yang sama dengan `status`).
+async function bacaAlamatAktif(id: string): Promise<unknown[]> {
+  const { data, error } = await admin!
+    .from("alamat")
+    .select("id, alias, isi")
+    .eq("pemilik", id)
+    .eq("aktif", true)
+    .order("dibuat_pada", { ascending: true });
+  if (error) throw new Error("baca_alamat:" + (error.code ?? ""));
+  return data ?? [];
+}
+
+// Galat fungsi SQL: kode yang dikenal dibalas pesan aman, selain itu dilempar (jadi 500 umum).
+function galatDariDb(
+  req: Request,
+  error: { message?: string; code?: string },
+  peta: Record<string, [number, string]>,
+  nama: string,
+): Response {
+  const pesanDb = error.message ?? "";
+  for (const kode of Object.keys(peta)) {
+    if (pesanDb.includes(kode)) {
+      const [status, pesan] = peta[kode];
+      return galat(req, status, pesan);
+    }
+  }
+  throw new Error(nama + ":" + (error.code ?? ""));
+}
+
+async function aksiAlamatSimpan(
+  req: Request,
+  pengguna: Pengguna,
+  isi: Record<string, unknown>,
+): Promise<Response> {
+  const p = await bacaPeran(pengguna.id);
+  if (p.jenis !== "customer") {
+    return galat(req, 403, "Aksi ini hanya untuk customer.");
+  }
+
+  const alias = teksAtauNull(isi.alias);
+  const teksAlamat = teksAtauNull(isi.isi);
+  if (alias === null || teksAlamat === null) {
+    return galat(req, 400, "Data belum lengkap atau tidak valid.");
+  }
+
+  // `id` kosong = tambah alamat baru; `id` terisi = ubah alamat itu.
+  let idAlamat: string | null = null;
+  if (isi.id !== undefined && isi.id !== null) {
+    if (typeof isi.id !== "string" || !REGEX_UUID.test(isi.id)) {
+      return galat(req, 400, "Data belum lengkap atau tidak valid.");
+    }
+    idAlamat = isi.id;
+  }
+
+  const { error } = await admin!.rpc("alamat_simpan", {
+    p_pemilik: pengguna.id,
+    p_id: idAlamat,
+    p_alias: alias,
+    p_isi: teksAlamat,
+  });
+  if (error) {
+    return galatDariDb(req, error, PETA_GALAT_ALAMAT, "alamat_simpan");
+  }
+
+  return balas(req, 200, {
+    ok: true,
+    alamat: await bacaAlamatAktif(pengguna.id),
+  });
+}
+
+async function aksiAlamatNonaktif(
+  req: Request,
+  pengguna: Pengguna,
+  isi: Record<string, unknown>,
+): Promise<Response> {
+  const p = await bacaPeran(pengguna.id);
+  if (p.jenis !== "customer") {
+    return galat(req, 403, "Aksi ini hanya untuk customer.");
+  }
+
+  if (typeof isi.id !== "string" || !REGEX_UUID.test(isi.id)) {
+    return galat(req, 400, "Data belum lengkap atau tidak valid.");
+  }
+
+  const { error } = await admin!.rpc("alamat_nonaktif", {
+    p_pemilik: pengguna.id,
+    p_id: isi.id,
+  });
+  if (error) {
+    return galatDariDb(req, error, PETA_GALAT_ALAMAT, "alamat_nonaktif");
+  }
+
+  return balas(req, 200, {
+    ok: true,
+    alamat: await bacaAlamatAktif(pengguna.id),
+  });
+}
+
+// ------------------------------------------------------------
 // Pintu masuk
 // ------------------------------------------------------------
 
@@ -304,6 +426,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
         return await aksiStatus(req, pengguna);
       case "daftar_profil":
         return await aksiDaftarProfil(req, pengguna, isi);
+      case "alamat_simpan":
+        return await aksiAlamatSimpan(req, pengguna, isi);
+      case "alamat_nonaktif":
+        return await aksiAlamatNonaktif(req, pengguna, isi);
       default:
         return galat(req, 400, "Aksi tidak dikenal.");
     }

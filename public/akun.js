@@ -25,6 +25,7 @@
     "masuk",
     "daftar",
     "profil",
+    "alamat",
     "sementara",
     "galat",
     "offline",
@@ -193,6 +194,12 @@
       label +
       ".";
 
+    // AKN.07: tombol Buku alamat hanya untuk customer (alamat.js yang memasang kliknya).
+    var tombolAlamat = el("tombol-buku-alamat");
+    if (tombolAlamat) {
+      tombolAlamat.hidden = d.peran !== "customer";
+    }
+
     var catatan = el("catatan-profil");
     if (d.peran === "customer") {
       catatan.textContent = d.profil
@@ -348,6 +355,13 @@
         typeof window.KedaiProfil.reset === "function"
       ) {
         window.KedaiProfil.reset();
+      }
+      // AKN.07: alamat di layar Buku alamat ikut dibersihkan.
+      if (
+        window.KedaiAlamat &&
+        typeof window.KedaiAlamat.reset === "function"
+      ) {
+        window.KedaiAlamat.reset();
       }
       tampilkan("masuk");
     }
