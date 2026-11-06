@@ -6,7 +6,7 @@
 // Penanganan push ditambah nanti (notifikasi.md).
 
 // Naikkan angka versi ini bila daftar cache berubah, supaya salinan lama dibuang.
-var NAMA_CACHE = "chata-v4";
+var NAMA_CACHE = "chata-v5";
 
 // Semua path relatif (tanpa awalan /) supaya jalan di GitHub Pages.
 // Tiap berkas aplikasi baru (JS, style.css, pustaka, ikon) wajib ditambah di sini.
@@ -18,6 +18,7 @@ var DAFTAR_CACHE = [
   "manifest.json",
   "style.css",
   "akun.js",
+  "profil.js",
   "img/icon-192.png",
   "img/icon-512.png",
   "img/chata-logo.png",

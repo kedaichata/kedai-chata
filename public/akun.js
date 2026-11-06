@@ -4,6 +4,9 @@
 // Layar "sementara" menampilkan sapaan dan peran; digantikan layar sebenarnya di langkah berikutnya
 // (AKN.06 Lengkapi profil, lalu layar utama per peran).
 //
+// AKN.06: layar Lengkapi profil ada di profil.js (dimuat setelah berkas ini). akun.js membuka layar itu
+// lewat window.KedaiProfil.tampil() dan membagikan pembantu lewat window.KedaiAkun.
+//
 // Aturan yang dijaga:
 // - Peran dan identitas tidak pernah dikirim aplikasi; server membacanya dari token login.
 // - Semua teks (nama dari server, pesan) dipasang lewat textContent, bukan innerHTML.
@@ -17,7 +20,15 @@
   var ALAMAT_KEDAI = (KONFIG.SUPABASE_URL || "") + "/functions/v1/kedai";
 
   // Nama layar; tiap layar punya elemen id "layar-<nama>" di index.html.
-  var LAYAR = ["memuat", "masuk", "daftar", "sementara", "galat", "offline"];
+  var LAYAR = [
+    "memuat",
+    "masuk",
+    "daftar",
+    "profil",
+    "sementara",
+    "galat",
+    "offline",
+  ];
 
   var LABEL_PERAN = {
     customer: "customer",
@@ -141,7 +152,8 @@
   // Panggilan ke kedai (token login dari sesi; kunci publishable di apikey)
   // ------------------------------------------------------------
 
-  function panggilKedai(aksi) {
+  // `data` (opsional): isian tambahan untuk aksi. Kunci "aksi" selalu dari parameter, tidak bisa tertimpa.
+  function panggilKedai(aksi, data) {
     return klien.auth.getSession().then(function (h) {
       var sesi = h && h.data ? h.data.session : null;
       if (!sesi) {
@@ -154,7 +166,7 @@
           Authorization: "Bearer " + sesi.access_token,
           apikey: KONFIG.SUPABASE_PUBLISHABLE_KEY,
         },
-        body: JSON.stringify({ aksi: aksi }),
+        body: JSON.stringify(Object.assign({}, data || {}, { aksi: aksi })),
       }).then(function (r) {
         return r.json().then(
           function (data) {
@@ -198,6 +210,19 @@
     panggilKedai("status")
       .then(function (h) {
         if (h.status === 200 && h.data && h.data.ok === true) {
+          // AK6: customer tanpa profil melihat layar Lengkapi profil (profil.js).
+          // Staf selalu punya profil null, jadi syaratnya wajib dua-duanya.
+          if (h.data.peran === "customer" && !h.data.profil) {
+            if (
+              window.KedaiProfil &&
+              typeof window.KedaiProfil.tampil === "function"
+            ) {
+              window.KedaiProfil.tampil();
+            } else {
+              tampilGalat("Aplikasi belum lengkap. Muat ulang halaman.");
+            }
+            return;
+          }
           isiSementara(h.data);
           tampilkan("sementara");
           return;
@@ -317,6 +342,13 @@
       el("daftar-password").value = "";
       bersihkanGalat("masuk");
       bersihkanGalat("daftar");
+      // Data pribadi di layar Lengkapi profil ikut dibersihkan (HP bisa dipakai bergantian).
+      if (
+        window.KedaiProfil &&
+        typeof window.KedaiProfil.reset === "function"
+      ) {
+        window.KedaiProfil.reset();
+      }
       tampilkan("masuk");
     }
     // Hanya mengakhiri sesi di perangkat ini (HP bisa dipakai bergantian).
@@ -330,6 +362,17 @@
     }
     muatStatus();
   }
+
+  // Pembantu untuk profil.js. Tidak membuka akses baru: token tetap dari sesi login di peramban.
+  window.KedaiAkun = Object.freeze({
+    tampilkan: tampilkan,
+    galatIsian: galatIsian,
+    galatForm: galatForm,
+    sibuk: sibuk,
+    panggilKedai: panggilKedai,
+    muatStatus: muatStatus,
+    keluar: keluar,
+  });
 
   // ------------------------------------------------------------
   // Pasang pendengar dan mulai

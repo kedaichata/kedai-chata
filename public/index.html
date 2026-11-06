@@ -162,6 +162,112 @@
                 </div>
             </section>
 
+            <!-- Lengkapi profil (AKN.06, AK6): hanya customer yang belum punya profil. Logika di profil.js -->
+            <section id="layar-profil" hidden>
+                <h1>Lengkapi profil</h1>
+                <p>
+                    Isi data berikut supaya pesanan Anda bisa diproses dan
+                    diantar.
+                </p>
+                <form id="form-profil" novalidate>
+                    <div class="isian" id="isian-profil-nama">
+                        <label class="isian__label" for="profil-nama"
+                            >Nama</label
+                        >
+                        <input
+                            class="isian__kolom"
+                            id="profil-nama"
+                            name="nama"
+                            type="text"
+                            maxlength="20"
+                            autocomplete="off"
+                        />
+                        <p class="isian__bantuan">
+                            3 sampai 20 karakter: huruf, angka, spasi, dan garis
+                            bawah.
+                        </p>
+                        <p class="isian__galat" hidden></p>
+                    </div>
+                    <div class="isian" id="isian-profil-wa">
+                        <label class="isian__label" for="profil-wa"
+                            >Nomor WA</label
+                        >
+                        <input
+                            class="isian__kolom"
+                            id="profil-wa"
+                            name="wa"
+                            type="tel"
+                            inputmode="tel"
+                            maxlength="20"
+                            autocomplete="tel"
+                        />
+                        <p class="isian__bantuan">
+                            Nomor ini dipakai warung untuk menghubungi Anda soal
+                            pesanan.
+                        </p>
+                        <p class="isian__galat" hidden></p>
+                    </div>
+                    <div class="isian" id="isian-profil-alias">
+                        <label class="isian__label" for="profil-alias"
+                            >Nama alamat</label
+                        >
+                        <input
+                            class="isian__kolom"
+                            id="profil-alias"
+                            name="alias"
+                            type="text"
+                            maxlength="30"
+                            autocomplete="off"
+                        />
+                        <p class="isian__bantuan">
+                            Nama singkat untuk alamat ini, misalnya Rumah atau
+                            Sekolah anak 1.
+                        </p>
+                        <p class="isian__galat" hidden></p>
+                    </div>
+                    <div class="isian" id="isian-profil-alamat">
+                        <label class="isian__label" for="profil-alamat"
+                            >Alamat antar</label
+                        >
+                        <textarea
+                            class="isian__kolom"
+                            id="profil-alamat"
+                            name="alamat"
+                            maxlength="200"
+                            autocomplete="street-address"
+                        ></textarea>
+                        <p class="isian__bantuan">
+                            Untuk antar ke sekolah, tulis nama sekolah, kelas,
+                            dan nama anak. Contoh: SD X, kelas 3B, a.n. Budi.
+                        </p>
+                        <p class="isian__galat" hidden></p>
+                    </div>
+                    <div class="isian" id="profil-galat-bungkus" hidden>
+                        <p
+                            class="isian__galat"
+                            id="profil-galat"
+                            role="alert"
+                        ></p>
+                    </div>
+                    <button
+                        type="submit"
+                        class="tombol tombol--utama"
+                        id="tombol-profil"
+                    >
+                        Simpan dan lanjut
+                    </button>
+                </form>
+                <div class="baris-tombol">
+                    <button
+                        type="button"
+                        class="tombol tombol--sekunder"
+                        id="profil-keluar"
+                    >
+                        Keluar
+                    </button>
+                </div>
+            </section>
+
             <!-- Layar sementara setelah masuk: diganti layar sebenarnya di langkah berikutnya -->
             <section id="layar-sementara" hidden>
                 <header class="bilah-atas">
@@ -288,6 +394,8 @@
         </script>
         <!-- Logika layar Daftar, Masuk, Keluar (AKN.05) -->
         <script src="akun.js"></script>
+        <!-- Layar Lengkapi profil (AKN.06); harus setelah akun.js karena memakai window.KedaiAkun -->
+        <script src="profil.js"></script>
         <script>
             // Mendaftarkan service worker (sw.js) supaya aplikasi bisa dipasang dan terbuka offline.
             // Path relatif (tanpa awalan /) supaya jalan di GitHub Pages.
