@@ -418,3 +418,40 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 3. Dari handoff sebelumnya: SEC-24 (uji kirim email Gmail tim) dan SEC-03 versi penuh masih menunggu akun uji; akun uji dibersihkan di `LNC.01`; tulisan sukses di layar Akun kecil dan abu-abu (P2); form masih melebar penuh di layar lebar.
 
 **Saran giliran berikutnya:** AKN.09 (layar Buat password baru dari link reset, dan tautan "Lupa password?" dengan petunjuk, AK12). Menyentuh login (P0), butuh "OK" ketua. Kemungkinan `sw.js` tidak berubah bila hanya menambah isi berkas yang ada. Kalau ada berkas JS baru, wajib masuk daftar cache `sw.js` (butuh "OK"). SEC-24 bisa sekalian dites begitu akun uji dengan email asli milik tim ada. Lampirkan `AGENTS.md`, `akun.md`, `security.md`, `public/index.html`, `public/akun.js`, `public/akunmenu.js`, `public/sw.js`, `public/style.css`, dan `public/config.js`.
+
+### Handoff #9 | 2026-11-06 | [RAC]
+
+**Tugas:** AKN.09 (layar Buat password baru dari link reset, dan tautan "Lupa password?" dengan petunjuk, AK12). Kode selesai, sudah di-push, Actions hijau. Tanpa migration, tanpa perubahan `kedai`, `sw.js` tidak berubah. "OK" ketua sudah diberikan di chat.
+
+**File yang diubah (hanya menambah, tidak ada baris lama dihapus):**
+
+- `public/index.html`: kartu pesan sukses di layar Masuk, tombol "Lupa password?" dengan kartu petunjuk, section `layar-resetpw` (satu isian password baru, tombol Simpan dan Batal).
+- `public/akun.js`: layar `resetpw` di daftar `LAYAR`; bagian `#` alamat dibaca sebelum klien dibuat; fungsi `mulaiReset`, `kirimResetPw`, `selesaiReset`, `batalReset`, `linkTidakBerlaku`; isian dan galat layar baru ikut dibersihkan saat Keluar.
+
+**Hasil:**
+
+- Alur: link dari "Send password recovery" membuka layar Buat password baru (bukan beranda). Simpan berhasil: sesi sementara ditutup, kembali ke layar Masuk dengan kartu "Password berhasil dibuat". Batal: sesi sementara ditutup lewat Keluar, kembali ke layar Masuk. Link rusak atau sudah terpakai: layar Masuk dengan pesan "Link sudah tidak berlaku. Hubungi tim untuk link baru."
+- Tes di GitHub Pages (Chrome di Mac, akun dummy dengan email milik tim; bukti diperiksa di chat dan tidak disimpan), **lulus**: layar Buat password baru tampil dari link; password bersimbol ditolak di HP; password baru diterima, password lama ditolak, login dengan password baru berhasil; link yang dipakai dua kali ditolak dengan pesan yang benar; kartu "Lupa password?" tampil; Batal kembali ke Masuk.
+- **SEC-24 lulus:** email dari Gmail tim terbukti sampai, dan link membuka layar Buat password baru. Ini menutup catatan "email belum pernah terkirim" dari Handoff #1.
+
+**Keputusan baru** (bawaan penulis; ketua menyetujui ringkasan rencana):
+
+- Satu isian password baru, tanpa kolom "ulangi password" (sama seperti ganti password di AKN.08b). Aturan sama dengan AK3.
+- Layar Buat password baru hanya tampil bila sesi benar-benar berasal dari link: token sesi sama dengan token di alamat, atau Supabase mengirim event `PASSWORD_RECOVERY`. Token hanya dibandingkan di memori, tidak dicatat, dan alamat peramban dibersihkan.
+- Link tetap sekali pakai (sifat Supabase). Ketua memutuskan dipertahankan; tidak ada upaya mengubahnya.
+- Petunjuk "Lupa password?" tanpa nomor atau email di repo (AK12).
+
+**Kejadian di lapangan (bahan belajar):**
+
+1. **Email reset gagal dikirim (500, 535 BadCredentials).** Penyebab: app password Gmail diketik manual dari layar HP dan meleset (akun Google itu hanya bisa dibuka dengan passkey di laptop). Perbaikan: app password dibuat ulang lalu dipasang di SMTP Supabase. Pencegahan: app password selalu disalin dan ditempel, jangan diketik; di laptop bersama login lewat "Coba cara lain" (kode dari `g.co/sc`) dan hilangkan centang "Jangan tanya lagi di perangkat ini". Pesan aslinya ada di Logs, Auth (log API Gateway hanya memuat "unexpected_failure").
+2. **Link sah tampil "Link sudah tidak berlaku".** Log Auth menunjukkan hanya satu `/verify` (303) per link, jadi bukan pemindai email. Pengecekan sesi di kode versi pertama diperbaiki dengan membandingkan token. Penyebab pastinya (event `PASSWORD_RECOVERY` datang terlambat, atau tes pertama masih memakai `akun.js` lama dari cache) tidak dipastikan karena isi `lib/supabase.js` belum dilihat; setelah perbaikan dan muat ulang keras, tes lulus. Pencegahan: setelah tiap deploy, muat ulang keras (Cmd+Shift+R) sebelum tes, dan tiap percobaan butuh link baru.
+
+**Belum beres:**
+
+1. Belum dites di HP Android; semua tes di Chrome di Mac.
+2. Reset password untuk akun staf belum dites (menunggu akun uji dari AKN.10 dan AKN.11). Alurnya sama, lewat link dari dashboard.
+3. Klik dua kali atau layar tertutup sebelum password dibuat menghasilkan "Link sudah tidak berlaku" dan butuh link baru dari ketua. Dipertahankan sesuai keputusan ketua; bila pelanggan sering mengeluh, bahan pertimbangan di review pemakaian.
+4. Di luar kode: logout dari akun Google proyek di laptop bersama, dan hapus app password lama yang salah ketik di akun Google itu.
+5. Dari handoff sebelumnya masih berlaku: SEC-03 versi penuh, tes staf 403, ganti password dari akun staf, dan akun uji (termasuk yang berisi email asli milik tim) dibersihkan di `LNC.01`.
+
+**Saran giliran berikutnya:** AKN.10 (SQL template tambah/nonaktifkan staf dan prosedur ketua; 1 akun owner dan 1 akun penjaga uji). High-Risk (P0), butuh penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md`, `akun.md`, `database.md`, `security.md`, dan isi `supabase/migrations/`.
