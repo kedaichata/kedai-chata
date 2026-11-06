@@ -343,3 +343,38 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 3. Akun uji (`test03`, `test04`, dan alamat dummy yang dibuat) dibersihkan di `LNC.01`. SEC-24 dan SEC-03 versi penuh masih menunggu, seperti di Handoff #4 dan #5. Form dan layar masih melebar penuh di layar lebar (dari Handoff #4).
 
 **Saran giliran berikutnya:** AKN.08 (menu Akun: ganti nama, ganti WA, ganti password). High-Risk (P0, data pelanggan). Butuh migration kecil (fungsi SQL ganti nama dan ganti WA, aturan AK7 dan AK8) dan aksi `ganti_nama` serta `ganti_wa` di `kedai`, dengan deploy ulang `kedai` tanpa `--no-verify-jwt`. Butuh penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md`, `akun.md`, `database.md`, `security.md`, `public/index.html`, `public/akun.js`, `public/profil.js`, `public/alamat.js`, `public/sw.js`, `public/style.css`, `supabase/functions/kedai/index.ts`, dan isi `supabase/migrations/`.
+
+### Handoff #7 | 2026-11-06 | [AIK]
+
+**Tugas:** AKN.08 bagian **08a** (menu Akun: ganti nama dan ganti nomor WA). Selesai dikerjakan dan diuji, sudah di-push (commit `3433c5c`, Actions #19 hijau). **AKN.08 belum selesai**: bagian **08b (ganti password)** belum dimulai, jadi butir AKN.08 belum dicentang. "OK" ketua untuk migration, deploy `kedai`, dan perubahan `sw.js` sudah diberikan.
+
+**File yang diubah:**
+
+- Baru: `public/akunmenu.js`, `supabase/migrations/20261106_ganti_profil.sql`, `supabase/migrations/20261106_ganti_profil_batal.sql`, `supabase/templates/20261106_ganti_profil_cek.sql`.
+- Diubah (hanya menambah): `public/index.html` (tombol `tombol-akun` di layar sementara, section `layar-akun`, tag script `akunmenu.js` setelah `alamat.js`), `public/akun.js` (layar `akun` di daftar `LAYAR`, tombol hanya untuk customer, `KedaiAkunMenu.reset()` saat Keluar), `public/sw.js` (`akunmenu.js` masuk daftar cache, `chata-v6` jadi `chata-v7`), `supabase/functions/kedai/index.ts` (aksi `ganti_nama` dan `ganti_wa`).
+
+**Hasil:**
+
+- Dua fungsi SQL baru: `public.ganti_nama(p_pemilik, p_nama)` dan `public.ganti_wa(p_pemilik, p_wa)`. Atomik, `SECURITY DEFINER`, `search_path` kosong, `EXECUTE` hanya `service_role`. Aturan nama (AK7) dan WA (AK8) sama dengan `buat_profil`; WA disimpan seragam `62...`. Tidak ada tabel atau hak tabel yang diubah. Query cek baca-saja lulus (bukti SEC-04).
+- `kedai` dideploy ulang tanpa `--no-verify-jwt` (urutan aman AGENTS.md bagian 8; token CLI sudah dibersihkan, dicek `[]`). Balasan sukses kedua aksi hanya `{"ok":true}`; layar membaca nilai terbaru lewat `status`.
+- Kode galat SQL dipetakan ke pesan aman: `nama_tidak_valid` dan `wa_tidak_valid` 400, `profil_tidak_ada` 400 ("Lengkapi profil dulu."). Peran selain customer dibalas 403.
+- Tes LULUS di GitHub Pages (Brave, DevTools mode HP, akun dan data dummy; bukti diperiksa di chat dan tidak disimpan): ganti nama dan ganti WA lewat konsol (200; WA `08...` tersimpan `62...`); nama 2 huruf dan WA `12345` ditolak server 400; **SEC-06**: id/pemilik palsu di kiriman diabaikan, yang berubah tetap akun sendiri (P0); layar Akun terbuka dengan nama terisi dan kolom WA kosong; ganti nama lewat layar lalu Kembali, sapaan memakai nama baru; ganti WA lewat layar dengan tanda hubung, tersimpan benar di server.
+
+**Keputusan baru** (bawaan penulis, belum ditanyakan satu per satu ke ketua; ketua hanya menyetujui ringkasan rencana):
+
+- Ganti nama dan ganti WA hanya untuk customer (mengikuti `database.md`). Nama staf diubah ketua lewat SQL Editor.
+- Pintu masuk sementara: tombol "Akun" di layar sementara (khusus customer). Dipindah ke menu Akun saat layar utama dibuat.
+- Nomor WA lama tidak ditampilkan; kolom WA selalu kosong dan dikosongkan lagi setelah berhasil dan saat Keluar. Kolom Nama diisi dari `status`.
+- Spasi dan tanda hubung di nomor WA dibuang sebelum dikirim (seperti `profil.js`).
+- Tombol Kembali di layar Akun memuat ulang `status` supaya sapaan di layar sementara memakai nama terbaru.
+
+**Belum beres:**
+
+1. **08b ganti password (AK11)** belum dimulai.
+2. Tes layar yang belum dijalankan: isian tidak valid di layar (nama 2 huruf, WA ngaco: pesan merah di bawah kolom dan tanpa panggilan server) dan Keluar mengosongkan layar Akun (nama dan WA kosong). Keduanya P1 sampai P2.
+3. Staf tidak bisa memakai aksi ganti nama/WA (403 "Aksi ini hanya untuk customer.") ditunda sampai akun owner uji ada (AKN.10), digabung ke AKN.11.
+4. Belum dites di HP Android. Semua tes di Brave di Mac (DevTools mode HP).
+5. Tampilan (P2): tulisan sukses "Nama berhasil diganti." dan "Nomor WA berhasil diganti." kecil dan abu-abu di bawah judul, gampang terlewat bila layar tergulir. Bisa dibuat lebih menonjol nanti.
+6. Akun uji (`test03`, `test04`, dan data dummy; nama `test04` sekarang `test 04 sec` atau `test 04 baru`) dibersihkan di `LNC.01`. SEC-24 dan SEC-03 versi penuh masih menunggu, seperti di Handoff #4 sampai #6. Form dan layar masih melebar penuh di layar lebar (dari Handoff #4).
+
+**Saran giliran berikutnya:** **08b: ganti password** (AK11): layar di menu Akun dengan isian password lama dan password baru; aplikasi login ulang dengan password lama dulu, baru mengganti lewat Supabase Auth; aturan password baru sama dengan AK3 (huruf dan angka, minimal 8). Tanpa migration dan tanpa aksi `kedai` baru, tetapi menyentuh login, jadi High-Risk (P0): butuh penjelasan dampak dan "OK" ketua, dan `sw.js` tidak berubah bila hanya menambah isi `akunmenu.js` dan `index.html`. Cek dulu catatan "Secure password change mati" di `security.md` bagian 7 dan `akun.md` Handoff awal. Setelah itu tes 8 yang tersisa (poin 2 di atas). Lampirkan `AGENTS.md`, `akun.md`, `database.md`, `security.md`, `public/index.html`, `public/akun.js`, `public/profil.js`, `public/alamat.js`, `public/akunmenu.js`, `public/sw.js`, `public/style.css`, `supabase/functions/kedai/index.ts`, dan isi `supabase/migrations/`.
