@@ -222,3 +222,33 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
   **Saran giliran berikutnya:** AKN.04 (Edge Function `kedai` versi pertama). High-Risk, butuh OK ketua. Yang perlu disiapkan sebelum mulai: (1) keputusan ketua soal scope di atas, (2) alamat GitHub Pages untuk daftar asal CORS, (3) konfirmasi FND.07 beres, (4) kunci secret baru (`sb_secret_...`) dibuat dan disimpan ketua sebagai secret fungsi di dashboard, bukan di kode, chat, atau md. Lampirkan `AGENTS.md`, `akun.md`, `database.md`, `security.md`, `public/config.js`, dan isi `supabase/migrations/` terbaru; folder `supabase/functions/` saat ini hanya berisi `.gitkeep`.
 
 ---
+
+### Handoff #3 | 2026-11-06 | [ketua]
+
+**Tugas:** AKN.04 (Edge Function `kedai` versi pertama). Selesai: kode ditulis, secret dipasang, dideploy, dan sudah di-push (commit `8b0e714`).
+
+**File yang diubah (baru):**
+
+- `supabase/functions/kedai/index.ts`
+
+**Hasil:**
+
+- Rangka `kedai` dengan cek token dua lapis. Lapis pertama: Verify JWT platform menyala (dicek di dashboard, deploy tanpa `--no-verify-jwt`). Lapis kedua: cek sendiri paling awal di kode, tanpa token atau token tidak valid dibalas 401; token kunci Supabase (`sb_...`) dan token anon ditolak.
+- CORS hanya untuk alamat GitHub Pages ChATA.
+- Dua aksi: `status` (peran dari tabel `staf`, profil, alamat aktif, dan `alamat_maks`; email tidak dikirim) dan `daftar_profil` (ID dari token, isian lain diabaikan, kode galat `buat_profil` dipetakan ke pesan aman Bahasa Indonesia).
+- Deploy lewat urutan aman `AGENTS.md` bagian 8. Token CLI sudah dibersihkan dari Terminal (dicek `[]`).
+
+**Keputusan baru:**
+
+- **Scope AKN.04 dipersempit (opsi A, keputusan ketua):** `kedai` v1 hanya membawa `status` dan `daftar_profil`. `alamat_simpan` dan `alamat_nonaktif` ditambah di AKN.07, `ganti_nama` dan `ganti_wa` di AKN.08, masing-masing dengan migration kecil dan OK ketua. Ini menyelesaikan selisih dengan AK16 yang disebut di Handoff #2 (AK16 menyebut enam aksi; yang paling akhir menang).
+- Nama variabel rahasia fungsi: `KUNCI_SECRET_KEDAI` (berisi kunci `sb_secret_...`, diisi di dashboard Edge Functions → Secrets). Nama tanpa awalan `SUPABASE_` dipilih karena nama berawalan itu biasanya ditolak dashboard.
+- Staf yang nonaktif dibalas 403 di `status` (tidak jatuh jadi customer). Ini pilihan penulis (bawaan), belum ditanyakan satu per satu ke ketua.
+- `@supabase/supabase-js` dipatok `2.58.0`.
+
+**Belum beres:**
+
+- **Fungsi belum pernah dipanggil.** Deploy hanya membuktikan kode terkirim. Uji dengan login asli dari halaman GitHub Pages (SEC-33) menunggu layar Masuk di AKN.05. Dashboard memberi label pengaturan "Verify JWT with legacy secret" (hanya menerima token berpenandatangan rahasia lama). Bila SEC-33 menunjukkan token login asli ditolak platform atau preflight CORS gagal: jangan lanjut, ikuti rencana mundur `security.md` aturan 3 (hanya dengan OK ketua).
+- Bila uji menunjukkan kunci `sb_secret_...` tidak jalan dengan `supabase-js 2.58.0`, laporkan ke ketua; jangan diubah diam-diam.
+- SEC-03 versi penuh dan uji kirim email Gmail tim (SEC-24) masih menunggu akun uji (dari Handoff #1 dan #2).
+
+**Saran giliran berikutnya:** AKN.05 (layar Daftar, Masuk, Keluar), lalu langsung SEC-33. Lampirkan `AGENTS.md`, `akun.md`, `security.md`, `public/index.html`, `public/sw.js`, `public/config.js`, dan `supabase/functions/kedai/index.ts`. Berkas JS baru wajib didaftarkan di cache `sw.js` (butuh OK ketua). Butir baru yang perlu ditambah ke sheet: migration dan aksi alamat (AKN.07), migration dan aksi ganti nama/WA (AKN.08).
