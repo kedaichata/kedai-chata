@@ -6,6 +6,12 @@
 //
 // AKN.08a: layar Akun (ganti nama dan nomor WA) ada di akunmenu.js (dimuat setelah berkas ini).
 //
+// AKN.09 (AK12): tautan "Lupa password?" di layar Masuk (hanya petunjuk) dan layar Buat password baru.
+// Link reset dikirim ketua dari dashboard ("Send password recovery"). Saat halaman dibuka lewat link itu,
+// aplikasi TIDAK langsung masuk ke beranda: layar Buat password baru tampil lebih dulu. Layar itu hanya
+// dibuka bila Supabase memastikan sesinya berasal dari link pemulihan (event PASSWORD_RECOVERY).
+// Token dari link tidak pernah ditulis ke konsol atau disimpan sendiri; alamat peramban dibersihkan.
+//
 // AKN.06: layar Lengkapi profil ada di profil.js (dimuat setelah berkas ini). akun.js membuka layar itu
 // lewat window.KedaiProfil.tampil() dan membagikan pembantu lewat window.KedaiAkun.
 //
@@ -29,6 +35,7 @@
     "profil",
     "alamat",
     "akun",
+    "resetpw",
     "sementara",
     "galat",
     "offline",
@@ -50,6 +57,23 @@
 
   function el(id) {
     return document.getElementById(id);
+  }
+
+  // AKN.09: baca bagian # alamat SEBELUM klien dibuat (pustaka menghapusnya setelah diproses).
+  // Hanya dipakai untuk tahu jenis link; nilai token tidak dipakai dan tidak dicatat.
+  var modeRecovery = false;
+  var linkGalat = false;
+  try {
+    var HASH_AWAL = window.location.hash || "";
+    var PARAM_HASH = new URLSearchParams(
+      HASH_AWAL.charAt(0) === "#" ? HASH_AWAL.slice(1) : HASH_AWAL,
+    );
+    modeRecovery =
+      PARAM_HASH.get("type") === "recovery" && !!PARAM_HASH.get("access_token");
+    linkGalat = !!(PARAM_HASH.get("error") || PARAM_HASH.get("error_code"));
+  } catch (err) {
+    modeRecovery = false;
+    linkGalat = false;
   }
 
   // Klien Supabase (kunci publishable dari config.js). Sesi disimpan pustaka di peramban.
@@ -110,6 +134,12 @@
     galatIsian("isian-" + prefiks + "-email", "");
     galatIsian("isian-" + prefiks + "-password", "");
     galatForm(prefiks, "");
+    // AKN.09: bagian layar Masuk (pesan sukses dan petunjuk Lupa password) ikut dibersihkan.
+    if (prefiks === "masuk") {
+      infoMasuk("");
+      el("lupa-petunjuk").hidden = true;
+      el("ke-lupa").setAttribute("aria-expanded", "false");
+    }
   }
 
   function sibuk(tombol, aktif, teksAsli) {
@@ -356,6 +386,9 @@
     function selesai() {
       el("masuk-password").value = "";
       el("daftar-password").value = "";
+      // AKN.09: password baru di layar Buat password baru tidak boleh tersisa.
+      el("resetpw-password").value = "";
+      bersihkanGalatReset();
       bersihkanGalat("masuk");
       bersihkanGalat("daftar");
       // Data pribadi di layar Lengkapi profil ikut dibersihkan (HP bisa dipakai bergantian).
@@ -481,6 +514,161 @@
       });
   }
 
+  // ------------------------------------------------------------
+  // AKN.09 (AK12): Lupa password dan layar Buat password baru
+  // ------------------------------------------------------------
+
+  var PESAN_LINK = "Link sudah tidak berlaku. Hubungi tim untuk link baru.";
+  var PESAN_UMUM_RESET = "Password belum bisa dibuat. Coba lagi nanti.";
+
+  // Pesan sukses di layar Masuk (kartu kecil). Teks lewat textContent.
+  function infoMasuk(teks) {
+    el("masuk-info").textContent = teks || "";
+    el("masuk-info-bungkus").hidden = !teks;
+  }
+
+  // Buang sisa token dari alamat peramban (riwayat dan tombol kembali tidak menyimpannya).
+  function bersihkanAlamat() {
+    try {
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search,
+      );
+    } catch (err) {
+      // Gagal membersihkan alamat tidak boleh mengganggu alur.
+    }
+  }
+
+  function bersihkanGalatReset() {
+    galatIsian("isian-resetpw-password", "");
+    galatForm("resetpw", "");
+  }
+
+  function linkTidakBerlaku() {
+    modeRecovery = false;
+    bersihkanAlamat();
+    el("resetpw-password").value = "";
+    bersihkanGalatReset();
+    tampilkan("masuk");
+    galatForm("masuk", PESAN_LINK);
+  }
+
+  // Pesan galat updateUser -> pesan aman Bahasa Indonesia (AK14).
+  function pesanReset(error) {
+    var kode = error && error.code ? error.code : "";
+    if (
+      !navigator.onLine ||
+      (error && error.name === "AuthRetryableFetchError")
+    ) {
+      return "Belum bisa terhubung. Periksa internet lalu coba lagi.";
+    }
+    if (
+      (error && error.name === "AuthSessionMissingError") ||
+      (error && (error.status === 401 || error.status === 403))
+    ) {
+      return PESAN_LINK;
+    }
+    if (kode === "same_password") {
+      return "Password baru harus berbeda dari password lama.";
+    }
+    if (kode === "weak_password") {
+      return "Password minimal 8 karakter, hanya huruf dan angka.";
+    }
+    if (
+      kode === "over_request_rate_limit" ||
+      kode === "over_email_send_rate_limit"
+    ) {
+      return PESAN_TERLALU_SERING;
+    }
+    return PESAN_UMUM_RESET;
+  }
+
+  // Dipanggil saat halaman dibuka dari link reset. Layar Buat password baru hanya tampil bila
+  // Supabase mengirim event PASSWORD_RECOVERY (sesi benar-benar dari link, bukan sesi lama).
+  function mulaiReset() {
+    var pulihTerbukti = false;
+    // Isi pendengar hanya mencatat penanda; tanpa panggilan Supabase di dalamnya.
+    klien.auth.onAuthStateChange(function (event) {
+      if (event === "PASSWORD_RECOVERY") {
+        pulihTerbukti = true;
+      }
+    });
+    klien.auth
+      .getSession()
+      .then(function (h) {
+        var sesi = h && h.data ? h.data.session : null;
+        if (sesi && pulihTerbukti) {
+          bersihkanAlamat();
+          bersihkanGalatReset();
+          el("resetpw-password").value = "";
+          tampilkan("resetpw");
+          return;
+        }
+        linkTidakBerlaku();
+      })
+      .catch(function () {
+        linkTidakBerlaku();
+      });
+  }
+
+  // Berhasil: sesi sementara dari link ditutup, pengguna masuk dengan password baru.
+  function selesaiReset() {
+    function lanjut() {
+      modeRecovery = false;
+      bersihkanAlamat();
+      el("resetpw-password").value = "";
+      bersihkanGalatReset();
+      tampilkan("masuk");
+      infoMasuk(
+        "Password berhasil dibuat. Silakan masuk dengan password baru.",
+      );
+    }
+    klien.auth.signOut({ scope: "local" }).then(lanjut, lanjut);
+  }
+
+  function kirimResetPw(e) {
+    e.preventDefault();
+    bersihkanGalatReset();
+    var baru = el("resetpw-password").value;
+    if (!REGEX_PASSWORD_BARU.test(baru)) {
+      galatIsian(
+        "isian-resetpw-password",
+        "Password minimal 8 karakter, hanya huruf dan angka.",
+      );
+      return;
+    }
+
+    var tombol = el("tombol-resetpw");
+    sibuk(tombol, true, "Simpan password");
+    klien.auth
+      .updateUser({ password: baru })
+      .then(function (h) {
+        sibuk(tombol, false, "Simpan password");
+        if (h.error) {
+          galatForm("resetpw", pesanReset(h.error));
+          return;
+        }
+        selesaiReset();
+      })
+      .catch(function () {
+        sibuk(tombol, false, "Simpan password");
+        galatForm(
+          "resetpw",
+          navigator.onLine
+            ? PESAN_UMUM_RESET
+            : "Belum bisa terhubung. Periksa internet lalu coba lagi.",
+        );
+      });
+  }
+
+  // Batal: sesi sementara dari link ditutup lewat Keluar supaya tidak ada yang masuk tanpa sengaja.
+  function batalReset() {
+    modeRecovery = false;
+    bersihkanAlamat();
+    keluar();
+  }
+
   // Pembantu untuk profil.js. Tidak membuka akses baru: token tetap dari sesi login di peramban.
   window.KedaiAkun = Object.freeze({
     tampilkan: tampilkan,
@@ -526,9 +714,37 @@
   el("galat-ulang").addEventListener("click", ulangi);
   el("galat-keluar").addEventListener("click", keluar);
   el("offline-ulang").addEventListener("click", ulangi);
+  // AKN.09: Lupa password (petunjuk) dan layar Buat password baru.
+  el("ke-lupa").addEventListener("click", function () {
+    var petunjuk = el("lupa-petunjuk");
+    petunjuk.hidden = !petunjuk.hidden;
+    el("ke-lupa").setAttribute(
+      "aria-expanded",
+      petunjuk.hidden ? "false" : "true",
+    );
+  });
+  el("form-resetpw").addEventListener("submit", function (e) {
+    if (!klien) {
+      e.preventDefault();
+      return;
+    }
+    kirimResetPw(e);
+  });
+  el("resetpw-batal").addEventListener("click", batalReset);
 
   if (!klien) {
     tampilGalat("Aplikasi belum lengkap. Muat ulang halaman.");
+    return;
+  }
+
+  // AKN.09: dibuka lewat link reset. Link rusak/kedaluwarsa: pesan di layar Masuk.
+  // Link benar: layar Buat password baru (tanpa masuk ke beranda lebih dulu).
+  if (linkGalat) {
+    linkTidakBerlaku();
+    return;
+  }
+  if (modeRecovery) {
+    mulaiReset();
     return;
   }
 

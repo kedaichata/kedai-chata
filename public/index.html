@@ -34,6 +34,10 @@
                     alt="Kedai ChATA"
                 />
                 <h1>Masuk</h1>
+                <!-- AKN.09: pesan sukses setelah membuat password baru (diisi akun.js lewat textContent) -->
+                <div class="kartu" id="masuk-info-bungkus" hidden>
+                    <p class="kartu__isi" id="masuk-info" role="status"></p>
+                </div>
                 <form id="form-masuk" novalidate>
                     <div class="isian" id="isian-masuk-email">
                         <label class="isian__label" for="masuk-email"
@@ -87,6 +91,31 @@
                     >
                         Belum punya akun? Daftar
                     </button>
+                </div>
+                <!-- AKN.09 (AK12): Lupa password. Hanya petunjuk, tanpa nomor atau email di repo -->
+                <div class="baris-tombol">
+                    <button
+                        type="button"
+                        class="tombol tombol--sekunder"
+                        id="ke-lupa"
+                        aria-expanded="false"
+                        aria-controls="lupa-petunjuk"
+                    >
+                        Lupa password?
+                    </button>
+                </div>
+                <div class="kartu" id="lupa-petunjuk" hidden>
+                    <h2 class="kartu__judul">Lupa password</h2>
+                    <p class="kartu__isi">
+                        Hubungi warung (lewat owner atau WA) dan minta link
+                        untuk membuat password baru. Link dikirim ke email yang
+                        Anda pakai saat daftar. Buka link itu di HP ini.
+                    </p>
+                    <p class="isian__bantuan">
+                        Kalau email Anda tidak aktif, link tidak akan sampai.
+                        Daftar ulang dengan email lain (riwayat pesanan lama
+                        tetap ada di akun lama).
+                    </p>
                 </div>
             </section>
 
@@ -158,6 +187,60 @@
                         id="ke-masuk"
                     >
                         Sudah punya akun? Masuk
+                    </button>
+                </div>
+            </section>
+
+            <!-- Buat password baru (AKN.09, AK12): dibuka dari link reset yang dikirim ketua. Logika di akun.js -->
+            <section id="layar-resetpw" hidden>
+                <img
+                    class="wordmark wordmark--besar"
+                    src="img/chata-logo.png"
+                    width="500"
+                    height="500"
+                    alt="Kedai ChATA"
+                />
+                <h1>Buat password baru</h1>
+                <p>Isi password baru untuk akun Anda.</p>
+                <form id="form-resetpw" novalidate>
+                    <div class="isian" id="isian-resetpw-password">
+                        <label class="isian__label" for="resetpw-password"
+                            >Password baru</label
+                        >
+                        <input
+                            class="isian__kolom"
+                            id="resetpw-password"
+                            name="password"
+                            type="password"
+                            autocomplete="new-password"
+                        />
+                        <p class="isian__bantuan">
+                            Minimal 8 karakter, hanya huruf dan angka.
+                        </p>
+                        <p class="isian__galat" hidden></p>
+                    </div>
+                    <div class="isian" id="resetpw-galat-bungkus" hidden>
+                        <p
+                            class="isian__galat"
+                            id="resetpw-galat"
+                            role="alert"
+                        ></p>
+                    </div>
+                    <button
+                        type="submit"
+                        class="tombol tombol--utama"
+                        id="tombol-resetpw"
+                    >
+                        Simpan password
+                    </button>
+                </form>
+                <div class="baris-tombol">
+                    <button
+                        type="button"
+                        class="tombol tombol--sekunder"
+                        id="resetpw-batal"
+                    >
+                        Batal
                     </button>
                 </div>
             </section>
