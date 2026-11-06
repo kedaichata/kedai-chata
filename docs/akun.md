@@ -492,3 +492,46 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 3. Dari handoff sebelumnya masih berlaku: tes di HP Android, SEC-03 versi penuh, tes staf 403, dan ganti password dari akun staf (tombol Akun di layar sementara baru muncul untuk customer, jadi jalur staf mungkin perlu menunggu layar utama).
 
 **Saran giliran berikutnya:** AKN.11 (sesi tes akun, bukti wajib). Lampirkan `AGENTS.md`, `akun.md`, `security.md`, dan `akun-test.md` (dibuat di sesi tes). Customer kedua tidak perlu dibuat karena sudah ada 5 akun customer; cek dulu minimal 2 di antaranya punya profil dan alamat. Urutan: tes staf (login, 403 aksi customer), tes "milik orang lain" dengan dua customer, SEC-03 versi penuh, lalu SEC-26 (nonaktifkan lalu aktifkan kembali) paling akhir.
+
+### Handoff #11 | 2026-11-06 | [RAC+FREN]
+
+**Tugas:** AKN.11 (sesi tes akun) bagian staf, "milik orang lain", dan SEC-01, SEC-02, SEC-03 (versi penuh), SEC-32. **AKN.11 belum selesai**: SEC-28 dan SEC-26 masih tersisa, jadi butir AKN.11 belum dicentang. `docs/akun-test.md` dibuat di sesi ini (baru, hanya kasus uji). Tidak ada kode, migration, atau deploy yang diubah.
+
+**File yang diubah:** `docs/akun-test.md` (baru). Selain itu tidak ada.
+
+**Hasil (semua lulus; bukti diperiksa di chat dan tidak disimpan):**
+
+- **Staf:** owner uji dan penjaga uji masuk dengan peran benar, tanpa layar Lengkapi profil. Keduanya memanggil `alamat_simpan`, `ganti_nama`, `ganti_wa`, dan `daftar_profil` dan dibalas 403 "Aksi ini hanya untuk customer." Penjaga juga dites `alamat_nonaktif` (403, bukan 404). Ganti password dari akun penjaga berhasil (password lama ditolak, baru diterima).
+- **SEC-03 versi penuh:** baca `pengaturan`, `profil`, `alamat`, `staf` lewat REST dengan kunci publishable: tanpa login 401 dan dengan token login 403, semuanya `42501`. Panggil `buat_profil` lewat `rpc` tanpa dan dengan token: ditolak `42501` (fungsi tidak sempat berjalan). Fungsi lain (`alamat_simpan`, `alamat_nonaktif`, `ganti_nama`, `ganti_wa`) tercakup bukti hak fungsi di query cek migration (SEC-04), tidak dites satu per satu.
+- **SEC-01:** `kedai` tanpa token dibalas 401 "Sesi tidak valid" (ditolak fungsi sendiri).
+- **SEC-02:** token palsu dibalas 401 `UNAUTHORIZED_LEGACY_JWT` (ditolak platform).
+- **SEC-32:** kunci publishable sebagai Bearer dan JWT `anon` lama sebagai Bearer, keduanya 401 "Sesi tidak valid" (ditolak fungsi sendiri, lapis kedua terbukti). Kunci lama masih tampil di dashboard (tombol View legacy API keys, pensiun awal 2027).
+- **Milik orang lain (alamat):** sudah lulus di AKN.07 (Handoff #6); diulang sekilas dengan `test03` dan `test04` sebagai konfirmasi: 404 untuk nonaktifkan dan ubah, alamat test03 tetap utuh. Tidak perlu diulang lagi.
+
+**Temuan:**
+
+- **P2:** tombol Buku alamat dan Akun tampil untuk owner dan penjaga di layar sementara. Server tetap menolak (403), jadi hanya tampilan. Kemungkinan beres sendiri saat layar utama per peran dibuat.
+
+**Keputusan baru:** tidak ada.
+
+**Kejadian di lapangan (bahan belajar):**
+
+1. Satu screenshot layar Masuk memuat alamat email akun uji penjaga (email milik tim, bukan customer) di chat sesi tes. Tidak masuk repo, md, atau kode; password akun itu sudah diganti. Penyebab: AI meminta screenshot tanpa mengingatkan di awal untuk menutup email. Pencegahan: bukti dikirim sebagai teks (status code, isi balasan Console); screenshot hanya bila diminta, dengan bagian yang harus di-crop disebut dulu.
+2. Tes "milik orang lain" untuk alamat sempat diulang padahal sudah lulus di AKN.07. Pencegahan: AI membaca handoff sebelumnya untuk tes yang sudah lulus sebelum menyusun langkah.
+
+**Belum beres:**
+
+1. **SEC-28** (cek pengaturan Auth di dashboard: Confirm email mati, minimal password 8, Secure password change mati) belum dijalankan.
+2. **SEC-26** (nonaktifkan staf lalu coba masuk, dilanjut aktifkan kembali) sengaja paling akhir. Template nonaktifkan sudah ada, **template aktifkan kembali belum ada**.
+3. `alamat_nonaktif` oleh owner tidak dites (P1, kodenya sama dengan penjaga). Reset password akun staf lewat link belum dites.
+4. Belum dites di HP Android; semua tes di Brave/Chrome di Mac.
+5. Akun uji (termasuk yang memakai email milik tim) dibersihkan di `LNC.01`.
+
+**Butir untuk dicentang di sheet:** SEC-01, SEC-02, SEC-03, SEC-32 (barisnya di sheet ada tepat setelah SEC-02). SEC-33 sudah lulus di Handoff #4; centang bila belum.
+
+**Butir baru yang perlu ditambah ke sheet (judul pendek):**
+
+- Template aktifkan kembali staf
+- Sembunyikan tombol Buku alamat dan Akun untuk staf
+
+**Saran giliran berikutnya:** selesaikan SEC-28 (hanya cek dashboard). Lalu buat template aktifkan kembali staf (High-Risk, butuh penjelasan dampak dan "OK" ketua), jalankan SEC-26 paling akhir, dan centang AKN.11. Lampirkan `AGENTS.md`, `akun.md`, `security.md`, `akun-test.md`, dan isi `supabase/templates/`.
