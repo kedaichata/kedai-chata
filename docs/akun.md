@@ -252,3 +252,12 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 - SEC-03 versi penuh dan uji kirim email Gmail tim (SEC-24) masih menunggu akun uji (dari Handoff #1 dan #2).
 
 **Saran giliran berikutnya:** AKN.05 (layar Daftar, Masuk, Keluar), lalu langsung SEC-33. Lampirkan `AGENTS.md`, `akun.md`, `security.md`, `public/index.html`, `public/sw.js`, `public/config.js`, dan `supabase/functions/kedai/index.ts`. Berkas JS baru wajib didaftarkan di cache `sw.js` (butuh OK ketua). Butir baru yang perlu ditambah ke sheet: migration dan aksi alamat (AKN.07), migration dan aksi ganti nama/WA (AKN.08).
+
+### 2026-11-06: AKN.07 dan AKN.08 membawa migration dan aksi `kedai`
+
+- Akibat opsi A (AKN.04 hanya membawa `status` dan `daftar_profil`, lihat Handoff #3), pekerjaan berikut **wajib masuk ke langkah yang sudah ada**. Jangan dianggap hanya urusan layar:
+  - **AKN.07 (buku alamat):** migration kecil berisi fungsi SQL atomik untuk simpan dan nonaktifkan alamat (cek kepemilikan dan batas `alamat_maks` dari `pengaturan`), ditambah aksi `alamat_simpan` dan `alamat_nonaktif` di `kedai`.
+  - **AKN.08 (menu akun):** migration kecil berisi fungsi SQL atomik untuk ganti nama dan ganti nomor WA (aturan validasi sama dengan AK7 dan AK8), ditambah aksi `ganti_nama` dan `ganti_wa` di `kedai`.
+- Tiap migration: ⚠️ butuh penjelasan dampak dan "OK" ketua; SQL disalin dulu ke `supabase/migrations/` (format `YYYYMMDD_nama.sql` dan `_batal.sql`), query cek baca-saja di `supabase/templates/`, tabel dan fungsi baru mengikuti pola hak `AGENTS.md` bagian 7.
+- Tiap penambahan aksi berarti **deploy ulang `kedai`** dengan urutan aman `AGENTS.md` bagian 8, **tanpa `--no-verify-jwt`**.
+- Nama fungsi SQL ditentukan di sesi masing-masing. Alasan pemisahan dari AKN.04: scope dipersempit atas keputusan ketua (opsi A).
