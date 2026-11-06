@@ -261,3 +261,28 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 - Tiap migration: ⚠️ butuh penjelasan dampak dan "OK" ketua; SQL disalin dulu ke `supabase/migrations/` (format `YYYYMMDD_nama.sql` dan `_batal.sql`), query cek baca-saja di `supabase/templates/`, tabel dan fungsi baru mengikuti pola hak `AGENTS.md` bagian 7.
 - Tiap penambahan aksi berarti **deploy ulang `kedai`** dengan urutan aman `AGENTS.md` bagian 8, **tanpa `--no-verify-jwt`**.
 - Nama fungsi SQL ditentukan di sesi masing-masing. Alasan pemisahan dari AKN.04: scope dipersempit atas keputusan ketua (opsi A).
+
+### Handoff #4 | 2026-11-06 | RAC
+
+**Tugas:** AKN.05 (layar Daftar, Masuk, Keluar) dan SEC-33 (uji pertama `kedai` dengan login asli). Selesai dan sudah di-push (commit `50ec621`; ikon tab `56029b4`). "OK" ketua untuk ganti halaman contoh, ubah `sw.js`, dan uji login diberikan lewat WA.
+
+**File yang diubah:** `public/akun.js` (baru), `public/index.html`, `public/sw.js` (cache `chata-v3` jadi `chata-v4`, `akun.js` masuk daftar cache). `style.css` dan `kedai` tidak disentuh.
+
+**Hasil:** Daftar (langsung masuk, Confirm email mati), Masuk, Keluar, dan pesan "Email atau password salah" berjalan. Setelah masuk, aplikasi memanggil `kedai` aksi `status` dan menampilkan layar sementara: "Halo [nama], Anda berhasil masuk sebagai [peran]". Ada layar Memuat, Galat, dan Offline. **SEC-33 lulus:** dari halaman GitHub Pages dengan login asli, `kedai` aksi `status` dibalas 200, tidak ada 401 dari platform dan tidak ada galat CORS. Bukti diperiksa di chat dan tidak disimpan. Dites di Brave di Mac; belum dites di HP Android.
+
+**Keputusan baru:**
+
+- SEC-33 lulus, jadi `kedai` **tetap tanpa `--no-verify-jwt`**. Rencana mundur di `security.md` aturan 3 tidak dipakai.
+- Halaman contoh DSN.02 sampai DSN.05 dihapus dari `index.html` (termasuk navigasi contoh dan `.contoh-sampul` di HTML). Kode `.contoh-*` di `style.css` dibiarkan. Ini menjawab pertanyaan `.contoh-sampul` di Handoff desain.md #2 sampai #4 untuk bagian HTML. OK ketua lewat WA.
+- Layar sementara setelah masuk memuat sapaan nama (tambahan dari ketua) dan tombol Keluar; diganti layar sebenarnya di langkah berikutnya.
+- Keluar hanya mengakhiri sesi di perangkat itu. Daftar dengan email yang sudah dipakai menampilkan "Email ini sudah terdaftar. Silakan masuk." Cek password "hanya huruf dan angka, 8 sampai 72 karakter" hanya di layar Daftar; layar Masuk tidak membatasi karakter. Ketiganya pilihan penulis (bawaan), belum ditanyakan satu per satu ke ketua.
+- Ikon tab peramban: `<link rel="icon">` ke `img/icon-192.png` di `index.html`; menghilangkan galat 404 `favicon.ico`.
+- Pustaka Supabase di `public/lib/supabase.js` berversi 2.119.0 (dibaca dari isi berkas; sebelumnya belum tercatat).
+
+**Belum beres:**
+
+- Layar sementara dan baris "Sistem siap." bersifat sementara. Navigasi per peran sudah dihapus dari `index.html` dan dibuat ulang saat layar utama dikerjakan.
+- Form melebar penuh di layar lebar (laptop) karena `style.css` belum membatasi lebar.
+- SEC-24 (uji kirim email Gmail tim) menunggu akun uji dengan email asli milik tim; akun uji AKN.05 memakai domain contoh dan tidak menerima email. SEC-03 versi penuh masuk AKN.11. Akun uji dibersihkan di `LNC.01`.
+
+**Saran giliran berikutnya:** AKN.06 (layar Lengkapi profil: nama, nomor WA, alamat pertama, dengan kalimat penjelasan nomor WA). Aksi `daftar_profil` dan fungsi `buat_profil` sudah ada, jadi kemungkinan tanpa migration baru: kerjanya di layar dan `akun.js` (layar muncul saat `status` mengembalikan `profil` kosong). High-Risk (P0, data pelanggan), tes teliti dengan bukti dan data dummy. Berkas JS baru wajib didaftarkan di `sw.js` (butuh "OK" ketua). Lampirkan `AGENTS.md`, `akun.md`, `security.md`, `public/index.html`, `public/akun.js`, `public/sw.js`, `public/style.css`, dan `supabase/functions/kedai/index.ts`.
