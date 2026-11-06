@@ -2,6 +2,7 @@
 // AKN.04: Edge Function `kedai` versi pertama (opsi A).
 // Aksi yang ada: `status` dan `daftar_profil`. Aksi lain ditambah di langkah berikutnya.
 // AKN.07: ditambah `alamat_simpan` dan `alamat_nonaktif` (buku alamat, akun.md AK9).
+// AKN.08a: ditambah `ganti_nama` dan `ganti_wa` (menu Akun, akun.md AK7, AK8).
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -378,6 +379,75 @@ async function aksiAlamatNonaktif(
 }
 
 // ------------------------------------------------------------
+// Aksi: ganti_nama dan ganti_wa (customer) (AKN.08a, AK7, AK8)
+// ID pemilik selalu dari token. Aplikasi hanya mengirim nilai barunya.
+// Aturan sebenarnya dicek fungsi SQL ganti_nama dan ganti_wa; ini hanya pagar kasar.
+// Staf tidak punya profil customer: ditolak 403 di sini dan profil_tidak_ada di SQL.
+// ------------------------------------------------------------
+
+// Kode galat fungsi SQL ganti_nama dan ganti_wa -> status dan pesan aman (AK14)
+const PETA_GALAT_UBAH_PROFIL: Record<string, [number, string]> = {
+  nama_tidak_valid: [
+    400,
+    "Nama 3 sampai 20 karakter, hanya huruf, angka, spasi, dan garis bawah.",
+  ],
+  wa_tidak_valid: [400, "Nomor WA tidak valid."],
+  profil_tidak_ada: [400, "Lengkapi profil dulu."],
+};
+
+async function aksiGantiNama(
+  req: Request,
+  pengguna: Pengguna,
+  isi: Record<string, unknown>,
+): Promise<Response> {
+  const p = await bacaPeran(pengguna.id);
+  if (p.jenis !== "customer") {
+    return galat(req, 403, "Aksi ini hanya untuk customer.");
+  }
+
+  const nama = teksAtauNull(isi.nama);
+  if (nama === null) {
+    return galat(req, 400, "Data belum lengkap atau tidak valid.");
+  }
+
+  const { error } = await admin!.rpc("ganti_nama", {
+    p_pemilik: pengguna.id,
+    p_nama: nama,
+  });
+  if (error) {
+    return galatDariDb(req, error, PETA_GALAT_UBAH_PROFIL, "ganti_nama");
+  }
+
+  return balas(req, 200, { ok: true });
+}
+
+async function aksiGantiWa(
+  req: Request,
+  pengguna: Pengguna,
+  isi: Record<string, unknown>,
+): Promise<Response> {
+  const p = await bacaPeran(pengguna.id);
+  if (p.jenis !== "customer") {
+    return galat(req, 403, "Aksi ini hanya untuk customer.");
+  }
+
+  const wa = teksAtauNull(isi.wa);
+  if (wa === null) {
+    return galat(req, 400, "Data belum lengkap atau tidak valid.");
+  }
+
+  const { error } = await admin!.rpc("ganti_wa", {
+    p_pemilik: pengguna.id,
+    p_wa: wa,
+  });
+  if (error) {
+    return galatDariDb(req, error, PETA_GALAT_UBAH_PROFIL, "ganti_wa");
+  }
+
+  return balas(req, 200, { ok: true });
+}
+
+// ------------------------------------------------------------
 // Pintu masuk
 // ------------------------------------------------------------
 
@@ -430,6 +500,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
         return await aksiAlamatSimpan(req, pengguna, isi);
       case "alamat_nonaktif":
         return await aksiAlamatNonaktif(req, pengguna, isi);
+      case "ganti_nama":
+        return await aksiGantiNama(req, pengguna, isi);
+      case "ganti_wa":
+        return await aksiGantiWa(req, pengguna, isi);
       default:
         return galat(req, 400, "Aksi tidak dikenal.");
     }

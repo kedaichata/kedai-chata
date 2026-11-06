@@ -4,6 +4,8 @@
 // Layar "sementara" menampilkan sapaan dan peran; digantikan layar sebenarnya di langkah berikutnya
 // (AKN.06 Lengkapi profil, lalu layar utama per peran).
 //
+// AKN.08a: layar Akun (ganti nama dan nomor WA) ada di akunmenu.js (dimuat setelah berkas ini).
+//
 // AKN.06: layar Lengkapi profil ada di profil.js (dimuat setelah berkas ini). akun.js membuka layar itu
 // lewat window.KedaiProfil.tampil() dan membagikan pembantu lewat window.KedaiAkun.
 //
@@ -26,6 +28,7 @@
     "daftar",
     "profil",
     "alamat",
+    "akun",
     "sementara",
     "galat",
     "offline",
@@ -200,6 +203,12 @@
       tombolAlamat.hidden = d.peran !== "customer";
     }
 
+    // AKN.08a: tombol Akun hanya untuk customer (akunmenu.js yang memasang kliknya).
+    var tombolAkun = el("tombol-akun");
+    if (tombolAkun) {
+      tombolAkun.hidden = d.peran !== "customer";
+    }
+
     var catatan = el("catatan-profil");
     if (d.peran === "customer") {
       catatan.textContent = d.profil
@@ -362,6 +371,13 @@
         typeof window.KedaiAlamat.reset === "function"
       ) {
         window.KedaiAlamat.reset();
+      }
+      // AKN.08a: isian di layar Akun ikut dibersihkan.
+      if (
+        window.KedaiAkunMenu &&
+        typeof window.KedaiAkunMenu.reset === "function"
+      ) {
+        window.KedaiAkunMenu.reset();
       }
       tampilkan("masuk");
     }

@@ -366,6 +366,107 @@
                 </div>
             </section>
 
+            <!-- Menu Akun (AKN.08a, AK7, AK8): ganti nama dan nomor WA, hanya customer. Logika di akunmenu.js -->
+            <section id="layar-akun" hidden>
+                <h1>Akun</h1>
+                <p
+                    class="isian__bantuan"
+                    id="akun-pesan"
+                    role="status"
+                    hidden
+                ></p>
+                <p
+                    class="isian__galat"
+                    id="akun-muat-galat"
+                    role="alert"
+                    hidden
+                ></p>
+                <div class="kartu">
+                    <h2 class="kartu__judul">Ganti nama</h2>
+                    <form id="form-akun-nama" novalidate>
+                        <div class="isian" id="isian-akun-nama">
+                            <label class="isian__label" for="akun-nama"
+                                >Nama</label
+                            >
+                            <input
+                                class="isian__kolom"
+                                id="akun-nama"
+                                name="nama"
+                                type="text"
+                                maxlength="20"
+                                autocomplete="off"
+                            />
+                            <p class="isian__bantuan">
+                                3 sampai 20 karakter: huruf, angka, spasi, dan
+                                garis bawah.
+                            </p>
+                            <p class="isian__galat" hidden></p>
+                        </div>
+                        <div class="isian" id="akunnama-galat-bungkus" hidden>
+                            <p
+                                class="isian__galat"
+                                id="akunnama-galat"
+                                role="alert"
+                            ></p>
+                        </div>
+                        <button
+                            type="submit"
+                            class="tombol tombol--utama"
+                            id="tombol-akun-nama"
+                        >
+                            Simpan nama
+                        </button>
+                    </form>
+                </div>
+                <div class="kartu">
+                    <h2 class="kartu__judul">Ganti nomor WA</h2>
+                    <form id="form-akun-wa" novalidate>
+                        <div class="isian" id="isian-akun-wa">
+                            <label class="isian__label" for="akun-wa"
+                                >Nomor WA baru</label
+                            >
+                            <input
+                                class="isian__kolom"
+                                id="akun-wa"
+                                name="wa"
+                                type="tel"
+                                inputmode="tel"
+                                maxlength="20"
+                                autocomplete="off"
+                            />
+                            <p class="isian__bantuan">
+                                Nomor ini dipakai warung untuk menghubungi Anda
+                                soal pesanan.
+                            </p>
+                            <p class="isian__galat" hidden></p>
+                        </div>
+                        <div class="isian" id="akunwa-galat-bungkus" hidden>
+                            <p
+                                class="isian__galat"
+                                id="akunwa-galat"
+                                role="alert"
+                            ></p>
+                        </div>
+                        <button
+                            type="submit"
+                            class="tombol tombol--utama"
+                            id="tombol-akun-wa"
+                        >
+                            Simpan nomor WA
+                        </button>
+                    </form>
+                </div>
+                <div class="baris-tombol">
+                    <button
+                        type="button"
+                        class="tombol tombol--sekunder"
+                        id="akun-kembali"
+                    >
+                        Kembali
+                    </button>
+                </div>
+            </section>
+
             <!-- Layar sementara setelah masuk: diganti layar sebenarnya di langkah berikutnya -->
             <section id="layar-sementara" hidden>
                 <header class="bilah-atas">
@@ -399,6 +500,16 @@
                         hidden
                     >
                         Buku alamat
+                    </button>
+                </div>
+                <div class="baris-tombol">
+                    <button
+                        type="button"
+                        class="tombol tombol--utama"
+                        id="tombol-akun"
+                        hidden
+                    >
+                        Akun
                     </button>
                 </div>
                 <div class="baris-tombol">
@@ -506,6 +617,8 @@
         <script src="profil.js"></script>
         <!-- Layar Buku alamat (AKN.07); harus setelah akun.js karena memakai window.KedaiAkun -->
         <script src="alamat.js"></script>
+        <!-- Menu Akun (AKN.08a); harus setelah akun.js karena memakai window.KedaiAkun -->
+        <script src="akunmenu.js"></script>
         <script>
             // Mendaftarkan service worker (sw.js) supaya aplikasi bisa dipasang dan terbuka offline.
             // Path relatif (tanpa awalan /) supaya jalan di GitHub Pages.

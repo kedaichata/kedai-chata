@@ -310,3 +310,36 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 - SEC-24 (uji kirim email Gmail tim) dan SEC-03 versi penuh masih menunggu, seperti di Handoff #4. Akun uji AKN.05 dan AKN.06 dibersihkan di `LNC.01`.
 
 **Saran giliran berikutnya:** AKN.07 (buku alamat). High-Risk (P0, data pelanggan). Butuh migration kecil (fungsi SQL atomik simpan dan nonaktifkan alamat, cek kepemilikan dan batas `alamat_maks`) dan aksi `alamat_simpan` serta `alamat_nonaktif` di `kedai`, dengan deploy ulang `kedai` tanpa `--no-verify-jwt`. Butuh penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md`, `akun.md`, `database.md`, `security.md`, `public/index.html`, `public/akun.js`, `public/profil.js`, `public/sw.js`, `public/style.css`, `supabase/functions/kedai/index.ts`, dan isi `supabase/migrations/`.
+
+### Handoff #6 | 2026-11-06 | [RAC]
+
+**Tugas:** AKN.07 (buku alamat: tambah, ubah, nonaktifkan, batas `alamat_maks`, petunjuk isi alamat). Kode selesai, migration dijalankan, `kedai` dideploy, sudah di-push (commit `aa00607`, Actions #18 hijau). **Tes 1 sampai 4 lulus**, jadi butir AKN.07 selesai. Tes staf dan tes Android masih tersisa (lihat "Belum beres"). "OK" ketua untuk migration, deploy `kedai`, dan perubahan `sw.js` sudah diberikan (ketua: ikuti rekomendasi).
+
+**File yang diubah:**
+
+- Baru: `public/alamat.js`, `supabase/migrations/20261106_alamat.sql`, `supabase/migrations/20261106_alamat_batal.sql`, `supabase/templates/20261106_alamat_cek.sql`.
+- Diubah (hanya menambah, tidak ada baris lama dihapus): `public/index.html` (section `layar-alamat`, tombol `tombol-buku-alamat`, tag script `alamat.js` setelah `profil.js`), `public/akun.js` (layar `alamat` di daftar `LAYAR`, tombol hanya untuk customer, `KedaiAlamat.reset()` saat Keluar), `public/sw.js` (`alamat.js` masuk daftar cache, `chata-v5` jadi `chata-v6`), `supabase/functions/kedai/index.ts` (aksi `alamat_simpan` dan `alamat_nonaktif`).
+
+**Hasil:**
+
+- Dua fungsi SQL baru: `public.alamat_simpan(p_pemilik, p_id, p_alias, p_isi)` (id kosong = tambah, terisi = ubah) dan `public.alamat_nonaktif(p_pemilik, p_id)`. Atomik, `SECURITY DEFINER`, `search_path` kosong, `EXECUTE` hanya `service_role`. Baris profil dikunci (`FOR UPDATE`) supaya dua permintaan bersamaan tidak menembus batas. Tidak ada tabel atau hak tabel yang diubah. Query cek baca-saja lulus (bukti SEC-04).
+- `kedai` dideploy ulang tanpa `--no-verify-jwt` (urutan aman AGENTS.md bagian 8; token CLI sudah dibersihkan, dicek `[]`). Balasan sukses kedua aksi memuat `alamat` (daftar aktif terbaru).
+- Kode galat SQL dipetakan ke pesan aman: `alias_tidak_valid` dan `alamat_tidak_valid` 400, `alamat_penuh` 409, `alamat_terakhir` 409, `alamat_tidak_ditemukan` 404, `profil_tidak_ada` 400.
+- Tes LULUS di GitHub Pages (Brave, DevTools mode HP, akun dan data dummy; bukti diperiksa di chat dan tidak disimpan): layar termuat "1 dari 5" (angka dari server); tambah, ubah, dan nonaktifkan dengan konfirmasi dua langkah; teks berisi tag HTML tampil sebagai teks biasa (SEC-18); tombol Tambah mati di 5 dari 5; **server menolak alamat keenam dengan 409 walau lewat konsol** (P0); Keluar mengosongkan layar alamat; **SEC-09 lintas akun**: akun B tidak bisa menonaktifkan atau mengubah alamat akun A (404 "Alamat tidak ditemukan." keduanya, alamat A tidak berubah); alamat aktif terakhir ditolak server (409) dan alamatnya tetap aktif; alias 2 huruf ditolak 400 dan id bukan UUID ditolak 400.
+
+**Keputusan baru** (bawaan penulis, belum ditanyakan satu per satu ke ketua; ketua hanya menyetujui "ikut rekomendasi"):
+
+- Pintu masuk sementara: tombol "Buku alamat" di layar sementara (khusus customer). Dipindah ke menu Akun saat layar utama dibuat.
+- Alias dan isi sama-sama bisa diubah; alias kembar boleh; alamat nonaktif tidak bisa diaktifkan lagi (customer menambah alamat baru). Order lama aman karena menyimpan salinan alamat (AK9).
+- Alamat milik orang lain, nonaktif, atau tidak ada dibalas satu kode yang sama (`alamat_tidak_ditemukan`, 404) supaya tidak membocorkan keberadaan alamat.
+- Nonaktifkan alamat aktif terakhir ditolak server (`alamat_terakhir`); tombolnya juga dimatikan di layar.
+- Saat server membalas 404 atau 409, layar kembali ke daftar, menampilkan pesannya, lalu menyegarkan data lewat `status`.
+- `alamat.js` mengisi data lewat aksi `status` saat layar dibuka (tidak ada aksi baca baru). Di layar alamat, 409 berarti gagal (beda dengan `profil.js` yang menganggap 409 beres).
+
+**Belum beres:**
+
+1. Staf tidak bisa memakai aksi alamat (403 "Aksi ini hanya untuk customer.") ditunda sampai akun owner uji ada (AKN.10), digabung ke AKN.11, seperti `daftar_profil` di Handoff #5.
+2. Belum dites di HP Android. Semua tes dilakukan di Brave di Mac (DevTools mode HP).
+3. Akun uji (`test03`, `test04`, dan alamat dummy yang dibuat) dibersihkan di `LNC.01`. SEC-24 dan SEC-03 versi penuh masih menunggu, seperti di Handoff #4 dan #5. Form dan layar masih melebar penuh di layar lebar (dari Handoff #4).
+
+**Saran giliran berikutnya:** AKN.08 (menu Akun: ganti nama, ganti WA, ganti password). High-Risk (P0, data pelanggan). Butuh migration kecil (fungsi SQL ganti nama dan ganti WA, aturan AK7 dan AK8) dan aksi `ganti_nama` serta `ganti_wa` di `kedai`, dengan deploy ulang `kedai` tanpa `--no-verify-jwt`. Butuh penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md`, `akun.md`, `database.md`, `security.md`, `public/index.html`, `public/akun.js`, `public/profil.js`, `public/alamat.js`, `public/sw.js`, `public/style.css`, `supabase/functions/kedai/index.ts`, dan isi `supabase/migrations/`.
