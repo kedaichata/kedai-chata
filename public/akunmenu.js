@@ -2,7 +2,8 @@
 // AKN.08a: layar Akun, bagian ganti nama dan ganti nomor WA (akun.md AK7, AK8, AK14). Hanya customer.
 // Dimuat SETELAH akun.js karena memakai window.KedaiAkun (pembantu layar dan panggilan ke `kedai`).
 // Layar dibuka dari tombol "Akun" di layar sementara (id tombol-akun); nanti tombolnya dipindah
-// ke menu Akun saat layar utama dibuat. Ganti password menyusul di AKN.08b.
+// ke menu Akun saat layar utama dibuat.
+// AKN.08b: ganti password (AK11) ditambah di berkas ini; pembantu A.gantiPassword ada di akun.js.
 //
 // Aturan yang dijaga:
 // - Yang dikirim hanya aksi dan nilai baru (nama atau wa). ID pemilik dari token di server.
@@ -27,7 +28,10 @@
   // Pagar kasar yang sama dengan profil.js dan aturan server (AK7, AK8). Server tetap yang memutuskan.
   var REGEX_NAMA = /^[A-Za-z0-9_ ]{3,20}$/;
   var REGEX_WA = /^(\+62|62|0)8[0-9]{7,12}$/;
+  // AK3: hanya huruf dan angka, minimal 8 karakter (batas atas 72 mengikuti batas Supabase Auth).
+  var REGEX_PASSWORD_BARU = /^[A-Za-z0-9]{8,72}$/;
 
+  var TEKS_PW = "Simpan password";
   var TEKS_NAMA = "Simpan nama";
   var TEKS_WA = "Simpan nomor WA";
   var PESAN_UMUM = "Perubahan belum bisa disimpan. Coba lagi sebentar lagi.";
@@ -68,6 +72,10 @@
     A.galatIsian("isian-akun-wa", "");
     A.galatForm("akunnama", "");
     A.galatForm("akunwa", "");
+    // AKN.08b: galat ganti password.
+    A.galatIsian("isian-akun-pwlama", "");
+    A.galatIsian("isian-akun-pwbaru", "");
+    A.galatForm("akunpw", "");
     tampilPesan("");
     galatMuat("");
   }
@@ -75,6 +83,9 @@
   function kosongkanIsian() {
     el("akun-nama").value = "";
     el("akun-wa").value = "";
+    // AKN.08b: password tidak boleh tersisa di layar.
+    el("akun-pwlama").value = "";
+    el("akun-pwbaru").value = "";
   }
 
   // ------------------------------------------------------------
@@ -209,12 +220,68 @@
   }
 
   // ------------------------------------------------------------
+  // Ganti password (AKN.08b, AK11)
+  // Login ulang dengan password lama dilakukan oleh A.gantiPassword (akun.js), baru password diganti.
+  // ------------------------------------------------------------
+
+  function kirimPw(e) {
+    e.preventDefault();
+    if (sedangProses) return;
+    bersihkanGalat();
+
+    var lama = el("akun-pwlama").value;
+    var baru = el("akun-pwbaru").value;
+
+    var lengkap = true;
+    if (!lama) {
+      A.galatIsian("isian-akun-pwlama", "Isi password lama.");
+      lengkap = false;
+    }
+    if (!REGEX_PASSWORD_BARU.test(baru)) {
+      A.galatIsian(
+        "isian-akun-pwbaru",
+        "Password minimal 8 karakter, hanya huruf dan angka.",
+      );
+      lengkap = false;
+    }
+    if (!lengkap) return;
+
+    var tombol = el("tombol-akun-pw");
+    sedangProses = true;
+    A.sibuk(tombol, true, TEKS_PW);
+
+    A.gantiPassword(lama, baru)
+      .then(function (h) {
+        sedangProses = false;
+        A.sibuk(tombol, false, TEKS_PW);
+
+        if (h && h.ok === true) {
+          el("akun-pwlama").value = "";
+          el("akun-pwbaru").value = "";
+          tampilPesan("Password berhasil diganti.");
+          return;
+        }
+        // Pesan dari gantiPassword sudah aman (Bahasa Indonesia, tanpa galat mentah).
+        A.galatForm(
+          "akunpw",
+          h && typeof h.pesan === "string" ? h.pesan : PESAN_UMUM,
+        );
+      })
+      .catch(function () {
+        sedangProses = false;
+        A.sibuk(tombol, false, TEKS_PW);
+        A.galatForm("akunpw", navigator.onLine ? PESAN_UMUM : PESAN_OFFLINE);
+      });
+  }
+
+  // ------------------------------------------------------------
   // Pasang pendengar
   // ------------------------------------------------------------
 
   el("tombol-akun").addEventListener("click", tampil);
   el("form-akun-nama").addEventListener("submit", kirimNama);
   el("form-akun-wa").addEventListener("submit", kirimWa);
+  el("form-akun-pw").addEventListener("submit", kirimPw);
   // Kembali: bersihkan isian, lalu muat ulang status supaya sapaan memakai nama terbaru.
   el("akun-kembali").addEventListener("click", function () {
     kosongkanIsian();

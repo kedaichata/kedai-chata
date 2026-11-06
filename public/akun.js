@@ -393,6 +393,94 @@
     muatStatus();
   }
 
+  // AKN.08b (AK11): ganti password. Login ulang dengan password lama dulu (sesi baru supaya tidak
+  // memicu verifikasi email), baru mengganti lewat Supabase Auth. Email dibaca dari sesi login di
+  // peramban dan tidak disimpan di mana pun. Mengembalikan Promise berisi { ok: true } atau
+  // { ok: false, pesan: "..." } (pesan aman Bahasa Indonesia, tanpa galat mentah).
+  function gantiPassword(lama, baru) {
+    var PESAN_UMUM_PW = "Password belum bisa diganti. Coba lagi nanti.";
+    var PESAN_SESI_PW = "Sesi sudah berakhir. Silakan keluar lalu masuk lagi.";
+
+    function putusJaringan(error) {
+      return (
+        !navigator.onLine || (error && error.name === "AuthRetryableFetchError")
+      );
+    }
+
+    if (!klien) {
+      return Promise.resolve({
+        ok: false,
+        pesan: "Aplikasi belum lengkap. Muat ulang halaman.",
+      });
+    }
+
+    return klien.auth
+      .getSession()
+      .then(function (h) {
+        var sesi = h && h.data ? h.data.session : null;
+        var email = sesi && sesi.user && sesi.user.email ? sesi.user.email : "";
+        if (!email) {
+          return { ok: false, pesan: PESAN_SESI_PW };
+        }
+        return klien.auth
+          .signInWithPassword({ email: email, password: lama })
+          .then(function (m) {
+            if (m.error || !m.data || !m.data.session) {
+              var e1 = m.error || null;
+              if (putusJaringan(e1)) {
+                return { ok: false, pesan: PESAN_OFFLINE };
+              }
+              var k1 = e1 && e1.code ? e1.code : "";
+              if (k1 === "invalid_credentials" || (e1 && e1.status === 400)) {
+                return { ok: false, pesan: "Password lama salah." };
+              }
+              if (
+                k1 === "over_request_rate_limit" ||
+                k1 === "over_email_send_rate_limit"
+              ) {
+                return { ok: false, pesan: PESAN_TERLALU_SERING };
+              }
+              return { ok: false, pesan: PESAN_UMUM_PW };
+            }
+            return klien.auth.updateUser({ password: baru }).then(function (u) {
+              if (!u.error) {
+                return { ok: true };
+              }
+              var e2 = u.error;
+              if (putusJaringan(e2)) {
+                return { ok: false, pesan: PESAN_OFFLINE };
+              }
+              var k2 = e2.code ? e2.code : "";
+              if (k2 === "same_password") {
+                return {
+                  ok: false,
+                  pesan: "Password baru harus berbeda dari password lama.",
+                };
+              }
+              if (k2 === "weak_password") {
+                return {
+                  ok: false,
+                  pesan: "Password minimal 8 karakter, hanya huruf dan angka.",
+                };
+              }
+              if (
+                k2 === "over_request_rate_limit" ||
+                k2 === "over_email_send_rate_limit"
+              ) {
+                return { ok: false, pesan: PESAN_TERLALU_SERING };
+              }
+              return { ok: false, pesan: PESAN_UMUM_PW };
+            });
+          });
+      })
+      .catch(function () {
+        return {
+          ok: false,
+          pesan: navigator.onLine ? PESAN_UMUM_PW : PESAN_OFFLINE,
+        };
+      });
+  }
+
   // Pembantu untuk profil.js. Tidak membuka akses baru: token tetap dari sesi login di peramban.
   window.KedaiAkun = Object.freeze({
     tampilkan: tampilkan,
@@ -402,6 +490,7 @@
     panggilKedai: panggilKedai,
     muatStatus: muatStatus,
     keluar: keluar,
+    gantiPassword: gantiPassword,
   });
 
   // ------------------------------------------------------------

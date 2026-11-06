@@ -456,6 +456,55 @@
                         </button>
                     </form>
                 </div>
+                <!-- AKN.08b (AK11): ganti password. Isian password lama dan baru; logika di akunmenu.js -->
+                <div class="kartu">
+                    <h2 class="kartu__judul">Ganti password</h2>
+                    <form id="form-akun-pw" novalidate>
+                        <div class="isian" id="isian-akun-pwlama">
+                            <label class="isian__label" for="akun-pwlama"
+                                >Password lama</label
+                            >
+                            <input
+                                class="isian__kolom"
+                                id="akun-pwlama"
+                                name="pwlama"
+                                type="password"
+                                autocomplete="current-password"
+                            />
+                            <p class="isian__galat" hidden></p>
+                        </div>
+                        <div class="isian" id="isian-akun-pwbaru">
+                            <label class="isian__label" for="akun-pwbaru"
+                                >Password baru</label
+                            >
+                            <input
+                                class="isian__kolom"
+                                id="akun-pwbaru"
+                                name="pwbaru"
+                                type="password"
+                                autocomplete="new-password"
+                            />
+                            <p class="isian__bantuan">
+                                Minimal 8 karakter, hanya huruf dan angka.
+                            </p>
+                            <p class="isian__galat" hidden></p>
+                        </div>
+                        <div class="isian" id="akunpw-galat-bungkus" hidden>
+                            <p
+                                class="isian__galat"
+                                id="akunpw-galat"
+                                role="alert"
+                            ></p>
+                        </div>
+                        <button
+                            type="submit"
+                            class="tombol tombol--utama"
+                            id="tombol-akun-pw"
+                        >
+                            Simpan password
+                        </button>
+                    </form>
+                </div>
                 <div class="baris-tombol">
                     <button
                         type="button"
