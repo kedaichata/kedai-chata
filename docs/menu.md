@@ -378,3 +378,13 @@ Tabel `menu` sudah live: kolom `deskripsi` adalah perubahan pada tabel yang ada.
 - Carry-over Handoff #3 sampai #7 tetap berlaku: fungsi `menu_simpan` 6 argumen masih ada di database; target ukuran foto belum diputuskan; cara mengenali nama kembar (teks pesan atau kode); handler fetch `sw.js` ikut menyimpan foto menu; belum dibuktikan dengan data di MNU.06 (batas harga 200000, Nonaktifkan dan Aktifkan kembali dengan nama kembar, 403 untuk non-owner); menu dummy dari uji tidak bisa dihapus. `menu.js` sekitar 874 baris (pedoman sekitar 500), komponen baru sebaiknya berkas terpisah dan wajib didaftarkan di `sw.js` (butuh "OK").
 
 **Saran giliran berikutnya:** MNU.10 (layar owner: kelola grup pilihan, buat sekali lalu centang di tiap menu). Lampirkan `AGENTS.md` + `menu.md` (sudah memuat handoff ini) + `desain.md`, serta `menu.js`, `menu-detail.js`, `akun.js` (pembungkus `panggilKedai`), `kerangka.js`, `index.html`, `style.css`, dan `sw.js`. `database.md` dan `security.md` belum perlu karena tidak ada perubahan tabel atau fungsi. Catatan desain: `grup_simpan` meminta daftar opsi lengkap, jadi layar harus memuat dulu lewat `grup_daftar`. Berkas JS baru wajib didaftarkan di `sw.js` (butuh "OK" ketua). Sesudahnya MNU.11 lalu sesi tes MNU.06 (ketua yang memutuskan urutannya).
+
+### 2026-11-07: Layar Kelola Grup terpisah, dan cara memasang grup ke menu (MNU.10)
+
+**Berkas tujuan:** `docs/menu.md` bagian 9. Melengkapi blok `2026-11-07: Deskripsi, sheet detail, dan pilihan menu` dan Handoff #8. Yang paling akhir menang.
+
+- Layar **Kelola Grup** adalah **layar terpisah** (bukan bagian layar Kelola Menu), dibuka dari **tombol di tab Menu**. Keputusan ketua (disampaikan lewat anggota tim).
+- **Tidak ada grup contoh atau grup siap pakai.** Owner membuat semua grup sendiri dari nol. Keputusan ketua.
+- Grup dibuat **sekali**, lalu dipasang ke **banyak menu** (mekanisme yang sudah ada di server, MNU.09).
+- Pemasangan dilakukan dari **sisi grup**: di layar Kelola Grup, tiap grup menampilkan daftar menu dengan kotak centang (memanggil `menu_grup_atur`). Ketua belum punya preferensi; dipilih mengikuti rekomendasi AI. Alasan selebihnya belum tercatat.
+- Pemasangan dari form Ubah menu (sisi menu) **tidak dibuat** di MNU.10.

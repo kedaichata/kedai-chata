@@ -6,6 +6,9 @@
 //
 // AKN.08a: layar Akun (ganti nama dan nomor WA) ada di akunmenu.js (dimuat setelah berkas ini).
 //
+// MNU.10: layar Kelola Grup pilihan (owner) ada di grup.js (dimuat setelah berkas ini). Di berkas ini hanya
+// nama layarnya ("grup") di daftar LAYAR dan pembersihan data saat Keluar.
+//
 // AKN.09 (AK12): tautan "Lupa password?" di layar Masuk (hanya petunjuk) dan layar Buat password baru.
 // Link reset dikirim ketua dari dashboard ("Send password recovery"). Saat halaman dibuka lewat link itu,
 // aplikasi TIDAK langsung masuk ke beranda: layar Buat password baru tampil lebih dulu. Layar itu hanya
@@ -35,6 +38,7 @@
     "profil",
     "alamat",
     "akun",
+    "grup", // MNU.10
     "resetpw",
     "sementara",
     "galat",
@@ -407,6 +411,10 @@
         typeof window.KedaiAkunMenu.reset === "function"
       ) {
         window.KedaiAkunMenu.reset();
+      }
+      // MNU.10: data grup pilihan di layar Kelola Grup ikut dibersihkan.
+      if (window.KedaiGrup && typeof window.KedaiGrup.reset === "function") {
+        window.KedaiGrup.reset();
       }
       // KRG.01: kerangka layar utama (tab, sapaan) dan daftar menu ikut dibersihkan.
       if (

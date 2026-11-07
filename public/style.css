@@ -1124,3 +1124,45 @@ body.sheet-terbuka {
         transition: none;
     }
 }
+
+/* ---- MNU.10 giliran 2: pemasangan grup pilihan ke menu (kotak centang di kartu grup) ---- */
+.pasang-menu {
+    margin: 12px 0 0;
+    padding: 12px 0 0;
+    border-top: 1px solid var(--garis-tipis);
+}
+
+.pasang-menu__judul {
+    margin: 0;
+    font-weight: 700;
+    color: var(--marun);
+    overflow-wrap: anywhere;
+}
+
+/* Satu baris = satu menu; seluruh baris bisa diketuk dan tingginya cukup untuk jari */
+.pasang-menu__baris {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: var(--tinggi-tombol);
+    margin: 4px 0 0;
+    cursor: pointer;
+}
+
+.pasang-menu__baris input[type="checkbox"] {
+    flex: 0 0 auto;
+    width: 26px;
+    height: 26px;
+    margin: 0;
+    accent-color: var(--marun);
+}
+
+.pasang-menu__baris input[type="checkbox"]:focus-visible {
+    outline: 3px solid var(--emas-terang);
+    outline-offset: 2px;
+}
+
+.pasang-menu__nama {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}

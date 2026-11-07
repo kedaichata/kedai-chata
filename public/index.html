@@ -600,6 +600,128 @@
                 </div>
             </section>
 
+            <!-- Kelola Grup pilihan (MNU.10): layar terpisah untuk owner, dibuka dari tombol di tab Menu
+                 (id menu-ke-grup). Logika di grup.js. Dua tampilan: daftar dan form. -->
+            <section id="layar-grup" hidden>
+                <div id="grup-daftar-bungkus">
+                    <h1>Kelola grup pilihan</h1>
+                    <p class="isian__bantuan">
+                        Grup pilihan adalah pilihan gratis untuk satu menu,
+                        misalnya Tingkat pedas: Tidak pedas, Sedang, Pedas. Buat
+                        grupnya sekali di sini. Pilihan tidak mengubah harga.
+                    </p>
+                    <div class="kartu" id="grup-pesan-bungkus" hidden>
+                        <p class="kartu__isi" id="grup-pesan" role="status"></p>
+                    </div>
+                    <p
+                        class="isian__galat"
+                        id="grup-daftar-galat"
+                        role="alert"
+                        hidden
+                    ></p>
+                    <p class="isian__bantuan" id="grup-ringkas"></p>
+                    <div id="grup-daftar-isi"></div>
+                    <div class="baris-tombol">
+                        <button
+                            type="button"
+                            class="tombol tombol--utama"
+                            id="grup-tambah"
+                        >
+                            Tambah grup
+                        </button>
+                    </div>
+                    <div class="baris-tombol">
+                        <button
+                            type="button"
+                            class="tombol tombol--sekunder"
+                            id="grup-muat-ulang"
+                        >
+                            Muat ulang
+                        </button>
+                    </div>
+                    <div class="baris-tombol">
+                        <button
+                            type="button"
+                            class="tombol tombol--sekunder"
+                            id="grup-kembali"
+                        >
+                            Kembali
+                        </button>
+                    </div>
+                </div>
+                <div id="grup-form-bungkus" hidden>
+                    <h1 id="grup-form-judul">Tambah grup</h1>
+                    <p
+                        class="isian__bantuan"
+                        id="grup-form-nonaktif-ket"
+                        hidden
+                    >
+                        Grup ini sedang nonaktif. Menyimpan akan mengaktifkannya
+                        kembali.
+                    </p>
+                    <form id="form-grup" novalidate>
+                        <div class="isian" id="isian-grup-nama">
+                            <label class="isian__label" for="grup-nama"
+                                >Nama grup</label
+                            >
+                            <input
+                                class="isian__kolom"
+                                id="grup-nama"
+                                name="nama"
+                                type="text"
+                                maxlength="30"
+                                autocomplete="off"
+                            />
+                            <p class="isian__bantuan">
+                                3 sampai 30 karakter, misalnya Tingkat pedas.
+                                Tidak boleh sama dengan grup aktif lain.
+                            </p>
+                            <p class="isian__galat" hidden></p>
+                        </div>
+                        <h2>Opsi</h2>
+                        <p class="isian__bantuan">
+                            Isi minimal 2 opsi. Pilih satu opsi bawaan, yaitu
+                            yang terpilih bila customer tidak memilih. Opsi
+                            bawaan tidak bisa dihapus; jadikan opsi lain bawaan
+                            dulu.
+                        </p>
+                        <div id="grup-opsi-isi"></div>
+                        <div class="baris-tombol">
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder"
+                                id="grup-opsi-tambah"
+                            >
+                                Tambah opsi
+                            </button>
+                        </div>
+                        <div class="isian" id="grup-galat-bungkus" hidden>
+                            <p
+                                class="isian__galat"
+                                id="grup-galat"
+                                role="alert"
+                            ></p>
+                        </div>
+                        <button
+                            type="submit"
+                            class="tombol tombol--utama"
+                            id="tombol-grup-simpan"
+                        >
+                            Simpan grup
+                        </button>
+                    </form>
+                    <div class="baris-tombol">
+                        <button
+                            type="button"
+                            class="tombol tombol--sekunder"
+                            id="grup-batal"
+                        >
+                            Batal
+                        </button>
+                    </div>
+                </div>
+            </section>
+
             <!-- KRG.01: Kerangka layar utama per peran (desain.md DS9, DS10).
                  Id "layar-sementara" tetap dipakai karena itu nama layar di akun.js.
                  Judul, tab, dan panel diatur kerangka.js sesuai peran dari server.
@@ -664,6 +786,16 @@
                                 id="menu-tambah"
                             >
                                 Tambah menu
+                            </button>
+                        </div>
+                        <!-- MNU.10: pintu ke layar Kelola Grup pilihan (layar terpisah, logika di grup.js) -->
+                        <div class="baris-tombol">
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder"
+                                id="menu-ke-grup"
+                            >
+                                Kelola grup pilihan
                             </button>
                         </div>
                     </div>
@@ -1275,6 +1407,8 @@
         <script src="menu-detail.js"></script>
         <!-- Kelola Menu (MNU.03); harus setelah akun.js karena memakai window.KedaiAkun -->
         <script src="menu.js"></script>
+        <!-- Kelola Grup pilihan (MNU.10); harus setelah akun.js, dan setelah index ini memuat tombol menu-ke-grup -->
+        <script src="grup.js"></script>
         <!-- Kerangka layar utama per peran (KRG.01); harus setelah akun.js dan menu.js -->
         <script src="kerangka.js"></script>
         <script>
