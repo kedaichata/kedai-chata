@@ -126,7 +126,7 @@ _(belum ada blok)_
 - Urutan bawaan daftar menu: nama A sampai Z.
 - Mengaktifkan kembali menu lewat `menu_simpan` (owner).
 
-### Handoff #N | 2026-11-07 | KETUA
+### Handoff #1 | 2026-11-07 | KETUA
 
 **Tugas:** MNU.01 selesai. Tabel `menu`, hak minimal, RLS, dan pengaturan `harga_maks_menu` sudah jalan di production dan lulus semua cek (RLS aktif, tanpa policy, hak `service_role` hanya SELECT/INSERT/UPDATE, tabel kosong). Sudah di-push (commit `e9fe2d3`).
 
@@ -171,3 +171,30 @@ _(belum ada blok)_
 **Berkas tujuan:** `docs/menu.md` bagian 9. Sumber: `home.md` HM1 dan Handoff #1. Yang paling akhir menang.
 
 Tab Menu owner tetap ada. Susunan navigasi owner kini: **Home, Order Masuk, Semua Order, Buat Order, Menu** (Home paling kiri, Menu paling kanan). Keputusan menu MN1 sampai MN9 tidak berubah.
+
+### Handoff #3 | 2026-11-07 | KETUA
+
+**Berkas tujuan:** `docs/menu.md` bagian 9. Yang paling akhir menang.
+
+**Tugas:** MNU.03 selesai (layar Kelola Menu owner). Sudah di-push (commit `6081c59`, "MNU.03 + kerangka apps", Pages #27 sukses). Tab Menu owner terbuka dan menampilkan keadaan kosong ("0 menu, 0 aktif", "Belum ada menu", tombol Tambah menu).
+
+**Berkas diubah:** `public/menu.js` (baru), `public/kerangka.js`, `public/style.css` (blok KRG.01 dan MNU.03, hanya penambahan), `public/sw.js` (cache `chata-v8`; `menu.js` dan `kerangka.js` didaftarkan, foto menu tidak), `public/index.html` (panel dan form Menu).
+
+**Keputusan baru:**
+
+- Tombol Tersedia/Habis besar di tiap kartu menu aktif, labelnya menunjukkan aksi berikutnya ("Tandai Habis" / "Tandai Tersedia"). Memanggil `menu_stok`.
+- Nonaktifkan memakai konfirmasi di kartu ("Ya, nonaktifkan") yang menjelaskan dampak. Tidak ada tombol hapus. Menu nonaktif diredupkan, berlencana Nonaktif, dan punya tombol "Aktifkan kembali" (`menu_simpan` + `aktifkan: true`). Bila nama kembar, pesan menyuruh ganti nama lewat Ubah.
+- Cek di aplikasi hanya kemudahan: nama 3 sampai 40 karakter, harga angka bulat lebih dari 0 (titik dan spasi dibuang), nama berkas foto sesuai aturan. Batas harga dan nama kembar diputuskan server, pesannya ditampilkan apa adanya.
+- Foto dibaca dari `img/<nama berkas>`; placeholder "Tanpa foto" atau "Foto belum ada" bila kosong atau berkas tidak ada.
+- Daftar dimuat saat tab dibuka (kerangka memanggil `KedaiMenu.tampil`), tanpa polling. Balasan sukses aksi memakai field `menu` untuk memperbarui daftar; bila tidak terbaca baru muat ulang.
+- Nama kembar dikenali dari teks pesan ("nama yang sama") karena balasan galat tidak membawa field kode.
+- Saat Keluar, `KedaiMenu.reset()` membersihkan data menu dari layar.
+
+**Belum beres:**
+
+- Belum diuji dengan data (tabel masih kosong): tambah, ubah, Tersedia/Habis, nonaktif dan aktifkan kembali, nama kembar, batas harga, foto, dan 403 untuk non-owner. Diuji di MNU.06.
+- Bentuk data menu diandaikan `{ id, nama, harga, tersedia, aktif, foto }`. Bila uji pertama beda, cukup sesuaikan `bacaMenu` di `menu.js`.
+- Handoff #2 menyebut kode `nama_kembar`, sedangkan `menu.js` mengandalkan teks pesan. Cek mana yang benar saat uji.
+- Handler fetch `sw.js` menyimpan semua respons sukses domain sendiri, jadi foto menu ikut tersimpan walau tidak ada di `DAFTAR_CACHE` (berbeda dari catatan "cukup di-cache browser"). Putuskan nanti apakah perlu dikecualikan.
+
+**Saran giliran berikutnya (MNU.04, daftar menu untuk customer):** minta `menu.js`, `kerangka.js`, `index.html`, `style.css`, `sw.js` (berkas JS baru wajib didaftarkan, butuh "OK"), dan `desain.md`. `KedaiMenu` hanya mengekspos `tampil` dan `reset`, jadi pembantu kartu, `rupiah`, dan foto perlu diekspos atau dipisah bila dipakai ulang. Customer memakai `menu_daftar` (hanya menu aktif); menu Habis abu-abu dan tidak bisa dipilih; aplikasi tidak pernah mengirim harga atau total, hanya id menu dan jumlah (MN4). Tab Pesan customer di `kerangka.js` masih "segera".

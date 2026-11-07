@@ -3,6 +3,9 @@
 // Tampil sebagai isi tab "Menu" di kerangka layar utama (kerangka.js memanggil KedaiMenu.tampil).
 // Dimuat SETELAH akun.js karena memakai window.KedaiAkun (pembantu layar dan panggilan ke `kedai`).
 //
+// MNU.04: bagian "daftar untuk customer" (tab Pesan) ada di blok terpisah di bawah. Hanya dilihat, tanpa tombol;
+// tombol pilih menu menyusul di ORD.
+//
 // Aturan yang dijaga:
 // - Yang dikirim hanya aksi dan isian (id, nama, harga angka bulat, nama berkas foto, aktifkan,
 //   tersedia). Aplikasi tidak pernah mengirim peran; server membacanya dari token dan menolak
@@ -580,6 +583,186 @@
   }
 
   // ------------------------------------------------------------
+  // MNU.04: daftar menu untuk customer (tab Pesan), hanya dilihat
+  // ------------------------------------------------------------
+  // Customer hanya mendapat menu aktif dari server (disaring sekali lagi di sini). Menu Habis tampil abu-abu
+  // dengan lencana Habis (MN3). Belum ada tombol pilih atau jumlah: itu menyusul di ORD, dan
+  // buatKartuPelanggan adalah tempat tombolnya nanti dipasang. Aplikasi tidak pernah mengirim harga atau
+  // total (MN4). Dimuat saat tab dibuka dan lewat Segarkan, tanpa polling (MN7).
+
+  var daftarPelanggan = []; // menu aktif: { id, nama, harga, tersedia, foto }
+  var termuatPelanggan = false; // sudah pernah berhasil memuat
+  var sedangMuatPelanggan = false;
+  var nomorMuatPelanggan = 0; // naik tiap muat dan reset; balasan lama (nomor tidak cocok) diabaikan
+
+  // Ambil hanya menu yang bentuknya benar dan aktif. null bila daftar tidak bisa dibaca sama sekali.
+  // Bila server tidak mengirim field aktif (customer memang hanya mendapat menu aktif), dianggap aktif.
+  function bacaMenuPelanggan(d) {
+    if (!Array.isArray(d)) return null;
+    var hasil = [];
+    var salahBentuk = 0;
+    for (var i = 0; i < d.length; i++) {
+      var m = d[i];
+      if (
+        m &&
+        (typeof m.id === "string" || typeof m.id === "number") &&
+        typeof m.nama === "string" &&
+        isFinite(Number(m.harga))
+      ) {
+        if (m.aktif !== false) {
+          hasil.push({
+            id: m.id,
+            nama: m.nama,
+            harga: Number(m.harga),
+            tersedia: m.tersedia === true,
+            foto:
+              typeof m.foto === "string" && REGEX_FOTO.test(m.foto)
+                ? m.foto
+                : "",
+          });
+        }
+      } else {
+        salahBentuk++;
+      }
+    }
+    if (d.length > 0 && hasil.length === 0 && salahBentuk > 0) return null;
+    return hasil;
+  }
+
+  // Pesan dari fungsi kedai sendiri (ok:false + pesan) aman ditampilkan; selain itu pesan umum.
+  function pesanMuatPelanggan(h) {
+    if (
+      h &&
+      h.data &&
+      h.data.ok === false &&
+      typeof h.data.pesan === "string"
+    ) {
+      return h.data.pesan;
+    }
+    return PESAN_MUAT;
+  }
+
+  function galatPelanggan(pesan) {
+    var p = el("pelanggan-menu-galat");
+    if (!p) return;
+    p.textContent = pesan || "";
+    p.hidden = !pesan;
+  }
+
+  function buatKartuPelanggan(m) {
+    var kartu = buat(
+      "div",
+      "kartu menu-kartu" + (m.tersedia ? "" : " menu-kartu--habis"),
+    );
+    var atas = buat("div", "menu-kartu__atas");
+    atas.appendChild(buatFoto(m));
+    var info = buat("div", "menu-info");
+    info.appendChild(buat("p", "menu-nama", m.nama));
+    info.appendChild(buat("p", "menu-harga", rupiah(m.harga)));
+    var lencana = buat("div", "menu-lencana");
+    if (m.tersedia) {
+      lencana.appendChild(
+        buat("span", "lencana lencana--tersedia", "Tersedia"),
+      );
+    } else {
+      lencana.appendChild(buat("span", "lencana lencana--habis", "Habis"));
+    }
+    info.appendChild(lencana);
+    atas.appendChild(info);
+    kartu.appendChild(atas);
+    // ORD: tombol pilih menu dan jumlah dipasang di sini (hanya untuk menu Tersedia).
+    return kartu;
+  }
+
+  function renderPelanggan() {
+    var wadah = el("pelanggan-menu-isi");
+    var ringkas = el("pelanggan-menu-ringkas");
+    if (!wadah || !ringkas) return;
+    while (wadah.firstChild) {
+      wadah.removeChild(wadah.firstChild);
+    }
+
+    var adaHabis = false;
+    for (var i = 0; i < daftarPelanggan.length; i++) {
+      if (!daftarPelanggan[i].tersedia) adaHabis = true;
+      wadah.appendChild(buatKartuPelanggan(daftarPelanggan[i]));
+    }
+
+    if (termuatPelanggan && daftarPelanggan.length === 0) {
+      var kosong = buat("div", "keadaan");
+      kosong.setAttribute("role", "status");
+      kosong.appendChild(buat("p", "keadaan__judul", "Belum ada menu"));
+      kosong.appendChild(
+        buat(
+          "p",
+          "keadaan__ket",
+          "Menu belum tersedia. Silakan cek lagi nanti.",
+        ),
+      );
+      wadah.appendChild(kosong);
+    }
+
+    if (sedangMuatPelanggan) {
+      ringkas.textContent = "Memuat menu...";
+    } else if (adaHabis) {
+      ringkas.textContent = "Menu yang abu-abu sedang habis.";
+    } else {
+      ringkas.textContent = "";
+    }
+  }
+
+  // Ambil menu aktif dari server (aksi menu_daftar). Gagal muat: daftar lama (bila ada) tetap tampil
+  // bersama pesan galat, supaya customer dengan sinyal jelek tidak kehilangan daftarnya.
+  function muatPelanggan() {
+    var nomor = ++nomorMuatPelanggan;
+    sedangMuatPelanggan = true;
+    galatPelanggan("");
+    renderPelanggan();
+    return A.panggilKedai("menu_daftar")
+      .then(function (h) {
+        if (nomor !== nomorMuatPelanggan) return;
+        sedangMuatPelanggan = false;
+        if (h.status === 200 && h.data && h.data.ok === true) {
+          var baru = bacaMenuPelanggan(h.data.menu);
+          if (baru) {
+            daftarPelanggan = baru;
+            termuatPelanggan = true;
+            galatPelanggan("");
+          } else {
+            galatPelanggan(PESAN_BACA);
+          }
+        } else if (h.status === 401 && !h.data) {
+          galatPelanggan(PESAN_SESI);
+        } else {
+          galatPelanggan(pesanMuatPelanggan(h));
+        }
+        renderPelanggan();
+      })
+      .catch(function () {
+        if (nomor !== nomorMuatPelanggan) return;
+        sedangMuatPelanggan = false;
+        galatPelanggan(navigator.onLine ? PESAN_MUAT : PESAN_OFFLINE);
+        renderPelanggan();
+      });
+  }
+
+  // Dipanggil kerangka.js saat tab Pesan (customer) dibuka dan lewat Segarkan.
+  function tampilPelanggan() {
+    muatPelanggan();
+  }
+
+  // Dipanggil dari reset() saat Keluar: tidak boleh ada data menu tersisa, dan balasan yang masih
+  // di jalan diabaikan.
+  function resetPelanggan() {
+    nomorMuatPelanggan++;
+    daftarPelanggan = [];
+    termuatPelanggan = false;
+    sedangMuatPelanggan = false;
+    galatPelanggan("");
+    renderPelanggan();
+  }
+
+  // ------------------------------------------------------------
   // Buka dan tutup layar
   // ------------------------------------------------------------
 
@@ -609,6 +792,7 @@
     tampilPesan("");
     render();
     el("menu-ringkas").textContent = "";
+    resetPelanggan(); // MNU.04
   }
 
   el("menu-tambah").addEventListener("click", function () {
@@ -619,6 +803,7 @@
 
   window.KedaiMenu = Object.freeze({
     tampil: tampil,
+    tampilPelanggan: tampilPelanggan, // MNU.04
     reset: reset,
   });
 })();

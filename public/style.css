@@ -728,6 +728,20 @@ button.navbawah__item:active {
     filter: grayscale(1);
 }
 
+/* MNU.04: menu Habis di daftar customer. Foto dan teks diabukan; lencana Habis tetap jelas (DS11) */
+.menu-kartu--habis .menu-foto {
+    opacity: 0.55;
+}
+
+.menu-kartu--habis .menu-foto img {
+    filter: grayscale(1);
+}
+
+.menu-kartu--habis .menu-nama,
+.menu-kartu--habis .menu-harga {
+    color: var(--teks-samar);
+}
+
 /* ------------------------------------------------------------------
    HOM.02: Kartu sampul, kartu sapaan, dan lencana peran (home.md HM3, HM4)
    Kartu sampul: marun gelap berisi logo ChATA, dengan pendar emas halus.

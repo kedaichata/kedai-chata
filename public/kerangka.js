@@ -18,6 +18,9 @@
 // di index.html. Item yang membuka layar Akun dan Buku alamat memakai layar yang sudah ada
 // (window.KedaiAkunMenu.tampil dan window.KedaiAlamat.tampil), tanpa panggilan server baru (HM10).
 //
+// MNU.04: tab Pesan (customer) memakai panel "pesan": daftar menu hanya dilihat, dimuat lewat
+// KedaiMenu.tampilPelanggan saat tab dibuka dan lewat Segarkan. Tombol pilih menyusul di ORD.
+//
 // Aturan yang dijaga:
 // - Peran datang dari balasan server (aksi status) lewat akun.js; aplikasi tidak pernah mengirim peran.
 //   Menyembunyikan tab di sini hanya kemudahan; yang menolak akses sebenarnya server.
@@ -51,7 +54,8 @@
     ],
     customer: [
       { id: "home", nama: "Home", panel: "akun" }, // HOM.01
-      { id: "pesan", nama: "Pesan", panel: "segera" },
+      // MNU.04: { id: "pesan", nama: "Pesan", panel: "segera" },
+      { id: "pesan", nama: "Pesan", panel: "pesan" },
       { id: "pesanan-saya", nama: "Pesanan Saya", panel: "segera" },
       // HOM.01: { id: "akun", nama: "Akun", panel: "akun" },
     ],
@@ -71,7 +75,8 @@
     penjaga: "nav-penjaga",
   };
 
-  var PANEL = ["segera", "menu", "lainnya", "akun"];
+  // MNU.04: var PANEL = ["segera", "menu", "lainnya", "akun"];
+  var PANEL = ["segera", "menu", "lainnya", "akun", "pesan"];
 
   // HOM.02: tulisan lencana peran di kartu sapaan (HM4). Peran tak dikenal: lencana disembunyikan.
   var LABEL_PERAN = {
@@ -144,6 +149,15 @@
       typeof window.KedaiMenu.tampil === "function"
     ) {
       window.KedaiMenu.tampil();
+    }
+
+    // MNU.04: daftar menu untuk customer (tab Pesan), dimuat saat dibuka dan lewat Segarkan.
+    if (
+      t.panel === "pesan" &&
+      window.KedaiMenu &&
+      typeof window.KedaiMenu.tampilPelanggan === "function"
+    ) {
+      window.KedaiMenu.tampilPelanggan();
     }
   }
 
