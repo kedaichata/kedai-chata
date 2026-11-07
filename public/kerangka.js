@@ -192,20 +192,9 @@
   // HOM.04: aksi item Home yang bisa diketuk (atribut data-aksi di index.html).
   var AKSI_HOME = {
     // HOM.04 (revisi): satu tombol "Pengaturan akun" membuka layar Akun (tanpa menggeser ke kartu tertentu).
-    // Tiga aksi di bawahnya (akun-nama, akun-wa, akun-pw) tidak lagi dipakai di index.html; dibiarkan, belum dihapus.
+    // HOM.05: tiga aksi lama (akun-nama, akun-wa, akun-pw) dihapus karena tidak dipakai lagi di index.html.
     akun: function () {
       bukaAkun(null);
-    },
-    "akun-nama": function () {
-      bukaAkun(el("kartu-akun-nama"));
-    },
-    "akun-wa": function () {
-      bukaAkun(el("kartu-akun-wa"));
-    },
-    "akun-pw": function () {
-      // Kartu Ganti password tidak punya id sendiri: ambil dari formnya.
-      var form = el("form-akun-pw");
-      bukaAkun(form ? form.parentNode : null);
     },
     alamat: function () {
       var B = window.KedaiAlamat;
@@ -250,7 +239,7 @@
     tab = null;
     sembunyikanSemua();
     el("kerangka-judul").textContent = "Beranda";
-    el("sapaan").textContent = "";
+    // HOM.05: #sapaan dan #catatan-profil lama sudah dihapus dari index.html.
     // HOM.02: sapaan baru dan lencana peran juga dibersihkan (nama tidak boleh tersisa setelah Keluar).
     el("home-nama").textContent = "";
     el("home-nama-bungkus").hidden = true;
@@ -258,9 +247,6 @@
     lencanaPeran.textContent = "";
     lencanaPeran.hidden = true;
     aturItemHome(null); // HOM.03, HOM.04: item Home per peran disembunyikan sampai masuk lagi
-    var catatan = el("catatan-profil");
-    catatan.textContent = "";
-    catatan.hidden = true;
     if (window.KedaiMenu && typeof window.KedaiMenu.reset === "function") {
       window.KedaiMenu.reset();
     }
