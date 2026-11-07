@@ -269,7 +269,9 @@
       window.KedaiKerangka &&
       typeof window.KedaiKerangka.atur === "function"
     ) {
-      window.KedaiKerangka.atur(d.peran);
+      // HOM.02: nama ikut dikirim supaya sapaan Home bisa memakainya (tanpa panggilan server baru).
+      // window.KedaiKerangka.atur(d.peran);
+      window.KedaiKerangka.atur(d.peran, nama);
     }
   }
 

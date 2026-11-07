@@ -9,6 +9,10 @@
 // Tab Home memakai panel "akun" (blok sapaan, Buku alamat, Pengaturan akun, Keluar) untuk SEMUA peran.
 // Panel "lainnya" tetap ada di HTML tetapi tidak terjangkau; isinya pindah ke Home di HOM.03 dan HOM.04.
 //
+// HOM.02: tab Home menampilkan kartu sampul, sapaan "Halo, {nama}, selamat datang di Kedai ChATA", dan
+// lencana peran. Nama datang dari akun.js sebagai argumen kedua atur(peran, nama); bila tidak ada,
+// sapaan tampil tanpa nama. Tidak ada panggilan server baru (HM10).
+//
 // Aturan yang dijaga:
 // - Peran datang dari balasan server (aksi status) lewat akun.js; aplikasi tidak pernah mengirim peran.
 //   Menyembunyikan tab di sini hanya kemudahan; yang menolak akses sebenarnya server.
@@ -63,6 +67,13 @@
   };
 
   var PANEL = ["segera", "menu", "lainnya", "akun"];
+
+  // HOM.02: tulisan lencana peran di kartu sapaan (HM4). Peran tak dikenal: lencana disembunyikan.
+  var LABEL_PERAN = {
+    owner: "Owner",
+    penjaga: "Penjaga",
+    customer: "Customer",
+  };
 
   var peran = null; // peran yang sedang dipasang; null = belum
   var tab = null; // id tab yang sedang terbuka; null = belum
@@ -131,8 +142,25 @@
     }
   }
 
+  // HOM.02: isi sapaan dan lencana peran. Teks dari server hanya lewat textContent.
+  function isiSapaan(p, nama) {
+    var teksNama = typeof nama === "string" ? nama.trim() : "";
+    el("home-nama").textContent = teksNama;
+    el("home-nama-bungkus").hidden = !teksNama;
+    var lencana = el("home-peran");
+    if (Object.prototype.hasOwnProperty.call(LABEL_PERAN, p)) {
+      lencana.textContent = LABEL_PERAN[p];
+      lencana.hidden = false;
+    } else {
+      lencana.textContent = "";
+      lencana.hidden = true;
+    }
+  }
+
   // Dipanggil akun.js setiap kali status dimuat. Peran sama: tab yang terbuka dipertahankan.
-  function atur(peranDariServer) {
+  // HOM.02: argumen kedua (nama) boleh kosong.
+  // function atur(peranDariServer) {
+  function atur(peranDariServer, namaDariServer) {
     var baru = peranDikenal(peranDariServer);
     if (baru !== peran) {
       peran = baru;
@@ -153,6 +181,7 @@
         el(NAV[k]).hidden = k !== peran;
       }
     }
+    isiSapaan(peran, namaDariServer); // HOM.02
     buka(tab);
   }
 
@@ -163,6 +192,12 @@
     sembunyikanSemua();
     el("kerangka-judul").textContent = "Beranda";
     el("sapaan").textContent = "";
+    // HOM.02: sapaan baru dan lencana peran juga dibersihkan (nama tidak boleh tersisa setelah Keluar).
+    el("home-nama").textContent = "";
+    el("home-nama-bungkus").hidden = true;
+    var lencanaPeran = el("home-peran");
+    lencanaPeran.textContent = "";
+    lencanaPeran.hidden = true;
     var catatan = el("catatan-profil");
     catatan.textContent = "";
     catatan.hidden = true;

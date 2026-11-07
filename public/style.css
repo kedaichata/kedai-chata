@@ -744,3 +744,139 @@ button.navbawah__item:active {
 .menu-kartu--nonaktif .menu-foto img {
     filter: grayscale(1);
 }
+
+/* ------------------------------------------------------------------
+   HOM.02: Kartu sampul, kartu sapaan, dan lencana peran (home.md HM3, HM4)
+   Kartu sampul: marun gelap berisi logo ChATA, dengan pendar emas halus.
+   Kartu sapaan: "Halo, {nama}, selamat datang di Kedai ChATA" + lencana peran.
+   Lencana peran berpinggir marun, BUKAN warna lencana status (DS11).
+   ------------------------------------------------------------------ */
+.kartu-sampul {
+    position: relative;
+    overflow: hidden;
+    margin: 0 0 12px;
+    padding: 28px 16px 22px;
+    text-align: center;
+    color: var(--teks-terang);
+    border: 1px solid rgba(226, 184, 74, 0.45);
+    border-radius: 20px;
+    background:
+        radial-gradient(
+            circle at 50% 40%,
+            rgba(226, 184, 74, 0.2) 0%,
+            rgba(226, 184, 74, 0) 58%
+        ),
+        linear-gradient(
+            150deg,
+            #4d0f1d 0%,
+            var(--marun-sangat-gelap) 55%,
+            #2a0710 100%
+        );
+    box-shadow:
+        0 6px 18px rgba(59, 10, 20, 0.28),
+        inset 0 1px 0 rgba(255, 244, 220, 0.1);
+}
+
+/* Bingkai tipis emas di dalam kartu */
+.kartu-sampul::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(226, 184, 74, 0.22);
+    border-radius: 14px;
+    pointer-events: none;
+}
+
+.kartu-sampul__logo {
+    position: relative;
+    display: block;
+    width: min(180px, 52vw);
+    height: auto;
+    margin: 0 auto;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.45));
+}
+
+/* Hiasan garis emas dengan belah ketupat di tengah */
+.kartu-sampul__hias {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 220px;
+    margin: 18px auto 0;
+}
+
+.kartu-sampul__hias::before,
+.kartu-sampul__hias::after {
+    content: "";
+    flex: 1 1 auto;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        rgba(226, 184, 74, 0),
+        rgba(226, 184, 74, 0.75)
+    );
+}
+
+.kartu-sampul__hias::after {
+    transform: scaleX(-1);
+}
+
+.kartu-sampul__hias span {
+    flex: 0 0 auto;
+    width: 7px;
+    height: 7px;
+    background: var(--emas-terang);
+    transform: rotate(45deg);
+}
+
+.kartu-sapaan {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--putih) 0%, var(--krem) 100%);
+    border: 1px solid var(--garis-tipis);
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(59, 10, 20, 0.08);
+}
+
+.kartu-sapaan__teks {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.4;
+    color: var(--teks-gelap);
+    overflow-wrap: anywhere;
+}
+
+.kartu-sapaan__nama {
+    font-weight: 700;
+    color: var(--marun);
+}
+
+.lencana-peran {
+    flex: 0 0 auto;
+    padding: 4px 12px;
+    border: 1.5px solid var(--marun);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--marun);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    line-height: 1.4;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* HP sangat kecil: lencana pindah ke bawah sapaan supaya teks tidak sesak */
+@media (max-width: 340px) {
+    .kartu-sapaan {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

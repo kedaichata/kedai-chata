@@ -787,7 +787,40 @@
                 <!-- Panel Akun (customer dan penjaga). Untuk owner, blok-akun dipindah ke panel Lainnya -->
                 <div id="panel-akun" hidden>
                     <div id="blok-akun">
-                        <div class="kartu">
+                        <!-- HOM.02: kartu sampul (logo ChATA, HM3) dan sapaan umum + lencana peran (HM4).
+                             Nama dan peran diisi kerangka.js lewat textContent. -->
+                        <div class="kartu-sampul">
+                            <img
+                                class="kartu-sampul__logo"
+                                src="img/chata-logo.png"
+                                width="500"
+                                height="500"
+                                alt="Kedai ChATA"
+                            />
+                            <div class="kartu-sampul__hias" aria-hidden="true">
+                                <span></span>
+                            </div>
+                        </div>
+                        <div class="kartu-sapaan">
+                            <p class="kartu-sapaan__teks">
+                                Halo,<span id="home-nama-bungkus" hidden>
+                                    <strong
+                                        class="kartu-sapaan__nama"
+                                        id="home-nama"
+                                    ></strong
+                                    >,</span
+                                >
+                                selamat datang di Kedai ChATA
+                            </p>
+                            <span
+                                class="lencana-peran"
+                                id="home-peran"
+                                hidden
+                            ></span>
+                        </div>
+                        <!-- HOM.02: kartu "Selamat datang" lama disembunyikan (belum dihapus).
+                             Dihapus di HOM.05 bersama bagian terkait di akun.js. -->
+                        <div class="kartu" hidden>
                             <h2 class="kartu__judul">Selamat datang</h2>
                             <p class="kartu__isi" id="sapaan"></p>
                             <p
