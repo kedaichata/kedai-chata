@@ -648,4 +648,23 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 
 **Saran giliran berikutnya:** pekerjaan mengikuti sheet; kandidat terdekat **MNU.01** (migration tabel menu, High-Risk, butuh penjelasan dampak dan "OK" ketua). Lampirkan `AGENTS.md`, `menu.md`, `database.md`, `security.md`, dan isi `supabase/migrations/`.
 
+### 2026-11-07: Pengaturan akun dan Buku alamat pindah ke Home
+
+**Berkas tujuan:** `docs/akun.md` bagian 9. Menimpa bagian 4 butir 4 (menu Akun) serta catatan di Handoff #8, #11, #13, dan #14 tentang tombol Akun dan Buku alamat di layar sementara dan menu Lainnya. Sumber: `home.md` (HM6, HM9, Handoff #2). Yang paling akhir menang.
+
+- Tombol "Akun" dan "Buku alamat" di layar sementara dihapus (HOM.05). Gantinya di Home: satu tombol **Pengaturan akun** (semua peran) yang membuka layar Akun yang sama, dan tombol **Buku alamat** (customer saja). Customer melihat Ganti nama, Ganti nomor WA, dan Ganti password; owner dan penjaga hanya Ganti password (TMN.01). Bukan tiga tombol terpisah.
+- Bantuan bukan lagi item di menu Akun atau Lainnya, tetapi tombol di Home (`home.md` HM5), "Segera".
+- Owner tidak lagi lewat menu Lainnya; Home dipakai semua peran.
+- Aturan akun tidak berubah (AK7 sampai AK11). Menyembunyikan item per peran hanya kemudahan tampilan; server tetap yang menolak.
+
+**Temuan di lapangan (terkait AK12):** link reset password dari dashboard sempat tampil "Link sudah tidak berlaku" pada klik pertama dari email. Log Auth menunjukkan link yang sama dibuka dua kali dalam satu detik (`/verify` 303 lalu 403 "One-time token not found"), jadi token sekali pakai sudah habis. Pembuka pertamanya belum diketahui (pemindai link atau klik ganda). Link yang sama berhasil saat disalin dan ditempel ke address bar. Pengaturan Auth normal (Site URL, Redirect URLs, masa berlaku 3600 detik). Satu `/recover` sempat 504 lalu berhasil diulang; diamati saja.
+
+### 2026-11-07: Cara memakai link reset password (AK12)
+
+**Berkas tujuan:** `docs/akun.md` bagian 9. Melengkapi AK12; alurnya tidak berubah. Yang paling akhir menang.
+
+- **Temuan dari ketua:** link reset yang diklik langsung dari email sering langsung tampil "Link sudah tidak berlaku", tetapi tidak selalu (kadang langsung berhasil). Link yang sama, bila **disalin lalu ditempel di tab baru**, selalu berhasil.
+- **Cara yang dipakai:** saat pengguna menerima link reset, mintalah ia **menyalin link dari email dan menempelkannya di tab baru** (address bar), jangan diklik langsung.
+- **Penyebab belum dipastikan.** Log Auth pernah menunjukkan link yang sama dibuka dua kali dalam satu detik, dan link hanya berlaku sekali pakai. Dugaan (belum dibuktikan): pemindai link di email membukanya lebih dulu.
+
 ---

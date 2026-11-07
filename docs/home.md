@@ -216,3 +216,25 @@ _(belum ada blok)_
 - **HOM.06** diulang setelah HOM.05, jangan dicentang dulu. **HOM.07** belum dikerjakan (catatan HM6 dan HM9 berubah, serta catatan link reset).
 
 **Saran giliran berikutnya:** HOM.05 (butuh "OK" ketua; enam berkas, bagi dua giliran). Lampirkan `AGENTS.md` + `home.md` + `desain.md` + versi terbaru `public/index.html`, `public/kerangka.js`, `public/style.css`, `public/akun.js`, `public/akunmenu.js`, `public/alamat.js`. Sebelum push, cek tiga hal anti-nyasar. Logout GitHub dan Supabase di profil browser setelah selesai.
+
+### 2026-11-07: HOM.05 selesai, sisa tampilan sementara dihapus
+
+**Persetujuan:** "OK" ketua untuk daftar penghapusan diberikan di chat. HOM.05 sudah dicentang di sheet.
+
+**Dihapus:**
+
+- `akun.js`: sapaan lama (`#sapaan`) beserta variabel `label`, blok tombol Buku alamat dan tombol Akun, dan blok `#catatan-profil`. Kartu Ganti nama dan Ganti nomor WA (TMN.01) tetap.
+- `akunmenu.js` dan `alamat.js`: masing-masing satu baris pendengar tombol lama (`tombol-akun`, `tombol-buku-alamat`).
+- `kerangka.js`: tiga aksi tak terpakai (`akun-nama`, `akun-wa`, `akun-pw`) dan dua pembersih `#sapaan` dan `#catatan-profil` di `reset()`. Aksi `akun` dan `alamat` tetap.
+- `index.html`: kartu "Selamat datang" yang tersembunyi, dua tombol lama beserta pembungkusnya, dan komentar tiga item lama.
+- `style.css`: `.contoh-sampul` dan `.contoh-sampul__nama`. Ini menutup pertanyaan terbuka `.contoh-sampul` di `desain.md` (kartu sampul baru sudah dipakai, HM3).
+
+**Urutan (dua giliran):** giliran A: `akun.js`, `akunmenu.js`, `alamat.js`. Giliran B: `kerangka.js`, `index.html`, `style.css`, dipush bersamaan. JS dihapus lebih dulu karena beberapa baris memanggil id lama tanpa pengaman; bila HTML dihapus duluan, aplikasi bisa error saat dibuka.
+
+**Sengaja dibiarkan:**
+
+- Panel Lainnya (`panel-lainnya`, `lainnya-akun`) di `index.html`: tidak terjangkau dan tidak berbahaya. Bila dihapus nanti, daftar `PANEL` di `kerangka.js` ikut diubah.
+- `LABEL_PERAN` di `akun.js` kini tidak dipakai.
+- Komentar lama yang sudah basi di bagian atas `akunmenu.js`, `alamat.js`, `kerangka.js`, dan `index.html` (masih menyebut tombol atau id lama).
+
+**Hasil tes:** giliran A dites di HP dan laptop dengan tiga peran; giliran B dites di HP Android dan laptop. Semua aman. Bukti diperiksa di chat dan tidak disimpan.

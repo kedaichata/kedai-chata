@@ -248,3 +248,14 @@ Dikerjakan **setelah `fondasi.md` dan sebelum `akun.md`**, karena layar pertama 
 - Tampilan di layar lebar (laptop) belum dibahas, baru dilihat sekali di Chrome Mac. Ikon dites di HP ketua saja, belum di HP anggota lain atau pelanggan.
 
 **Saran giliran berikutnya:** mulai `akun.md` (prefix AKN). AKN.01 dan AKN.02 (pengaturan Auth dan SMTP di dashboard) berisiko tinggi (P0) dan butuh "OK" ketua; siapkan ringkasan untuk diteruskan lewat WA bila yang bertugas bukan ketua. Lampirkan `AGENTS.md` + `akun.md` + `database.md` + `security.md` + versi terbaru `public/index.html`, `public/style.css`, dan `public/sw.js`. Sebelum push, cek tiga hal anti-nyasar. Logout GitHub dan Supabase di profil browser setelah selesai.
+
+### 2026-11-07: Home menggantikan Lainnya dan Akun, Bantuan pindah ke Home, kartu sampul dipakai
+
+**Berkas tujuan:** `docs/desain.md` bagian 9. Menimpa DS10, DS15, dan butir "Ringkasan order 7 hari di menu Lainnya" di bagian 8. Sumber: `home.md` (HM1 sampai HM12, Handoff #1 dan #2). Yang paling akhir menang.
+
+- **DS10 diganti:** tab **Home** ada di **paling kiri** untuk tiga peran, menggantikan Lainnya (owner) dan Akun (customer, penjaga). Owner: Home, Order Masuk, Semua Order, Buat Order, Menu. Customer: Home, Pesan, Pesanan Saya. Penjaga: Home, Antrean. Home juga **halaman pertama setelah masuk**. Alasan belum tercatat.
+- **DS15 diganti:** pintu Bantuan adalah **tombol di Home** untuk semua peran, bukan lagi item di Akun atau Lainnya. Tampil "Segera" dan tidak bisa diketuk sampai `bantuan.md` selesai.
+- **Kartu sampul dipakai (DS2, DS5, HM3):** komponen `.kartu-sampul` (logo ChATA di marun gelap) di `style.css`. Pertanyaan terbuka soal `.contoh-sampul` (Handoff #2 sampai #4) terjawab: blok `.contoh-sampul` dihapus dari `style.css` di HOM.05 dengan "OK" ketua.
+- **Lencana peran** (`.lencana-peran`: Owner, Penjaga, Customer) berpinggir marun, bukan warna lencana status (DS11).
+- **Isi Home dari atas:** kartu sampul, sapaan "Halo, {nama}, selamat datang di Kedai ChATA" dengan lencana peran, tombol Bantuan, bagian Pelanggan (owner, "Segera"), daftar (Ringkasan order 7 hari untuk owner "Segera", Pengaturan akun, Buku alamat untuk customer), lalu Keluar di paling bawah.
+- **Bagian 8:** pintu Ringkasan order 7 hari adalah tombol di Home, bukan menu Lainnya (isi layar tetap di `bonus.md` B31).

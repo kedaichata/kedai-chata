@@ -165,3 +165,9 @@ _(belum ada blok)_
 **Belum beres:** aksi menu belum pernah dipanggil dengan data. Nama kembar, batas harga, nama dan foto tidak valid, serta 403 untuk customer dan penjaga belum dibuktikan; diuji di MNU.06.
 
 **Saran giliran berikutnya (MNU.03, layar Kelola Menu):** minta berkas JS aplikasi dan `style.css` terbaru, `sw.js` (berkas JS baru wajib didaftarkan di cache, butuh "OK"), dan `desain.md`. Isi permintaan: `aksi`, `id`, `nama`, `harga` (bilangan bulat), `foto` (nama berkas, kosong = tanpa foto), `aktifkan`, `tersedia`. Pesan galat dari server sudah aman ditampilkan apa adanya (lewat `textContent`).
+
+### 2026-11-07: Susunan navigasi owner kini dengan Home
+
+**Berkas tujuan:** `docs/menu.md` bagian 9. Sumber: `home.md` HM1 dan Handoff #1. Yang paling akhir menang.
+
+Tab Menu owner tetap ada. Susunan navigasi owner kini: **Home, Order Masuk, Semua Order, Buat Order, Menu** (Home paling kiri, Menu paling kanan). Keputusan menu MN1 sampai MN9 tidak berubah.

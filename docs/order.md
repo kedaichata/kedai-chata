@@ -159,3 +159,9 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 ---
 
 _(belum ada blok)_
+
+### 2026-11-07: Pintu "Pelanggan tanpa akun" ada di Home (owner)
+
+**Berkas tujuan:** `docs/order.md`, Catatan Susulan di akhir berkas. Sumber: `home.md` HM7 dan HOM.04. Yang paling akhir menang.
+
+Item **Pelanggan** ("Pelanggan tanpa akun", O16) untuk owner ada di **Home**, di bagian tersendiri sebelum Pengaturan akun. Tempatnya sudah dibuat dan tampil "Segera" (tidak bisa diketuk). ORD.11 tinggal mengaktifkannya dan membuat layar daftarnya. Wizard Buat Order tetap di tab Buat Order.

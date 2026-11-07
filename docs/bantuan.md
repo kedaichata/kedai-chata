@@ -134,3 +134,10 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua. Dikerjakan **setelah `not
 ---
 
 _(belum ada blok)_
+
+### 2026-11-07: Pintu Bantuan pindah ke Home
+
+**Berkas tujuan:** `docs/bantuan.md`, Catatan Susulan di akhir berkas. Menimpa BT1, baris "Pintu masuk" di bagian 4, dan BTN.03 (letak item Bantuan). Sumber: `home.md` HM5, HOM.03. Yang paling akhir menang.
+
+- Bantuan dibuka dari **tombol Bantuan di Home** untuk semua peran, bukan dari menu Akun atau Lainnya (keduanya sudah tidak ada di navigasi).
+- Tempat tombolnya **sudah dibuat** di `index.html` (id `home-bantuan`), tampil "Segera" dan `disabled` sampai BTN.03 selesai. BTN.03 tinggal **mengaktifkan tombol itu** dan membuat layarnya; tidak perlu membuat item baru di menu.
