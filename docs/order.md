@@ -165,3 +165,16 @@ _(belum ada blok)_
 **Berkas tujuan:** `docs/order.md`, Catatan Susulan di akhir berkas. Sumber: `home.md` HM7 dan HOM.04. Yang paling akhir menang.
 
 Item **Pelanggan** ("Pelanggan tanpa akun", O16) untuk owner ada di **Home**, di bagian tersendiri sebelum Pengaturan akun. Tempatnya sudah dibuat dan tampil "Segera" (tidak bisa diketuk). ORD.11 tinggal mengaktifkannya dan membuat layar daftarnya. Wizard Buat Order tetap di tab Buat Order.
+
+### 2026-11-07: Item order menyimpan pilihan menu
+
+**Berkas tujuan:** `docs/order.md`, Catatan Susulan di akhir berkas. Sumber: blok `2026-11-07: Deskripsi, sheet detail, dan pilihan menu` di `docs/menu.md`. Menambah O3 dan O12. Yang paling akhir menang.
+
+- `order_item` menyimpan **teks pilihan yang disalin** (nama grup dan nama opsi, misal "Tingkat pedas: Tidak pedas"), sama seperti nama dan harga menu disalin. Mengubah atau menonaktifkan grup atau opsi kemudian tidak mengubah order lama.
+- Pilihan **selalu tersimpan eksplisit**, termasuk bila customer tidak mengubah bawaan, sehingga penjaga tidak perlu menebak.
+- `order_buat` menerima **id menu, jumlah, dan id opsi** per item; server memvalidasi opsi terhadap grup yang terpasang di menu. Harga tetap dihitung server; pilihan gratis tidak mengubah total.
+- **Item yang sama dengan pilihan berbeda = baris terpisah** (Mie Ayam Tidak pedas x1 dan Mie Ayam Pedas x1).
+- Add-on berbayar adalah item menu biasa; tidak ada hubungan induk di order.
+- Penjaga dan owner melihat pilihan di baris item pada detail order.
+- Ganti pilihan setelah order dikirim: lewat **catatan baru** (O12) selama belum Diproses (bawaan, sejalan O12).
+- Dampak ke urutan: ORD.01 dan ORD.02 memuat pilihan sejak awal, jadi `order_item` tidak perlu diubah setelah terisi.

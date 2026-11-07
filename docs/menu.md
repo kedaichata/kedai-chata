@@ -225,3 +225,40 @@ Tab Menu owner tetap ada. Susunan navigasi owner kini: **Home, Order Masuk, Semu
 - Menu dummy dari uji ini tetap ada (menu tidak bisa dihapus); nonaktifkan atau pakai ulang sebelum peluncuran.
 
 **Saran giliran berikutnya:** MNU.06 (sesi tes menu, High-Risk P0, bukti untuk hak owner dan harga). Lampirkan `AGENTS.md` + `menu.md` + `database.md` + `security.md`; dokumen `menu-test.md` dibuat di sesi tes. Pakai satu akun per peran (owner, penjaga, customer) dengan data dummy, dan bukti diperiksa di chat lalu tidak disimpan. Setelah itu ORD.01 (migration order, butuh "OK" ketua); di ORD, tombol pilih menu dipasang di `buatKartuPelanggan`, dan tab Pesan di `kerangka.js` sudah memakai panel `pesan`.
+
+### 2026-11-07: Deskripsi, sheet detail, dan pilihan menu (permintaan owner)
+
+**Berkas tujuan:** `docs/menu.md` bagian 9. Menggantikan butir "paket atau varian (pedas, porsi)" di bagian 8 (Ditunda) dan menambah MN4. Yang paling akhir menang.
+
+**Deskripsi dan sheet detail**
+
+- Tiap menu punya **deskripsi (opsional)**, maks 200 karakter, batas disimpan di database (bawaan).
+- Customer mengetuk **kartu menu** (foto atau bagian mana saja) untuk membuka **sheet detail**: foto besar, nama, harga, deskripsi, dan pilihan (bila ada). Tutup lewat tombol X, ketuk di luar, atau geser turun.
+- Menu Habis tetap bisa dibuka, tetapi tidak bisa dipilih (bawaan).
+- Tombol tambah dan jumlah dipasang di sheet yang sama saat ORD dikerjakan; di MNU sheet hanya menampilkan.
+- Target ukuran foto untuk zoom: **belum diputuskan** (30 sampai 50 KB mungkin kurang tajam saat diperbesar; ketua yang memutuskan).
+
+**Add-on berbayar = menu biasa**
+
+- Add-on yang menambah harga (extra telur, es batu) dibuat owner sebagai **menu biasa** dan dipilih customer sebagai item terpisah. Tidak ada harga tambahan per pilihan, sehingga rumus total tidak berubah (MN4 dan O3 utuh).
+- Konsekuensi: add-on tidak terikat ke menu induknya; customer bisa memesannya tanpa menu induk. Diterima karena wajar di warung. Beri nama jelas (misal "Tambah es batu").
+
+**Pilihan gratis (grup pilihan)**
+
+- **Grup pilihan** dibuat owner **sekali**, lalu **dipasang ke menu mana saja** yang perlu (seperti mekanisme merchant GoFood). Menu tanpa grup tidak menampilkan pilihan apa pun (es teh tidak punya pilihan pedas).
+- Satu jenis grup saja: **pilih satu, dengan tepat satu opsi bawaan**. Tanpa harga, tanpa pilih banyak.
+- Contoh: grup "Tingkat pedas" berisi Tidak pedas (**bawaan**), Sedang, Pedas. Bawaan "Tidak pedas" dipilih karena kebanyakan pemesan memesan untuk anak sekolah. Grup lain, misalnya "Dingin / Panas" untuk minuman, dibuat dengan cara yang sama.
+- Satu menu boleh memakai lebih dari satu grup (bawaan).
+- Grup dan opsi **tidak dihapus**, hanya dinonaktifkan (bawaan, sejalan MN3).
+- Pilihan **gratis**: tidak mengubah harga dan total.
+- Catatan "pedas/sedang/tidak" yang tadinya masuk catatan order kini menjadi pilihan di item.
+
+**Perubahan MN4 (aplikasi kirim apa saja)**
+
+Aplikasi mengirim **id menu, jumlah, dan id opsi terpilih** (satu per grup). Server memeriksa bahwa opsi itu milik grup yang terpasang di menu tersebut. Bila tidak dikirim, server memakai opsi bawaan (bawaan). Aplikasi tetap tidak pernah mengirim harga atau total.
+
+**Dampak teknis (butuh "OK" ketua)**
+
+Tabel `menu` sudah live: kolom `deskripsi` adalah perubahan pada tabel yang ada. Tabel grup, opsi, dan pemasangan ke menu baru, serta `menu_simpan` dan `menu_daftar` berubah. Layar Kelola Menu dan `menu.js` (sudah sekitar 800 baris) ikut berubah; komponen sheet sebaiknya berkas baru, sehingga `sw.js` perlu didaftar (butuh "OK").
+
+**Belum diputuskan:** target ukuran foto, batas deskripsi, dan menu Habis boleh dibuka sheet-nya (bawaan: boleh).
