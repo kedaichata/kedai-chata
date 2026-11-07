@@ -6,6 +6,9 @@
 // MNU.04: bagian "daftar untuk customer" (tab Pesan) ada di blok terpisah di bawah. Hanya dilihat, tanpa tombol;
 // tombol pilih menu menyusul di ORD.
 //
+// MNU.08: kartu menu customer bisa diketuk untuk membuka sheet detail (window.KedaiMenuDetail, berkas
+// menu-detail.js). Bila komponen itu belum termuat, kartu tampil dan berperilaku seperti sebelumnya.
+//
 // Aturan yang dijaga:
 // - Yang dikirim hanya aksi dan isian (id, nama, harga angka bulat, nama berkas foto, aktifkan,
 //   tersedia). Aplikasi tidak pernah mengirim peran; server membacanya dari token dan menolak
@@ -671,6 +674,30 @@
     atas.appendChild(info);
     kartu.appendChild(atas);
     // ORD: tombol pilih menu dan jumlah dipasang di sini (hanya untuk menu Tersedia).
+
+    // MNU.08: ketuk kartu (atau Enter/Spasi) membuka sheet detail. Hanya dipasang bila komponennya ada.
+    // Ketukan pada tombol di dalam kartu (nanti dari ORD) tidak ikut membuka sheet.
+    var Detail = window.KedaiMenuDetail;
+    if (Detail && typeof Detail.buka === "function") {
+      kartu.className += " menu-kartu--bisa-diketuk";
+      kartu.setAttribute("role", "button");
+      kartu.tabIndex = 0;
+      kartu.addEventListener("click", function (e) {
+        var dalam =
+          e.target && e.target.closest
+            ? e.target.closest("button, a, input")
+            : null;
+        if (dalam && kartu.contains(dalam)) return;
+        Detail.buka(m, kartu);
+      });
+      kartu.addEventListener("keydown", function (e) {
+        if (e.target !== kartu) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          Detail.buka(m, kartu);
+        }
+      });
+    }
     return kartu;
   }
 
@@ -754,6 +781,13 @@
   // Dipanggil dari reset() saat Keluar: tidak boleh ada data menu tersisa, dan balasan yang masih
   // di jalan diabaikan.
   function resetPelanggan() {
+    // MNU.08: sheet detail yang masih terbuka ditutup seketika saat Keluar.
+    if (
+      window.KedaiMenuDetail &&
+      typeof window.KedaiMenuDetail.tutup === "function"
+    ) {
+      window.KedaiMenuDetail.tutup(true);
+    }
     nomorMuatPelanggan++;
     daftarPelanggan = [];
     termuatPelanggan = false;

@@ -948,3 +948,179 @@ button.navbawah__item:active {
 .home-keluar {
     margin-top: 24px;
 }
+
+/* ------------------------------------------------------------------
+   MNU.08: sheet detail menu untuk customer (menu.md, blok susulan 2026-11-07)
+   Naik dari bawah. Latar isi krem, bingkai marun, warna dari variabel di :root. Hanya tambahan.
+   ------------------------------------------------------------------ */
+
+/* Kartu menu customer yang bisa diketuk (kelas dipasang menu.js hanya bila sheet tersedia) */
+.menu-kartu--bisa-diketuk {
+    cursor: pointer;
+}
+
+.menu-kartu--bisa-diketuk:active {
+    background: rgba(184, 146, 58, 0.12);
+}
+
+.menu-kartu--bisa-diketuk:focus-visible {
+    outline: 3px solid var(--marun);
+    outline-offset: 2px;
+}
+
+/* Halaman di belakang sheet tidak ikut menggulir */
+body.sheet-terbuka {
+    overflow: hidden;
+}
+
+.sheet-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 30; /* di atas bilah atas dan navigasi bawah (z-index 10) */
+}
+
+.sheet-menu__latar {
+    position: absolute;
+    inset: 0;
+    background: rgba(42, 26, 26, 0.55);
+    opacity: 0;
+    transition: opacity 0.22s ease;
+}
+
+.sheet-menu__lembar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-width: 560px; /* di layar lebar sheet tidak melebar penuh */
+    margin: 0 auto;
+    max-height: 85vh;
+    max-height: 85dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--krem);
+    border-top: 3px solid var(--emas-redup);
+    border-radius: 20px 20px 0 0;
+    transform: translateY(100%);
+    transition: transform 0.22s ease;
+}
+
+.sheet-menu--buka .sheet-menu__latar {
+    opacity: 1;
+}
+
+.sheet-menu--buka .sheet-menu__lembar {
+    transform: translateY(0);
+}
+
+/* Garis kecil di tengah atas sebagai petunjuk bahwa sheet bisa ditarik turun */
+.sheet-menu__pegangan {
+    flex: 0 0 auto;
+    position: relative;
+    height: 28px;
+    touch-action: none; /* tarikan di pegangan dipakai untuk menutup, bukan menggulir halaman */
+}
+
+.sheet-menu__pegangan::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    width: 44px;
+    height: 5px;
+    margin-left: -22px;
+    border-radius: 3px;
+    background: var(--emas-redup);
+}
+
+/* Tombol X: marun gelap dengan garis emas, ukuran sentuh 48 px (DS8) */
+.sheet-menu__tutup {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 1px solid var(--emas-redup);
+    border-radius: 50%;
+    background: var(--marun-sangat-gelap);
+    color: var(--teks-terang);
+    cursor: pointer;
+}
+
+.sheet-menu__tutup:active {
+    background: var(--marun);
+}
+
+.sheet-menu__tutup:focus-visible {
+    outline: 3px solid var(--emas-terang);
+    outline-offset: 2px;
+}
+
+.sheet-menu__isi {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0 16px calc(24px + env(safe-area-inset-bottom, 0px));
+}
+
+.sheet-menu__foto {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    overflow: hidden;
+    background: rgba(184, 146, 58, 0.18);
+    color: var(--teks-samar);
+    text-align: center;
+}
+
+.sheet-menu__foto img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.sheet-menu__foto--habis img {
+    filter: grayscale(1);
+    opacity: 0.7;
+}
+
+.sheet-menu__nama {
+    margin: 0 0 4px;
+    font-size: 1.35rem;
+    overflow-wrap: anywhere;
+}
+
+.sheet-menu__harga {
+    margin: 0 0 8px;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.sheet-menu__ket {
+    margin: 10px 0 0;
+}
+
+.sheet-menu__deskripsi {
+    margin: 14px 0 0;
+    white-space: pre-line; /* baris baru yang diketik owner tetap tampil */
+    overflow-wrap: anywhere;
+}
+
+/* Pengguna yang mematikan animasi di HP: sheet muncul dan hilang tanpa gerak */
+@media (prefers-reduced-motion: reduce) {
+    .sheet-menu__latar,
+    .sheet-menu__lembar {
+        transition: none;
+    }
+}
