@@ -120,3 +120,37 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 ---
 
 _(belum ada blok)_
+
+### Handoff #1 | 2026-11-07 | [Ketua]
+
+**Tugas selesai:** HOM.01 dan HOM.02 (tinggal dicentang di sheet).
+
+**File yang diubah:**
+
+- HOM.01: `public/kerangka.js`, `public/index.html`.
+- HOM.02: `public/style.css` (hanya menambah di akhir), `public/index.html`, `public/kerangka.js`, `public/akun.js` (satu baris; "OK" ketua diberikan di chat).
+- `sw.js` tidak disentuh (tidak ada berkas baru; `chata-logo.png` sudah ada di cache). Hash commit belum dicatat.
+- Kode lama tidak ada yang dihapus. Yang diganti dijadikan komentar bertanda `HOM.01` atau `HOM.02`.
+
+**Isi:**
+
+- HOM.01: tab Home (ikon rumah) menggantikan Lainnya (owner) dan Akun (customer, penjaga). Home memakai panel blok akun yang sudah ada (Buku alamat, Pengaturan akun, Keluar), untuk semua peran.
+- HOM.02: kartu sampul (`.kartu-sampul`, logo ChATA di marun gelap dengan pendar dan hiasan emas), kartu sapaan "Halo, {nama}, selamat datang di Kedai ChATA", dan lencana peran (`.lencana-peran`, berpinggir marun, bukan warna lencana status). Nama dan peran lewat `textContent`; `akun.js` mengirim nama sebagai argumen kedua `atur(peran, nama)`, tanpa panggilan server baru. Nama dan lencana dibersihkan saat Keluar.
+
+**Keputusan baru:**
+
+- **HM1 berubah:** Home di posisi **paling kiri**, bukan paling kanan. Owner: Home, Order Masuk, Semua Order, Buat Order, Menu. Customer: Home, Pesan, Pesanan Saya. Penjaga: Home, Antrean. Menimpa HM1 dan DS10. Alasan belum tercatat.
+- **HM11 berubah:** Home menjadi **halaman pertama setelah masuk** untuk semua peran (bukan tab kerja pertama). Alasan belum tercatat.
+- **HM8 dikonfirmasi tetap:** item Aktifkan Notifikasi baru muncul setelah `notifikasi.md` selesai (tidak tampil sebagai "Segera").
+- **HM3 terpenuhi:** kartu sampul baru dipakai, jadi pertanyaan terbuka soal `.contoh-sampul` (Handoff `desain.md`) terjawab: dipakai (komponen baru). Penghapusan `.contoh-sampul` yang lama tetap di HOM.05.
+
+**Hasil tes:** HOM.01 dan HOM.02 dites di HP dan laptop dengan tiga peran (owner, penjaga, customer), sesuai. Bukti diperiksa di chat dan tidak disimpan.
+
+**Belum beres:**
+
+- Panel Lainnya (`panel-lainnya`, `lainnya-akun`) masih ada di `index.html` tetapi tidak terjangkau. Item Pelanggan dan Bantuan ("Segera") belum punya jalan masuk sampai HOM.03 dan HOM.04.
+- Kartu "Selamat datang" lama hanya disembunyikan (`hidden`). `akun.js` masih mengisi `#sapaan` dan `#catatan-profil`. Penghapusan di HOM.05 (butuh "OK" dan satu blok catatan).
+- Tombol Buku alamat, Pengaturan akun, dan Keluar masih bergaya lama; dirapikan di HOM.04.
+- Komentar lama di `kerangka.js` dan `index.html` (tab Lainnya dan Akun) belum dibersihkan; ikut HOM.05 bila diizinkan.
+
+**Saran giliran berikutnya:** HOM.03 (tombol Bantuan "Segera", Low-Risk), lalu HOM.04. Lampirkan `AGENTS.md` + `home.md` + `desain.md` + versi terbaru `public/kerangka.js`, `public/index.html`, `public/style.css` (+ `public/akun.js`, `public/akunmenu.js`, `public/alamat.js` untuk HOM.04). Sebelum push, cek tiga hal anti-nyasar. Logout GitHub dan Supabase di profil browser setelah selesai.
