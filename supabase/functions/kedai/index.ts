@@ -4,6 +4,9 @@
 // AKN.07: ditambah `alamat_simpan` dan `alamat_nonaktif` (buku alamat, akun.md AK9).
 // AKN.08a: ditambah `ganti_nama` dan `ganti_wa` (menu Akun, akun.md AK7, AK8).
 // MNU.02: ditambah `menu_daftar`, `menu_simpan`, `menu_stok`, `menu_nonaktif` (menu.md MN5).
+// MNU.07: `menu_simpan` menerima isian `deskripsi` (WAJIB dikirim, teks, boleh kosong; boleh beberapa baris)
+//         dan memanggil fungsi SQL menu_simpan versi 7 argumen. Kode galat baru: deskripsi_tidak_valid.
+//         `menu_daftar` tidak diubah di sini: fungsi SQL-nya kini membawa field `deskripsi`.
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -472,6 +475,8 @@ const PETA_GALAT_MENU: Record<string, [number, string]> = {
   menu_tidak_ditemukan: [404, "Menu tidak ditemukan."],
   menu_tidak_aktif: [409, "Menu ini nonaktif. Aktifkan dulu."],
   stok_tidak_valid: [400, "Data belum lengkap atau tidak valid."],
+  // MNU.07: batas panjang ada di pengaturan `deskripsi_menu_maks`, jadi pesan tanpa angka (tidak ditulis mati).
+  deskripsi_tidak_valid: [400, "Deskripsi menu terlalu panjang."],
 };
 
 // Batas atas bilangan bulat 32-bit (kolom harga bertipe integer).
@@ -543,6 +548,17 @@ async function aksiMenuSimpan(
     foto = teksFoto.trim() === "" ? null : teksFoto.trim();
   }
 
+  // Deskripsi (MNU.07): WAJIB dikirim dan berupa teks (boleh kosong = tanpa deskripsi). Bila field tidak ada,
+  // permintaan ditolak supaya deskripsi lama tidak terhapus tanpa sengaja. Boleh beberapa baris; fungsi SQL
+  // merapikan dan mengecek batas panjang dari pengaturan (ini hanya pagar kasar).
+  if (typeof isi.deskripsi !== "string") {
+    return galat(req, 400, "Data belum lengkap atau tidak valid.");
+  }
+  const deskripsi = teksAtauNull(isi.deskripsi);
+  if (deskripsi === null) {
+    return galat(req, 400, PETA_GALAT_MENU.deskripsi_tidak_valid[1]);
+  }
+
   // `id` kosong = tambah menu baru; `id` terisi = ubah menu itu.
   let idMenu: string | null = null;
   if (isi.id !== undefined && isi.id !== null) {
@@ -561,6 +577,7 @@ async function aksiMenuSimpan(
     p_nama: nama,
     p_harga: isi.harga,
     p_foto: foto,
+    p_deskripsi: deskripsi,
     p_aktifkan: aktifkan,
   });
   if (error) {

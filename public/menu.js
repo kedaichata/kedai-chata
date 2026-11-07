@@ -9,8 +9,13 @@
 // MNU.08: kartu menu customer bisa diketuk untuk membuka sheet detail (window.KedaiMenuDetail, berkas
 // menu-detail.js). Bila komponen itu belum termuat, kartu tampil dan berperilaku seperti sebelumnya.
 //
+// MNU.07: deskripsi menu (opsional, boleh beberapa baris). Owner mengisinya lewat kolom Deskripsi di form
+// Kelola Menu; `deskripsi` ikut dikirim pada SETIAP menu_simpan (server menolak bila field-nya tidak ada,
+// supaya deskripsi lama tidak terhapus tanpa sengaja), termasuk saat Aktifkan kembali. Customer melihatnya
+// di sheet detail (menu-detail.js). Batas panjang diputuskan server (pengaturan deskripsi_menu_maks).
+//
 // Aturan yang dijaga:
-// - Yang dikirim hanya aksi dan isian (id, nama, harga angka bulat, nama berkas foto, aktifkan,
+// - Yang dikirim hanya aksi dan isian (id, nama, harga angka bulat, nama berkas foto, deskripsi, aktifkan,
 //   tersedia). Aplikasi tidak pernah mengirim peran; server membacanya dari token dan menolak
 //   selain owner. Menyembunyikan tab Menu dari peran lain hanya kemudahan.
 // - Cek di aplikasi hanya kemudahan (panjang nama, harga angka bulat, bentuk nama berkas). Batas harga
@@ -131,6 +136,8 @@
           aktif: m.aktif === true,
           foto:
             typeof m.foto === "string" && REGEX_FOTO.test(m.foto) ? m.foto : "",
+          // MNU.07: teks apa adanya dari server (sudah dirapikan server); kosong bila tanpa deskripsi.
+          deskripsi: typeof m.deskripsi === "string" ? m.deskripsi : "",
         });
       }
     }
@@ -153,6 +160,7 @@
     A.galatIsian("isian-menu-nama", "");
     A.galatIsian("isian-menu-harga", "");
     A.galatIsian("isian-menu-foto", "");
+    A.galatIsian("isian-menu-deskripsi", "");
     A.galatForm("menu", "");
   }
 
@@ -469,6 +477,7 @@
       nama: m.nama,
       harga: m.harga,
       foto: m.foto,
+      deskripsi: m.deskripsi,
       aktifkan: true,
     })
       .then(function (h) {
@@ -502,6 +511,7 @@
     el("menu-nama").value = m ? m.nama : "";
     el("menu-harga").value = m ? String(m.harga) : "";
     el("menu-berkas-foto").value = m ? m.foto : "";
+    el("menu-deskripsi").value = m ? m.deskripsi : "";
     el("menu-daftar-bungkus").hidden = true;
     el("menu-form-bungkus").hidden = false;
     window.scrollTo(0, 0);
@@ -512,6 +522,7 @@
     el("menu-nama").value = "";
     el("menu-harga").value = "";
     el("menu-berkas-foto").value = "";
+    el("menu-deskripsi").value = "";
     bersihkanGalatForm();
     el("menu-form-bungkus").hidden = true;
     el("menu-daftar-bungkus").hidden = false;
@@ -528,6 +539,9 @@
     var nama = el("menu-nama").value.replace(/\s+/g, " ").trim();
     var teksHarga = el("menu-harga").value.replace(/[.\s]/g, "");
     var foto = el("menu-berkas-foto").value.trim();
+    // Deskripsi boleh beberapa baris. Di sini hanya penyeragaman baris baru dan buang spasi di tepi;
+    // server merapikan sisanya dan memutuskan batas panjang.
+    var deskripsi = el("menu-deskripsi").value.replace(/\r\n?/g, "\n").trim();
 
     var lengkap = true;
     if (nama.length < 3 || nama.length > 40) {
@@ -550,7 +564,12 @@
     }
     if (!lengkap) return;
 
-    var data = { nama: nama, harga: Number(teksHarga), foto: foto };
+    var data = {
+      nama: nama,
+      harga: Number(teksHarga),
+      foto: foto,
+      deskripsi: deskripsi,
+    };
     var tambah = idUbah === null;
     if (!tambah) data.id = idUbah;
     var pesanSukses = tambah ? "Menu ditambahkan." : "Perubahan menu disimpan.";
@@ -622,6 +641,8 @@
               typeof m.foto === "string" && REGEX_FOTO.test(m.foto)
                 ? m.foto
                 : "",
+            // MNU.07: dipakai sheet detail (menu-detail.js); kosong bila tanpa deskripsi.
+            deskripsi: typeof m.deskripsi === "string" ? m.deskripsi : "",
           });
         }
       } else {
