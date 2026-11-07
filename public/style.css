@@ -32,6 +32,17 @@ html {
     text-size-adjust: 100%;
 }
 
+/* TMN.01: elemen berstatus hidden harus benar-benar hilang. Tanpa aturan ini, kelas yang
+   mengatur display (misalnya .tombol dan .baris-tombol: flex) menimpa atribut hidden. */
+[hidden] {
+    display: none !important;
+}
+
+/* TMN.01: baris tombol yang satu-satunya isinya tersembunyi ikut hilang (tanpa jarak kosong) */
+.baris-tombol:has(> [hidden]:only-child) {
+    display: none;
+}
+
 body {
     margin: 0;
     padding: 16px;
