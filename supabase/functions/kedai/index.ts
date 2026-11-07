@@ -7,6 +7,9 @@
 // MNU.07: `menu_simpan` menerima isian `deskripsi` (WAJIB dikirim, teks, boleh kosong; boleh beberapa baris)
 //         dan memanggil fungsi SQL menu_simpan versi 7 argumen. Kode galat baru: deskripsi_tidak_valid.
 //         `menu_daftar` tidak diubah di sini: fungsi SQL-nya kini membawa field `deskripsi`.
+// MNU.09 (giliran 2): ditambah `grup_daftar`, `grup_simpan`, `grup_nonaktif`, `menu_grup_atur`
+//         (grup pilihan gratis; semuanya owner saja). `menu_daftar` tidak diubah di sini:
+//         fungsi SQL-nya kini membawa field `grup`. Kode galat baru dipetakan di PETA_GALAT_GRUP.
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -643,6 +646,221 @@ async function aksiMenuNonaktif(
 }
 
 // ------------------------------------------------------------
+// Aksi: grup_daftar, grup_simpan, grup_nonaktif, menu_grup_atur (MNU.09 giliran 2)
+// Semuanya HANYA owner (SEC-07, SEC-08), dicek dua lapis: di sini dan di fungsi SQL.
+// ID pelaku selalu dari token. Aplikasi hanya mengirim nama, daftar opsi, dan id pilihan;
+// peran dan id pelaku dari aplikasi diabaikan (SEC-06).
+// Aturan sebenarnya dicek fungsi SQL (aturan 19); ini hanya pagar kasar dan bentuk data.
+// Balasan sukses memuat daftar terbaru (`grup` dan/atau `menu`) supaya aplikasi tidak
+// perlu memanggil lagi. `grup` = semua grup beserta semua opsinya (termasuk nonaktif),
+// karena `grup_simpan` meminta daftar opsi LENGKAP saat mengubah grup.
+// ------------------------------------------------------------
+
+// Kode galat fungsi SQL grup pilihan -> status dan pesan aman (AK14)
+// Pesan batas jumlah sengaja tanpa angka: batasnya ada di pengaturan, bukan ditulis mati.
+// (id_kosong dan pengaturan_rusak sengaja tidak dipetakan: jadi galat umum 500;
+//  pilihan_rusak hanya muncul dari opsi_periksa yang belum dipanggil aksi mana pun,
+//  jadi dipetakan nanti di ORD.01.)
+const PETA_GALAT_GRUP: Record<string, [number, string]> = {
+  bukan_owner: [403, "Aksi ini hanya untuk owner."],
+  grup_nama_tidak_valid: [400, "Nama grup 3 sampai 30 karakter."],
+  grup_nama_kembar: [409, "Sudah ada grup aktif dengan nama yang sama."],
+  grup_tidak_ditemukan: [404, "Grup pilihan tidak ditemukan."],
+  grup_tidak_aktif: [409, "Grup ini nonaktif. Aktifkan dulu."],
+  grup_tidak_valid: [400, "Data belum lengkap atau tidak valid."],
+  grup_terlalu_banyak: [409, "Jumlah grup di menu ini sudah mencapai batas."],
+  opsi_tidak_valid: [
+    400,
+    "Pilihan tidak valid. Tiap grup butuh minimal 2 pilihan aktif, tepat satu pilihan bawaan yang aktif, dan nama pilihan 2 sampai 30 karakter.",
+  ],
+  opsi_tidak_lengkap: [
+    409,
+    "Daftar pilihan sudah berubah. Muat ulang layar lalu coba lagi.",
+  ],
+  opsi_nama_kembar: [
+    409,
+    "Ada pilihan aktif dengan nama yang sama di grup ini.",
+  ],
+  opsi_terlalu_banyak: [
+    409,
+    "Jumlah pilihan aktif di grup ini sudah mencapai batas.",
+  ],
+  menu_tidak_ditemukan: [404, "Menu tidak ditemukan."],
+};
+
+// Pagar kasar jumlah elemen kiriman (batas sebenarnya dicek fungsi SQL dari pengaturan).
+const BATAS_OPSI_KIRIMAN = 100;
+const BATAS_GRUP_KIRIMAN = 50;
+
+// Semua grup beserta semua opsinya (hanya dipanggil untuk owner).
+async function bacaDaftarGrup(): Promise<unknown[]> {
+  const { data, error } = await admin!.rpc("grup_daftar", { p_semua: true });
+  if (error) throw new Error("grup_daftar:" + (error.code ?? ""));
+  return Array.isArray(data) ? data : [];
+}
+
+// Rapikan bentuk daftar opsi kiriman aplikasi: hanya field id, nama, bawaan, aktif yang diteruskan.
+// null = bentuk tidak valid. Aturan isi (jumlah, bawaan, nama kembar, dst) dicek fungsi SQL.
+function rapikanOpsi(v: unknown): Record<string, unknown>[] | null {
+  if (!Array.isArray(v) || v.length > BATAS_OPSI_KIRIMAN) return null;
+  const hasil: Record<string, unknown>[] = [];
+  for (const el of v) {
+    if (el === null || typeof el !== "object" || Array.isArray(el)) return null;
+    const o = el as Record<string, unknown>;
+    const item: Record<string, unknown> = {};
+
+    // id: kosong = opsi baru; terisi harus uuid
+    if (o.id === undefined || o.id === null || o.id === "") {
+      item.id = null;
+    } else if (typeof o.id === "string" && REGEX_UUID.test(o.id)) {
+      item.id = o.id;
+    } else {
+      return null;
+    }
+
+    // nama: teks (rapikan dan batas panjang dicek fungsi SQL)
+    const nama = teksAtauNull(o.nama);
+    if (nama === null) return null;
+    item.nama = nama;
+
+    // bawaan dan aktif: boleh tidak dikirim; bila dikirim harus boolean
+    if (o.bawaan !== undefined && o.bawaan !== null) {
+      if (typeof o.bawaan !== "boolean") return null;
+      item.bawaan = o.bawaan;
+    }
+    if (o.aktif !== undefined && o.aktif !== null) {
+      if (typeof o.aktif !== "boolean") return null;
+      item.aktif = o.aktif;
+    }
+    hasil.push(item);
+  }
+  return hasil;
+}
+
+async function aksiGrupDaftar(
+  req: Request,
+  pengguna: Pengguna,
+): Promise<Response> {
+  const tolak = await tolakBukanOwner(req, pengguna);
+  if (tolak) return tolak;
+
+  return balas(req, 200, { ok: true, grup: await bacaDaftarGrup() });
+}
+
+async function aksiGrupSimpan(
+  req: Request,
+  pengguna: Pengguna,
+  isi: Record<string, unknown>,
+): Promise<Response> {
+  const tolak = await tolakBukanOwner(req, pengguna);
+  if (tolak) return tolak;
+
+  const nama = teksAtauNull(isi.nama);
+  const opsi = rapikanOpsi(isi.opsi);
+  if (nama === null || opsi === null) {
+    return galat(req, 400, "Data belum lengkap atau tidak valid.");
+  }
+
+  // `id` kosong = tambah grup baru; `id` terisi = ubah grup itu (opsi harus LENGKAP).
+  let idGrup: string | null = null;
+  if (isi.id !== undefined && isi.id !== null) {
+    if (typeof isi.id !== "string" || !REGEX_UUID.test(isi.id)) {
+      return galat(req, 400, "Data belum lengkap atau tidak valid.");
+    }
+    idGrup = isi.id;
+  }
+
+  // `aktifkan` = true: aktifkan kembali grup nonaktif sambil mengubahnya. Selain true dianggap tidak.
+  const aktifkan = isi.aktifkan === true;
+
+  const { data, error } = await admin!.rpc("grup_simpan", {
+    p_oleh: pengguna.id,
+    p_id: idGrup,
+    p_nama: nama,
+    p_opsi: opsi,
+    p_aktifkan: aktifkan,
+  });
+  if (error) {
+    return galatDariDb(req, error, PETA_GALAT_GRUP, "grup_simpan");
+  }
+
+  // `menu` ikut dibalas karena nama grup dan opsi tampil di tiap menu (field `grup`).
+  return balas(req, 200, {
+    ok: true,
+    id: typeof data === "string" ? data : null,
+    grup: await bacaDaftarGrup(),
+    menu: await bacaDaftarMenu(true),
+  });
+}
+
+async function aksiGrupNonaktif(
+  req: Request,
+  pengguna: Pengguna,
+  isi: Record<string, unknown>,
+): Promise<Response> {
+  const tolak = await tolakBukanOwner(req, pengguna);
+  if (tolak) return tolak;
+
+  if (typeof isi.id !== "string" || !REGEX_UUID.test(isi.id)) {
+    return galat(req, 400, "Data belum lengkap atau tidak valid.");
+  }
+
+  const { error } = await admin!.rpc("grup_nonaktif", {
+    p_oleh: pengguna.id,
+    p_id: isi.id,
+  });
+  if (error) {
+    return galatDariDb(req, error, PETA_GALAT_GRUP, "grup_nonaktif");
+  }
+
+  return balas(req, 200, {
+    ok: true,
+    grup: await bacaDaftarGrup(),
+    menu: await bacaDaftarMenu(true),
+  });
+}
+
+async function aksiMenuGrupAtur(
+  req: Request,
+  pengguna: Pengguna,
+  isi: Record<string, unknown>,
+): Promise<Response> {
+  const tolak = await tolakBukanOwner(req, pengguna);
+  if (tolak) return tolak;
+
+  if (typeof isi.menu_id !== "string" || !REGEX_UUID.test(isi.menu_id)) {
+    return galat(req, 400, "Data belum lengkap atau tidak valid.");
+  }
+
+  // `grup_ids` = daftar LENGKAP grup aktif yang diinginkan (urutan = urutan tampil);
+  // daftar kosong = lepas semua. Dobel dan batas jumlah dicek fungsi SQL.
+  if (
+    !Array.isArray(isi.grup_ids) ||
+    isi.grup_ids.length > BATAS_GRUP_KIRIMAN
+  ) {
+    return galat(req, 400, "Data belum lengkap atau tidak valid.");
+  }
+  const grupIds: string[] = [];
+  for (const g of isi.grup_ids) {
+    if (typeof g !== "string" || !REGEX_UUID.test(g)) {
+      return galat(req, 400, "Data belum lengkap atau tidak valid.");
+    }
+    grupIds.push(g);
+  }
+
+  const { error } = await admin!.rpc("menu_grup_atur", {
+    p_oleh: pengguna.id,
+    p_menu_id: isi.menu_id,
+    p_grup_ids: grupIds,
+  });
+  if (error) {
+    return galatDariDb(req, error, PETA_GALAT_GRUP, "menu_grup_atur");
+  }
+
+  return balas(req, 200, { ok: true, menu: await bacaDaftarMenu(true) });
+}
+
+// ------------------------------------------------------------
 // Pintu masuk
 // ------------------------------------------------------------
 
@@ -707,6 +925,14 @@ Deno.serve(async (req: Request): Promise<Response> => {
         return await aksiMenuStok(req, pengguna, isi);
       case "menu_nonaktif":
         return await aksiMenuNonaktif(req, pengguna, isi);
+      case "grup_daftar":
+        return await aksiGrupDaftar(req, pengguna);
+      case "grup_simpan":
+        return await aksiGrupSimpan(req, pengguna, isi);
+      case "grup_nonaktif":
+        return await aksiGrupNonaktif(req, pengguna, isi);
+      case "menu_grup_atur":
+        return await aksiMenuGrupAtur(req, pengguna, isi);
       default:
         return galat(req, 400, "Aksi tidak dikenal.");
     }
