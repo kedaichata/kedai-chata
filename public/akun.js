@@ -221,27 +221,8 @@
   function isiSementara(d) {
     var nama =
       typeof d.nama_tampilan === "string" ? d.nama_tampilan.trim() : "";
-    var label = Object.prototype.hasOwnProperty.call(LABEL_PERAN, d.peran)
-      ? LABEL_PERAN[d.peran]
-      : "pengguna";
-    el("sapaan").textContent =
-      (nama ? "Halo " + nama + ", " : "Halo, ") +
-      "Anda berhasil masuk sebagai " +
-      label +
-      ".";
-
-    // AKN.07: tombol Buku alamat hanya untuk customer (alamat.js yang memasang kliknya).
-    var tombolAlamat = el("tombol-buku-alamat");
-    if (tombolAlamat) {
-      tombolAlamat.hidden = d.peran !== "customer";
-    }
-
-    // AKN.08a: tombol Akun (akunmenu.js yang memasang kliknya).
-    // TMN.01: kini tampil untuk semua peran, karena staf memakainya untuk ganti password.
-    var tombolAkun = el("tombol-akun");
-    if (tombolAkun) {
-      tombolAkun.hidden = false;
-    }
+    // HOM.05: sapaan lama (#sapaan), tombol Buku alamat, dan tombol Akun dihapus.
+    // Sapaan kini di kartu Home (kerangka.js), dan Home yang membuka layar Akun dan Buku alamat.
 
     // TMN.01: kartu Ganti nama dan Ganti nomor WA hanya untuk customer (server menolak staf dengan 403).
     var kartuNama = el("kartu-akun-nama");
@@ -253,16 +234,7 @@
       kartuWa.hidden = d.peran !== "customer";
     }
 
-    var catatan = el("catatan-profil");
-    if (d.peran === "customer") {
-      catatan.textContent = d.profil
-        ? "Profil Anda sudah lengkap."
-        : "Profil belum lengkap. Layar Lengkapi profil menyusul di langkah berikutnya.";
-      catatan.hidden = false;
-    } else {
-      catatan.textContent = "";
-      catatan.hidden = true;
-    }
+    // HOM.05: catatan profil lama (#catatan-profil) dihapus.
 
     // KRG.01: kerangka layar utama (kerangka.js) memasang navigasi dan tab sesuai peran dari server.
     if (

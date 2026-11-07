@@ -415,7 +415,7 @@
     el("alamat-ringkas").textContent = "";
   }
 
-  el("tombol-buku-alamat").addEventListener("click", tampil);
+  // HOM.05: pendengar tombol lama "tombol-buku-alamat" dihapus; layar dibuka dari Home (kerangka.js).
   el("alamat-tambah").addEventListener("click", function () {
     galatDaftar("");
     bukaForm(null);

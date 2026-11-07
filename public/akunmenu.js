@@ -278,7 +278,7 @@
   // Pasang pendengar
   // ------------------------------------------------------------
 
-  el("tombol-akun").addEventListener("click", tampil);
+  // HOM.05: pendengar tombol lama "tombol-akun" dihapus; layar Akun dibuka dari Home (kerangka.js).
   el("form-akun-nama").addEventListener("submit", kirimNama);
   el("form-akun-wa").addEventListener("submit", kirimWa);
   el("form-akun-pw").addEventListener("submit", kirimPw);
