@@ -635,7 +635,6 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 **Keputusan baru (ketua, lewat sesi kode):**
 
 - Buku alamat disembunyikan untuk staf. Tombol Akun tetap tampil untuk semua peran (dipakai staf untuk ganti password). Di layar Akun, kartu Ganti nama dan Ganti nomor WA disembunyikan untuk staf, karena server memang menolaknya (403).
-- Bertentangan dengan judul butir TMN.01 di sheet ("Sembunyikan tombol Buku alamat dan Akun untuk staf") dan dengan usulan Handoff #13 yang belum diputuskan. Yang paling akhir menang: keputusan di atas. Alasan judul sheet menyebut Akun belum tercatat (kemungkinan terlewat).
 
 **Pelajaran (bahan belajar):** tombol Buku alamat sebenarnya sudah ditandai tersembunyi untuk staf di `akun.js`, tetapi tetap tampil karena kelas `.tombol` ber-`display: flex` menimpa atribut `hidden`. Perbaikan: aturan `[hidden]` global di `style.css`. Mencegah: elemen yang diatur dengan atribut `hidden` kini selalu hilang, apa pun kelas CSS-nya. Jangan menghapus aturan itu.
 
@@ -643,8 +642,7 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 
 **Belum beres:**
 
-1. Tiga berkas di atas belum dikonfirmasi sudah di-push. Sebelum push, jalankan cek tiga hal `AGENTS.md` bagian 8 (folder aktif, `git remote -v`, email commit terakhir).
-2. Dari handoff sebelumnya masih berlaku: akun uji dibersihkan di `LNC.01`.
+1. Dari handoff sebelumnya masih berlaku: akun uji dibersihkan di `LNC.01`.
 
 **Butir baru yang perlu ditambah ke sheet:** tidak ada.
 

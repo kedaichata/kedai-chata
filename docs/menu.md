@@ -125,3 +125,21 @@ _(belum ada blok)_
 - Tabel `menu` memberi pagar kedua: harga lebih dari 0, nama 3 sampai 40 karakter.
 - Urutan bawaan daftar menu: nama A sampai Z.
 - Mengaktifkan kembali menu lewat `menu_simpan` (owner).
+
+### Handoff #N | 2026-11-07 | KETUA
+
+**Tugas:** MNU.01 selesai. Tabel `menu`, hak minimal, RLS, dan pengaturan `harga_maks_menu` sudah jalan di production dan lulus semua cek (RLS aktif, tanpa policy, hak `service_role` hanya SELECT/INSERT/UPDATE, tabel kosong). Sudah di-push (commit `e9fe2d3`).
+
+**Berkas diubah:** `supabase/migrations/20261107_menu.sql`, `supabase/migrations/20261107_menu_batal.sql`, `supabase/templates/20261107_menu_cek.sql`, serta blok susulan di `docs/menu.md` dan `docs/database.md`.
+
+**Keputusan baru:** lihat blok `2026-11-07: Foto menu di public/img` di atas (foto di `public/img`, nama kembar ditolak, pagar kedua di tabel, urutan A sampai Z, batas harga 200000).
+
+**Belum beres:** aturan nama dan foto di tabel belum diuji dengan data (tabel masih kosong); diuji di MNU.06.
+
+**Saran giliran berikutnya (MNU.02):** minta `supabase/functions/kedai/` terbaru dan jelaskan dampak sebelum "OK". Fungsi SQL menu dibuat di sini, bukan di MNU.01:
+
+- Isi `diubah_pada` dan `diubah_oleh` di fungsi (tidak ada trigger).
+- Rapikan nama sebelum simpan (spasi di awal, akhir, dan ganda), karena tabel menolaknya.
+- Cek harga terhadap `harga_maks_menu`.
+- Petakan `unique_violation` nama kembar ke satu kode galat aman, termasuk saat mengaktifkan kembali menu yang namanya sudah dipakai menu aktif.
+- `menu_daftar` mengembalikan hanya nama berkas foto, urut nama A sampai Z; customer hanya melihat menu aktif.
