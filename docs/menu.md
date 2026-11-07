@@ -198,3 +198,30 @@ Tab Menu owner tetap ada. Susunan navigasi owner kini: **Home, Order Masuk, Semu
 - Handler fetch `sw.js` menyimpan semua respons sukses domain sendiri, jadi foto menu ikut tersimpan walau tidak ada di `DAFTAR_CACHE` (berbeda dari catatan "cukup di-cache browser"). Putuskan nanti apakah perlu dikecualikan.
 
 **Saran giliran berikutnya (MNU.04, daftar menu untuk customer):** minta `menu.js`, `kerangka.js`, `index.html`, `style.css`, `sw.js` (berkas JS baru wajib didaftarkan, butuh "OK"), dan `desain.md`. `KedaiMenu` hanya mengekspos `tampil` dan `reset`, jadi pembantu kartu, `rupiah`, dan foto perlu diekspos atau dipisah bila dipakai ulang. Customer memakai `menu_daftar` (hanya menu aktif); menu Habis abu-abu dan tidak bisa dipilih; aplikasi tidak pernah mengirim harga atau total, hanya id menu dan jumlah (MN4). Tab Pesan customer di `kerangka.js` masih "segera".
+
+### Handoff #4 | 2026-11-07 | KETUA
+
+**Berkas tujuan:** `docs/menu.md` bagian 9. Yang paling akhir menang.
+
+**Tugas:** MNU.04 selesai (daftar menu untuk customer, tab Pesan). Sudah di-push (commit `<hash>`). Hasil lihat langsung: dua menu dummy tampil benar di tab Pesan customer, satu Habis (abu-abu, lencana Habis) dan satu Tersedia (lencana Tersedia), foto kosong tampil placeholder "Tanpa foto". Ikut dibereskan: isian harga di Kelola Menu kini langsung membuang huruf saat diketik.
+
+**Berkas diubah:** `public/menu.js`, `public/kerangka.js`, `public/index.html`, `public/style.css`. `sw.js` tidak disentuh (cache tetap `chata-v8`), tidak ada berkas JS baru. Tidak ada kode lama yang dihapus; dua baris lama di `kerangka.js` (tab Pesan dan daftar `PANEL`) dijadikan komentar.
+
+**Keputusan baru:**
+
+- Tab Pesan customer hanya **menampilkan** daftar menu aktif; tombol pilih dan jumlah dikerjakan di ORD (keputusan ketua di chat). Tempat tombol nanti: fungsi `buatKartuPelanggan` di `menu.js` (hanya untuk menu Tersedia).
+- Menu Habis tampil abu-abu dengan lencana Habis (kelas `.menu-kartu--habis`). Server menyaring menu nonaktif; aplikasi menyaring sekali lagi bila ada `aktif: false`.
+- Daftar dimuat saat tab dibuka dan lewat Segarkan, tanpa polling. Bila gagal muat, daftar lama (bila ada) tetap tampil bersama pesan galat. Saat Keluar, data dibersihkan dan balasan yang telat datang diabaikan.
+- Logika customer ditaruh di `menu.js` (bukan berkas baru) supaya `sw.js` tidak perlu diubah. Akibatnya `menu.js` sekitar 800 baris (pedoman ~500); pecah bila ORD menambah panjang.
+- Isian harga membuang huruf dan simbol saat diketik (titik dan spasi tetap boleh); cek lengkap tetap di `kirim()` dan server.
+- Aturan nama berkas foto dipertegas: huruf kecil, angka, strip, berakhiran `.jpg` atau `.webp` (`.jpeg` dan `.png` ditolak). Owner mengisi nama berkasnya saja (contoh `nasi-ayam.jpg`), tanpa `public/img/`.
+
+**Belum beres:**
+
+- Foto menu belum dicoba dengan berkas sungguhan (hanya placeholder yang terlihat). Uji: taruh berkas di `public/img`, push, isi nama berkasnya lewat Ubah.
+- Belum dibuktikan dengan data: nama kembar (termasuk saat Aktifkan kembali), batas harga 200000, Nonaktifkan dan Aktifkan kembali, serta 403 bila customer atau penjaga memanggil `menu_simpan`, `menu_stok`, atau `menu_nonaktif`. Diuji di MNU.06.
+- Nama kembar dikenali dari teks pesan ("nama yang sama"), sedangkan Handoff #2 menyebut kode `nama_kembar`; cek mana yang benar saat uji.
+- Handler fetch `sw.js` menyimpan semua respons sukses domain sendiri, jadi foto menu ikut tersimpan walau tidak ada di `DAFTAR_CACHE`. Putuskan nanti apakah perlu dikecualikan.
+- Menu dummy dari uji ini tetap ada (menu tidak bisa dihapus); nonaktifkan atau pakai ulang sebelum peluncuran.
+
+**Saran giliran berikutnya:** MNU.06 (sesi tes menu, High-Risk P0, bukti untuk hak owner dan harga). Lampirkan `AGENTS.md` + `menu.md` + `database.md` + `security.md`; dokumen `menu-test.md` dibuat di sesi tes. Pakai satu akun per peran (owner, penjaga, customer) dengan data dummy, dan bukti diperiksa di chat lalu tidak disimpan. Setelah itu ORD.01 (migration order, butuh "OK" ketua); di ORD, tombol pilih menu dipasang di `buatKartuPelanggan`, dan tab Pesan di `kerangka.js` sudah memakai panel `pesan`.

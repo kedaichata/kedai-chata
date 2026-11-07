@@ -801,6 +801,16 @@
   el("menu-batal").addEventListener("click", tutupForm);
   el("form-menu").addEventListener("submit", kirim);
 
+  // Isian harga hanya menerima angka: huruf dan tanda lain langsung dibuang saat diketik. Titik dan spasi
+  // tetap boleh ("15.000"); dibuang saat kirim. Cek lengkap tetap di kirim() dan di server.
+  el("menu-harga").addEventListener("input", function (e) {
+    var kolom = e.target;
+    var bersih = kolom.value.replace(/[^0-9.\s]/g, "");
+    if (bersih !== kolom.value) {
+      kolom.value = bersih;
+    }
+  });
+
   window.KedaiMenu = Object.freeze({
     tampil: tampil,
     tampilPelanggan: tampilPelanggan, // MNU.04
