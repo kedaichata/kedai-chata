@@ -3,6 +3,7 @@
 # 🧪 akun-test.md: Kasus Uji Fitur Akun
 
 > Hanya kasus uji. **Tanpa hasil dan tanpa bukti** (`AGENTS.md` bagian 10 butir 2). Hanya dilampirkan di sesi tes bersama `AGENTS.md`, `akun.md`, dan `security.md`.
+> **File ini tidak memuat status.** Kasus mana yang sudah dites dan hasilnya ada di blok Handoff `akun.md` dan sheet kerja. Baca keduanya sebelum mengulang tes.
 > Tes di production dengan **akun, nomor WA, dan alamat dummy**. Screenshot hanya bila diminta, dan **email, nomor, alamat nyata ditutup atau di-crop dulu**.
 > Prioritas: P0 = login, peran, data pelanggan, keamanan. P1 = pendukung. P2 = tampilan.
 > Sebelum tes setelah deploy: muat ulang keras (Cmd+Shift+R).
@@ -58,14 +59,15 @@
 
 ## 6. Staf: owner dan penjaga (AK4, AK5)
 
-| ID     | Tes                                                                                                            | Hasil yang benar                                                         | Prioritas |
-| ------ | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | --------- |
-| AKT-24 | Masuk sebagai owner uji dan penjaga uji.                                                                       | Peran terbaca benar; layar Lengkapi profil tidak muncul.                 | P0        |
-| AKT-25 | Staf memanggil `daftar_profil`, `alamat_simpan`, `alamat_nonaktif`, `ganti_nama`, `ganti_wa` (SEC-07, SEC-08). | Semua 403 "Aksi ini hanya untuk customer."; tidak ada data terbentuk.    | P0        |
-| AKT-26 | Staf mengganti password lewat layar Akun.                                                                      | Berhasil; password lama ditolak, baru diterima.                          | P1        |
-| AKT-27 | Reset password akun staf lewat link dari dashboard.                                                            | Sama seperti AKT-21.                                                     | P1        |
-| AKT-28 | Nonaktifkan staf lewat SQL template, lalu staf memakai aplikasi; aktifkan kembali (SEC-26).                    | Staf nonaktif 403 di panggilan berikutnya; setelah aktif kembali normal. | P0        |
-| AKT-29 | Cari jalur menjadi staf dari aplikasi (SEC-26).                                                                | Tidak ada jalur; akun baru selalu customer.                              | P0        |
+| ID     | Tes                                                                                                                                                                       | Hasil yang benar                                                                                                                                                                                    | Prioritas |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| AKT-24 | Masuk sebagai owner uji dan penjaga uji.                                                                                                                                  | Peran terbaca benar; layar Lengkapi profil tidak muncul.                                                                                                                                            | P0        |
+| AKT-25 | Staf memanggil `daftar_profil`, `alamat_simpan`, `alamat_nonaktif`, `ganti_nama`, `ganti_wa` (SEC-07, SEC-08).                                                            | Semua 403 "Aksi ini hanya untuk customer."; tidak ada data terbentuk.                                                                                                                               | P0        |
+| AKT-26 | Staf mengganti password lewat layar Akun.                                                                                                                                 | Berhasil; password lama ditolak, baru diterima.                                                                                                                                                     | P1        |
+| AKT-27 | Reset password akun staf lewat link dari dashboard.                                                                                                                       | Sama seperti AKT-21.                                                                                                                                                                                | P1        |
+| AKT-28 | Dengan sesi staf uji masih terbuka: nonaktifkan lewat template nonaktif, tekan Segarkan, jalankan query cek staf, lalu aktifkan kembali lewat template aktifkan (SEC-26). | Nonaktif: 403 "Akun ini tidak aktif. Hubungi pengelola.", layar galat (bukan layar Lengkapi profil), baris staf tetap ada dengan aktif = false. Setelah aktif kembali: panggilan berikutnya normal. | P0        |
+| AKT-29 | Cari jalur menjadi staf dari aplikasi (SEC-26).                                                                                                                           | Tidak ada jalur; akun baru selalu customer.                                                                                                                                                         | P0        |
+| AKT-38 | Jalankan template aktifkan dengan ID salah, dan dengan ID staf yang sudah aktif.                                                                                          | Gagal sendiri dengan pesan Bahasa Indonesia; tidak ada yang berubah.                                                                                                                                | P1        |
 
 ## 7. Akses dan keamanan (rujukan `security.md`)
 

@@ -535,3 +535,91 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 - Sembunyikan tombol Buku alamat dan Akun untuk staf
 
 **Saran giliran berikutnya:** selesaikan SEC-28 (hanya cek dashboard). Lalu buat template aktifkan kembali staf (High-Risk, butuh penjelasan dampak dan "OK" ketua), jalankan SEC-26 paling akhir, dan centang AKN.11. Lampirkan `AGENTS.md`, `akun.md`, `security.md`, `akun-test.md`, dan isi `supabase/templates/`.
+
+### Handoff #12 | 7 Nov 2026 | ketua
+
+**Tugas:** AKN.11 (sesi tes akun) lanjutan. **AKN.11 BELUM SELESAI.** Dikerjakan: SEC-28, template aktifkan kembali staf, dan bagian nonaktif dari SEC-26.
+
+**File berubah**
+
+- BARU `supabase/templates/20261106_staf_aktifkan.sql`: disimpan ketua di folder templates. **Belum pernah dijalankan.** Status commit dan push belum dikonfirmasi.
+- DIPERBARUI `docs/akun-test.md`: hanya kasus (AKT-28 dipertajam, AKT-38 baru). Tanpa hasil dan bukti.
+
+**Hasil**
+
+- **SEC-28 LULUS** (juga menutup AKT-33). Dari dashboard Authentication: Confirm email mati, panjang minimal password 8, Secure password change mati, Password requirements kosong. Bukti: screenshot dashboard, diperiksa di chat, tanpa data pribadi, tidak disimpan.
+- **Query cek staf sebelum nonaktif lulus** (`20261106_staf_cek.sql` semua bagian): 1 owner dan 1 penjaga, dua-duanya aktif; 0 staf punya profil customer; RLS aktif dan 0 policy di tabel staf; hak: anon dan authenticated tidak ada, service_role hanya SELECT.
+- **SEC-26, bagian nonaktif LULUS.** Penjaga uji (ID diawali `2d2e1b15`) dinonaktifkan lewat template nonaktif (hasil Success). Dengan sesi login lama masih terbuka, tombol Segarkan memanggil `kedai` dan dibalas **403** `{"ok":false,"pesan":"Akun ini tidak aktif. Hubungi pengelola."}`. Aplikasi menampilkan layar galat, bukan layar Lengkapi profil (tidak jatuh jadi customer; sesi lama tidak menolong).
+
+**Keputusan baru (disetujui ketua)**
+
+- Template aktifkan kembali staf, file `20261106_staf_aktifkan.sql`. Hanya mengubah satu kolom (`aktif` dari false ke true) pada satu baris staf yang nonaktif. Tanpa DELETE dan tanpa mengubah tabel, fungsi, atau hak. Gagal sendiri bila isian belum diganti, ID salah, atau staf sudah aktif. Isian (ID akun) hanya diisi di dashboard.
+- Komentar di `20261106_staf_nonaktif.sql` masih menulis bahwa mengaktifkan kembali "belum diputuskan". Komentar itu sengaja tidak diubah. Keputusan di atas yang berlaku.
+
+**BELUM BERES (urut, jangan dilewati)**
+
+1. **PERHATIAN: penjaga uji (`2d2e1b15`) SAAT INI MASIH NONAKTIF.** Harus diaktifkan kembali sebelum sesi lain memakainya.
+2. Jalankan `20261106_staf_cek.sql` SAAT akun masih nonaktif dan tempel bagian (1) dan (2) ke chat. Ini bukti SEC-26 dan belum diambil. Harapan: baris `2d2e1b15` muncul dengan `aktif = false`; ringkasan penjaga 0 aktif dan 1 nonaktif; owner tetap aktif.
+3. Aktifkan kembali lewat `20261106_staf_aktifkan.sql` (ID lengkap dari Authentication > Users, 8 karakter pertama harus `2d2e1b15`). Template ini baru pertama kali dipakai, jadi perhatikan hasilnya.
+4. Di tab aplikasi (sesi lama masih bisa dipakai), tekan Segarkan: harus normal sebagai penjaga. Jalankan `20261106_staf_cek.sql` lagi: penjaga `aktif = true`, kembali 1 owner dan 1 penjaga aktif.
+5. Uji AKT-38: template aktifkan dengan ID salah atau staf yang sudah aktif harus gagal sendiri, tanpa mengubah apa pun.
+6. Sisa tes kecil: `alamat_nonaktif` oleh owner (P1), reset password akun staf lewat link (AKT-27), HP Android (AKT-36, AKT-37).
+7. Setelah semua beres: centang SEC-26, lalu AKN.11.
+
+**Pengingat centang sheet**
+
+- Centang sekarang: **SEC-03** (lulus di Handoff #11, di sheet masih "Belum") dan **SEC-28** (lulus hari ini).
+- Jangan dicentang dulu: SEC-26 (menunggu butir 2 sampai 4). SEC-06 sampai SEC-09 mencakup aksi order dan menu yang belum ada, jadi biarkan sampai ORD.14.
+- Catatan baris AKN.11 di sheet, usulan isi: "sisa: SEC-26 (aktifkan kembali penjaga uji), AKT-38, alamat_nonaktif owner, AKT-27, Android".
+
+**Catatan untuk sesi berikutnya**
+
+- Bukti query cek harus diambil SEBELUM akun diaktifkan kembali, kalau tidak, keadaan nonaktif tidak bisa dibuktikan lagi.
+- Query yang sudah terisi ID tidak boleh disimpan ke repo atau ditempel ke chat; tutup tab query tanpa menyimpan.
+- Jangan kirim screenshot layar Masuk (email kelihatan); kirim teks atau crop dulu.
+
+### Handoff #12 | 7 Nov 2026 | ketua
+
+**Tugas:** AKN.11 (sesi tes akun), sesi lanjutan. **AKN.11 BELUM SELESAI.** Sisa satu hal: tes Android (AKT-36, AKT-37), akan dikerjakan ketua siang ini (7 Nov). Semua tes lain lulus.
+
+**File berubah**
+
+- BARU `supabase/templates/20261106_staf_aktifkan.sql`: template aktifkan kembali staf. Disimpan ketua di folder templates. Sudah dijalankan dan teruji di production (lihat hasil). Status commit dan push belum dikonfirmasi.
+- DIPERBARUI `docs/akun-test.md`: hanya kasus. AKT-28 dipertajam, AKT-38 baru, dan satu baris penunjuk di bagian atas ("file ini tidak memuat status; lihat Handoff dan sheet").
+
+**Hasil (akun dan data dummy; bukti diperiksa di chat dan tidak disimpan)**
+
+- **SEC-28 LULUS** (menutup AKT-33). Dashboard Authentication: Confirm email mati, panjang minimal password 8, Secure password change mati, Password requirements kosong.
+- **Query cek staf (`20261106_staf_cek.sql`) lulus** di tiga keadaan: sebelum nonaktif (1 owner dan 1 penjaga aktif; 0 staf punya profil customer; RLS aktif tanpa policy; service_role hanya SELECT), saat penjaga nonaktif (baris `2d2e1b15` tetap ada dengan `aktif = false`; ringkasan penjaga 0 aktif dan 1 nonaktif), dan setelah aktif kembali (kembali 1 owner dan 1 penjaga aktif).
+- **SEC-26 LULUS** (menutup AKT-28 dan AKT-29). Penjaga uji dinonaktifkan lewat template nonaktif dengan sesi login lama masih terbuka. Tombol Segarkan dibalas **403** "Akun ini tidak aktif. Hubungi pengelola." dan aplikasi menampilkan layar galat (bukan layar Lengkapi profil). Setelah diaktifkan kembali lewat template aktifkan, tombol Coba lagi dibalas **200** (`peran: penjaga`, `profil: null`, `alamat: []`) tanpa login ulang. **AKT-29:** dari akun customer dummy, `status` dengan `peran: "owner"` tetap dijawab customer (200); aksi `staf_tambah` dan `staf_aktifkan` dibalas 400 "Aksi tidak dikenal." Tidak ada jalur menjadi staf dari aplikasi.
+- **AKT-38 LULUS.** Template aktifkan dengan ID nol, dan dengan ID penjaga yang sudah aktif, sama-sama gagal sendiri dengan pesan "Tidak ada staf NONAKTIF dengan ID ini (salah ID, atau sudah aktif). Tidak ada yang diubah." Tidak ada data berubah.
+- **`alamat_nonaktif` oleh owner LULUS** (AKT-25): 403 "Aksi ini hanya untuk customer." (sama dengan penjaga di Handoff #11). Token dari sesi yang sudah Keluar dibalas 401 "Sesi tidak valid. Silakan masuk lagi." (perilaku benar).
+- **AKT-27 dan AKT-22 LULUS.** Link reset dari dashboard membuka layar Buat password baru; password baru diterima, password lama ditolak "Email atau password salah"; link yang sama dibuka kedua kali: "Link sudah tidak berlaku. Hubungi tim untuk link baru." **Catatan:** akun yang direset dan diuji adalah **owner uji** (dipilih ketua dengan sengaja; sapaan setelah login "Halo Owner Uji... sebagai owner"). Password owner uji SUDAH BERGANTI; ketua menyimpannya.
+
+**Keputusan baru (disetujui ketua)**
+
+- Template aktifkan kembali staf, `20261106_staf_aktifkan.sql`: hanya mengubah satu kolom (`aktif` dari false ke true) pada satu baris staf nonaktif; tanpa DELETE; tanpa mengubah tabel, fungsi, atau hak; gagal sendiri bila isian belum diganti, ID salah, atau staf sudah aktif. Isian hanya diisi di dashboard.
+- Komentar di `20261106_staf_nonaktif.sql` masih menulis bahwa mengaktifkan kembali "belum diputuskan". Sengaja tidak diubah; keputusan di atas yang berlaku (yang paling akhir menang).
+- **Android ditunda atas keputusan ketua** (alasan: salin-tempel di HP menyulitkan). Ketua akan mengerjakannya siang ini. AKN.11 TIDAK dicentang sampai itu selesai.
+- Usulan (belum diputuskan): tidak ada kolom status di akun-test.md; baris penunjuk di bagian atas sudah ditambahkan sebagai gantinya.
+
+**BELUM BERES**
+
+1. **AKT-36 dan AKT-37 (Android), belum dites.** Tidak butuh konsol: (AKT-36) setelah update, buka di HP Android, pastikan versi baru muncul, layar akun terbaca, dan tombol cukup besar; (AKT-37) matikan internet lalu buka aplikasi, harus muncul layar Offline, dan login tetap butuh internet. Hasilnya cukup ditempel sebagai teks atau screenshot tanpa email.
+2. Setelah Android selesai: ketua mencentang AKN.11 di sheet dan menambahkan hasilnya ke handoff berikutnya.
+
+**Pengingat centang sheet**
+
+- Centang sekarang: **SEC-03**, **SEC-26**, **SEC-28**.
+- AKN.11: **jangan dicentang dulu.** Usulan isi Catatan: "sisa: Android (AKT-36, AKT-37), dikerjakan ketua 7 Nov".
+- Jangan dicentang dulu: SEC-06 sampai SEC-09 (mencakup aksi order dan menu yang belum ada; tes bagian itu saat ORD.14).
+- Di sheet tidak ada AKN.12; setelah AKN.11 fitur berikutnya mengikuti sheet (MNU.01 bergantung pada SEC-28, yang sudah lulus, dan butuh OK ketua).
+
+**Catatan prosedur untuk sesi berikutnya (tes lewat Console)**
+
+- Cara termudah: di Network, klik kanan panggilan `kedai` lalu Copy as fetch. Sebelum Enter: ubah `credentials` jadi `"omit"`; hapus semua header kecuali `apikey`, `authorization`, `content-type`, `x-client-info` (header lain, seperti `cache-control`, `priority`, `accept`, `accept-language`, ditolak CORS server dan itu benar; server TIDAK boleh diubah untuk ini); ganti `body`; di ujung tambahkan `.then(r => r.text().then(t => console.log(r.status, t)))`.
+- Token `authorization` memuat sesi login: JANGAN tempel ke chat atau simpan di mana pun; tempel ke chat hanya baris hasil (status dan balasan). Token dari sesi yang sudah Keluar dibalas 401, jadi ambil token dari panggilan terbaru (Clear Network dulu, lalu Segarkan).
+- Bukti query cek staf harus diambil SEBELUM akun diaktifkan kembali. Query yang terisi ID tidak boleh disimpan ke repo atau chat; tutup tab query tanpa menyimpan.
+- Saran AI di sesi ini sempat menyebut "AKN.12" yang tidak ada di sheet. Sudah dikoreksi; tidak ada dampak pada pekerjaan.
+
+**Saran giliran berikutnya:** selesaikan Android (butir 1). Setelah itu pekerjaan berikutnya mengikuti sheet; kandidat terdekat MNU.01 (migration tabel menu, High-Risk, butuh penjelasan dampak dan OK ketua).
