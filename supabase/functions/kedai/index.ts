@@ -3,6 +3,7 @@
 // Aksi yang ada: `status` dan `daftar_profil`. Aksi lain ditambah di langkah berikutnya.
 // AKN.07: ditambah `alamat_simpan` dan `alamat_nonaktif` (buku alamat, akun.md AK9).
 // AKN.08a: ditambah `ganti_nama` dan `ganti_wa` (menu Akun, akun.md AK7, AK8).
+// MNU.02: ditambah `menu_daftar`, `menu_simpan`, `menu_stok`, `menu_nonaktif` (menu.md MN5).
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -448,6 +449,183 @@ async function aksiGantiWa(
 }
 
 // ------------------------------------------------------------
+// Aksi: menu_daftar, menu_simpan, menu_stok, menu_nonaktif (MNU.02, menu.md MN5)
+// `menu_daftar`: semua peran (nonaktif ditolak). Owner mendapat semua menu,
+// customer dan penjaga hanya menu aktif. Yang lain: hanya owner (SEC-07, SEC-08).
+// ID pelaku selalu dari token. Aplikasi hanya mengirim nama, harga, nama berkas
+// foto, dan pilihan; peran dan id pelaku dari aplikasi diabaikan (SEC-06).
+// Aturan sebenarnya dicek fungsi SQL (aturan 19); ini hanya pagar kasar.
+// Balasan sukses memuat daftar menu terbaru supaya aplikasi tidak perlu memanggil lagi.
+// ------------------------------------------------------------
+
+// Kode galat fungsi SQL menu -> status dan pesan aman (AK14)
+// (id_kosong dan pengaturan_rusak sengaja tidak dipetakan: jadi galat umum 500)
+const PETA_GALAT_MENU: Record<string, [number, string]> = {
+  bukan_owner: [403, "Aksi ini hanya untuk owner."],
+  nama_tidak_valid: [400, "Nama menu 3 sampai 40 karakter."],
+  harga_tidak_valid: [400, "Harga tidak valid atau melebihi batas."],
+  foto_tidak_valid: [
+    400,
+    "Nama berkas foto hanya huruf kecil, angka, dan strip, berakhiran .jpg atau .webp.",
+  ],
+  nama_kembar: [409, "Sudah ada menu aktif dengan nama yang sama."],
+  menu_tidak_ditemukan: [404, "Menu tidak ditemukan."],
+  menu_tidak_aktif: [409, "Menu ini nonaktif. Aktifkan dulu."],
+  stok_tidak_valid: [400, "Data belum lengkap atau tidak valid."],
+};
+
+// Batas atas bilangan bulat 32-bit (kolom harga bertipe integer).
+const BATAS_INTEGER = 2147483647;
+
+// Lapis kedua peran owner: bukan staf aktif berperan owner = 403.
+async function tolakBukanOwner(
+  req: Request,
+  pengguna: Pengguna,
+): Promise<Response | null> {
+  const p = await bacaPeran(pengguna.id);
+  if (p.jenis === "nonaktif") {
+    return galat(req, 403, "Akun ini tidak aktif. Hubungi pengelola.");
+  }
+  if (p.jenis !== "staf" || p.peran !== "owner") {
+    return galat(req, 403, "Aksi ini hanya untuk owner.");
+  }
+  return null;
+}
+
+// Daftar menu dari fungsi SQL (semua = true hanya untuk owner).
+async function bacaDaftarMenu(semua: boolean): Promise<unknown[]> {
+  const { data, error } = await admin!.rpc("menu_daftar", { p_semua: semua });
+  if (error) throw new Error("menu_daftar:" + (error.code ?? ""));
+  return Array.isArray(data) ? data : [];
+}
+
+async function aksiMenuDaftar(
+  req: Request,
+  pengguna: Pengguna,
+): Promise<Response> {
+  const p = await bacaPeran(pengguna.id);
+  if (p.jenis === "nonaktif") {
+    return galat(req, 403, "Akun ini tidak aktif. Hubungi pengelola.");
+  }
+  const semua = p.jenis === "staf" && p.peran === "owner";
+  return balas(req, 200, { ok: true, menu: await bacaDaftarMenu(semua) });
+}
+
+async function aksiMenuSimpan(
+  req: Request,
+  pengguna: Pengguna,
+  isi: Record<string, unknown>,
+): Promise<Response> {
+  const tolak = await tolakBukanOwner(req, pengguna);
+  if (tolak) return tolak;
+
+  const nama = teksAtauNull(isi.nama);
+  if (nama === null) {
+    return galat(req, 400, "Data belum lengkap atau tidak valid.");
+  }
+
+  // Harga harus bilangan bulat dalam jangkauan integer; batas wajar dicek fungsi SQL.
+  if (
+    typeof isi.harga !== "number" ||
+    !Number.isInteger(isi.harga) ||
+    Math.abs(isi.harga) > BATAS_INTEGER
+  ) {
+    return galat(req, 400, PETA_GALAT_MENU.harga_tidak_valid[1]);
+  }
+
+  // Foto opsional: kosong atau tidak dikirim = tanpa foto. Bentuk namanya dicek fungsi SQL.
+  let foto: string | null = null;
+  if (isi.foto !== undefined && isi.foto !== null) {
+    const teksFoto = teksAtauNull(isi.foto);
+    if (teksFoto === null) {
+      return galat(req, 400, PETA_GALAT_MENU.foto_tidak_valid[1]);
+    }
+    foto = teksFoto.trim() === "" ? null : teksFoto.trim();
+  }
+
+  // `id` kosong = tambah menu baru; `id` terisi = ubah menu itu.
+  let idMenu: string | null = null;
+  if (isi.id !== undefined && isi.id !== null) {
+    if (typeof isi.id !== "string" || !REGEX_UUID.test(isi.id)) {
+      return galat(req, 400, "Data belum lengkap atau tidak valid.");
+    }
+    idMenu = isi.id;
+  }
+
+  // `aktifkan` = true: aktifkan kembali menu nonaktif. Selain true dianggap tidak.
+  const aktifkan = isi.aktifkan === true;
+
+  const { data, error } = await admin!.rpc("menu_simpan", {
+    p_oleh: pengguna.id,
+    p_id: idMenu,
+    p_nama: nama,
+    p_harga: isi.harga,
+    p_foto: foto,
+    p_aktifkan: aktifkan,
+  });
+  if (error) {
+    return galatDariDb(req, error, PETA_GALAT_MENU, "menu_simpan");
+  }
+
+  return balas(req, 200, {
+    ok: true,
+    id: typeof data === "string" ? data : null,
+    menu: await bacaDaftarMenu(true),
+  });
+}
+
+async function aksiMenuStok(
+  req: Request,
+  pengguna: Pengguna,
+  isi: Record<string, unknown>,
+): Promise<Response> {
+  const tolak = await tolakBukanOwner(req, pengguna);
+  if (tolak) return tolak;
+
+  if (
+    typeof isi.id !== "string" ||
+    !REGEX_UUID.test(isi.id) ||
+    typeof isi.tersedia !== "boolean"
+  ) {
+    return galat(req, 400, "Data belum lengkap atau tidak valid.");
+  }
+
+  const { error } = await admin!.rpc("menu_stok", {
+    p_oleh: pengguna.id,
+    p_id: isi.id,
+    p_tersedia: isi.tersedia,
+  });
+  if (error) {
+    return galatDariDb(req, error, PETA_GALAT_MENU, "menu_stok");
+  }
+
+  return balas(req, 200, { ok: true, menu: await bacaDaftarMenu(true) });
+}
+
+async function aksiMenuNonaktif(
+  req: Request,
+  pengguna: Pengguna,
+  isi: Record<string, unknown>,
+): Promise<Response> {
+  const tolak = await tolakBukanOwner(req, pengguna);
+  if (tolak) return tolak;
+
+  if (typeof isi.id !== "string" || !REGEX_UUID.test(isi.id)) {
+    return galat(req, 400, "Data belum lengkap atau tidak valid.");
+  }
+
+  const { error } = await admin!.rpc("menu_nonaktif", {
+    p_oleh: pengguna.id,
+    p_id: isi.id,
+  });
+  if (error) {
+    return galatDariDb(req, error, PETA_GALAT_MENU, "menu_nonaktif");
+  }
+
+  return balas(req, 200, { ok: true, menu: await bacaDaftarMenu(true) });
+}
+
+// ------------------------------------------------------------
 // Pintu masuk
 // ------------------------------------------------------------
 
@@ -504,6 +682,14 @@ Deno.serve(async (req: Request): Promise<Response> => {
         return await aksiGantiNama(req, pengguna, isi);
       case "ganti_wa":
         return await aksiGantiWa(req, pengguna, isi);
+      case "menu_daftar":
+        return await aksiMenuDaftar(req, pengguna);
+      case "menu_simpan":
+        return await aksiMenuSimpan(req, pengguna, isi);
+      case "menu_stok":
+        return await aksiMenuStok(req, pengguna, isi);
+      case "menu_nonaktif":
+        return await aksiMenuNonaktif(req, pengguna, isi);
       default:
         return galat(req, 400, "Aksi tidak dikenal.");
     }
