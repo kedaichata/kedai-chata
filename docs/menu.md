@@ -262,3 +262,31 @@ Aplikasi mengirim **id menu, jumlah, dan id opsi terpilih** (satu per grup). Ser
 Tabel `menu` sudah live: kolom `deskripsi` adalah perubahan pada tabel yang ada. Tabel grup, opsi, dan pemasangan ke menu baru, serta `menu_simpan` dan `menu_daftar` berubah. Layar Kelola Menu dan `menu.js` (sudah sekitar 800 baris) ikut berubah; komponen sheet sebaiknya berkas baru, sehingga `sw.js` perlu didaftar (butuh "OK").
 
 **Belum diputuskan:** target ukuran foto, batas deskripsi, dan menu Habis boleh dibuka sheet-nya (bawaan: boleh).
+
+### Handoff #5 | 2026-11-07 | [RAC]
+
+**Berkas tujuan:** `docs/menu.md` bagian 9. Yang paling akhir menang.
+
+**Tugas:** MNU.08 selesai (sheet detail menu untuk customer). Sudah di-push dalam dua giliran (hash belum dicatat): giliran 1 tanpa "OK" karena tidak menyentuh `sw.js`, giliran 2 dengan "OK" ketua (diberikan di chat) karena mengubah `sw.js`. Hasil lihat langsung di HP dan laptop: ketuk kartu di tab Pesan membuka sheet berisi foto besar, nama, harga, dan lencana; foto tidak pecah; menu Habis abu-abu, tetap bisa dibuka, dan ada teks "Menu ini sedang habis, jadi belum bisa dipilih."; menu tanpa foto menampilkan "Tanpa foto" tanpa galat; sheet tutup lewat X, ketuk area gelap, dan geser turun (geser pendek kembali ke atas); mode pesawat tetap jalan. Bukti diperiksa di chat dan tidak disimpan.
+
+**Berkas diubah:** `public/menu-detail.js` (baru), `public/menu.js`, `public/style.css` (blok MNU.08 di akhir), `public/index.html` (satu tag script sebelum `menu.js`), `public/sw.js` (`menu-detail.js` masuk daftar cache, cache `chata-v8` jadi `chata-v9`). Tidak ada kode lama yang dihapus; semuanya tambahan.
+
+**Keputusan baru:**
+
+- Komponen sheet berdiri sendiri di `menu-detail.js` (`window.KedaiMenuDetail`, fungsi `buka` dan `tutup`), elemennya dibuat lewat JS. `menu.js` hanya menambah kait kecil di `buatKartuPelanggan` dan penutupan sheet di `resetPelanggan`. Alasan: `menu.js` sudah sekitar 850 baris. Kait hanya aktif bila komponen termuat.
+- Sheet hanya menampilkan. Tombol tambah dan jumlah dipasang di sini saat ORD dikerjakan. Ketukan pada tombol di dalam kartu tidak membuka sheet.
+- Cara tutup: tombol X, ketuk area gelap, geser turun (lebih dari sekitar 80 px = tutup), dan Esc di keyboard. Geser hanya untuk layar sentuh. Sheet ditutup seketika saat Keluar.
+- Bagian deskripsi hanya tampil bila `deskripsi` berupa teks tidak kosong. `bacaMenuPelanggan` di `menu.js` belum menyalin field itu, jadi deskripsi belum tampil sampai MNU.07.
+- Hasil lihat langsung: foto menu ukuran sekitar 30 sampai 50 KB tidak pecah saat diperbesar di sheet. **Target ukuran foto tetap belum diputuskan ketua.**
+- Alasan pilihan tampilan (tinggi maksimal 85% layar, lebar maksimal 560 px di layar lebar) belum tercatat dari ketua.
+
+**Belum beres:**
+
+- Target ukuran foto untuk zoom belum diputuskan ketua (lihat di atas).
+- Deskripsi belum tampil; menunggu MNU.07.
+- Saat ORD menambah tombol di sheet, tahanan Tab di `tekanTombol` (`menu-detail.js`) perlu disesuaikan, karena sekarang hanya ada satu elemen yang bisa difokus (tombol X).
+- Menu dummy dari tes (termasuk yang tanpa foto) tidak bisa dihapus; nonaktifkan atau pakai ulang sebelum peluncuran.
+- Handler fetch `sw.js` menyimpan semua respons sukses domain sendiri, jadi foto menu ikut tersimpan walau catatan lama bilang cukup di-cache browser. Masih menunggu keputusan (carry-over dari Handoff #3 dan #4).
+- Belum dibuktikan dengan data (diuji di MNU.06): nama kembar, batas harga 200000, Nonaktifkan dan Aktifkan kembali, dan 403 untuk non-owner.
+
+**Saran giliran berikutnya:** MNU.07 (kolom deskripsi, High-Risk, butuh "OK" ketua karena mengubah tabel `menu` yang sudah live). Lampirkan `AGENTS.md` + `menu.md` + `database.md` + `security.md`, berkas migration terbaru, `supabase/functions/kedai/`, serta `menu.js`, `menu-detail.js`, `index.html`, `style.css`, `sw.js`. Isinya: kolom `deskripsi` (opsional, maksimal 200 karakter, batas disimpan di database), `menu_simpan` dan `menu_daftar` diperluas, isian deskripsi di Kelola Menu, lalu `bacaMenu` dan `bacaMenuPelanggan` menyalin `deskripsi` supaya muncul di sheet. Jelaskan dampaknya ke ketua dulu; ringkasan WA bisa dibuat bila yang bertugas bukan ketua.
