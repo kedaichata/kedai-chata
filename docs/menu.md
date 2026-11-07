@@ -290,3 +290,32 @@ Tabel `menu` sudah live: kolom `deskripsi` adalah perubahan pada tabel yang ada.
 - Belum dibuktikan dengan data (diuji di MNU.06): nama kembar, batas harga 200000, Nonaktifkan dan Aktifkan kembali, dan 403 untuk non-owner.
 
 **Saran giliran berikutnya:** MNU.07 (kolom deskripsi, High-Risk, butuh "OK" ketua karena mengubah tabel `menu` yang sudah live). Lampirkan `AGENTS.md` + `menu.md` + `database.md` + `security.md`, berkas migration terbaru, `supabase/functions/kedai/`, serta `menu.js`, `menu-detail.js`, `index.html`, `style.css`, `sw.js`. Isinya: kolom `deskripsi` (opsional, maksimal 200 karakter, batas disimpan di database), `menu_simpan` dan `menu_daftar` diperluas, isian deskripsi di Kelola Menu, lalu `bacaMenu` dan `bacaMenuPelanggan` menyalin `deskripsi` supaya muncul di sheet. Jelaskan dampaknya ke ketua dulu; ringkasan WA bisa dibuat bila yang bertugas bukan ketua.
+
+### Handoff #6 | 2026-11-07 | KETUA
+
+**Berkas tujuan:** `docs/menu.md` bagian 9. Menggantikan butir "batas deskripsi" yang tertulis belum diputuskan di blok `2026-11-07: Deskripsi, sheet detail, dan pilihan menu`. Yang paling akhir menang.
+
+**Tugas:** MNU.07 selesai (deskripsi menu). Kolom `deskripsi`, pengaturan, dan fungsi SQL sudah jalan di production; `kedai` sudah dideploy; aplikasi sudah di-push (commit `135538e`, Pages hijau). Cek SQL 1 sampai 5 dan uji perilaku fungsi lulus (rapikan, kosong jadi NULL, 201 karakter ditolak, 200 karakter diterima). Hasil lihat langsung: owner mengisi deskripsi tiga baris bergaya bullet lewat Ubah dan tersimpan; customer membuka sheet detail dan deskripsi tampil tiga baris terpisah, juga pada menu Habis; Nonaktifkan lalu Aktifkan kembali tidak menghapus deskripsi; sheet tutup lewat X, ketuk area gelap, dan geser turun di HP. Bukti diperiksa di chat dan tidak disimpan.
+
+**Berkas diubah:** `supabase/migrations/20261107_03_menu_deskripsi.sql`, `supabase/migrations/20261107_03_menu_deskripsi_batal.sql`, `supabase/templates/20261107_03_menu_deskripsi_cek.sql`, `supabase/templates/20261107_03_menu_deskripsi_uji.sql`, `supabase/functions/kedai/index.ts` (hanya penambahan), `public/menu.js`, `public/index.html`. `style.css` dan `sw.js` tidak disentuh (cache tetap `chata-v9`; tidak ada berkas JS baru). Di `menu.js` dua baris lama ikut diubah, hanya untuk menambah `deskripsi`: baris komentar header dan baris `var data` di `kirim`. Sisanya tambahan.
+
+**Keputusan baru:**
+
+- Deskripsi opsional dan **boleh beberapa baris** (Enter); untuk daftar, owner mengawali tiap baris dengan "- ". Batas **200 karakter**, disimpan di pengaturan `deskripsi_menu_maks`. Usulan owner, diputuskan ketua di chat; alasan selebihnya belum tercatat.
+- Server merapikan sebelum simpan: akhir baris CR jadi satu jenis baris baru, karakter kontrol dibuang, spasi berulang jadi satu, spasi di tepi tiap baris dibuang, baris kosong beruntun jadi satu, baris kosong di awal dan akhir dibuang, hasil kosong disimpan NULL. Panjang dihitung setelah dirapikan (satu Enter = satu karakter).
+- `menu_simpan` **wajib** menerima field `deskripsi` (teks, boleh kosong); bila field tidak ada, dibalas 400. Deskripsi kosong menghapus deskripsi lama. Karena itu aksi Aktifkan kembali ikut mengirim deskripsi.
+- `menu_daftar` kini membawa `deskripsi` ke semua peran (customer dan penjaga ikut melihatnya).
+- Kode galat baru `deskripsi_tidak_valid` (400, "Deskripsi menu terlalu panjang.", tanpa angka karena batasnya ada di pengaturan).
+- Tabel `menu` punya pagar bentuk untuk `deskripsi` (tidak kosong, tanpa spasi di tepi, tanpa CR); batas panjang dijaga fungsi dari pengaturan, sama seperti `harga_maks_menu`.
+- Fungsi `menu_simpan` versi 7 argumen dibuat **tanpa nilai bawaan** pada `p_deskripsi`, dan versi 6 argumen (MNU.02) sengaja dibiarkan supaya `kedai` lama tetap jalan selama deploy; panggilan lama dan baru tidak ambigu.
+
+**Belum beres:**
+
+- Fungsi `menu_simpan` versi 6 argumen masih ada di database dan tidak dipanggil lagi. Butir baru untuk sheet: "Buang fungsi menu_simpan lama". High-Risk, butuh "OK" ketua, tidak mendesak.
+- Penolakan deskripsi lebih dari 200 karakter terbukti di server (uji SQL) tetapi belum dilihat lewat aplikasi (pesan merah di form). Diuji di MNU.06.
+- Deskripsi belum tampil di kartu Kelola Menu (owner); hanya terlihat di form Ubah dan sheet detail customer.
+- Blok susulan untuk `docs/database.md` bagian 9 (kolom `deskripsi`, pengaturan `deskripsi_menu_maks`, fungsi `menu_simpan` 7 argumen, `menu_daftar` membawa `deskripsi`) belum ditempel.
+- Carry-over dari Handoff #3 sampai #5 tetap berlaku: target ukuran foto belum diputuskan; cara mengenali nama kembar (teks pesan atau kode); handler fetch `sw.js` ikut menyimpan foto menu; belum dibuktikan dengan data di MNU.06 (batas harga 200000, Nonaktifkan dan Aktifkan kembali dengan nama kembar, 403 untuk non-owner).
+- Menu dummy dari uji tetap ada (menu tidak bisa dihapus); nonaktifkan atau pakai ulang sebelum peluncuran.
+
+**Saran giliran berikutnya:** MNU.09 (grup pilihan gratis: tabel grup, opsi, dan pemasangan ke menu; High-Risk, butuh "OK" ketua karena tabel dan fungsi baru serta `menu_simpan` dan `menu_daftar` berubah lagi), sesuai urutan sheet. Lampirkan `AGENTS.md` + `menu.md` + `database.md` + `security.md`, migration terbaru (`20261107_03_menu_deskripsi.sql`), `supabase/functions/kedai/`, `menu.js`, `menu-detail.js`, `index.html`, `style.css`, `sw.js`. `menu.js` kini 874 baris (pedoman sekitar 500), jadi komponen baru sebaiknya berkas terpisah; berkas JS baru wajib didaftarkan di `sw.js` (butuh "OK"). Sesi tes MNU.06 (High-Risk P0, bukti untuk hak owner dan harga) dapat dijalankan sebelum atau sesudah MNU.09 sampai MNU.11; ketua yang memutuskan.

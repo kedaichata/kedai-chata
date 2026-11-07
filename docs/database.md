@@ -203,3 +203,15 @@ Angka yang bisa berubah **tidak ditulis mati di kode** (`AGENTS.md` bagian 1). N
 - **Bagian 4:** pengaturan `foto_menu_maks_kb` **tidak dibuat**.
 - **Bagian 5:** aksi `foto_menu_minta_unggah` dan `foto_menu_catat` **tidak dibuat**. `menu_daftar` hanya mengembalikan nama berkas, tanpa tautan sementara. Mengaktifkan kembali menu tetap lewat `menu_simpan`.
 - **Bagian 3 (hak):** tidak berubah.
+
+### 2026-11-07: Deskripsi menu (menambah bagian 2, 4, dan 5)
+
+**Berkas tujuan:** `docs/database.md` bagian 9. Rujukan lengkap: `docs/menu.md` bagian 9, Handoff #6. Yang paling akhir menang.
+
+- **Bagian 2 (tabel `menu`):** kolom baru `deskripsi` (teks, opsional, boleh beberapa baris). Pagar bentuk di tabel: tidak kosong, tanpa spasi atau baris kosong di awal dan akhir, tanpa karakter CR. Batas panjang atas tidak ada di tabel; dijaga fungsi dari pengaturan.
+- **Bagian 4 (pengaturan):** kunci baru `deskripsi_menu_maks` = 200 (karakter, MNU.07). Panjang dihitung setelah dirapikan; satu baris baru dihitung satu karakter.
+- **Bagian 5 (fungsi SQL dan aksi):**
+  - `menu_simpan` kini punya versi 7 argumen yang menerima `p_deskripsi` (tanpa nilai bawaan). Fungsi merapikan deskripsi (CR jadi satu jenis baris baru, karakter kontrol dibuang, spasi berulang jadi satu, spasi di tepi tiap baris dibuang, baris kosong beruntun jadi satu, baris kosong di awal dan akhir dibuang); hasil kosong disimpan NULL. Kode galat baru: `deskripsi_tidak_valid`.
+  - Aksi `menu_simpan` di `kedai` **wajib** menerima field `deskripsi` (teks, boleh kosong); bila field tidak ada, dibalas 400. Deskripsi kosong menghapus deskripsi lama.
+  - `menu_daftar` kini membawa field `deskripsi` untuk semua peran.
+  - Versi 6 argumen `menu_simpan` (MNU.02) masih ada di database dan tidak dipanggil lagi. Pembuangannya menunggu keputusan ketua (butir sheet: "Buang fungsi menu_simpan lama"; High-Risk, butuh "OK", tidak mendesak).
