@@ -101,3 +101,27 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 ---
 
 _(belum ada blok)_
+
+### 2026-11-07: Foto menu di public/img, dan keputusan pagar MNU.01
+
+**Berkas tujuan:** `docs/menu.md` bagian 9. Menimpa MN6 dan sebagian `database.md` (bagian 2, 4, 5). Yang paling akhir menang.
+
+**Foto menu**
+
+- Foto menu disimpan di **`public/img`** (ditayangkan GitHub Pages), **bukan Storage**. MN6 digantikan.
+- Tidak ada bucket foto menu, aksi `foto_menu_minta_unggah` dan `foto_menu_catat`, maupun pengaturan `foto_menu_maks_kb`. Tautan sementara foto tidak dibuat; `menu_daftar` hanya mengembalikan nama berkas.
+- Kolom foto di tabel `menu` berisi **nama berkas saja** (contoh `nasi-ayam.jpg`), kosong bila tanpa foto. Foto tetap opsional.
+- Aturan nama berkas (dicek fungsi dan tabel): huruf kecil, angka, dan strip saja, berakhiran `.jpg` atau `.webp`, tanpa garis miring dan tanpa titik ganda.
+- Owner mengisi **"Nama berkas foto"** di layar Kelola Menu. Bila berkas belum ada di `public/img` atau nama salah ketik, layar menampilkan placeholder, bukan galat.
+- Ketua mengompres foto (target sekitar 30 sampai 50 KB) dan memasukkannya ke `public/img` lewat git push (prosedur `AGENTS.md` bagian 8), beberapa foto sekali push. Ketua membantu owner bila perlu.
+- Foto menu **dikecualikan dari daftar cache `sw.js`**; cukup di-cache browser. Foto menu bersifat publik karena repo public, jadi tidak boleh memuat wajah atau data pelanggan.
+- MNU.05 tidak lagi bergantung pada FTO.02 dan FTO.03.
+- Alasan: menghemat egress 5 GB yang juga dipakai foto bukti antar; menu jarang berubah, jadi bantuan ketua sesekali dinilai lebih murah daripada egress yang mepet.
+
+**Keputusan lain untuk MNU.01 dan MNU.02**
+
+- Nama menu **kembar ditolak** di antara menu aktif (huruf besar dan kecil dianggap sama).
+- `harga_maks_menu` = 200000 rupiah, dikonfirmasi ketua.
+- Tabel `menu` memberi pagar kedua: harga lebih dari 0, nama 3 sampai 40 karakter.
+- Urutan bawaan daftar menu: nama A sampai Z.
+- Mengaktifkan kembali menu lewat `menu_simpan` (owner).

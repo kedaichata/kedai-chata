@@ -193,3 +193,13 @@ Angka yang bisa berubah **tidak ditulis mati di kode** (`AGENTS.md` bagian 1). N
 - Ini menggantikan "diawali nomor urut" di bagian 6 butir 1 (yang paling akhir menang). Format tahun-bulan-hari dipilih supaya urutan alfabet sama dengan urutan waktu. Keputusan PIC di sesi kode; alasan dari ketua belum tercatat.
 - Urutan migration tetap mengikuti bagian 6 butir 7 (AKN.03, MNU.01, ORD.01, FTO.01, NTF.02, BTN.01).
 - Query cek baca-saja per migration disimpan di `supabase/templates/` dengan nama `YYYYMMDD_nama_cek.sql` (contoh `20261105_akun_cek.sql`), karena dijalankan berulang dan tanpa data nyata.
+
+### 2026-11-07: Foto menu di public/img (menimpa bagian 2, 4, dan 5)
+
+**Berkas tujuan:** `docs/database.md` bagian 9. Rujukan lengkap ada di blok `docs/menu.md` bagian 9 dengan judul yang sama. Yang paling akhir menang.
+
+- **Bagian 2 (Storage):** hanya **satu bucket** (foto bukti antar). Tidak ada bucket foto menu.
+- **Bagian 2 (tabel `menu`):** kolom foto berisi **nama berkas saja** di `public/img` (contoh `nasi-ayam.jpg`), kosong bila tanpa foto. Hanya huruf kecil, angka, dan strip, berakhiran `.jpg` atau `.webp`.
+- **Bagian 4:** pengaturan `foto_menu_maks_kb` **tidak dibuat**.
+- **Bagian 5:** aksi `foto_menu_minta_unggah` dan `foto_menu_catat` **tidak dibuat**. `menu_daftar` hanya mengembalikan nama berkas, tanpa tautan sementara. Mengaktifkan kembali menu tetap lewat `menu_simpan`.
+- **Bagian 3 (hak):** tidak berubah.
