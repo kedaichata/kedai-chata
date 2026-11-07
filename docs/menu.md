@@ -319,3 +319,35 @@ Tabel `menu` sudah live: kolom `deskripsi` adalah perubahan pada tabel yang ada.
 - Menu dummy dari uji tetap ada (menu tidak bisa dihapus); nonaktifkan atau pakai ulang sebelum peluncuran.
 
 **Saran giliran berikutnya:** MNU.09 (grup pilihan gratis: tabel grup, opsi, dan pemasangan ke menu; High-Risk, butuh "OK" ketua karena tabel dan fungsi baru serta `menu_simpan` dan `menu_daftar` berubah lagi), sesuai urutan sheet. Lampirkan `AGENTS.md` + `menu.md` + `database.md` + `security.md`, migration terbaru (`20261107_03_menu_deskripsi.sql`), `supabase/functions/kedai/`, `menu.js`, `menu-detail.js`, `index.html`, `style.css`, `sw.js`. `menu.js` kini 874 baris (pedoman sekitar 500), jadi komponen baru sebaiknya berkas terpisah; berkas JS baru wajib didaftarkan di `sw.js` (butuh "OK"). Sesi tes MNU.06 (High-Risk P0, bukti untuk hak owner dan harga) dapat dijalankan sebelum atau sesudah MNU.09 sampai MNU.11; ketua yang memutuskan.
+
+### Handoff #7 | 2026-11-07 | FREN
+
+**Berkas tujuan:** `docs/menu.md` bagian 9. Yang paling akhir menang.
+
+**Tugas:** MNU.09 **baru separuh**: giliran 1 (SQL) selesai dan sudah jalan di production; giliran 2 (aksi `kedai`) belum dikerjakan. **Jangan dicentang di sheet dulu.** "OK" ketua untuk tabel dan fungsi baru serta angka batas diberikan lewat WA (ketua setuju pada usulan). Migration dijalankan manual di SQL Editor akun ketua. Cek struktur 1 sampai 6 lulus, uji perilaku fungsi 60 lulus dan 0 gagal (uji dibatalkan otomatis, cek sesudah uji menunjukkan 0 grup, 0 opsi, 0 pemasangan). Bukti diperiksa di chat dan tidak disimpan.
+
+**Berkas diubah (semua baru, belum di-commit dan belum di-push):** `supabase/migrations/20261107_04_menu_grup_pilihan.sql`, `supabase/migrations/20261107_04_menu_grup_pilihan_batal.sql`, `supabase/templates/20261107_04_menu_grup_pilihan_cek.sql`, `supabase/templates/20261107_04_menu_grup_pilihan_uji.sql` (pastikan keempatnya ada di folder repo ChATA sebelum commit). Tidak ada kode lama yang dihapus. `menu_daftar` diganti di tempat (hanya menambah field `grup`); `menu_simpan` tidak disentuh. `index.ts`, `menu.js`, `index.html`, `style.css`, dan `sw.js` tidak disentuh.
+
+**Keputusan baru (usulan penulis, disetujui ketua lewat WA; alasan selebihnya belum tercatat):**
+
+- Tiga tabel baru: `grup_pilihan`, `opsi_pilihan`, `menu_grup`. RLS aktif tanpa policy, `service_role` hanya baca, tambah, dan ubah (tanpa DELETE). Melepas grup dari menu = penanda aktif jadi false.
+- Pengaturan baru: `grup_maks_per_menu` = 3 dan `opsi_maks_per_grup` = 6. Keduanya dihitung dari yang **aktif** saja (yang nonaktif tidak bisa dihapus).
+- Tiap grup: minimal 2 opsi aktif, tepat satu opsi bawaan dan harus aktif. Nama grup 3 sampai 30 karakter, nama opsi 2 sampai 30 karakter (bentuk data, dijaga tabel dan fungsi, tidak di pengaturan). Nama grup aktif tidak boleh kembar; nama opsi aktif tidak boleh kembar dalam satu grup (huruf besar dan kecil dianggap sama).
+- `grup_simpan(p_oleh, p_id, p_nama, p_opsi, p_aktifkan default false)`: owner; id kosong = grup baru. `p_opsi` adalah **daftar lengkap** opsi (array JSON), urutan daftar = urutan tampil; tiap elemen `{id (kosong bila baru), nama, bawaan, aktif (bila tidak ada dianggap true)}`. Saat mengubah grup, semua opsi lama (termasuk yang nonaktif) wajib ikut; yang dibuang dikirim dengan `aktif: false`, bila ada yang kurang ditolak (`opsi_tidak_lengkap`). Grup nonaktif hanya bisa diubah bila `p_aktifkan` = true (sekaligus mengaktifkannya kembali). Mengembalikan id grup.
+- `grup_nonaktif(p_oleh, p_id)`: owner; opsi dan pemasangannya tidak diubah.
+- `grup_daftar(p_semua)`: grup beserta opsinya untuk layar owner; `true` memuat grup dan opsi nonaktif juga (supaya bisa dikirim balik lengkap ke `grup_simpan`), `false` hanya yang aktif. Fungsinya tidak memeriksa peran; pembatasan ke owner dilakukan `kedai`, sama seperti `menu_daftar`.
+- `menu_grup_atur(p_oleh, p_menu_id, p_grup_ids uuid[])`: owner; daftar **lengkap** grup aktif yang diinginkan untuk satu menu, urutan daftar = urutan tampil; daftar kosong = lepas semua.
+- `opsi_periksa(p_menu_id, p_opsi_ids uuid[])` mengembalikan `[{grup_id, grup_nama, opsi_id, opsi_nama}]`, satu per grup aktif yang terpasang di menu itu; grup tanpa pilihan memakai opsi bawaan. Menolak (`opsi_tidak_valid`) opsi nonaktif, opsi dari grup yang tidak terpasang di menu itu, id dobel, id kosong, dan dua opsi dari grup yang sama. Disiapkan untuk ORD.01; **belum dipanggil siapa pun**.
+- `menu_daftar` kini membawa `grup` di tiap menu: `[{id, nama, opsi: [{id, nama, bawaan}]}]`, hanya grup dan opsi aktif, ke semua peran.
+- Kode galat baru (untuk peta galat `kedai`): `grup_nama_tidak_valid`, `grup_nama_kembar`, `grup_tidak_ditemukan`, `grup_tidak_aktif`, `grup_tidak_valid`, `grup_terlalu_banyak`, `opsi_tidak_valid`, `opsi_tidak_lengkap`, `opsi_nama_kembar`, `opsi_terlalu_banyak`, `pilihan_rusak` (data tidak konsisten; seharusnya tidak pernah muncul).
+
+**Belum beres:**
+
+- Giliran 2 MNU.09: aksi `kedai` untuk `grup_daftar`, `grup_simpan`, `grup_nonaktif`, dan `menu_grup_atur` (semuanya owner saja; `menu_daftar` sudah membawa `grup` tanpa perubahan di `kedai`), peta galat untuk kode baru (pesan tanpa angka, karena batas ada di pengaturan, seperti `deskripsi_tidak_valid`), lalu deploy `kedai` (butuh "OK" ketua, urutan aman `AGENTS.md` bagian 8).
+- Aplikasi belum membaca field `grup`. Layar owner = MNU.10, tampilan pilihan di sheet detail = MNU.11.
+- Blok susulan `docs/database.md` bagian 9 untuk MNU.07 (dari Handoff #6) dan MNU.09 belum ditempel; usul: ditulis sekaligus setelah giliran 2.
+- Berkas uji `20261107_04_menu_grup_pilihan_uji.sql` hanya bisa dijalankan selama **belum ada grup pilihan** di database (jalan berhenti dengan pesan bila sudah ada); jangan dipakai ulang setelah owner membuat grup.
+- Fungsi `menu_simpan` versi 6 argumen masih ada di database (carry-over Handoff #6).
+- Carry-over Handoff #3 sampai #6 tetap berlaku: target ukuran foto belum diputuskan; cara mengenali nama kembar; handler fetch `sw.js` ikut menyimpan foto menu; belum dibuktikan dengan data di MNU.06; menu dummy dari uji tidak bisa dihapus. `menu.js` sekitar 874 baris (pedoman sekitar 500), komponen baru sebaiknya berkas terpisah dan wajib didaftarkan di `sw.js` (butuh "OK").
+
+**Saran giliran berikutnya:** giliran 2 MNU.09 (aksi `kedai`, High-Risk, deploy butuh "OK" ketua). Lampirkan `AGENTS.md` + `menu.md` (sudah memuat handoff ini) + `database.md` + `security.md`, `supabase/functions/kedai/index.ts` versi terbaru, dan `20261107_04_menu_grup_pilihan.sql`. Berkas aplikasi belum perlu sampai MNU.10. Sesudah MNU.09 selesai, dicentang, lalu MNU.10 (layar owner), MNU.11, dan sesi tes MNU.06 (ketua yang memutuskan urutannya).
