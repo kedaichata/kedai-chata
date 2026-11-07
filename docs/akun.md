@@ -622,4 +622,32 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 
 **Saran giliran berikutnya:** pekerjaan mengikuti sheet; kandidat terdekat **MNU.01** (migration tabel menu, High-Risk, butuh penjelasan dampak dan "OK" ketua). Lampirkan `AGENTS.md`, `menu.md`, `database.md`, `security.md`, dan isi `supabase/migrations/`.
 
+### Handoff #14 | 7 Nov 2026 | [RAC]
+
+**Tugas:** TMN.01 (sembunyikan tombol dan kartu yang tidak berlaku untuk staf). Selesai dan sudah dites. **Butir ini sudah selesai, silakan dicentang di sheet.** Tidak ada migration, deploy fungsi, atau perubahan `sw.js`.
+
+**File yang diubah (hanya menambah; satu baris lama diganti, lihat di bawah):**
+
+- `public/akun.js` (fungsi `isiSementara`): tombol Akun kini tampil untuk semua peran (satu baris lama diganti: `tombolAkun.hidden = d.peran !== "customer"` jadi `tombolAkun.hidden = false`). Kartu Ganti nama dan Ganti nomor WA di layar Akun hanya tampil untuk customer.
+- `public/index.html`: dua kartu itu diberi id `kartu-akun-nama` dan `kartu-akun-wa`, plus satu komentar.
+- `public/style.css`: ditambah aturan `[hidden] { display: none !important; }` dan aturan `.baris-tombol:has(> [hidden]:only-child)` supaya baris tombol yang kosong ikut hilang.
+
+**Keputusan baru (ketua, lewat sesi kode):**
+
+- Buku alamat disembunyikan untuk staf. Tombol Akun tetap tampil untuk semua peran (dipakai staf untuk ganti password). Di layar Akun, kartu Ganti nama dan Ganti nomor WA disembunyikan untuk staf, karena server memang menolaknya (403).
+- Bertentangan dengan judul butir TMN.01 di sheet ("Sembunyikan tombol Buku alamat dan Akun untuk staf") dan dengan usulan Handoff #13 yang belum diputuskan. Yang paling akhir menang: keputusan di atas. Alasan judul sheet menyebut Akun belum tercatat (kemungkinan terlewat).
+
+**Pelajaran (bahan belajar):** tombol Buku alamat sebenarnya sudah ditandai tersembunyi untuk staf di `akun.js`, tetapi tetap tampil karena kelas `.tombol` ber-`display: flex` menimpa atribut `hidden`. Perbaikan: aturan `[hidden]` global di `style.css`. Mencegah: elemen yang diatur dengan atribut `hidden` kini selalu hilang, apa pun kelas CSS-nya. Jangan menghapus aturan itu.
+
+**Hasil tes (visual sanity check, akun dummy):** owner dan penjaga lulus (layar sementara hanya Akun dan Keluar tanpa jarak kosong; layar Akun hanya Ganti password). Customer lulus (Buku alamat, Akun, Keluar tampil; layar Akun punya tiga kartu; layar Buku alamat tetap normal, teks berisi tag HTML tetap tampil sebagai teks biasa).
+
+**Belum beres:**
+
+1. Tiga berkas di atas belum dikonfirmasi sudah di-push. Sebelum push, jalankan cek tiga hal `AGENTS.md` bagian 8 (folder aktif, `git remote -v`, email commit terakhir).
+2. Dari handoff sebelumnya masih berlaku: akun uji dibersihkan di `LNC.01`.
+
+**Butir baru yang perlu ditambah ke sheet:** tidak ada.
+
+**Saran giliran berikutnya:** pekerjaan mengikuti sheet; kandidat terdekat **MNU.01** (migration tabel menu, High-Risk, butuh penjelasan dampak dan "OK" ketua). Lampirkan `AGENTS.md`, `menu.md`, `database.md`, `security.md`, dan isi `supabase/migrations/`.
+
 ---
