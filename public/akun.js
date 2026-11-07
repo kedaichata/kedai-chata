@@ -236,10 +236,21 @@
       tombolAlamat.hidden = d.peran !== "customer";
     }
 
-    // AKN.08a: tombol Akun hanya untuk customer (akunmenu.js yang memasang kliknya).
+    // AKN.08a: tombol Akun (akunmenu.js yang memasang kliknya).
+    // TMN.01: kini tampil untuk semua peran, karena staf memakainya untuk ganti password.
     var tombolAkun = el("tombol-akun");
     if (tombolAkun) {
-      tombolAkun.hidden = d.peran !== "customer";
+      tombolAkun.hidden = false;
+    }
+
+    // TMN.01: kartu Ganti nama dan Ganti nomor WA hanya untuk customer (server menolak staf dengan 403).
+    var kartuNama = el("kartu-akun-nama");
+    if (kartuNama) {
+      kartuNama.hidden = d.peran !== "customer";
+    }
+    var kartuWa = el("kartu-akun-wa");
+    if (kartuWa) {
+      kartuWa.hidden = d.peran !== "customer";
     }
 
     var catatan = el("catatan-profil");

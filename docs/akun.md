@@ -618,7 +618,7 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 
 **Butir baru yang perlu ditambah ke sheet (judul pendek, bila belum ada):**
 
-- Sembunyikan tombol Buku alamat dan Akun untuk staf (P2)
+- Sembunyikan tombol Buku alamat dan Akun untuk staf (P2) => TMN.01
 
 **Saran giliran berikutnya:** pekerjaan mengikuti sheet; kandidat terdekat **MNU.01** (migration tabel menu, High-Risk, butuh penjelasan dampak dan "OK" ketua). Lampirkan `AGENTS.md`, `menu.md`, `database.md`, `security.md`, dan isi `supabase/migrations/`.
 
