@@ -26,6 +26,8 @@ var DAFTAR_CACHE = [
   "img/icon-192.png",
   "img/icon-512.png",
   "img/chata-logo.png",
+  "img/menu1.jpg",
+  "img/esteh.jpg",
 ];
 
 // Saat dipasang: simpan salinan awal semua berkas aplikasi.
