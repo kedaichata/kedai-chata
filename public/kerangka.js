@@ -4,6 +4,11 @@
 // Dimuat SETELAH akun.js dan menu.js. akun.js memanggil window.KedaiKerangka.atur(peran) setiap kali
 // status dimuat (masuk, Segarkan, kembali dari layar lain) dan .reset() saat Keluar.
 //
+// HOM.01: tab Home menjadi tab PERTAMA (paling kiri) untuk tiga peran dan jadi halaman pertama setelah masuk.
+// Tab Lainnya (owner) dan Akun (customer, penjaga) dikeluarkan dari daftar tab (baris lama dijadikan komentar).
+// Tab Home memakai panel "akun" (blok sapaan, Buku alamat, Pengaturan akun, Keluar) untuk SEMUA peran.
+// Panel "lainnya" tetap ada di HTML tetapi tidak terjangkau; isinya pindah ke Home di HOM.03 dan HOM.04.
+//
 // Aturan yang dijaga:
 // - Peran datang dari balasan server (aksi status) lewat akun.js; aplikasi tidak pernah mengirim peran.
 //   Menyembunyikan tab di sini hanya kemudahan; yang menolak akses sebenarnya server.
@@ -28,23 +33,27 @@
   // "segera" = fitur belum dibuat; panel nyata menyusul bersama fiturnya (menu, order, dll.).
   var TAB = {
     owner: [
+      { id: "home", nama: "Home", panel: "akun" }, // HOM.01
       { id: "order-masuk", nama: "Order Masuk", panel: "segera" },
       { id: "semua-order", nama: "Semua Order", panel: "segera" },
       { id: "buat-order", nama: "Buat Order", panel: "segera" },
       { id: "menu", nama: "Menu", panel: "menu" },
-      { id: "lainnya", nama: "Lainnya", panel: "lainnya" },
+      // HOM.01: { id: "lainnya", nama: "Lainnya", panel: "lainnya" },
     ],
     customer: [
+      { id: "home", nama: "Home", panel: "akun" }, // HOM.01
       { id: "pesan", nama: "Pesan", panel: "segera" },
       { id: "pesanan-saya", nama: "Pesanan Saya", panel: "segera" },
-      { id: "akun", nama: "Akun", panel: "akun" },
+      // HOM.01: { id: "akun", nama: "Akun", panel: "akun" },
     ],
     penjaga: [
+      { id: "home", nama: "Home", panel: "akun" }, // HOM.01
       { id: "antrean", nama: "Antrean", panel: "segera" },
-      { id: "akun", nama: "Akun", panel: "akun" },
+      // HOM.01: { id: "akun", nama: "Akun", panel: "akun" },
     ],
     // Peran tak dikenal: hanya Akun (supaya tetap bisa keluar), tanpa navigasi bawah.
-    lain: [{ id: "akun", nama: "Akun", panel: "akun" }],
+    // HOM.01: lain: [{ id: "akun", nama: "Akun", panel: "akun" }],
+    lain: [{ id: "home", nama: "Home", panel: "akun" }],
   };
 
   var NAV = {
@@ -132,7 +141,9 @@
 
     // Blok Akun (sapaan, Buku alamat, Pengaturan akun, Keluar): owner di Lainnya, peran lain di tab Akun.
     var blok = el("blok-akun");
-    var tujuan = peran === "owner" ? el("lainnya-akun") : el("panel-akun");
+    // HOM.01: Home memakai panel-akun untuk semua peran (owner tidak lagi lewat Lainnya).
+    // var tujuan = peran === "owner" ? el("lainnya-akun") : el("panel-akun");
+    var tujuan = el("panel-akun");
     if (blok.parentNode !== tujuan) {
       tujuan.appendChild(blok);
     }

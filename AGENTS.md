@@ -83,6 +83,7 @@ Pola: **satu fitur = satu dokumen md + satu dokumen tes** (hanya dilampirkan di 
 | **`docs/features.md`**     | Peta besar fitur, layar per peran, versi, peluncuran. Dibaca sekali untuk orientasi.             | LNC             |
 | **`docs/fondasi.md`**      | Repo, Supabase, terbit online, PWA dasar, CLI, pagar anti-nyasar.                                | FND             |
 | **`docs/desain.md`**       | Tema marun dan emas, navigasi per peran, komponen layar, logo HTML/CSS, keadaan khusus.          | DSN             |
+| **`docs/home.md`**         | Kerangka utama tampilan aplikasi                                                                 | HOM             |
 | **`docs/akun.md`**         | Daftar, login, tiga peran, profil, buku alamat, password, pembuatan akun staf.                   | AKN             |
 | **`docs/menu.md`**         | Daftar menu, harga, Tersedia/Habis, dikelola owner.                                              | MNU             |
 | **`docs/order.md`**        | Order customer, status, setuju/tolak, catatan berlapis, order wakil owner, pelanggan tanpa akun. | ORD             |
