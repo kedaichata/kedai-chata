@@ -829,27 +829,168 @@
                                 hidden
                             ></p>
                         </div>
+                        <!-- HOM.03: tombol Bantuan (HM5), semua peran. Tampil "Segera" dan tidak bisa diketuk
+                             (disabled) sampai bantuan.md selesai; saat itu tombol ini diaktifkan di sana. -->
                         <div class="baris-tombol">
                             <button
                                 type="button"
-                                class="tombol tombol--utama"
-                                id="tombol-buku-alamat"
-                                hidden
+                                class="tombol tombol--sekunder tombol--segera"
+                                id="home-bantuan"
+                                disabled
+                                aria-disabled="true"
                             >
-                                Buku alamat
+                                <span>Bantuan</span>
+                                <span class="tombol__segera">Segera</span>
                             </button>
                         </div>
-                        <div class="baris-tombol">
-                            <button
-                                type="button"
-                                class="tombol tombol--utama"
-                                id="tombol-akun"
-                                hidden
-                            >
-                                Pengaturan akun
-                            </button>
+
+                        <!-- HOM.04: item Home menurut peran (HM6, HM7, HM12). Atribut data-peran berisi peran yang
+                             boleh melihat item (dipisah spasi); kerangka.js yang menampilkan atau menyembunyikan.
+                             Itu hanya kemudahan tampilan: pengaman sebenarnya server (HM10).
+                             Item "Segera" bukan tombol (tidak bisa diketuk). -->
+                        <!-- Owner: Pelanggan tanpa akun, bagian tersendiri sebelum pengaturan akun (HM7) -->
+                        <div class="home-grup" data-grup hidden>
+                            <div class="daftar">
+                                <div
+                                    class="daftar__item daftar__item--segera"
+                                    data-peran="owner"
+                                    aria-disabled="true"
+                                    hidden
+                                >
+                                    <span class="daftar__utama">
+                                        <span class="daftar__nama"
+                                            >Pelanggan</span
+                                        >
+                                        <span class="daftar__ket"
+                                            >Pelanggan tanpa akun</span
+                                        >
+                                    </span>
+                                    <span class="daftar__nilai">Segera</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="baris-tombol">
+
+                        <!-- Daftar pengaturan akun per peran (HM6). Urutan di sini sudah sesuai tiap peran:
+                             customer: nama, WA, password, Buku alamat; owner: Ringkasan order 7 hari lalu password;
+                             penjaga: password saja. -->
+                        <div class="home-grup" data-grup hidden>
+                            <h2 class="home-judul">Pengaturan akun</h2>
+                            <div class="daftar">
+                                <button
+                                    type="button"
+                                    class="daftar__item daftar__item--tombol"
+                                    data-aksi="akun-nama"
+                                    data-peran="customer"
+                                    hidden
+                                >
+                                    <span class="daftar__utama">
+                                        <span class="daftar__nama"
+                                            >Ganti nama</span
+                                        >
+                                    </span>
+                                    <span
+                                        class="daftar__panah"
+                                        aria-hidden="true"
+                                        >&rsaquo;</span
+                                    >
+                                </button>
+                                <button
+                                    type="button"
+                                    class="daftar__item daftar__item--tombol"
+                                    data-aksi="akun-wa"
+                                    data-peran="customer"
+                                    hidden
+                                >
+                                    <span class="daftar__utama">
+                                        <span class="daftar__nama"
+                                            >Ganti nomor WA</span
+                                        >
+                                    </span>
+                                    <span
+                                        class="daftar__panah"
+                                        aria-hidden="true"
+                                        >&rsaquo;</span
+                                    >
+                                </button>
+                                <div
+                                    class="daftar__item daftar__item--segera"
+                                    data-peran="owner"
+                                    aria-disabled="true"
+                                    hidden
+                                >
+                                    <span class="daftar__utama">
+                                        <span class="daftar__nama"
+                                            >Ringkasan order 7 hari</span
+                                        >
+                                    </span>
+                                    <span class="daftar__nilai">Segera</span>
+                                </div>
+                                <button
+                                    type="button"
+                                    class="daftar__item daftar__item--tombol"
+                                    data-aksi="akun-pw"
+                                    data-peran="customer owner penjaga"
+                                    hidden
+                                >
+                                    <span class="daftar__utama">
+                                        <span class="daftar__nama"
+                                            >Ganti password</span
+                                        >
+                                    </span>
+                                    <span
+                                        class="daftar__panah"
+                                        aria-hidden="true"
+                                        >&rsaquo;</span
+                                    >
+                                </button>
+                                <button
+                                    type="button"
+                                    class="daftar__item daftar__item--tombol"
+                                    data-aksi="alamat"
+                                    data-peran="customer"
+                                    hidden
+                                >
+                                    <span class="daftar__utama">
+                                        <span class="daftar__nama"
+                                            >Buku alamat</span
+                                        >
+                                    </span>
+                                    <span
+                                        class="daftar__panah"
+                                        aria-hidden="true"
+                                        >&rsaquo;</span
+                                    >
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- HOM.04: dua tombol lama (Buku alamat dan Pengaturan akun) digantikan daftar di atas.
+                             Disembunyikan, belum dihapus: akun.js, alamat.js, dan akunmenu.js masih memakai
+                             id-nya. Dihapus di HOM.05 (butuh "OK"). -->
+                        <div hidden>
+                            <div class="baris-tombol">
+                                <button
+                                    type="button"
+                                    class="tombol tombol--utama"
+                                    id="tombol-buku-alamat"
+                                    hidden
+                                >
+                                    Buku alamat
+                                </button>
+                            </div>
+                            <div class="baris-tombol">
+                                <button
+                                    type="button"
+                                    class="tombol tombol--utama"
+                                    id="tombol-akun"
+                                    hidden
+                                >
+                                    Pengaturan akun
+                                </button>
+                            </div>
+                        </div>
+                        <!-- HOM.04: Keluar tetap paling bawah, berpinggir (DS9, DS12), diberi jarak dari daftar -->
+                        <div class="baris-tombol home-keluar">
                             <button
                                 type="button"
                                 class="tombol tombol--sekunder"

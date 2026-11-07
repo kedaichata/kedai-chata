@@ -880,3 +880,74 @@ button.navbawah__item:active {
         align-items: flex-start;
     }
 }
+
+/* ------------------------------------------------------------------
+   HOM.03 dan HOM.04: isi Home (tombol Bantuan "Segera", bagian Pelanggan,
+   daftar pengaturan akun per peran). Memakai .daftar yang sudah ada.
+   Item bertulisan "Segera" bukan tombol dan tidak bisa diketuk.
+   ------------------------------------------------------------------ */
+.tombol--segera {
+    gap: 10px;
+}
+
+.tombol__segera {
+    padding: 1px 10px;
+    border: 1.5px solid currentColor;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.home-grup {
+    margin-top: 16px;
+}
+
+.home-judul {
+    margin: 0 0 8px;
+    font-size: 1.1rem;
+    color: var(--marun);
+}
+
+/* Item daftar yang bisa diketuk (button, bukan tautan) */
+.daftar__item--tombol {
+    width: 100%;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--garis-tipis);
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.daftar__item--tombol:active {
+    background: rgba(226, 184, 74, 0.2);
+}
+
+.daftar__panah {
+    flex: 0 0 auto;
+    font-size: 1.6rem;
+    line-height: 1;
+    color: var(--marun);
+}
+
+/* Item "Segera": terlihat redup dan tidak bisa diketuk */
+.daftar__item--segera {
+    color: var(--teks-samar);
+}
+
+.daftar__item--segera .daftar__nilai {
+    font-size: 0.85rem;
+    color: var(--teks-samar);
+}
+
+/* Item yang tersembunyi tetap dihitung :last-child, jadi garis bawah dibuang di item terlihat terakhir */
+.daftar > .daftar__item:not([hidden]):not(:has(~ .daftar__item:not([hidden]))) {
+    border-bottom: 0;
+}
+
+/* Tombol Keluar diberi jarak dari daftar supaya tidak salah pencet (DS12) */
+.home-keluar {
+    margin-top: 24px;
+}

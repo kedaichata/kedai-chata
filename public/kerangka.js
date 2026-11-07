@@ -13,6 +13,11 @@
 // lencana peran. Nama datang dari akun.js sebagai argumen kedua atur(peran, nama); bila tidak ada,
 // sapaan tampil tanpa nama. Tidak ada panggilan server baru (HM10).
 //
+// HOM.03 dan HOM.04: Home berisi tombol Bantuan ("Segera", tidak bisa diketuk), bagian Pelanggan (owner,
+// "Segera"), dan daftar pengaturan akun per peran. Item ditampilkan menurut peran lewat atribut data-peran
+// di index.html. Item yang membuka layar Akun dan Buku alamat memakai layar yang sudah ada
+// (window.KedaiAkunMenu.tampil dan window.KedaiAlamat.tampil), tanpa panggilan server baru (HM10).
+//
 // Aturan yang dijaga:
 // - Peran datang dari balasan server (aksi status) lewat akun.js; aplikasi tidak pernah mengirim peran.
 //   Menyembunyikan tab di sini hanya kemudahan; yang menolak akses sebenarnya server.
@@ -157,6 +162,54 @@
     }
   }
 
+  // HOM.03 dan HOM.04: tampilkan item Home yang cocok dengan peran, sembunyikan sisanya.
+  // data-peran berisi peran yang boleh melihat item (dipisah spasi). Peran null atau tak dikenal:
+  // semua item bertanda data-peran disembunyikan. Ini hanya kemudahan tampilan (HM10); server yang menolak akses.
+  function aturItemHome(p) {
+    var blok = el("blok-akun");
+    var butir = blok.querySelectorAll("[data-peran]");
+    for (var i = 0; i < butir.length; i++) {
+      var boleh = (butir[i].getAttribute("data-peran") || "").split(" ");
+      butir[i].hidden = !p || boleh.indexOf(p) === -1;
+    }
+    // Bagian (judul + daftar) yang semua itemnya tersembunyi ikut disembunyikan.
+    var grup = blok.querySelectorAll("[data-grup]");
+    for (var g = 0; g < grup.length; g++) {
+      grup[g].hidden = !grup[g].querySelector("[data-peran]:not([hidden])");
+    }
+  }
+
+  // HOM.04: buka layar Akun yang sudah ada, lalu geser ke kartu yang dimaksud (bila terlihat).
+  function bukaAkun(kartu) {
+    var M = window.KedaiAkunMenu;
+    if (!M || typeof M.tampil !== "function") return;
+    M.tampil();
+    if (kartu && !kartu.hidden && typeof kartu.scrollIntoView === "function") {
+      kartu.scrollIntoView();
+    }
+  }
+
+  // HOM.04: aksi item Home yang bisa diketuk (atribut data-aksi di index.html).
+  var AKSI_HOME = {
+    "akun-nama": function () {
+      bukaAkun(el("kartu-akun-nama"));
+    },
+    "akun-wa": function () {
+      bukaAkun(el("kartu-akun-wa"));
+    },
+    "akun-pw": function () {
+      // Kartu Ganti password tidak punya id sendiri: ambil dari formnya.
+      var form = el("form-akun-pw");
+      bukaAkun(form ? form.parentNode : null);
+    },
+    alamat: function () {
+      var B = window.KedaiAlamat;
+      if (B && typeof B.tampil === "function") {
+        B.tampil();
+      }
+    },
+  };
+
   // Dipanggil akun.js setiap kali status dimuat. Peran sama: tab yang terbuka dipertahankan.
   // HOM.02: argumen kedua (nama) boleh kosong.
   // function atur(peranDariServer) {
@@ -182,6 +235,7 @@
       }
     }
     isiSapaan(peran, namaDariServer); // HOM.02
+    aturItemHome(peran); // HOM.03, HOM.04
     buka(tab);
   }
 
@@ -198,6 +252,7 @@
     var lencanaPeran = el("home-peran");
     lencanaPeran.textContent = "";
     lencanaPeran.hidden = true;
+    aturItemHome(null); // HOM.03, HOM.04: item Home per peran disembunyikan sampai masuk lagi
     var catatan = el("catatan-profil");
     catatan.textContent = "";
     catatan.hidden = true;
@@ -221,6 +276,17 @@
       pasangNav(NAV[k]);
     }
   }
+
+  // HOM.04: satu pendengar untuk semua item Home yang bisa diketuk.
+  el("blok-akun").addEventListener("click", function (e) {
+    var sasaran =
+      e.target && e.target.closest ? e.target.closest("[data-aksi]") : null;
+    if (!sasaran || sasaran.disabled) return;
+    var aksi = sasaran.getAttribute("data-aksi");
+    if (Object.prototype.hasOwnProperty.call(AKSI_HOME, aksi)) {
+      AKSI_HOME[aksi]();
+    }
+  });
 
   window.KedaiKerangka = Object.freeze({
     atur: atur,
