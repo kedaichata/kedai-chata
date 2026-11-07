@@ -143,3 +143,25 @@ _(belum ada blok)_
 - Cek harga terhadap `harga_maks_menu`.
 - Petakan `unique_violation` nama kembar ke satu kode galat aman, termasuk saat mengaktifkan kembali menu yang namanya sudah dipakai menu aktif.
 - `menu_daftar` mengembalikan hanya nama berkas foto, urut nama A sampai Z; customer hanya melihat menu aktif.
+
+### Handoff #2 | 2026-11-07 | FREN
+
+**Berkas tujuan:** `docs/menu.md` bagian 9. Yang paling akhir menang.
+
+**Tugas:** MNU.02 selesai. Empat fungsi SQL menu dan empat aksi menu di `kedai` sudah jalan di production (commit `88f6ad5`). Hasil cek: `EXECUTE` hanya `postgres` dan `service_role`, nilai peran `owner` cocok, `harga_maks_menu` 200000, tabel `menu` masih kosong. Aksi lama (login, profil) diuji dengan 3 akun beda peran dan normal.
+
+**Berkas diubah:** `supabase/migrations/20261107_02_menu_fungsi.sql`, `supabase/migrations/20261107_02_menu_fungsi_batal.sql`, `supabase/templates/20261107_02_menu_fungsi_cek.sql`, `supabase/functions/kedai/index.ts` (hanya penambahan, tidak ada baris lama yang diubah).
+
+**Keputusan baru:**
+
+- Aksi menu **tetap di `kedai`**, tidak dipisah menjadi fungsi sendiri (keputusan ketua; alasan belum tercatat).
+- `menu_daftar`: owner mendapat semua menu (aktif dan nonaktif), customer dan penjaga hanya yang aktif. Balasan hanya nama berkas foto. Akun staf nonaktif ditolak.
+- `menu_simpan`: `id` kosong = tambah (otomatis aktif dan Tersedia), `id` terisi = ubah. Isian `aktifkan` = true mengaktifkan kembali menu nonaktif. Nama kembar dibalas kode `nama_kembar`, termasuk saat mengaktifkan kembali.
+- `menu_stok` hanya untuk menu aktif (menu nonaktif ditolak, kode `menu_tidak_aktif`). `menu_nonaktif` pada menu yang sudah nonaktif dianggap berhasil.
+- Peran owner dicek **dua lapis**: di `kedai` dan di dalam fungsi SQL.
+- Fungsi merapikan nama (spasi awal, akhir, dan ganda), mengecek harga bulat lebih dari 0 dan tidak melebihi `harga_maks_menu`, serta bentuk nama berkas foto.
+- Balasan sukses `menu_simpan`, `menu_stok`, dan `menu_nonaktif` membawa daftar menu terbaru (`menu`), jadi aplikasi tidak perlu memanggil `menu_daftar` lagi.
+
+**Belum beres:** aksi menu belum pernah dipanggil dengan data. Nama kembar, batas harga, nama dan foto tidak valid, serta 403 untuk customer dan penjaga belum dibuktikan; diuji di MNU.06.
+
+**Saran giliran berikutnya (MNU.03, layar Kelola Menu):** minta berkas JS aplikasi dan `style.css` terbaru, `sw.js` (berkas JS baru wajib didaftarkan di cache, butuh "OK"), dan `desain.md`. Isi permintaan: `aksi`, `id`, `nama`, `harga` (bilangan bulat), `foto` (nama berkas, kosong = tanpa foto), `aktifkan`, `tersedia`. Pesan galat dari server sudah aman ditampilkan apa adanya (lewat `textContent`).
