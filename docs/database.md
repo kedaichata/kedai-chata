@@ -215,3 +215,26 @@ Angka yang bisa berubah **tidak ditulis mati di kode** (`AGENTS.md` bagian 1). N
   - Aksi `menu_simpan` di `kedai` **wajib** menerima field `deskripsi` (teks, boleh kosong); bila field tidak ada, dibalas 400. Deskripsi kosong menghapus deskripsi lama.
   - `menu_daftar` kini membawa field `deskripsi` untuk semua peran.
   - Versi 6 argumen `menu_simpan` (MNU.02) masih ada di database dan tidak dipanggil lagi. Pembuangannya menunggu keputusan ketua (butir sheet: "Buang fungsi menu_simpan lama"; High-Risk, butuh "OK", tidak mendesak).
+
+### 2026-11-07: Grup pilihan gratis (menambah bagian 2, 3, 4, dan 5)
+
+**Berkas tujuan:** `docs/database.md` bagian 9. Rujukan lengkap: `docs/menu.md` bagian 9, Handoff #7 dan #8. Yang paling akhir menang.
+
+- **Bagian 2 (tabel baru, MNU.09):**
+  - `grup_pilihan`: `id`, `nama` (3 sampai 30 karakter), `aktif`, `dibuat_pada`, `diubah_pada`, `diubah_oleh`. Nama grup **aktif** tidak boleh kembar (huruf besar dan kecil dianggap sama).
+  - `opsi_pilihan`: `id`, `grup_id`, `nama` (2 sampai 30 karakter), `bawaan`, `aktif`, `urutan`, `dibuat_pada`, `diubah_pada`. Nama opsi aktif tidak boleh kembar dalam satu grup; paling banyak satu opsi `bawaan` per grup; opsi bawaan harus aktif.
+  - `menu_grup` (pemasangan grup ke menu): `menu_id`, `grup_id` (keduanya kunci utama), `urutan`, `aktif`, `diubah_pada`, `diubah_oleh`.
+  - Pagar nama di tabel: tanpa karakter kontrol, tanpa spasi di tepi, tanpa spasi ganda.
+- **Bagian 3 (hak):** ketiga tabel RLS aktif tanpa policy. `service_role` hanya SELECT, INSERT, UPDATE; **tanpa DELETE**; `anon` dan `authenticated` nol. Grup dan opsi tidak dihapus, hanya dinonaktifkan; **melepas grup dari menu = `aktif` jadi false**.
+- **Bagian 4 (pengaturan):** `grup_maks_per_menu` = 3 dan `opsi_maks_per_grup` = 6. Dihitung dari yang **aktif** saja. Syarat minimal 2 opsi aktif per grup dan tepat satu bawaan adalah aturan fungsi, bukan pengaturan.
+- **Bagian 5 (fungsi SQL, `EXECUTE` hanya `service_role`):**
+  - `grup_simpan(p_oleh, p_id, p_nama, p_opsi, p_aktifkan)`: owner; `p_id` kosong = grup baru. `p_opsi` adalah **daftar lengkap** opsi (array JSON; urutan = urutan tampil). Saat mengubah, semua opsi lama termasuk yang nonaktif wajib ikut; yang dibuang dikirim `aktif: false`, bila kurang ditolak `opsi_tidak_lengkap`. Grup nonaktif hanya bisa diubah bila `p_aktifkan` = true. Mengembalikan id grup.
+  - `grup_nonaktif(p_oleh, p_id)`: owner; opsi dan pemasangannya tidak diubah.
+  - `grup_daftar(p_semua)`: tanpa cek peran (dibatasi `kedai`, seperti `menu_daftar`); `true` memuat grup dan opsi nonaktif juga.
+  - `menu_grup_atur(p_oleh, p_menu_id, p_grup_ids)`: owner; daftar **lengkap** grup aktif untuk satu menu, kosong = lepas semua.
+  - `opsi_periksa(p_menu_id, p_opsi_ids)`: memeriksa opsi terpilih terhadap grup yang terpasang di menu (opsi bawaan dipakai bila grup tidak dipilih). **Belum dipanggil siapa pun**; ORD.01 yang memanggilnya.
+  - `menu_daftar` diganti di tempat: kini membawa `grup` di tiap menu (hanya grup dan opsi aktif, semua peran). `menu_simpan` tidak berubah.
+  - Kode galat baru: `grup_nama_tidak_valid`, `grup_nama_kembar`, `grup_tidak_ditemukan`, `grup_tidak_aktif`, `grup_tidak_valid`, `grup_terlalu_banyak`, `opsi_tidak_valid`, `opsi_tidak_lengkap`, `opsi_nama_kembar`, `opsi_terlalu_banyak`, `pilihan_rusak`.
+- **Bagian 5 (aksi `kedai`):** `grup_daftar`, `grup_simpan`, `grup_nonaktif`, `menu_grup_atur`, semuanya owner saja (lapis kedua peran di `kedai`). Rincian isian dan balasan ada di Handoff #8 (`docs/menu.md`).
+- **Berkas SQL:** `supabase/migrations/20261107_04_menu_grup_pilihan.sql` (dan `_batal`), `supabase/templates/20261107_04_menu_grup_pilihan_cek.sql` dan `_uji.sql`. Berkas uji hanya bisa dijalankan selama belum ada grup di database.
+- **Catatan untuk ORD.01:** `order_item` perlu menyalin nama grup dan nama opsi terpilih (seperti nama dan harga menu), dan memanggil `opsi_periksa` sebelum menyimpan; kode `pilihan_rusak` dipetakan di `kedai` saat itu.

@@ -351,3 +351,30 @@ Tabel `menu` sudah live: kolom `deskripsi` adalah perubahan pada tabel yang ada.
 - Carry-over Handoff #3 sampai #6 tetap berlaku: target ukuran foto belum diputuskan; cara mengenali nama kembar; handler fetch `sw.js` ikut menyimpan foto menu; belum dibuktikan dengan data di MNU.06; menu dummy dari uji tidak bisa dihapus. `menu.js` sekitar 874 baris (pedoman sekitar 500), komponen baru sebaiknya berkas terpisah dan wajib didaftarkan di `sw.js` (butuh "OK").
 
 **Saran giliran berikutnya:** giliran 2 MNU.09 (aksi `kedai`, High-Risk, deploy butuh "OK" ketua). Lampirkan `AGENTS.md` + `menu.md` (sudah memuat handoff ini) + `database.md` + `security.md`, `supabase/functions/kedai/index.ts` versi terbaru, dan `20261107_04_menu_grup_pilihan.sql`. Berkas aplikasi belum perlu sampai MNU.10. Sesudah MNU.09 selesai, dicentang, lalu MNU.10 (layar owner), MNU.11, dan sesi tes MNU.06 (ketua yang memutuskan urutannya).
+
+### Handoff #8 | 2026-11-07 | KETUA
+
+**Berkas tujuan:** `docs/menu.md` bagian 9. Yang paling akhir menang.
+
+**Tugas:** MNU.09 **selesai** (giliran 2: aksi grup pilihan di `kedai`). Sudah dideploy dengan urutan aman `AGENTS.md` bagian 8 ("OK" ketua diberikan di chat) dan di-push (commit `17ef790`). Hasil tes lewat Console browser dengan akun dummy: owner memanggil `grup_daftar` (200, grup 0), `grup_nonaktif` dan `menu_grup_atur` dengan id kosong-kosongan (404, pesan "tidak ditemukan"), `grup_simpan` dengan satu opsi (400, pesan aturan pilihan), semuanya tanpa menyimpan data; customer dan penjaga memanggil keempat aksi dan **semuanya 403** ("hanya untuk owner"); aksi lama `status` dan `menu_daftar` tetap normal. Token akses dibersihkan dari Mac dan sesi dashboard di-logout. Bukti diperiksa di chat dan tidak disimpan.
+
+**Berkas diubah:** `supabase/functions/kedai/index.ts` saja (hanya penambahan, tidak ada baris lama yang dihapus atau diubah; tambahan sekitar 226 baris). Berkas lain tidak disentuh.
+
+**Keputusan baru (pilihan penulis; "OK" deploy dari ketua, alasan selebihnya belum tercatat):**
+
+- Empat aksi baru di `kedai`: `grup_daftar`, `grup_simpan`, `grup_nonaktif`, `menu_grup_atur`. Semuanya **owner saja**, dicek dua lapis (di `kedai` dan di fungsi SQL).
+- Isian permintaan: `grup_daftar` tanpa isian; `grup_simpan` = `id` (kosong = grup baru), `nama`, `opsi` (daftar **lengkap**, tiap elemen `id`, `nama`, `bawaan`, `aktif`), `aktifkan`; `grup_nonaktif` = `id`; `menu_grup_atur` = `menu_id` dan `grup_ids` (daftar lengkap grup aktif, kosong = lepas semua).
+- `grup_daftar` selalu meminta semua grup dan opsi, termasuk yang nonaktif, supaya bisa dikirim balik lengkap ke `grup_simpan`.
+- Balasan sukses: `grup_daftar` membawa `grup`; `grup_simpan` membawa `id`, `grup`, dan `menu`; `grup_nonaktif` membawa `grup` dan `menu`; `menu_grup_atur` membawa `menu`. Aplikasi tidak perlu memanggil ulang.
+- `kedai` hanya meneruskan field `id`, `nama`, `bawaan`, `aktif` dari tiap opsi, dengan pagar kasar 100 opsi dan 50 grup per permintaan. Batas sebenarnya tetap dijaga fungsi SQL dari pengaturan.
+- Peta galat `PETA_GALAT_GRUP`: `bukan_owner` 403; `grup_tidak_ditemukan` dan `menu_tidak_ditemukan` 404; `grup_nama_kembar`, `opsi_nama_kembar`, `grup_tidak_aktif`, `opsi_tidak_lengkap`, `grup_terlalu_banyak`, `opsi_terlalu_banyak` 409; `grup_nama_tidak_valid`, `grup_tidak_valid`, `opsi_tidak_valid` 400. Pesan batas jumlah tanpa angka karena batasnya ada di pengaturan. Kode `id_kosong` dan `pengaturan_rusak` sengaja tidak dipetakan (jadi galat umum 500). Kode `pilihan_rusak` belum dipetakan karena hanya keluar dari `opsi_periksa`; dipetakan di ORD.01.
+
+**Belum beres:**
+
+- Jalur **sukses** `grup_simpan`, `grup_nonaktif`, dan `menu_grup_atur` dengan data belum pernah dicoba lewat `kedai`; yang terbukti baru jalur galat dan 403. Masuk sesi tes MNU.06 (butir sheet: "Tes aksi grup dengan data").
+- Koreksi: blok `docs/database.md` untuk MNU.07 **sudah ada** (judul "Deskripsi menu"), jadi catatan "belum ditempel" di Handoff #6 dan #7 tidak berlaku. Blok MNU.09 ditempel bersamaan dengan handoff ini.
+- Aplikasi belum membaca field `grup` dari `menu_daftar`. Layar owner = MNU.10, tampilan pilihan di sheet detail = MNU.11.
+- Berkas uji `20261107_04_menu_grup_pilihan_uji.sql` hanya bisa dijalankan selama belum ada grup pilihan di database; jangan dipakai ulang setelah owner membuat grup.
+- Carry-over Handoff #3 sampai #7 tetap berlaku: fungsi `menu_simpan` 6 argumen masih ada di database; target ukuran foto belum diputuskan; cara mengenali nama kembar (teks pesan atau kode); handler fetch `sw.js` ikut menyimpan foto menu; belum dibuktikan dengan data di MNU.06 (batas harga 200000, Nonaktifkan dan Aktifkan kembali dengan nama kembar, 403 untuk non-owner); menu dummy dari uji tidak bisa dihapus. `menu.js` sekitar 874 baris (pedoman sekitar 500), komponen baru sebaiknya berkas terpisah dan wajib didaftarkan di `sw.js` (butuh "OK").
+
+**Saran giliran berikutnya:** MNU.10 (layar owner: kelola grup pilihan, buat sekali lalu centang di tiap menu). Lampirkan `AGENTS.md` + `menu.md` (sudah memuat handoff ini) + `desain.md`, serta `menu.js`, `menu-detail.js`, `akun.js` (pembungkus `panggilKedai`), `kerangka.js`, `index.html`, `style.css`, dan `sw.js`. `database.md` dan `security.md` belum perlu karena tidak ada perubahan tabel atau fungsi. Catatan desain: `grup_simpan` meminta daftar opsi lengkap, jadi layar harus memuat dulu lewat `grup_daftar`. Berkas JS baru wajib didaftarkan di `sw.js` (butuh "OK" ketua). Sesudahnya MNU.11 lalu sesi tes MNU.06 (ketua yang memutuskan urutannya).
