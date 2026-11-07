@@ -645,3 +645,102 @@ a.daftar__item:active {
         animation: none;
     }
 }
+
+/* ------------------------------------------------------------------
+   KRG.01 dan MNU.03: kerangka layar utama dan layar Kelola Menu
+   Hanya tambahan. Warna dari variabel di :root; lencana Tersedia/Habis/Nonaktif memakai
+   warna yang sama dengan lencana status (desain.md 4.2) dan selalu disertai tulisan (DS11).
+   ------------------------------------------------------------------ */
+
+/* Item navigasi bawah berupa <button>: buang gaya bawaan tombol, sisakan garis penanda di atas */
+button.navbawah__item {
+    background: transparent;
+    border-width: 0;
+    border-top-width: 3px;
+    border-radius: 0;
+    cursor: pointer;
+}
+
+button.navbawah__item:active {
+    background: rgba(226, 184, 74, 0.12);
+}
+
+/* Lencana menu */
+.lencana--tersedia {
+    background: #d6f0c8; /* hijau muda */
+    color: #1f5a14;
+}
+
+.lencana--habis {
+    background: #f6d0d0; /* merah pucat */
+    color: #8a1f1f;
+}
+
+.lencana--nonaktif {
+    background: #dddad5; /* abu-abu */
+    color: #4a4640;
+}
+
+/* Kartu menu: foto kecil di kiri, nama, harga, dan lencana di kanan */
+.menu-kartu__atas {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 0 0 4px;
+}
+
+.menu-foto {
+    flex: 0 0 64px;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgba(184, 146, 58, 0.18);
+    color: var(--teks-samar);
+    font-size: 0.72rem;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.menu-foto img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.menu-info {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.menu-nama {
+    margin: 0;
+    font-weight: 700;
+    color: var(--marun);
+    overflow-wrap: anywhere;
+}
+
+.menu-harga {
+    margin: 0;
+    font-weight: 700;
+}
+
+.menu-lencana {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 6px 0 0;
+}
+
+/* Menu nonaktif: bagian atas kartu diredupkan (tombol di bawahnya tetap jelas) */
+.menu-kartu--nonaktif .menu-kartu__atas {
+    opacity: 0.55;
+}
+
+.menu-kartu--nonaktif .menu-foto img {
+    filter: grayscale(1);
+}

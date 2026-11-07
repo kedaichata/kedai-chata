@@ -600,10 +600,16 @@
                 </div>
             </section>
 
-            <!-- Layar sementara setelah masuk: diganti layar sebenarnya di langkah berikutnya -->
-            <section id="layar-sementara" hidden>
+            <!-- KRG.01: Kerangka layar utama per peran (desain.md DS9, DS10).
+                 Id "layar-sementara" tetap dipakai karena itu nama layar di akun.js.
+                 Judul, tab, dan panel diatur kerangka.js sesuai peran dari server.
+                 Semua id lama (sapaan, catatan-profil, tombol-buku-alamat, tombol-akun,
+                 tombol-keluar, tombol-segarkan) tetap ada. -->
+            <section id="layar-sementara" class="ruang-navbawah" hidden>
                 <header class="bilah-atas">
-                    <div class="bilah-atas__judul">Beranda sementara</div>
+                    <div class="bilah-atas__judul" id="kerangka-judul">
+                        Beranda
+                    </div>
                     <button
                         type="button"
                         class="bilah-atas__segarkan"
@@ -616,44 +622,374 @@
                         </svg>
                     </button>
                 </header>
-                <div class="kartu">
-                    <h2 class="kartu__judul">Selamat datang</h2>
-                    <p class="kartu__isi" id="sapaan"></p>
-                    <p class="isian__bantuan" id="catatan-profil" hidden></p>
+
+                <!-- Panel: fitur yang belum dibuat (Order, Pesan, Antrean, dll.) -->
+                <div id="panel-segera" hidden>
+                    <div class="keadaan" role="status">
+                        <svg
+                            class="keadaan__ikon"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        <p class="keadaan__judul">Segera hadir</p>
+                        <p class="keadaan__ket" id="segera-ket"></p>
+                    </div>
                 </div>
-                <p class="isian__bantuan">
-                    Layar ini sementara. Layar utama menyusul di langkah
-                    berikutnya.
-                </p>
-                <div class="baris-tombol">
+
+                <!-- Panel Menu (owner): Kelola Menu (MNU.03). Logika di menu.js -->
+                <div id="panel-menu" hidden>
+                    <div id="menu-daftar-bungkus">
+                        <div class="kartu" id="menu-pesan-bungkus" hidden>
+                            <p
+                                class="kartu__isi"
+                                id="menu-pesan"
+                                role="status"
+                            ></p>
+                        </div>
+                        <p
+                            class="isian__galat"
+                            id="menu-daftar-galat"
+                            role="alert"
+                            hidden
+                        ></p>
+                        <p class="isian__bantuan" id="menu-ringkas"></p>
+                        <div id="menu-daftar-isi"></div>
+                        <div class="baris-tombol">
+                            <button
+                                type="button"
+                                class="tombol tombol--utama"
+                                id="menu-tambah"
+                            >
+                                Tambah menu
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="menu-form-bungkus" hidden>
+                        <h2 id="menu-form-judul">Tambah menu</h2>
+                        <form id="form-menu" novalidate>
+                            <div class="isian" id="isian-menu-nama">
+                                <label class="isian__label" for="menu-nama"
+                                    >Nama menu</label
+                                >
+                                <input
+                                    class="isian__kolom"
+                                    id="menu-nama"
+                                    name="nama"
+                                    type="text"
+                                    maxlength="60"
+                                    autocomplete="off"
+                                />
+                                <p class="isian__bantuan">
+                                    3 sampai 40 karakter. Tidak boleh sama
+                                    dengan menu aktif lain.
+                                </p>
+                                <p class="isian__galat" hidden></p>
+                            </div>
+                            <div class="isian" id="isian-menu-harga">
+                                <label class="isian__label" for="menu-harga"
+                                    >Harga (rupiah)</label
+                                >
+                                <input
+                                    class="isian__kolom"
+                                    id="menu-harga"
+                                    name="harga"
+                                    type="text"
+                                    inputmode="numeric"
+                                    maxlength="15"
+                                    autocomplete="off"
+                                />
+                                <p class="isian__bantuan">
+                                    Angka bulat saja, misalnya 15000.
+                                </p>
+                                <p class="isian__galat" hidden></p>
+                            </div>
+                            <div class="isian" id="isian-menu-foto">
+                                <label
+                                    class="isian__label"
+                                    for="menu-berkas-foto"
+                                    >Nama berkas foto (opsional)</label
+                                >
+                                <input
+                                    class="isian__kolom"
+                                    id="menu-berkas-foto"
+                                    name="foto"
+                                    type="text"
+                                    maxlength="80"
+                                    autocomplete="off"
+                                    autocapitalize="none"
+                                    spellcheck="false"
+                                />
+                                <p class="isian__bantuan">
+                                    Nama berkasnya saja, misalnya nasi-ayam.jpg.
+                                    Berkas fotonya dimasukkan ketua ke folder
+                                    img. Kosongkan bila tanpa foto.
+                                </p>
+                                <p class="isian__galat" hidden></p>
+                            </div>
+                            <div class="isian" id="menu-galat-bungkus" hidden>
+                                <p
+                                    class="isian__galat"
+                                    id="menu-galat"
+                                    role="alert"
+                                ></p>
+                            </div>
+                            <button
+                                type="submit"
+                                class="tombol tombol--utama"
+                                id="tombol-menu-simpan"
+                            >
+                                Simpan menu
+                            </button>
+                        </form>
+                        <div class="baris-tombol">
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder"
+                                id="menu-batal"
+                            >
+                                Batal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel Lainnya (owner): Pelanggan dan Bantuan menyusul, Akun dipasang kerangka.js -->
+                <div id="panel-lainnya" hidden>
+                    <ul class="daftar">
+                        <li class="daftar__item">
+                            <span class="daftar__utama">
+                                <span class="daftar__nama">Pelanggan</span>
+                                <span class="daftar__ket"
+                                    >Pelanggan tanpa akun</span
+                                >
+                            </span>
+                            <span class="daftar__nilai">Segera</span>
+                        </li>
+                        <li class="daftar__item">
+                            <span class="daftar__utama">
+                                <span class="daftar__nama">Bantuan</span>
+                                <span class="daftar__ket"
+                                    >Tanya-jawab per peran</span
+                                >
+                            </span>
+                            <span class="daftar__nilai">Segera</span>
+                        </li>
+                    </ul>
+                    <div id="lainnya-akun"></div>
+                </div>
+
+                <!-- Panel Akun (customer dan penjaga). Untuk owner, blok-akun dipindah ke panel Lainnya -->
+                <div id="panel-akun" hidden>
+                    <div id="blok-akun">
+                        <div class="kartu">
+                            <h2 class="kartu__judul">Selamat datang</h2>
+                            <p class="kartu__isi" id="sapaan"></p>
+                            <p
+                                class="isian__bantuan"
+                                id="catatan-profil"
+                                hidden
+                            ></p>
+                        </div>
+                        <div class="baris-tombol">
+                            <button
+                                type="button"
+                                class="tombol tombol--utama"
+                                id="tombol-buku-alamat"
+                                hidden
+                            >
+                                Buku alamat
+                            </button>
+                        </div>
+                        <div class="baris-tombol">
+                            <button
+                                type="button"
+                                class="tombol tombol--utama"
+                                id="tombol-akun"
+                                hidden
+                            >
+                                Pengaturan akun
+                            </button>
+                        </div>
+                        <div class="baris-tombol">
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder"
+                                id="tombol-keluar"
+                            >
+                                Keluar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigasi bawah per peran (DS10). Hanya satu yang tampil; diatur kerangka.js -->
+                <nav
+                    class="navbawah"
+                    id="nav-owner"
+                    aria-label="Menu utama owner"
+                    hidden
+                >
                     <button
                         type="button"
-                        class="tombol tombol--utama"
-                        id="tombol-buku-alamat"
-                        hidden
+                        class="navbawah__item"
+                        data-tab="order-masuk"
                     >
-                        Buku alamat
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <polyline
+                                points="22 12 16 12 14 15 10 15 8 12 2 12"
+                            />
+                            <path
+                                d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"
+                            />
+                        </svg>
+                        <span>Order Masuk</span>
                     </button>
-                </div>
-                <div class="baris-tombol">
                     <button
                         type="button"
-                        class="tombol tombol--utama"
-                        id="tombol-akun"
-                        hidden
+                        class="navbawah__item"
+                        data-tab="semua-order"
                     >
-                        Akun
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <line x1="8" y1="6" x2="21" y2="6" />
+                            <line x1="8" y1="12" x2="21" y2="12" />
+                            <line x1="8" y1="18" x2="21" y2="18" />
+                            <line x1="3" y1="6" x2="3.01" y2="6" />
+                            <line x1="3" y1="12" x2="3.01" y2="12" />
+                            <line x1="3" y1="18" x2="3.01" y2="18" />
+                        </svg>
+                        <span>Semua Order</span>
                     </button>
-                </div>
-                <div class="baris-tombol">
                     <button
                         type="button"
-                        class="tombol tombol--sekunder"
-                        id="tombol-keluar"
+                        class="navbawah__item"
+                        data-tab="buat-order"
                     >
-                        Keluar
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="16" />
+                            <line x1="8" y1="12" x2="16" y2="12" />
+                        </svg>
+                        <span>Buat Order</span>
                     </button>
-                </div>
+                    <button
+                        type="button"
+                        class="navbawah__item"
+                        data-tab="menu"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"
+                            />
+                            <path
+                                d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"
+                            />
+                        </svg>
+                        <span>Menu</span>
+                    </button>
+                    <button
+                        type="button"
+                        class="navbawah__item"
+                        data-tab="lainnya"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="12" r="1" />
+                            <circle cx="19" cy="12" r="1" />
+                            <circle cx="5" cy="12" r="1" />
+                        </svg>
+                        <span>Lainnya</span>
+                    </button>
+                </nav>
+
+                <nav
+                    class="navbawah"
+                    id="nav-customer"
+                    aria-label="Menu utama customer"
+                    hidden
+                >
+                    <button
+                        type="button"
+                        class="navbawah__item"
+                        data-tab="pesan"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"
+                            />
+                            <line x1="3" y1="6" x2="21" y2="6" />
+                            <path d="M16 10a4 4 0 0 1-8 0" />
+                        </svg>
+                        <span>Pesan</span>
+                    </button>
+                    <button
+                        type="button"
+                        class="navbawah__item"
+                        data-tab="pesanan-saya"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+                            />
+                            <rect
+                                x="8"
+                                y="2"
+                                width="8"
+                                height="4"
+                                rx="1"
+                                ry="1"
+                            />
+                        </svg>
+                        <span>Pesanan Saya</span>
+                    </button>
+                    <button
+                        type="button"
+                        class="navbawah__item"
+                        data-tab="akun"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
+                            />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        <span>Akun</span>
+                    </button>
+                </nav>
+
+                <nav
+                    class="navbawah"
+                    id="nav-penjaga"
+                    aria-label="Menu utama penjaga"
+                    hidden
+                >
+                    <button
+                        type="button"
+                        class="navbawah__item"
+                        data-tab="antrean"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        <span>Antrean</span>
+                    </button>
+                    <button
+                        type="button"
+                        class="navbawah__item"
+                        data-tab="akun"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
+                            />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        <span>Akun</span>
+                    </button>
+                </nav>
             </section>
 
             <!-- Galat (DS13): teks diisi akun.js lewat textContent -->
@@ -752,6 +1088,10 @@
         <script src="alamat.js"></script>
         <!-- Menu Akun (AKN.08a); harus setelah akun.js karena memakai window.KedaiAkun -->
         <script src="akunmenu.js"></script>
+        <!-- Kelola Menu (MNU.03); harus setelah akun.js karena memakai window.KedaiAkun -->
+        <script src="menu.js"></script>
+        <!-- Kerangka layar utama per peran (KRG.01); harus setelah akun.js dan menu.js -->
+        <script src="kerangka.js"></script>
         <script>
             // Mendaftarkan service worker (sw.js) supaya aplikasi bisa dipasang dan terbuka offline.
             // Path relatif (tanpa awalan /) supaya jalan di GitHub Pages.

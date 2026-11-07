@@ -263,6 +263,14 @@
       catatan.textContent = "";
       catatan.hidden = true;
     }
+
+    // KRG.01: kerangka layar utama (kerangka.js) memasang navigasi dan tab sesuai peran dari server.
+    if (
+      window.KedaiKerangka &&
+      typeof window.KedaiKerangka.atur === "function"
+    ) {
+      window.KedaiKerangka.atur(d.peran);
+    }
   }
 
   function muatStatus() {
@@ -425,6 +433,13 @@
         typeof window.KedaiAkunMenu.reset === "function"
       ) {
         window.KedaiAkunMenu.reset();
+      }
+      // KRG.01: kerangka layar utama (tab, sapaan) dan daftar menu ikut dibersihkan.
+      if (
+        window.KedaiKerangka &&
+        typeof window.KedaiKerangka.reset === "function"
+      ) {
+        window.KedaiKerangka.reset();
       }
       tampilkan("masuk");
     }
