@@ -11,13 +11,14 @@
 
 ## 1. Daftar, Masuk, Keluar
 
-| ID     | Tes                                                           | Hasil yang benar                                       | Prioritas |
-| ------ | ------------------------------------------------------------- | ------------------------------------------------------ | --------- |
-| AKT-01 | Daftar dengan email dummy dan password valid.                 | Langsung masuk, lalu layar Lengkapi profil.            | P0        |
-| AKT-02 | Daftar dengan email yang sudah terdaftar.                     | Pesan "Email ini sudah terdaftar. Silakan masuk."      | P1        |
-| AKT-03 | Daftar dengan password bersimbol atau kurang dari 8 karakter. | Ditolak di HP tanpa panggilan server.                  | P1        |
-| AKT-04 | Masuk dengan password salah.                                  | "Email atau password salah", tanpa galat mentah.       | P0        |
-| AKT-05 | Tekan Keluar, lalu buka layar-layar akun.                     | Sesi berakhir; isian dan data layar sebelumnya kosong. | P0        |
+| ID     | Tes                                                                   | Hasil yang benar                                       | Prioritas |
+| ------ | --------------------------------------------------------------------- | ------------------------------------------------------ | --------- |
+| AKT-01 | Daftar dengan email dummy dan password valid.                         | Langsung masuk, lalu layar Lengkapi profil.            | P0        |
+| AKT-02 | Daftar dengan email yang sudah terdaftar.                             | Pesan "Email ini sudah terdaftar. Silakan masuk."      | P1        |
+| AKT-03 | Daftar dengan password bersimbol atau kurang dari 8 karakter.         | Ditolak di HP tanpa panggilan server.                  | P1        |
+| AKT-04 | Masuk dengan password salah.                                          | "Email atau password salah", tanpa galat mentah.       | P0        |
+| AKT-05 | Tekan Keluar, lalu buka layar-layar akun.                             | Sesi berakhir; isian dan data layar sebelumnya kosong. | P0        |
+| AKT-39 | Daftar dengan email berisi tanda + (misal nama+customer@example.com). | Diterima; langsung masuk, lalu layar Lengkapi profil.  | P1        |
 
 ## 2. Lengkapi profil (AK6 sampai AK8)
 
@@ -68,6 +69,7 @@
 | AKT-28 | Dengan sesi staf uji masih terbuka: nonaktifkan lewat template nonaktif, tekan Segarkan, jalankan query cek staf, lalu aktifkan kembali lewat template aktifkan (SEC-26). | Nonaktif: 403 "Akun ini tidak aktif. Hubungi pengelola.", layar galat (bukan layar Lengkapi profil), baris staf tetap ada dengan aktif = false. Setelah aktif kembali: panggilan berikutnya normal. | P0        |
 | AKT-29 | Cari jalur menjadi staf dari aplikasi (SEC-26).                                                                                                                           | Tidak ada jalur; akun baru selalu customer.                                                                                                                                                         | P0        |
 | AKT-38 | Jalankan template aktifkan dengan ID salah, dan dengan ID staf yang sudah aktif.                                                                                          | Gagal sendiri dengan pesan Bahasa Indonesia; tidak ada yang berubah.                                                                                                                                | P1        |
+| AKT-40 | Jalankan template tambah staf dengan ID akun yang sudah punya profil customer, dan dengan ID yang sudah ada di staf.                                                      | Gagal sendiri dengan pesan Bahasa Indonesia; tidak ada yang berubah.                                                                                                                                | P1        |
 
 ## 7. Akses dan keamanan (rujukan `security.md`)
 

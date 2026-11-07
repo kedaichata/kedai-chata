@@ -538,48 +538,6 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 
 ### Handoff #12 | 7 Nov 2026 | ketua
 
-**Tugas:** AKN.11 (sesi tes akun) lanjutan. **AKN.11 BELUM SELESAI.** Dikerjakan: SEC-28, template aktifkan kembali staf, dan bagian nonaktif dari SEC-26.
-
-**File berubah**
-
-- BARU `supabase/templates/20261106_staf_aktifkan.sql`: disimpan ketua di folder templates. **Belum pernah dijalankan.** Status commit dan push belum dikonfirmasi.
-- DIPERBARUI `docs/akun-test.md`: hanya kasus (AKT-28 dipertajam, AKT-38 baru). Tanpa hasil dan bukti.
-
-**Hasil**
-
-- **SEC-28 LULUS** (juga menutup AKT-33). Dari dashboard Authentication: Confirm email mati, panjang minimal password 8, Secure password change mati, Password requirements kosong. Bukti: screenshot dashboard, diperiksa di chat, tanpa data pribadi, tidak disimpan.
-- **Query cek staf sebelum nonaktif lulus** (`20261106_staf_cek.sql` semua bagian): 1 owner dan 1 penjaga, dua-duanya aktif; 0 staf punya profil customer; RLS aktif dan 0 policy di tabel staf; hak: anon dan authenticated tidak ada, service_role hanya SELECT.
-- **SEC-26, bagian nonaktif LULUS.** Penjaga uji (ID diawali `2d2e1b15`) dinonaktifkan lewat template nonaktif (hasil Success). Dengan sesi login lama masih terbuka, tombol Segarkan memanggil `kedai` dan dibalas **403** `{"ok":false,"pesan":"Akun ini tidak aktif. Hubungi pengelola."}`. Aplikasi menampilkan layar galat, bukan layar Lengkapi profil (tidak jatuh jadi customer; sesi lama tidak menolong).
-
-**Keputusan baru (disetujui ketua)**
-
-- Template aktifkan kembali staf, file `20261106_staf_aktifkan.sql`. Hanya mengubah satu kolom (`aktif` dari false ke true) pada satu baris staf yang nonaktif. Tanpa DELETE dan tanpa mengubah tabel, fungsi, atau hak. Gagal sendiri bila isian belum diganti, ID salah, atau staf sudah aktif. Isian (ID akun) hanya diisi di dashboard.
-- Komentar di `20261106_staf_nonaktif.sql` masih menulis bahwa mengaktifkan kembali "belum diputuskan". Komentar itu sengaja tidak diubah. Keputusan di atas yang berlaku.
-
-**BELUM BERES (urut, jangan dilewati)**
-
-1. **PERHATIAN: penjaga uji (`2d2e1b15`) SAAT INI MASIH NONAKTIF.** Harus diaktifkan kembali sebelum sesi lain memakainya.
-2. Jalankan `20261106_staf_cek.sql` SAAT akun masih nonaktif dan tempel bagian (1) dan (2) ke chat. Ini bukti SEC-26 dan belum diambil. Harapan: baris `2d2e1b15` muncul dengan `aktif = false`; ringkasan penjaga 0 aktif dan 1 nonaktif; owner tetap aktif.
-3. Aktifkan kembali lewat `20261106_staf_aktifkan.sql` (ID lengkap dari Authentication > Users, 8 karakter pertama harus `2d2e1b15`). Template ini baru pertama kali dipakai, jadi perhatikan hasilnya.
-4. Di tab aplikasi (sesi lama masih bisa dipakai), tekan Segarkan: harus normal sebagai penjaga. Jalankan `20261106_staf_cek.sql` lagi: penjaga `aktif = true`, kembali 1 owner dan 1 penjaga aktif.
-5. Uji AKT-38: template aktifkan dengan ID salah atau staf yang sudah aktif harus gagal sendiri, tanpa mengubah apa pun.
-6. Sisa tes kecil: `alamat_nonaktif` oleh owner (P1), reset password akun staf lewat link (AKT-27), HP Android (AKT-36, AKT-37).
-7. Setelah semua beres: centang SEC-26, lalu AKN.11.
-
-**Pengingat centang sheet**
-
-- Centang sekarang: **SEC-03** (lulus di Handoff #11, di sheet masih "Belum") dan **SEC-28** (lulus hari ini).
-- Jangan dicentang dulu: SEC-26 (menunggu butir 2 sampai 4). SEC-06 sampai SEC-09 mencakup aksi order dan menu yang belum ada, jadi biarkan sampai ORD.14.
-- Catatan baris AKN.11 di sheet, usulan isi: "sisa: SEC-26 (aktifkan kembali penjaga uji), AKT-38, alamat_nonaktif owner, AKT-27, Android".
-
-**Catatan untuk sesi berikutnya**
-
-- Bukti query cek harus diambil SEBELUM akun diaktifkan kembali, kalau tidak, keadaan nonaktif tidak bisa dibuktikan lagi.
-- Query yang sudah terisi ID tidak boleh disimpan ke repo atau ditempel ke chat; tutup tab query tanpa menyimpan.
-- Jangan kirim screenshot layar Masuk (email kelihatan); kirim teks atau crop dulu.
-
-### Handoff #12 | 7 Nov 2026 | ketua
-
 **Tugas:** AKN.11 (sesi tes akun), sesi lanjutan. **AKN.11 BELUM SELESAI.** Sisa satu hal: tes Android (AKT-36, AKT-37), akan dikerjakan ketua siang ini (7 Nov). Semua tes lain lulus.
 
 **File berubah**
@@ -623,3 +581,45 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 - Saran AI di sesi ini sempat menyebut "AKN.12" yang tidak ada di sheet. Sudah dikoreksi; tidak ada dampak pada pekerjaan.
 
 **Saran giliran berikutnya:** selesaikan Android (butir 1). Setelah itu pekerjaan berikutnya mengikuti sheet; kandidat terdekat MNU.01 (migration tabel menu, High-Risk, butuh penjelasan dampak dan OK ketua).
+
+### 2026-11-07: staf yang juga customer pakai dua akun (versi 1)
+
+- **Keputusan (ketua):** di versi 1, owner atau penjaga yang juga mau memesan (misalnya untuk anaknya) memakai **dua akun**: satu staf, satu customer. Pola email: `nama+peran@gmail.com` (misal `+owner` dan `+customer`). Ini menegaskan aturan di bagian 4 dan AK4, bukan perubahan.
+- **Akun staf dibuat sejak awal sebagai staf** lewat template tambah staf. Jangan menjadikan akun customer yang sudah punya profil sebagai staf (template menolak).
+- **Pemicu:** masukan dari keluarga ketua bahwa owner juga punya anak yang memesan, jadi butuh alamat dan order sendiri.
+- **Ditunda:** satu akun untuk dua peran (staf punya profil dan alamat sendiri). Berisiko (peran, login, fungsi server, tes ulang), jadi dibahas setelah review pemakaian versi 1 bila keluhan owner banyak. Alasan penundaan selain itu belum tercatat.
+- **Teruji:** login akun staf berpola `+owner` dan `+staf` (Handoff #11 dan #12), dan **daftar customer dengan email berpola `+customer` lulus** (7 Nov 2026).
+
+### Handoff #13 | 7 Nov 2026 | ketua
+
+**Tugas:** AKN.11 (sesi tes akun), penutup: tes Android, dan pembahasan owner yang juga customer. **AKN.11 SELESAI, silakan dicentang di sheet.**
+
+**File yang diubah:**
+
+- DIPERBARUI `docs/akun-test.md`: hanya kasus. AKT-39 baru (daftar dengan email berisi `+`) dan AKT-40 baru (template tambah staf menolak akun yang sudah customer atau sudah staf). Tanpa hasil dan bukti.
+- DIPERBARUI `docs/akun.md`: dua blok ini. Tidak ada kode, migration, atau deploy yang diubah.
+
+**Hasil (akun dan data dummy; bukti diperiksa di chat dan tidak disimpan):**
+
+- **AKT-36 LULUS.** Di Android, app terpasang: versi baru muncul, layar Akun dan Buku alamat terbaca, tombol cukup besar (akun customer uji).
+- **AKT-37 LULUS.** Internet dimatikan lalu app dibuka: muncul layar Offline ChATA (bukan halaman Chrome). Tombol Coba lagi saat offline tetap di layar yang sama, tanpa crash. Setelah internet menyala, Coba lagi masuk ke Beranda sementara tanpa login ulang.
+- **AKT-39 LULUS.** Daftar dengan email berpola `nama+customer` (Gmail): diterima, layar Lengkapi profil muncul, profil tersimpan, masuk sebagai customer.
+- **AKT-40 LULUS.** Template tambah staf dijalankan dengan isian nama dan peran valid. (a) Dengan ID akun customer yang profilnya lengkap: gagal dengan "Akun ini sudah punya profil customer. Staf harus akun terpisah (email berbeda)." (b) Dengan ID penjaga uji yang sudah ada di staf: gagal dengan "Akun ini sudah ada di tabel staf. Tidak ada yang diubah." Tidak ada baris staf yang terbentuk atau berubah (satu blok DO, galat membatalkan semuanya).
+
+**Keputusan baru (disetujui ketua):** lihat blok `2026-11-07: staf yang juga customer pakai dua akun`. Ringkas: versi 1 pakai dua akun untuk staf yang juga customer; satu akun untuk dua peran ditunda.
+
+**Temuan:**
+
+- **P2 (lanjutan dari Handoff #11):** tombol Buku alamat dan Akun tampil untuk staf di layar sementara. Usulan, **belum diputuskan dan belum dikerjakan**: Buku alamat disembunyikan untuk staf; tombol Akun tetap ada (satu-satunya tempat staf ganti password); di layar Akun, ganti nama dan ganti WA disembunyikan untuk staf. Perubahan tampilan saja (Low-Risk). Mungkin beres sendiri saat layar utama per peran dibuat.
+
+**Belum beres:**
+
+1. Akun uji, termasuk akun `+customer` baru dan akun berisi email milik tim, dibersihkan di `LNC.01`. Password owner uji sudah berganti (disimpan ketua).
+
+**Butir baru yang perlu ditambah ke sheet (judul pendek, bila belum ada):**
+
+- Sembunyikan tombol Buku alamat dan Akun untuk staf (P2)
+
+**Saran giliran berikutnya:** pekerjaan mengikuti sheet; kandidat terdekat **MNU.01** (migration tabel menu, High-Risk, butuh penjelasan dampak dan "OK" ketua). Lampirkan `AGENTS.md`, `menu.md`, `database.md`, `security.md`, dan isi `supabase/migrations/`.
+
+---
