@@ -154,3 +154,32 @@ _(belum ada blok)_
 - Komentar lama di `kerangka.js` dan `index.html` (tab Lainnya dan Akun) belum dibersihkan; ikut HOM.05 bila diizinkan.
 
 **Saran giliran berikutnya:** HOM.03 (tombol Bantuan "Segera", Low-Risk), lalu HOM.04. Lampirkan `AGENTS.md` + `home.md` + `desain.md` + versi terbaru `public/kerangka.js`, `public/index.html`, `public/style.css` (+ `public/akun.js`, `public/akunmenu.js`, `public/alamat.js` untuk HOM.04). Sebelum push, cek tiga hal anti-nyasar. Logout GitHub dan Supabase di profil browser setelah selesai.
+
+### Handoff #2 | 2026-11-07 | [RAC]
+
+**Tugas selesai:** HOM.03 dan HOM.04 (tinggal dicentang di sheet).
+
+**File yang diubah:** `public/index.html`, `public/kerangka.js`, `public/style.css` (hanya menambah di akhir). `sw.js` tidak disentuh (tidak ada berkas baru). Hash commit belum dicatat.
+
+**Isi:**
+
+- HOM.03: tombol Bantuan di Home untuk semua peran, tampil "Segera" dan tidak bisa diketuk (HM5).
+- HOM.04: daftar pengaturan akun per peran lewat atribut `data-peran` di `index.html`, ditampilkan oleh `kerangka.js` (`aturItemHome`). Customer: Ganti nama, Ganti nomor WA, Ganti password, Buku alamat. Owner: bagian Pelanggan ("Segera"), lalu Ringkasan order 7 hari ("Segera") tepat di atas Ganti password. Penjaga: Ganti password saja. Keluar tetap paling bawah, diberi jarak. Item yang bisa diketuk memakai layar Akun dan Buku alamat yang sudah ada (`KedaiAkunMenu.tampil`, `KedaiAlamat.tampil`), tanpa panggilan server baru (HM10). Item peran lain disembunyikan, dan semuanya disembunyikan lagi saat Keluar.
+- Kode lama tidak ada yang dihapus. Dua tombol lama (Buku alamat dan Pengaturan akun) hanya dibungkus `hidden`. Satu baris lama berubah: pembungkus tombol Keluar ditambah class `home-keluar`.
+
+**Keputusan baru:**
+
+- Ganti nama, Ganti nomor WA, dan Ganti password membuka layar Akun yang sama, lalu menggeser ke kartunya masing-masing. Alasan belum tercatat dari ketua; dipilih penulis kode karena HM6 meminta layar Akun dipakai ulang.
+- HM8 tidak berubah: item Aktifkan Notifikasi belum ditampilkan sampai `notifikasi.md` selesai.
+
+**Temuan di lapangan:** link reset password dari dashboard sempat menampilkan "Link sudah tidak berlaku" pada klik pertama. Log Auth menunjukkan link yang sama dibuka dua kali dalam satu detik (`/verify` 303 lalu 403 "One-time token not found"). Siapa pembuka pertamanya belum diketahui (pemindai link atau klik ganda). Link yang sama berhasil saat disalin dan ditempel ke address bar. Pengaturan Auth normal (Site URL, Redirect URLs, OTP 3600 detik). Satu `/recover` sempat 504 lalu berhasil diulang; diamati saja. Cara kirim link reset dicatat di `akun.md` pada HOM.07 (belum ditulis).
+
+**Hasil tes:** HOM.03 dan HOM.04 dites dengan checklist HOM.06 untuk tiga peran (customer, owner, penjaga), sesuai. Bukti diperiksa di chat dan tidak disimpan.
+
+**Belum beres:**
+
+- HOM.05 menunggu "OK" ketua untuk daftar penghapusan: kartu "Selamat datang" tersembunyi (`#sapaan`, `#catatan-profil`), dua tombol lama, kode pengisinya di `akun.js`, satu baris pendengar di `akunmenu.js` dan `alamat.js`, dua baris reset di `kerangka.js`, dan `.contoh-sampul` di `style.css`. Perlu satu blok catatan.
+- Panel Lainnya (`panel-lainnya`, `lainnya-akun`) masih ada di `index.html` dan tidak terjangkau; tidak termasuk daftar HOM.05, tanyakan ketua apakah ikut dihapus.
+- HOM.06 diulang setelah HOM.05, jangan dicentang dulu. HOM.07 belum dikerjakan.
+
+**Saran giliran berikutnya:** HOM.05 (butuh "OK" ketua; enam berkas, bagi dua giliran). Lampirkan `AGENTS.md` + `home.md` + `desain.md` + versi terbaru `public/index.html`, `public/kerangka.js`, `public/style.css`, `public/akun.js`, `public/akunmenu.js`, `public/alamat.js`. Sebelum push, cek tiga hal anti-nyasar. Logout GitHub dan Supabase di profil browser setelah selesai.

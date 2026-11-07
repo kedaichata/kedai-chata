@@ -874,8 +874,10 @@
                              customer: nama, WA, password, Buku alamat; owner: Ringkasan order 7 hari lalu password;
                              penjaga: password saja. -->
                         <div class="home-grup" data-grup hidden>
+                            <!-- HOM.04 (revisi): judul "Pengaturan akun" dan tiga item lama (Ganti nama, Ganti nomor WA,
+                                 Ganti password) diganti SATU tombol "Pengaturan akun" yang membuka layar Akun.
+                                 Dijadikan komentar, belum dihapus.
                             <h2 class="home-judul">Pengaturan akun</h2>
-                            <div class="daftar">
                                 <button
                                     type="button"
                                     class="daftar__item daftar__item--tombol"
@@ -884,15 +886,9 @@
                                     hidden
                                 >
                                     <span class="daftar__utama">
-                                        <span class="daftar__nama"
-                                            >Ganti nama</span
-                                        >
+                                        <span class="daftar__nama">Ganti nama</span>
                                     </span>
-                                    <span
-                                        class="daftar__panah"
-                                        aria-hidden="true"
-                                        >&rsaquo;</span
-                                    >
+                                    <span class="daftar__panah" aria-hidden="true">&rsaquo;</span>
                                 </button>
                                 <button
                                     type="button"
@@ -902,16 +898,24 @@
                                     hidden
                                 >
                                     <span class="daftar__utama">
-                                        <span class="daftar__nama"
-                                            >Ganti nomor WA</span
-                                        >
+                                        <span class="daftar__nama">Ganti nomor WA</span>
                                     </span>
-                                    <span
-                                        class="daftar__panah"
-                                        aria-hidden="true"
-                                        >&rsaquo;</span
-                                    >
+                                    <span class="daftar__panah" aria-hidden="true">&rsaquo;</span>
                                 </button>
+                                <button
+                                    type="button"
+                                    class="daftar__item daftar__item--tombol"
+                                    data-aksi="akun-pw"
+                                    data-peran="customer owner penjaga"
+                                    hidden
+                                >
+                                    <span class="daftar__utama">
+                                        <span class="daftar__nama">Ganti password</span>
+                                    </span>
+                                    <span class="daftar__panah" aria-hidden="true">&rsaquo;</span>
+                                </button>
+                            -->
+                            <div class="daftar">
                                 <div
                                     class="daftar__item daftar__item--segera"
                                     data-peran="owner"
@@ -928,13 +932,13 @@
                                 <button
                                     type="button"
                                     class="daftar__item daftar__item--tombol"
-                                    data-aksi="akun-pw"
+                                    data-aksi="akun"
                                     data-peran="customer owner penjaga"
                                     hidden
                                 >
                                     <span class="daftar__utama">
                                         <span class="daftar__nama"
-                                            >Ganti password</span
+                                            >Pengaturan akun</span
                                         >
                                     </span>
                                     <span

@@ -191,6 +191,11 @@
 
   // HOM.04: aksi item Home yang bisa diketuk (atribut data-aksi di index.html).
   var AKSI_HOME = {
+    // HOM.04 (revisi): satu tombol "Pengaturan akun" membuka layar Akun (tanpa menggeser ke kartu tertentu).
+    // Tiga aksi di bawahnya (akun-nama, akun-wa, akun-pw) tidak lagi dipakai di index.html; dibiarkan, belum dihapus.
+    akun: function () {
+      bukaAkun(null);
+    },
     "akun-nama": function () {
       bukaAkun(el("kartu-akun-nama"));
     },
