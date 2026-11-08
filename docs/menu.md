@@ -443,3 +443,35 @@ Tabel `menu` sudah live: kolom `deskripsi` adalah perubahan pada tabel yang ada.
 - Carry-over Handoff #3 sampai #9 tetap berlaku: fungsi `menu_simpan` 6 argumen masih ada; target ukuran foto belum diputuskan; cara mengenali nama kembar (teks pesan atau kode); handler fetch `sw.js` ikut menyimpan foto menu; belum dibuktikan dengan data di MNU.06 (batas harga 200000, Nonaktifkan dan Aktifkan kembali dengan nama kembar, 403 untuk non-owner, aksi grup dengan data: Ubah grup, menonaktifkan opsi, mengganti bawaan, `grup_terlalu_banyak`); grup dan menu dummy tidak bisa dihapus (nonaktifkan atau pakai ulang sebelum peluncuran); berkas uji `20261107_04_menu_grup_pilihan_uji.sql` tidak boleh dijalankan lagi. `menu.js` kini sekitar 900 baris (pedoman sekitar 500); komponen baru sebaiknya berkas terpisah dan wajib didaftarkan di `sw.js` (butuh "OK").
 
 **Saran giliran berikutnya:** MNU.06 (sesi tes menu, High-Risk P0; bukti untuk hak owner, harga, dan aksi grup dengan data). Lampirkan `AGENTS.md` + `menu.md` (sudah memuat handoff ini) + `database.md` + `security.md`; dokumen `menu-test.md` dibuat di sesi tes. Pakai satu akun per peran (owner, penjaga, customer) dengan data dummy. Atau ORD.01 (migration order, butuh "OK" ketua) bila ketua memilih itu dulu; urutannya ketua yang memutuskan.
+
+### Handoff #11 | 2026-11-08 | [AIK]
+
+**Berkas tujuan:** `docs/menu.md` bagian 9 (tempel paling bawah, di bawah Handoff #10). Yang paling akhir menang.
+
+**Tugas:** Sesi tes MNU.06 **baru sebagian**. **Jangan dicentang di sheet dulu.** Tidak ada kode aplikasi, SQL, atau Edge Function yang diubah. Yang baru hanya `docs/menu-test.md` (kasus uji MT-01 sampai MT-24; simpan di repo). Semua tes lewat Console browser dengan akun dummy owner, penjaga, dan customer. Bukti diperiksa di chat dan tidak disimpan.
+
+**Sudah lulus, jangan diulang** (nomor kasus di `docs/menu-test.md`): MT-01 sampai MT-11, MT-13, MT-15 sampai MT-22. Dari daftar itu, MT-03, MT-11, MT-19, MT-20, MT-21, dan MT-22 terbukti di sesi kode (Handoff #1 sampai #10); sisanya di sesi tes 8 Nov 2026. Termasuk yang kini sudah terbukti dengan data: 403 non-owner untuk aksi menu, batas harga 200000, nama kembar, nonaktif dan aktifkan kembali, serta seluruh aksi grup (buat, ubah, ganti bawaan, nonaktifkan opsi, batas opsi, batas 3 grup per menu).
+
+**Keputusan baru** (PIC sesi ini; alasan selebihnya belum tercatat):
+
+- `menu-test.md` dibuat saat handoff ini, bukan di tengah sesi.
+- Cek tampilan cukup diceritakan dengan kata-kata, tanpa screenshot HP (alasan: repot memindahkan gambar dari HP ke laptop). Bukti P0 tetap teks balasan server dari Console.
+- Data uji dipakai ulang, tidak membuat menu atau grup baru kecuali perlu.
+
+**Temuan di lapangan:**
+
+- Balasan galat server hanya membawa `ok` dan `pesan`, tanpa kode. Nama kembar dikenali dari teks "nama yang sama" di `menu.js`, dan itu cocok. Carry-over soal teks atau kode **terjawab**.
+- Aturan nama kembar hanya antar menu **aktif** (sesuai blok 2026-11-07 Foto menu). Menu nonaktif boleh diganti ke nama yang dipakai menu aktif, tetapi mengaktifkannya kembali ditolak 409.
+- Harga 200001, 0, dan -5 dibalas 400 "Data belum lengkap atau tidak valid.", sedangkan 1500.5 dibalas "Harga tidak valid atau melebihi batas.". Belum dicek di `supabase/functions/kedai/index.ts` apakah `kedai` punya batas harga sendiri (bila ada angka tertulis mati, itu melanggar aturan angka di database). Batas 200000 itu sendiri sudah terbukti benar.
+- `grup_simpan` untuk grup baru harus **tanpa field `id`** (`id: ""` dibalas 400). Bentuk isian lengkap ada di `docs/menu-test.md` bagian 1.
+
+**Belum beres:**
+
+- **MT-14** (tag HTML di nama grup dan nama opsi): data uji sudah dipasang, tampilannya belum dicek. Nama grup uji kini `<b>Grup</b> <i>HTML</i>` dengan dua opsi bertag, terpasang di menu "menu tanpa gambar", dan menu itu **sedang aktif** (customer bisa melihatnya). Cek: owner di Kelola grup pilihan dan panel "Pasang ke menu"; customer di sheet detail menu itu. Hasil yang benar: semuanya tampil sebagai tulisan, tanpa popup.
+- **Pulihkan data uji** sesudah MT-14, lewat layar: (1) tab Menu owner, ketuk Nonaktifkan pada "menu tanpa gambar"; (2) Kelola grup pilihan, kartu grup bertag, "Pasang ke menu", lepas centang "menu tanpa gambar", lalu Nonaktifkan grup itu. Keadaan akhir yang benar: "menu tanpa gambar" nonaktif, harga 1000, tanpa foto, deskripsi, dan grup; Grup Uji 1b (kini bernama bertag), Grup Uji 2, dan Grup Uji 3 nonaktif; "Level pedas" tetap aktif dan terpasang di "ayam karage". Menu dummy lain (ayam karage, Ayam Katsu, es teh manis) tidak disentuh.
+- **MT-12** (pesan merah di form Ubah untuk deskripsi 201 karakter): belum dilihat lewat aplikasi.
+- **MT-23 dan MT-24** menunggu order (ORD.01 dan ORD.02); dikerjakan di sesi tes order.
+- Cek `kedai/index.ts` soal batas harga (lihat Temuan).
+- Carry-over Handoff #3 sampai #10 yang **masih berlaku**: fungsi `menu_simpan` 6 argumen masih ada (membuangnya butuh "OK" ketua); target ukuran foto belum diputuskan; handler fetch `sw.js` ikut menyimpan foto menu; menu dan grup dummy tidak bisa dihapus (nonaktifkan atau pakai ulang sebelum peluncuran); tahanan Tab di `tekanTombol` (`menu-detail.js`) perlu disesuaikan saat ORD menambah tombol di sheet; pemilihan opsi oleh customer dan pemetaan `pilihan_rusak` di ORD.01; iPhone belum dicek; `menu.js` sekitar 900 baris (pedoman sekitar 500); berkas uji `20261107_04_menu_grup_pilihan_uji.sql` tidak boleh dijalankan lagi.
+
+**Saran giliran berikutnya:** sesi singkat menutup MNU.06: MT-14, MT-12, lalu pulihkan data uji. Bila semuanya lulus, MNU.06 siap dicentang. Setelah itu urutan ditentukan ketua (ORD.01 butuh "OK" ketua karena migration). Lampirkan `AGENTS.md` + `menu.md` (sudah memuat handoff ini) + `menu-test.md` + `akun.js`. Untuk ORD.01 tambahkan `order.md`, `database.md`, dan `security.md`.
