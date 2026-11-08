@@ -250,4 +250,43 @@ Item **Pelanggan** ("Pelanggan tanpa akun", O16) untuk owner ada di **Home**, di
 2. Lalu ORD.03 (layar Pesan): lampirkan juga `akun.js`, `menu.js`, `menu-detail.js`, `kerangka.js`, `style.css`, dan `sw.js`. Berkas JS baru wajib didaftarkan di cache `sw.js` (perubahan `sw.js` butuh "OK" ketua).
 3. ORD.05 (`order_setuju` dan `order_tolak`) butuh penjelasan dampak dan "OK" ketua.
 
+### Handoff #3 | 2026-11-08 | KETUA
+
+**Berkas tujuan:** `docs/order.md` bagian 9, ditempel di bawah Handoff #2. Yang paling akhir menang.
+
+**Pertentangan dengan Handoff #2:** butir "tes ORD.02 belum jalan" dan "`index.ts` belum dikonfirmasi di-push" sudah tidak berlaku. `index.ts` dan Handoff #2 sudah di-push (commit `50c1a86`, `main -> main`, lewat tiga cek aman). Butir Handoff #2 lain yang tidak disebut di sini tetap berlaku.
+
+**Tugas:** ORD.02 **selesai dan sudah dicentang di sheet.** Tes dijalankan lewat konsol browser di aplikasi asli (`window.KedaiAkun.panggilKedai`), satu akun per peran ditambah customer kedua, semuanya dummy. Bukti diperiksa di chat dan tidak disimpan. Baris SEC di sheet **sengaja tidak ada yang dicentang** (jadwalnya setelah ORD.14, dan sebagian baru teruji sebagian).
+
+**Berkas diubah:** tidak ada berkas kode yang diubah di sesi ini. Yang di-push hanya `docs/order.md` (Handoff #2) dan `supabase/functions/kedai/index.ts` (aksi ORD.02, isinya tidak berubah dari Handoff #2).
+
+**Yang sudah lulus (ringkas):**
+
+- `order_buat` sah: total dihitung server, status Menunggu, "Hari ini" dan "Besok" jadi tanggal dari server, nomor order berjalan, catatan awal jadi catatan pertama, catatan kosong boleh.
+- Teks pilihan tersalin ("Level pedas: Sedang"), nama dan harga menu tersalin ke item. Harga menu diubah kemudian: order lama tetap harga lama, order baru memakai harga baru.
+- Isian palsu (total, status, peran, metode bayar, harga dan subtotal di item) diabaikan.
+- Customer kedua: detail order dan alamat milik customer lain dibalas 404, daftarnya kosong.
+- Owner dan penjaga memanggil `order_buat`: 403. Owner melihat semua order (daftar ringkas tanpa nomor WA dan isi alamat; detail memuat nomor WA, alamat, dan riwayat). Penjaga tidak melihat order Menunggu (daftar kosong, detail 404). Customer melihat riwayat kosong.
+- 11 kasus isian salah ditolak semua (tipe, hari berupa tanggal, jam, item kosong, jumlah nol, jumlah dan jumlah item melebihi batas, catatan terlalu panjang, Diantar tanpa alamat, menu tidak ada, opsi asing) dan tidak ada order yang lolos.
+- Menu Habis ditolak, termasuk saat dicampur menu tersedia (seluruh order ditolak, nomor order tidak terpakai).
+
+**Keputusan baru:**
+
+- **Tes jam HP (SEC-19) digeser ke ORD.14**, dikerjakan di HP Android dummy setelah ORD.03 (layar Pesan) ada: geser tanggal HP, pesan lewat layar, cek `hari_target` di detail order. Usulan penulis sesi, disetujui PIC. Alasan: aplikasi tidak pernah mengirim jam HP, jadi tes lewat konsol tidak membuktikan apa pun; menggeser jam Mac bersama tidak disarankan (bisa mengganggu login dan SSH).
+- **MT-23 dan MT-24 (`docs/menu-test.md`) dikerjakan adik ketua di sesi berikutnya** (keputusan PIC). Keduanya sudah bisa dijalankan karena tes ORD.02 lulus.
+
+**Belum beres:**
+
+- **SEC-19 jam HP** (digeser ke ORD.14, lihat di atas). Bagian "waktu catatan dari server" menunggu ORD.09.
+- **SEC yang baru sebagian:** SEC-05 (catatan belum ada aksinya), SEC-06 (ID pengguna dan aksi selain `order_buat`), SEC-07 (customer memanggil aksi owner: aksinya belum ada), SEC-08 (aksi owner-only oleh penjaga, order Ditolak dan Dibatalkan), SEC-09 (`order_batal`, `catatan_tambah`, dan lainnya). Sesi tes nanti tidak perlu mengulang yang sudah lulus di atas.
+- **Belum dites di aksi ORD.02:** customer memesan tipe Diambil atau Makan di warung (alamat diabaikan); filter hari dan filter status di `order_daftar` (termasuk galat filter status salah); urutan daftar untuk status Disetujui ke atas dan urutan terbaru dulu untuk customer; penjaga melihat order Disetujui (menunggu ORD.05).
+- **Data uji (dummy):** order nomor 1 sampai 3 milik customer 1, tidak bisa dihapus, dibersihkan di LNC.01 bersama reset nomor order. Menu uji: Ayam Katsu diubah jadi Habis dan harga es teh manis diubah jadi 6000 (aslinya 5000); **belum dikonfirmasi dikembalikan**, kembalikan lewat layar Menu owner sebelum ORD.03 atau MT-23 dan MT-24.
+- Catatan teknis untuk layar (ORD.03 dan ORD.04): isian `order_detail` bernama **`id`** (bukan `order_id`); balasan konsol berbentuk `{status, data}`.
+
+**Saran giliran berikutnya:**
+
+1. **MT-23 dan MT-24** oleh adik ketua (lampirkan `AGENTS.md` + `order.md` + `docs/menu-test.md`; akun dummy sudah ada; kembalikan Ayam Katsu ke Tersedia dulu).
+2. **ORD.03** (layar Pesan; lampirkan juga `akun.js`, `menu.js`, `menu-detail.js`, `kerangka.js`, `style.css`, `sw.js`). Berkas JS baru wajib didaftarkan di cache `sw.js` (perubahan `sw.js` butuh "OK" ketua). Tombol Kirim dikunci di layar karena server tidak menahan kirim ganda (Handoff #2).
+3. **ORD.05** (`order_setuju` dan `order_tolak`) butuh penjelasan dampak dan "OK" ketua.
+
 ---
