@@ -211,4 +211,43 @@ Item **Pelanggan** ("Pelanggan tanpa akun", O16) untuk owner ada di **Home**, di
 - Order uji tidak bisa dihapus; dibersihkan di LNC.01 bersama reset nomor order.
   **Saran giliran berikutnya:** ORD.02 (fungsi SQL dan aksi `order_buat`, `order_daftar`, `order_detail`; High-Risk, butuh "OK" ketua). Kemungkinan dua giliran seperti MNU.09: fungsi SQL lebih dulu (migration baru), lalu aksi di `kedai/index.ts`. Lampirkan `AGENTS.md` + `order.md` (sudah memuat handoff ini) + `database.md` + `security.md`, serta `supabase/functions/kedai/index.ts`, `20261108_order.sql`, `20261107_04_menu_grup_pilihan.sql` (memuat `opsi_periksa` dan `menu_daftar`), dan `20261105_akun.sql` (pola fungsi dan hak).
 
+### Handoff #2 | 2026-11-08 | KETUA
+
+**Berkas tujuan:** `docs/order.md` bagian 9. Yang paling akhir menang.
+
+**Tugas:** ORD.02 **kode dan deploy selesai, tes belum.** Jangan dicentang di sheet dulu; pengingat centang menyusul setelah tes lolos.
+
+- Giliran 1 (fungsi SQL `order_buat`, `order_daftar`, `order_detail`): dijalankan di SQL Editor dengan "OK" ketua (hasil "Success. No rows returned"), lalu dicek: SECURITY DEFINER dan `search_path` kosong, EXECUTE hanya `service_role` (`anon` dan `authenticated` nol), tidak ada fungsi kembar, tabel order masih kosong. Semuanya sesuai harapan. Bukti diperiksa di chat dan tidak disimpan. Sudah di-push.
+- Giliran 2 (aksi `order_buat`, `order_daftar`, `order_detail` di `kedai`): di-deploy 8 Nov 2026 ke project ChATA **tanpa** `--no-verify-jwt`, lewat urutan aman `AGENTS.md` bagian 8. Token CLI sudah dibersihkan (dicek `[]`).
+
+**Berkas diubah:**
+
+- Baru: `supabase/migrations/20261108_02_order_fungsi.sql`, `supabase/migrations/20261108_02_order_fungsi_batal.sql`, `supabase/templates/20261108_02_order_fungsi_cek.sql`
+- Diubah: `supabase/functions/kedai/index.ts` (hanya tambahan: komentar kepala, `PETA_GALAT_ORDER`, tiga fungsi aksi, tiga `case`; tidak ada baris lama yang dihapus atau diubah).
+
+**Keputusan baru** (ketua menyetujui format teks pilihan "Nama grup: Nama opsi", disusun mengikuti urutan grup di menu; selebihnya pilihan penulis, alasan belum tercatat; rincian lengkap di kepala `20261108_02_order_fungsi.sql`):
+
+- `order_buat` menerima `tipe`, `alamat_id`, `hari` (teks persis "Hari ini" atau "Besok"), `jam` (HH:MM; jam yang sudah lewat tidak ditolak, O2), `item` (daftar `{menu_id, jumlah, opsi_ids}`), dan `catatan`. Isian lain dari aplikasi dibuang. Tipe selain Diantar: `alamat_id` diabaikan.
+- Menu nonaktif atau Habis = satu kode galat `menu_tidak_tersedia`. Item sama dengan pilihan sama yang dikirim dua kali = dua baris. Tidak ada penahan kirim ganda di server; tombol Kirim dikunci di layar (ORD.03). Fungsi tidak mengisi `baca_catatan`; tanda "Catatan baru" (ORD.10) menghitung catatan milik orang lain saja.
+- `order_daftar`: baris ringkas (tanpa nomor WA dan isi alamat; teks `ringkas` "Nama x jumlah"). Filter hari (tanggal `YYYY-MM-DD`) hanya dipakai owner; filter status untuk semua peran. Urutan owner dan penjaga: hari antar, lalu kelompok (Disetujui sampai siap, Menunggu, Selesai, Ditolak dan Dibatalkan), lalu waktu diputuskan atau dibuat terlama dulu. Customer: terbaru dulu, tanpa pembagian halaman.
+- `order_detail`: metode bayar tampil ke owner dan penjaga; nama pemutus dan riwayat status hanya owner. Order yang tidak ada dan yang tidak boleh dilihat memakai satu galat `order_tidak_ditemukan`. Urutan baris item: nama menu lalu pilihan (tabel tidak punya kolom urutan baris).
+- Balasan `kedai`: `order_buat` memuat `order` (`id`, `nomor`, `status`, `total`, `hari_target`, `jam_permintaan`), `order_daftar` memuat `daftar`, `order_detail` memuat `order`.
+- `pilihan_rusak` dan `opsi_tidak_valid` kini dipetakan di `kedai` (meluruskan Handoff #1). Kode `id_kosong`, `pengaturan_rusak`, dan `total_terlalu_besar` sengaja tidak dipetakan (galat umum 500).
+
+**Belum beres:**
+
+- **Tes ORD.02 belum jalan** (High-Risk, wajib bukti). Caranya: konsol browser di halaman aplikasi asli, dengan `window.KedaiAkun.panggilKedai(aksi, data)` dari `akun.js`. Butuh akun dummy: customer 1 (profil dan alamat aktif), customer 2, owner, penjaga, dan minimal satu menu Tersedia (idealnya dengan grup pilihan). Kesiapan akun dummy belum dikonfirmasi saat handoff ini.
+- Rencana tes: order sah dan total benar; teks pilihan tersalin; harga dan status palsu dari aplikasi diabaikan (SEC-06, SEC-12); customer 2 tidak bisa membuka order customer 1 (SEC-05, SEC-09); owner dan penjaga ditolak di `order_buat` (403); penjaga tidak melihat order Menunggu (SEC-08); alamat orang lain dan menu Habis ditolak; waktu dari server (SEC-19).
+- Pagar antar-kolom tabel order (Handoff #1) baru teruji untuk status Menunggu lewat `order_buat`; sisanya lewat ORD.05, ORD.12, dan ORD.14.
+- MT-23 dan MT-24 (`docs/menu-test.md`) bisa dijalankan setelah tes ORD.02 lolos.
+- `index.ts` sudah disalin ke repo dan di-deploy, tetapi **belum dikonfirmasi di-push**: cek `git status`.
+- Komentar lama di `index.ts` (`PETA_GALAT_GRUP`) masih menyebut `pilihan_rusak` dipetakan di ORD.01; sengaja tidak diubah. Yang berlaku blok ini.
+- Order uji tidak bisa dihapus; dibersihkan di LNC.01 bersama reset nomor order.
+
+**Saran giliran berikutnya:**
+
+1. Tes ORD.02 (lampirkan `AGENTS.md` + `order.md` yang sudah memuat handoff ini + `database.md` + `security.md`). Setelah lolos: butir ORD.02 selesai, silakan dicentang di sheet.
+2. Lalu ORD.03 (layar Pesan): lampirkan juga `akun.js`, `menu.js`, `menu-detail.js`, `kerangka.js`, `style.css`, dan `sw.js`. Berkas JS baru wajib didaftarkan di cache `sw.js` (perubahan `sw.js` butuh "OK" ketua).
+3. ORD.05 (`order_setuju` dan `order_tolak`) butuh penjelasan dampak dan "OK" ketua.
+
 ---

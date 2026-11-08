@@ -10,6 +10,9 @@
 // MNU.09 (giliran 2): ditambah `grup_daftar`, `grup_simpan`, `grup_nonaktif`, `menu_grup_atur`
 //         (grup pilihan gratis; semuanya owner saja). `menu_daftar` tidak diubah di sini:
 //         fungsi SQL-nya kini membawa field `grup`. Kode galat baru dipetakan di PETA_GALAT_GRUP.
+// ORD.02 (giliran 2): ditambah `order_buat` (customer), `order_daftar` dan `order_detail` (semua peran
+//         yang aktif; hak lihat dijaga fungsi SQL, order.md O11). Kode galat baru dipetakan di
+//         PETA_GALAT_ORDER, termasuk `pilihan_rusak` dari opsi_periksa.
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -861,6 +864,223 @@ async function aksiMenuGrupAtur(
 }
 
 // ------------------------------------------------------------
+// Aksi: order_buat, order_daftar, order_detail (ORD.02 giliran 2, order.md O2 sampai O4, O11, O20)
+// `order_buat`: HANYA customer. Aplikasi hanya mengirim tipe, id alamat, hari ("Hari ini" atau
+// "Besok"), jam, daftar item (id menu, jumlah, id opsi), dan catatan awal. Harga, total, status,
+// metode bayar, peran, dan id pengguna dari aplikasi tidak pernah diteruskan (SEC-06): item dibangun
+// ulang hanya dari tiga isian di atas, dan id akun selalu dari token.
+// `order_daftar` dan `order_detail`: semua peran yang aktif. Order mana yang boleh dilihat ditentukan
+// fungsi SQL dari peran di tabel staf (O11, SEC-05, SEC-08), bukan dari kiriman aplikasi.
+// Aturan sebenarnya dicek fungsi SQL (aturan 19); ini hanya pagar kasar dan bentuk data.
+// ------------------------------------------------------------
+
+// Kode galat fungsi SQL order -> status dan pesan aman (AK14)
+// Pesan batas jumlah sengaja tanpa angka: batasnya ada di pengaturan, bukan ditulis mati.
+// (id_kosong, pengaturan_rusak, dan total_terlalu_besar sengaja tidak dipetakan: jadi galat umum 500.)
+const PETA_GALAT_ORDER: Record<string, [number, string]> = {
+  bukan_customer: [403, "Aksi ini hanya untuk customer."],
+  akun_nonaktif: [403, "Akun ini tidak aktif. Hubungi pengelola."],
+  profil_tidak_ada: [400, "Lengkapi profil dulu."],
+  tipe_tidak_valid: [400, "Tipe pesanan tidak valid."],
+  hari_tidak_valid: [400, "Hari tidak valid."],
+  jam_tidak_valid: [400, "Jam tidak valid. Isi jam dan menit."],
+  item_tidak_valid: [400, "Data pesanan belum lengkap atau tidak valid."],
+  item_kosong: [400, "Pilih minimal satu menu."],
+  item_terlalu_banyak: [
+    409,
+    "Jumlah jenis menu dalam satu pesanan sudah mencapai batas.",
+  ],
+  jumlah_tidak_valid: [400, "Jumlah menu tidak valid."],
+  jumlah_terlalu_banyak: [409, "Jumlah satu menu melebihi batas."],
+  menu_tidak_ditemukan: [
+    404,
+    "Ada menu yang tidak ditemukan. Muat ulang menu lalu coba lagi.",
+  ],
+  menu_tidak_tersedia: [
+    409,
+    "Ada menu yang sedang habis atau tidak tersedia. Muat ulang menu lalu coba lagi.",
+  ],
+  opsi_tidak_valid: [
+    409,
+    "Pilihan menu berubah atau tidak valid. Muat ulang menu lalu coba lagi.",
+  ],
+  pilihan_rusak: [
+    409,
+    "Pilihan menu sedang bermasalah. Coba lagi nanti atau hubungi pengelola.",
+  ],
+  alamat_wajib: [400, "Pilih alamat antar."],
+  alamat_tidak_ditemukan: [404, "Alamat tidak ditemukan."],
+  catatan_terlalu_panjang: [400, "Catatan terlalu panjang."],
+  status_tidak_valid: [400, "Filter status tidak valid."],
+  order_tidak_ditemukan: [404, "Pesanan tidak ditemukan."],
+};
+
+// Pagar kasar jumlah baris item kiriman (batas sebenarnya dicek fungsi SQL dari pengaturan).
+const BATAS_ITEM_KIRIMAN = 50;
+
+type ItemKiriman = { menu_id: string; jumlah: number; opsi_ids: string[] };
+
+// Bentuk kiriman item dicek kasar lalu DIBANGUN ULANG: hanya menu_id, jumlah, dan opsi_ids yang
+// diteruskan. Harga, nama, subtotal, atau isian lain dari aplikasi dibuang (SEC-06).
+// Mengembalikan null bila bentuknya salah.
+function bacaItemKiriman(v: unknown): ItemKiriman[] | null {
+  if (!Array.isArray(v) || v.length > BATAS_ITEM_KIRIMAN) return null;
+  const hasil: ItemKiriman[] = [];
+  for (const e of v) {
+    if (e === null || typeof e !== "object" || Array.isArray(e)) return null;
+    const baris = e as Record<string, unknown>;
+    if (typeof baris.menu_id !== "string" || !REGEX_UUID.test(baris.menu_id)) {
+      return null;
+    }
+    if (typeof baris.jumlah !== "number" || !Number.isInteger(baris.jumlah)) {
+      return null;
+    }
+    let opsi: string[] = [];
+    if (baris.opsi_ids !== undefined && baris.opsi_ids !== null) {
+      if (
+        !Array.isArray(baris.opsi_ids) ||
+        baris.opsi_ids.length > BATAS_OPSI_KIRIMAN
+      ) {
+        return null;
+      }
+      for (const o of baris.opsi_ids) {
+        if (typeof o !== "string" || !REGEX_UUID.test(o)) return null;
+      }
+      opsi = baris.opsi_ids as string[];
+    }
+    hasil.push({
+      menu_id: baris.menu_id,
+      jumlah: baris.jumlah,
+      opsi_ids: opsi,
+    });
+  }
+  return hasil;
+}
+
+async function aksiOrderBuat(
+  req: Request,
+  pengguna: Pengguna,
+  isi: Record<string, unknown>,
+): Promise<Response> {
+  // Lapis kedua peran: hanya customer (SEC-07). Peran dari aplikasi diabaikan.
+  const p = await bacaPeran(pengguna.id);
+  if (p.jenis === "nonaktif") {
+    return galat(req, 403, "Akun ini tidak aktif. Hubungi pengelola.");
+  }
+  if (p.jenis !== "customer") {
+    return galat(req, 403, "Aksi ini hanya untuk customer.");
+  }
+
+  const tipe = teksAtauNull(isi.tipe);
+  const hari = teksAtauNull(isi.hari);
+  const jam = teksAtauNull(isi.jam);
+  const item = bacaItemKiriman(isi.item);
+  if (tipe === null || hari === null || jam === null || item === null) {
+    return galat(req, 400, "Data belum lengkap atau tidak valid.");
+  }
+
+  // Alamat antar: boleh kosong (tipe Diambil dan Makan di warung). Kepemilikan dicek fungsi SQL (SEC-09).
+  let idAlamat: string | null = null;
+  if (isi.alamat_id !== undefined && isi.alamat_id !== null) {
+    if (typeof isi.alamat_id !== "string" || !REGEX_UUID.test(isi.alamat_id)) {
+      return galat(req, 400, "Data belum lengkap atau tidak valid.");
+    }
+    idAlamat = isi.alamat_id;
+  }
+
+  // Catatan awal: boleh kosong. Batas sebenarnya dari pengaturan, dicek fungsi SQL.
+  let catatan: string | null = null;
+  if (isi.catatan !== undefined && isi.catatan !== null) {
+    if (typeof isi.catatan !== "string" || isi.catatan.length > BATAS_TEKS) {
+      return galat(req, 400, PETA_GALAT_ORDER.catatan_terlalu_panjang[1]);
+    }
+    catatan = isi.catatan;
+  }
+
+  const { data, error } = await admin!.rpc("order_buat", {
+    p_akun: pengguna.id,
+    p_tipe: tipe,
+    p_alamat_id: idAlamat,
+    p_hari: hari,
+    p_jam: jam,
+    p_item: item,
+    p_catatan: catatan,
+  });
+  if (error) {
+    return galatDariDb(req, error, PETA_GALAT_ORDER, "order_buat");
+  }
+
+  return balas(req, 200, { ok: true, order: data });
+}
+
+async function aksiOrderDaftar(
+  req: Request,
+  pengguna: Pengguna,
+  isi: Record<string, unknown>,
+): Promise<Response> {
+  const p = await bacaPeran(pengguna.id);
+  if (p.jenis === "nonaktif") {
+    return galat(req, 403, "Akun ini tidak aktif. Hubungi pengelola.");
+  }
+
+  // Filter hari (hanya dipakai owner, peran lain diabaikan fungsi SQL) dan filter status: boleh kosong.
+  let hari: string | null = null;
+  if (isi.hari !== undefined && isi.hari !== null) {
+    if (typeof isi.hari !== "string" || isi.hari.length > 20) {
+      return galat(req, 400, "Data belum lengkap atau tidak valid.");
+    }
+    hari = isi.hari;
+  }
+  let status: string | null = null;
+  if (isi.status !== undefined && isi.status !== null) {
+    if (typeof isi.status !== "string" || isi.status.length > 30) {
+      return galat(req, 400, "Data belum lengkap atau tidak valid.");
+    }
+    status = isi.status;
+  }
+
+  const { data, error } = await admin!.rpc("order_daftar", {
+    p_akun: pengguna.id,
+    p_hari: hari,
+    p_status: status,
+  });
+  if (error) {
+    return galatDariDb(req, error, PETA_GALAT_ORDER, "order_daftar");
+  }
+
+  return balas(req, 200, {
+    ok: true,
+    daftar: Array.isArray(data) ? data : [],
+  });
+}
+
+async function aksiOrderDetail(
+  req: Request,
+  pengguna: Pengguna,
+  isi: Record<string, unknown>,
+): Promise<Response> {
+  const p = await bacaPeran(pengguna.id);
+  if (p.jenis === "nonaktif") {
+    return galat(req, 403, "Akun ini tidak aktif. Hubungi pengelola.");
+  }
+
+  // ID order dari aplikasi tidak dipercaya: fungsi SQL mengecek hak lihat (SEC-05, SEC-09).
+  if (typeof isi.id !== "string" || !REGEX_UUID.test(isi.id)) {
+    return galat(req, 400, "Data belum lengkap atau tidak valid.");
+  }
+
+  const { data, error } = await admin!.rpc("order_detail", {
+    p_akun: pengguna.id,
+    p_order_id: isi.id,
+  });
+  if (error) {
+    return galatDariDb(req, error, PETA_GALAT_ORDER, "order_detail");
+  }
+
+  return balas(req, 200, { ok: true, order: data });
+}
+
+// ------------------------------------------------------------
 // Pintu masuk
 // ------------------------------------------------------------
 
@@ -933,6 +1153,12 @@ Deno.serve(async (req: Request): Promise<Response> => {
         return await aksiGrupNonaktif(req, pengguna, isi);
       case "menu_grup_atur":
         return await aksiMenuGrupAtur(req, pengguna, isi);
+      case "order_buat":
+        return await aksiOrderBuat(req, pengguna, isi);
+      case "order_daftar":
+        return await aksiOrderDaftar(req, pengguna, isi);
+      case "order_detail":
+        return await aksiOrderDetail(req, pengguna, isi);
       default:
         return galat(req, 400, "Aksi tidak dikenal.");
     }
