@@ -1109,6 +1109,57 @@
                     </div>
                 </div>
 
+                <!-- Panel Pesanan Saya (customer, ORD.04): daftar riwayat dan detail pesanan. Logika di pesanan.js -->
+                <div id="panel-pesanan" hidden>
+                    <!-- Langkah 1: daftar -->
+                    <div id="pesanan-langkah-daftar">
+                        <p
+                            class="isian__bantuan"
+                            id="pesanan-memuat"
+                            role="status"
+                            hidden
+                        >
+                            Memuat pesanan...
+                        </p>
+                        <p
+                            class="isian__galat"
+                            id="pesanan-daftar-galat"
+                            role="alert"
+                            hidden
+                        ></p>
+                        <p class="isian__bantuan" id="pesanan-ringkas"></p>
+                        <div id="pesanan-daftar-isi"></div>
+                    </div>
+
+                    <!-- Langkah 2: detail -->
+                    <div id="pesanan-langkah-detail" hidden>
+                        <div class="baris-tombol">
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder"
+                                id="pesanan-kembali"
+                            >
+                                Kembali ke daftar
+                            </button>
+                        </div>
+                        <p
+                            class="isian__bantuan"
+                            id="pesanan-detail-memuat"
+                            role="status"
+                            hidden
+                        >
+                            Memuat pesanan...
+                        </p>
+                        <p
+                            class="isian__galat"
+                            id="pesanan-detail-galat"
+                            role="alert"
+                            hidden
+                        ></p>
+                        <div id="pesanan-detail-isi"></div>
+                    </div>
+                </div>
+
                 <!-- Panel Lainnya (owner): Pelanggan dan Bantuan menyusul, Akun dipasang kerangka.js -->
                 <!-- HOM.01: tab Lainnya sudah tidak ada di navigasi, panel ini tidak terjangkau.
                      Pelanggan dan Bantuan pindah ke Home di HOM.03 dan HOM.04. -->
@@ -1599,6 +1650,8 @@
         <script src="grup.js"></script>
         <!-- Layar Pesan customer (ORD.03): keranjang, form pesanan, Kirim; harus setelah akun.js (memakai window.KedaiAkun) -->
         <script src="pesan.js"></script>
+        <!-- Layar Pesanan Saya customer (ORD.04): daftar, detail, Batalkan; harus setelah akun.js dan pesan.js (memakai KedaiPesan.teksBayar) -->
+        <script src="pesanan.js"></script>
         <!-- Kerangka layar utama per peran (KRG.01); harus setelah akun.js dan menu.js -->
         <script src="kerangka.js"></script>
         <script>

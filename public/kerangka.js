@@ -59,7 +59,8 @@
       { id: "home", nama: "Home", panel: "akun" }, // HOM.01
       // MNU.04: { id: "pesan", nama: "Pesan", panel: "segera" },
       { id: "pesan", nama: "Pesan", panel: "pesan" },
-      { id: "pesanan-saya", nama: "Pesanan Saya", panel: "segera" },
+      // ORD.04: { id: "pesanan-saya", nama: "Pesanan Saya", panel: "segera" },
+      { id: "pesanan-saya", nama: "Pesanan Saya", panel: "pesanan" },
       // HOM.01: { id: "akun", nama: "Akun", panel: "akun" },
     ],
     penjaga: [
@@ -79,7 +80,8 @@
   };
 
   // MNU.04: var PANEL = ["segera", "menu", "lainnya", "akun"];
-  var PANEL = ["segera", "menu", "lainnya", "akun", "pesan"];
+  // ORD.04: var PANEL = ["segera", "menu", "lainnya", "akun", "pesan"];
+  var PANEL = ["segera", "menu", "lainnya", "akun", "pesan", "pesanan"];
 
   // HOM.02: tulisan lencana peran di kartu sapaan (HM4). Peran tak dikenal: lencana disembunyikan.
   var LABEL_PERAN = {
@@ -170,6 +172,15 @@
       typeof window.KedaiPesan.tampil === "function"
     ) {
       window.KedaiPesan.tampil();
+    }
+
+    // ORD.04: layar Pesanan Saya (daftar dan detail) di pesanan.js; dimuat saat tab dibuka dan lewat Segarkan.
+    if (
+      t.panel === "pesanan" &&
+      window.KedaiPesanan &&
+      typeof window.KedaiPesanan.tampil === "function"
+    ) {
+      window.KedaiPesanan.tampil();
     }
   }
 
@@ -279,6 +290,13 @@
     // ORD.03: keranjang, alamat, dan hasil order tidak boleh tersisa setelah Keluar.
     if (window.KedaiPesan && typeof window.KedaiPesan.reset === "function") {
       window.KedaiPesan.reset();
+    }
+    // ORD.04: daftar dan detail pesanan tidak boleh tersisa setelah Keluar.
+    if (
+      window.KedaiPesanan &&
+      typeof window.KedaiPesanan.reset === "function"
+    ) {
+      window.KedaiPesanan.reset();
     }
   }
 

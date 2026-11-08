@@ -49,8 +49,11 @@
   var PESAN_OFFLINE =
     "Belum bisa terhubung. Periksa internet lalu coba lagi. Pesanan belum terkirim.";
   // Jaringan putus SETELAH permintaan terkirim: hasilnya tidak pasti. Kirim ulang bisa membuat order dobel.
+  // ORD.04: teks lama (menyuruh hubungi lewat WhatsApp) diganti karena sekarang ada layar Pesanan Saya.
+  // var PESAN_TIDAK_PASTI =
+  //   "Belum bisa memastikan pesanan sudah terkirim. Jangan kirim ulang dulu: hubungi ChATA lewat WhatsApp untuk memastikan, supaya tidak dobel.";
   var PESAN_TIDAK_PASTI =
-    "Belum bisa memastikan pesanan sudah terkirim. Jangan kirim ulang dulu: hubungi ChATA lewat WhatsApp untuk memastikan, supaya tidak dobel.";
+    "Belum bisa memastikan pesanan sudah terkirim. Jangan kirim ulang dulu: buka tab Pesanan Saya dan tekan Segarkan untuk melihat apakah pesananmu sudah masuk, supaya tidak dobel.";
   var PESAN_SESI = "Sesi sudah berakhir. Silakan keluar lalu masuk lagi.";
   var PESAN_ALAMAT_MUAT =
     "Daftar alamat belum bisa dimuat. Coba lagi sebentar lagi.";
