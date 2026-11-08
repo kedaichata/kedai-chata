@@ -20,6 +20,10 @@
 //         supaya order yang sudah Dibatalkan atau Ditolak tidak lagi dibilang "sudah diproses".
 //         Kode baru ini dikirim fungsi SQL `order_batal` versi baru (migration susulan, dijalankan
 //         SETELAH berkas ini dideploy). Sebelum SQL baru jalan, pemetaan ini belum terpakai (aman).
+// ORD.05 (giliran 2): ditambah `order_setuju` (owner, metode bayar wajib) dan `order_tolak` (owner,
+//         alasan opsional). Hanya owner; customer dan penjaga ditolak 403 (SEC-07, SEC-08). Kode galat
+//         baru dipetakan di PETA_GALAT_ORDER_KEPUTUSAN. Fungsi SQL: 20261108_05_order_setuju_tolak.sql
+//         (sudah dijalankan dan lulus cek SEBELUM berkas ini dideploy). Push ada di NTF, bukan di sini.
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -1162,6 +1166,105 @@ async function aksiOrderBatal(
 }
 
 // ------------------------------------------------------------
+// Aksi: order_setuju dan order_tolak (ORD.05, order.md O6, O7, O8, security.md SEC-07, SEC-08, SEC-10, SEC-11)
+// Hanya owner aktif. Customer dan penjaga ditolak di sini (lapis kedua); fungsi SQL mengecek ulang peran,
+// mengunci baris order (satu pemenang bila dua owner bersamaan), dan hanya menerima order Menunggu.
+// Aplikasi hanya mengirim id order dan (setuju) metode bayar atau (tolak) alasan. Id akun selalu dari token.
+// Push ke customer dan penjaga dipasang di NTF (bukan di sini).
+// ------------------------------------------------------------
+
+// Kode galat fungsi SQL order_setuju dan order_tolak -> status dan pesan aman (AK14)
+// (id_kosong sengaja tidak dipetakan: jadi galat umum 500.)
+const PETA_GALAT_ORDER_KEPUTUSAN: Record<string, [number, string]> = {
+  akun_nonaktif: [403, "Akun ini tidak aktif. Hubungi pengelola."],
+  peran_tidak_boleh: [403, "Aksi ini hanya untuk owner."],
+  metode_tidak_valid: [400, "Pilih metode bayar: Transfer, Tunai, atau QRIS."],
+  alasan_terlalu_panjang: [400, "Alasan terlalu panjang."],
+  order_tidak_ditemukan: [404, "Pesanan tidak ditemukan."],
+  sudah_diproses: [409, "Pesanan sudah diproses. Segarkan daftar pesanan."],
+  sudah_ditolak: [409, "Pesanan ini sudah ditolak."],
+  sudah_dibatalkan: [409, "Pesanan ini sudah dibatalkan."],
+};
+
+async function aksiOrderSetuju(
+  req: Request,
+  pengguna: Pengguna,
+  isi: Record<string, unknown>,
+): Promise<Response> {
+  const p = await bacaPeran(pengguna.id);
+  if (p.jenis === "nonaktif") {
+    return galat(req, 403, "Akun ini tidak aktif. Hubungi pengelola.");
+  }
+  // Lapis kedua peran: hanya owner (SEC-07 untuk customer, SEC-08 untuk penjaga)
+  if (p.jenis !== "staf" || p.peran !== "owner") {
+    return galat(req, 403, "Aksi ini hanya untuk owner.");
+  }
+
+  // ID order dari aplikasi tidak dipercaya: fungsi SQL yang mengecek order dan statusnya.
+  if (typeof isi.id !== "string" || !REGEX_UUID.test(isi.id)) {
+    return galat(req, 400, "Data belum lengkap atau tidak valid.");
+  }
+
+  // Metode bayar wajib. Nilai yang sah dicek fungsi SQL (Transfer, Tunai, QRIS; SEC-11).
+  if (typeof isi.metode !== "string" || isi.metode.length > BATAS_TEKS) {
+    return galat(req, 400, PETA_GALAT_ORDER_KEPUTUSAN.metode_tidak_valid[1]);
+  }
+
+  const { data, error } = await admin!.rpc("order_setuju", {
+    p_akun: pengguna.id,
+    p_order_id: isi.id,
+    p_metode: isi.metode,
+  });
+  if (error) {
+    return galatDariDb(req, error, PETA_GALAT_ORDER_KEPUTUSAN, "order_setuju");
+  }
+
+  return balas(req, 200, { ok: true, order: data });
+}
+
+async function aksiOrderTolak(
+  req: Request,
+  pengguna: Pengguna,
+  isi: Record<string, unknown>,
+): Promise<Response> {
+  const p = await bacaPeran(pengguna.id);
+  if (p.jenis === "nonaktif") {
+    return galat(req, 403, "Akun ini tidak aktif. Hubungi pengelola.");
+  }
+  if (p.jenis !== "staf" || p.peran !== "owner") {
+    return galat(req, 403, "Aksi ini hanya untuk owner.");
+  }
+
+  if (typeof isi.id !== "string" || !REGEX_UUID.test(isi.id)) {
+    return galat(req, 400, "Data belum lengkap atau tidak valid.");
+  }
+
+  // Alasan opsional; panjang sebenarnya (maks 200) dicek fungsi SQL.
+  let alasan: string | null = null;
+  if (isi.alasan !== undefined && isi.alasan !== null) {
+    if (typeof isi.alasan !== "string" || isi.alasan.length > BATAS_TEKS) {
+      return galat(
+        req,
+        400,
+        PETA_GALAT_ORDER_KEPUTUSAN.alasan_terlalu_panjang[1],
+      );
+    }
+    alasan = isi.alasan;
+  }
+
+  const { data, error } = await admin!.rpc("order_tolak", {
+    p_akun: pengguna.id,
+    p_order_id: isi.id,
+    p_alasan: alasan,
+  });
+  if (error) {
+    return galatDariDb(req, error, PETA_GALAT_ORDER_KEPUTUSAN, "order_tolak");
+  }
+
+  return balas(req, 200, { ok: true, order: data });
+}
+
+// ------------------------------------------------------------
 // Pintu masuk
 // ------------------------------------------------------------
 
@@ -1242,6 +1345,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
         return await aksiOrderDetail(req, pengguna, isi);
       case "order_batal":
         return await aksiOrderBatal(req, pengguna, isi);
+      case "order_setuju":
+        return await aksiOrderSetuju(req, pengguna, isi);
+      case "order_tolak":
+        return await aksiOrderTolak(req, pengguna, isi);
       default:
         return galat(req, 400, "Aksi tidak dikenal.");
     }
