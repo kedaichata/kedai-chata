@@ -633,10 +633,24 @@
       for (var j = 0; j < gr.opsi.length; j++) {
         var o = gr.opsi[j];
         if (o && typeof o.nama === "string" && o.nama.trim() !== "") {
-          opsi.push({ nama: o.nama, bawaan: o.bawaan === true });
+          // ORD.03: id opsi ikut dibawa (dikirim ke server lewat keranjang). Id tidak terbaca = "".
+          // opsi.push({ nama: o.nama, bawaan: o.bawaan === true });
+          opsi.push({
+            id: typeof o.id === "string" ? o.id : "",
+            nama: o.nama,
+            bawaan: o.bawaan === true,
+          });
         }
       }
-      if (opsi.length > 0) hasil.push({ nama: gr.nama, opsi: opsi });
+      // ORD.03: id grup ikut dibawa.
+      // if (opsi.length > 0) hasil.push({ nama: gr.nama, opsi: opsi });
+      if (opsi.length > 0) {
+        hasil.push({
+          id: typeof gr.id === "string" ? gr.id : "",
+          nama: gr.nama,
+          opsi: opsi,
+        });
+      }
     }
     return hasil;
   }
@@ -699,6 +713,32 @@
     p.hidden = !pesan;
   }
 
+  // ORD.03: ketuk Tambah di kartu menu. Menu dengan grup pilihan membuka sheet detail (pilih dulu);
+  // menu tanpa grup langsung masuk keranjang (jumlah 1) lewat window.KedaiPesan.tambah (pesan.js).
+  // Yang dikirim hanya id menu, nama, dan harga untuk tampilan; harga resmi dihitung server (MN4).
+  function tekanTambah(m, kartu, tombol) {
+    var P = window.KedaiPesan;
+    var Detail = window.KedaiMenuDetail;
+    if (m.grup.length > 0) {
+      if (Detail && typeof Detail.buka === "function") Detail.buka(m, kartu);
+      return;
+    }
+    galatPelanggan("");
+    var masuk = !!(
+      P &&
+      typeof P.tambah === "function" &&
+      P.tambah({ id: String(m.id), nama: m.nama, harga: m.harga }, [], 1)
+    );
+    if (!masuk) {
+      galatPelanggan("Belum bisa menambah ke pesanan. Coba Segarkan menu.");
+      return;
+    }
+    tombol.textContent = "Ditambahkan \u2713";
+    setTimeout(function () {
+      tombol.textContent = "Tambah";
+    }, 1200);
+  }
+
   function buatKartuPelanggan(m) {
     var kartu = buat(
       "div",
@@ -721,6 +761,21 @@
     atas.appendChild(info);
     kartu.appendChild(atas);
     // ORD: tombol pilih menu dan jumlah dipasang di sini (hanya untuk menu Tersedia).
+    // ORD.03: tombol Tambah (menu tanpa grup) atau Pilih (menu dengan grup, membuka sheet detail).
+    if (m.tersedia) {
+      var aksi = buat("div", "baris-tombol menu-kartu__aksi");
+      var tombolTambah = buat(
+        "button",
+        "tombol tombol--sekunder",
+        m.grup.length > 0 ? "Pilih" : "Tambah",
+      );
+      tombolTambah.type = "button";
+      tombolTambah.addEventListener("click", function () {
+        tekanTambah(m, kartu, tombolTambah);
+      });
+      aksi.appendChild(tombolTambah);
+      kartu.appendChild(aksi);
+    }
 
     // MNU.08: ketuk kartu (atau Enter/Spasi) membuka sheet detail. Hanya dipasang bila komponennya ada.
     // Ketukan pada tombol di dalam kartu (nanti dari ORD) tidak ikut membuka sheet.

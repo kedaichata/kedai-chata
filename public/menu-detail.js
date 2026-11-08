@@ -22,9 +22,16 @@
 //   sebagai daftar BACA SAJA di bawah deskripsi, opsi bawaan ditandai emoji centang (\u2705; keputusan ketua, menggantikan tulisan "(bawaan)"), dengan keterangan "\u2705 = otomatis dipilih kalau tidak diganti" di bawah daftar. Memilih opsi dikerjakan di
 //   ORD (ketuk, keranjang, tersimpan di order), bukan di sini. Menu tanpa grup tidak menampilkan bagian ini.
 
+// ORD.03: untuk menu Tersedia, sheet kini juga berisi PILIHAN satu per grup (bawaan sudah terpilih), pengatur
+//   jumlah, dan tombol "Tambah ke pesanan" yang memanggil window.KedaiPesan.tambah(menu, pilihan, jumlah)
+//   (pesan.js), lalu sheet menutup. Menu Habis tetap hanya tampil (daftar baca-saja, tanpa tombol).
+//   Data yang dibaca bertambah: id (menu), grup[].id, grup[].opsi[].id. Bila ada id yang kosong, tombol
+//   Tambah tidak dipasang dan customer diminta menyegarkan menu. Tab berputar di antara kontrol di sheet.
+
 (function () {
   "use strict";
 
+  var JUMLAH_MAKS_FORMAT = 9999; // bentuk data saja (sama dengan pesan.js); batas sebenarnya diputuskan server
   var KELAS_BUKA = "sheet-menu--buka";
   var LAMA_ANIMASI = 220; // milidetik; sama dengan transisi di style.css
   var AMBANG_TUTUP = 80; // geser turun lebih dari ini (px) = tutup, kurang dari ini kembali ke atas
@@ -37,6 +44,8 @@
   var pegangan = null;
   var tombolTutup = null;
   var isi = null;
+
+  var kontrolGrup = []; // ORD.03: [{ g: grup, radios: [input] }] untuk sheet yang sedang terbuka
 
   var terbuka = false;
   var pemicu = null; // elemen yang diketuk untuk membuka; fokus dikembalikan ke sana saat ditutup
@@ -146,7 +155,149 @@
     return bungkus;
   }
 
+  // ORD.03: grup pilihan yang BISA dipilih (satu opsi per grup, bawaan sudah terpilih). Mengembalikan
+  // { elemen, lengkap }; lengkap = false bila ada id grup atau id opsi yang kosong. Teks lewat textContent.
+  function buatGrupPilih(daftar) {
+    var bungkus = buat("div", "sheet-menu__pilihan");
+    var lengkap = true;
+    for (var i = 0; i < daftar.length; i++) {
+      var g = daftar[i];
+      if (!g || typeof g.nama !== "string" || !Array.isArray(g.opsi)) continue;
+      if (typeof g.id !== "string" || g.id === "") lengkap = false;
+      var kelompok = buat("div", "sheet-menu__grup");
+      kelompok.setAttribute("role", "radiogroup");
+      var judul = buat("h3", "sheet-menu__grup-nama", g.nama);
+      judul.id = "sheet-grup-" + i;
+      kelompok.setAttribute("aria-labelledby", judul.id);
+      kelompok.appendChild(judul);
+      var radios = [];
+      var adaBawaan = false;
+      for (var a = 0; a < g.opsi.length; a++) {
+        if (g.opsi[a] && g.opsi[a].bawaan === true) adaBawaan = true;
+      }
+      for (var j = 0; j < g.opsi.length; j++) {
+        var o = g.opsi[j];
+        if (!o || typeof o.nama !== "string" || o.nama.trim() === "") continue;
+        if (typeof o.id !== "string" || o.id === "") lengkap = false;
+        var baris = buat("label", "sheet-menu__pilih");
+        var radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = "sheet-grup-" + i;
+        radio.checked = adaBawaan ? o.bawaan === true : radios.length === 0;
+        baris.appendChild(radio);
+        baris.appendChild(buat("span", "", o.nama));
+        kelompok.appendChild(baris);
+        radios.push(radio);
+      }
+      if (radios.length === 0) continue;
+      kontrolGrup.push({ g: g, radios: radios });
+      bungkus.appendChild(kelompok);
+    }
+    if (bungkus.children.length === 0) return null;
+    return { elemen: bungkus, lengkap: lengkap };
+  }
+
+  // ORD.03: jumlah dan tombol "Tambah ke pesanan". Pilihan dikumpulkan urut seperti grup di menu:
+  // [{ id (uuid opsi), teks ("Nama grup: Nama opsi") }], sesuai kontrak KedaiPesan.tambah.
+  function buatAksi(m, pilihanLengkap) {
+    var bungkus = buat("div", "sheet-menu__aksi");
+    if (!pilihanLengkap) {
+      bungkus.appendChild(
+        buat(
+          "p",
+          "isian__bantuan sheet-menu__ket",
+          "Pilihan menu belum bisa dibaca. Tutup, lalu Segarkan menu.",
+        ),
+      );
+      return bungkus;
+    }
+
+    var jumlah = 1;
+    var baris = buat("div", "sheet-menu__jumlah");
+    var kurang = buat("button", "tombol tombol--sekunder", "\u2212");
+    kurang.type = "button";
+    kurang.setAttribute("aria-label", "Kurangi jumlah");
+    var angka = buat("span", "sheet-menu__jumlah-angka", "1");
+    angka.setAttribute("aria-live", "polite");
+    var tambahJumlah = buat("button", "tombol tombol--sekunder", "+");
+    tambahJumlah.type = "button";
+    tambahJumlah.setAttribute("aria-label", "Tambah jumlah");
+
+    var galat = buat("p", "sheet-menu__galat");
+    galat.hidden = true;
+
+    function segarkanJumlah() {
+      angka.textContent = String(jumlah);
+      kurang.disabled = jumlah <= 1;
+      tambahJumlah.disabled = jumlah >= JUMLAH_MAKS_FORMAT;
+    }
+    kurang.addEventListener("click", function () {
+      if (jumlah > 1) jumlah--;
+      segarkanJumlah();
+    });
+    tambahJumlah.addEventListener("click", function () {
+      if (jumlah < JUMLAH_MAKS_FORMAT) jumlah++;
+      segarkanJumlah();
+    });
+    segarkanJumlah();
+
+    baris.appendChild(kurang);
+    baris.appendChild(angka);
+    baris.appendChild(tambahJumlah);
+    bungkus.appendChild(baris);
+
+    var tombol = buat("button", "tombol tombol--utama", "Tambah ke pesanan");
+    tombol.type = "button";
+    tombol.addEventListener("click", function () {
+      var pilihan = [];
+      for (var i = 0; i < kontrolGrup.length; i++) {
+        var k = kontrolGrup[i];
+        var terpilih = -1;
+        for (var r = 0; r < k.radios.length; r++) {
+          if (k.radios[r].checked) terpilih = r;
+        }
+        // Opsi yang tampil urut sama dengan g.opsi yang valid (nama tidak kosong).
+        var valid = [];
+        for (var x = 0; x < k.g.opsi.length; x++) {
+          var o = k.g.opsi[x];
+          if (o && typeof o.nama === "string" && o.nama.trim() !== "")
+            valid.push(o);
+        }
+        if (terpilih < 0 || !valid[terpilih]) {
+          galat.textContent = "Pilih satu opsi di tiap pilihan dulu.";
+          galat.hidden = false;
+          return;
+        }
+        pilihan.push({
+          id: valid[terpilih].id,
+          teks: k.g.nama + ": " + valid[terpilih].nama,
+        });
+      }
+      var P = window.KedaiPesan;
+      var masuk = !!(
+        P &&
+        typeof P.tambah === "function" &&
+        P.tambah(
+          { id: String(m.id), nama: m.nama, harga: Number(m.harga) },
+          pilihan,
+          jumlah,
+        )
+      );
+      if (masuk) {
+        tutup();
+      } else {
+        galat.textContent =
+          "Belum bisa menambah ke pesanan. Tutup, Segarkan menu, lalu coba lagi.";
+        galat.hidden = false;
+      }
+    });
+    bungkus.appendChild(tombol);
+    bungkus.appendChild(galat);
+    return bungkus;
+  }
+
   function isiSheet(m) {
+    kontrolGrup = [];
     kosongkan(isi);
     isi.appendChild(buatFotoBesar(m));
 
@@ -181,9 +332,24 @@
     }
 
     // MNU.11: grup pilihan (opsional, hanya tampil). Tidak ada grup: bagian ini tidak dibuat.
+    // ORD.03: menu Tersedia memakai grup yang bisa dipilih; menu Habis tetap daftar baca-saja.
+    var pilihanLengkap = true;
     if (Array.isArray(m.grup) && m.grup.length > 0) {
-      var pilihan = buatGrup(m.grup);
-      if (pilihan) isi.appendChild(pilihan);
+      if (m.tersedia) {
+        var hasilPilih = buatGrupPilih(m.grup);
+        if (hasilPilih) {
+          isi.appendChild(hasilPilih.elemen);
+          pilihanLengkap = hasilPilih.lengkap;
+        }
+      } else {
+        var pilihan = buatGrup(m.grup);
+        if (pilihan) isi.appendChild(pilihan);
+      }
+    }
+
+    // ORD.03: jumlah dan tombol Tambah hanya untuk menu Tersedia yang punya id.
+    if (m.tersedia && (typeof m.id === "string" || typeof m.id === "number")) {
+      isi.appendChild(buatAksi(m, pilihanLengkap));
     }
   }
 
@@ -311,8 +477,29 @@
       e.preventDefault();
       tutup();
     } else if (e.key === "Tab") {
-      e.preventDefault();
-      tombolTutup.focus();
+      // ORD.03: Tab berputar di antara kontrol sheet (tombol X, pilihan, jumlah, Tambah).
+      // e.preventDefault();
+      // tombolTutup.focus();
+      var kontrol = lembar.querySelectorAll(
+        "button:not([disabled]), input:not([disabled])",
+      );
+      if (kontrol.length === 0) {
+        e.preventDefault();
+        return;
+      }
+      var pertama = kontrol[0];
+      var terakhir = kontrol[kontrol.length - 1];
+      var aktif = document.activeElement;
+      if (!lembar.contains(aktif)) {
+        e.preventDefault();
+        pertama.focus();
+      } else if (e.shiftKey && aktif === pertama) {
+        e.preventDefault();
+        terakhir.focus();
+      } else if (!e.shiftKey && aktif === terakhir) {
+        e.preventDefault();
+        pertama.focus();
+      }
     }
   }
 

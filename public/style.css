@@ -1201,3 +1201,65 @@ body.sheet-terbuka {
     font-size: 15px;
     color: var(--teks-samar);
 }
+
+/* ---- ORD.03: tombol Tambah di kartu menu customer, serta pilihan dan jumlah di sheet detail ---- */
+.menu-kartu__aksi {
+    margin: 10px 0 0;
+}
+
+.sheet-menu__pilih {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 48px;
+    padding: 4px 0;
+    cursor: pointer;
+    overflow-wrap: anywhere;
+}
+
+.sheet-menu__pilih input {
+    flex: 0 0 auto;
+    width: 24px;
+    height: 24px;
+    margin: 0;
+    accent-color: var(--marun);
+}
+
+.sheet-menu__pilih input:focus-visible {
+    outline: 3px solid var(--emas-terang);
+    outline-offset: 2px;
+}
+
+.sheet-menu__aksi {
+    margin: 18px 0 0;
+    padding: 14px 0 0;
+    border-top: 1px solid var(--garis-tipis);
+}
+
+.sheet-menu__jumlah {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: 0 0 12px;
+}
+
+.sheet-menu__jumlah .tombol {
+    width: 52px;
+    min-width: 52px;
+    padding: 0;
+    font-size: 1.4rem;
+}
+
+.sheet-menu__jumlah-angka {
+    min-width: 56px;
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.sheet-menu__galat {
+    margin: 10px 0 0;
+    color: var(--bahaya);
+    font-weight: 700;
+}

@@ -298,4 +298,53 @@ Item **Pelanggan** ("Pelanggan tanpa akun", O16) untuk owner ada di **Home**, di
 - **Data uji (dummy) bertambah:** order nomor 4 dan 5 milik customer 1, tidak bisa dihapus, dibersihkan di LNC.01 bersama reset nomor order. Harga es teh manis sudah dikembalikan ke 5000.
 - **ORD.03 belum dikerjakan** (status sheet Belum); saran Handoff #3 butir 2 tetap berlaku, begitu pula butir 3 (ORD.05 butuh penjelasan dampak dan "OK" ketua).
 
+### Handoff #4 | 2026-11-08 | [RAC]
+
+**Berkas tujuan:** `docs/order.md` bagian 9, ditempel paling bawah (di bawah blok "MT-23 dan MT-24 selesai dan lulus"). Yang paling akhir menang.
+
+**Pertentangan dengan blok lama:** tidak ada. Saran Handoff #3 butir 2 (ORD.03) dijalankan; butir 1 sudah tidak berlaku (lihat blok MT-23 dan MT-24).
+
+**Tugas:** ORD.03 (layar customer Pesan) **belum selesai, jangan dicentang di sheet.** Giliran 1 dari 3 sudah dikerjakan: keranjang, form pesanan, Kirim, dan layar selesai (teks O21). Yang belum ada: tombol Tambah di kartu menu dan pilihan menu di sheet detail, jadi layar pesanan belum bisa dicoba dari tampilan (keranjang masih kosong). Rencana tiga giliran: (1) `pesan.js` + `index.html` + `kerangka.js` (selesai), (2) `menu.js` + `menu-detail.js` + `style.css` bila perlu, (3) `sw.js` (sudah dikerjakan lebih awal, lihat di bawah).
+
+**Berkas diubah:**
+
+- Baru: `public/pesan.js` (765 baris).
+- Diubah: `public/index.html` (panel Pesan dibungkus tiga langkah: menu, pesanan, selesai; tiga elemen daftar menu lama tidak berubah isinya, hanya dibungkus `#pesan-langkah-menu`; ditambah `<script src="pesan.js">` setelah `grup.js`).
+- Diubah: `public/kerangka.js` (hanya tambahan: `KedaiPesan.tampil()` saat tab Pesan dibuka, `KedaiPesan.reset()` saat Keluar; tidak ada baris lama dihapus).
+- Diubah: `public/sw.js` (`pesan.js` masuk daftar cache, versi cache `chata-v10` jadi `chata-v11`; baris lama dijadikan komentar). "OK" ketua untuk `sw.js` sudah diberikan lewat PIC.
+
+**Keputusan baru** (pilihan penulis; alasan belum tercatat dari ketua kecuali disebut):
+
+- Keranjang disimpan di `pesan.js` (bukan di daftar menu), karena `kerangka.js` memuat ulang daftar menu tiap tab Pesan dibuka. Baris keranjang: menu sama dengan kombinasi pilihan berbeda = baris terpisah; kombinasi sama digabung jumlahnya.
+- Yang dikirim ke `order_buat`: `tipe`, `alamat_id` (hanya Diantar), `hari` ("Hari ini" atau "Besok"), `jam` (HH:MM), `item` (`menu_id`, `jumlah`, `opsi_ids`), `catatan`. Total di layar hanya perkiraan; angka resmi dari balasan server.
+- Alamat antar diambil lewat aksi `status` (`h.data.alamat`), tanpa aksi baru. Satu alamat: langsung terpilih. Lebih dari satu: customer wajib memilih sendiri (hindari salah antar). Kembali dari Buku alamat, daftar alamat dimuat ulang otomatis.
+- Jam wajib diisi (pemilih jam bawaan HP), tanpa daftar dan tanpa batas (O2). Label jam mengikuti tipe (Jam antar, Jam ambil, Jam datang).
+- Tombol Kirim dikunci sejak ditekan sampai balasan datang; keranjang dikosongkan begitu order berhasil.
+- Jaringan putus setelah permintaan terkirim (hasil tidak pasti): pesan "Belum bisa memastikan pesanan sudah terkirim. Jangan kirim ulang dulu: hubungi ChATA lewat WhatsApp untuk memastikan, supaya tidak dobel." Offline dari awal: pesan lain ("Pesanan belum terkirim"). Sesudah ORD.04 ada, pesan ini bisa diganti agar menyuruh cek di Pesanan Saya.
+- Galat 404 atau 409 yang berisi "Muat ulang menu" membuat daftar menu dimuat ulang otomatis; galat alamat tidak ditemukan membuat daftar alamat dimuat ulang.
+- Teks O21 ada di `pesan.js` dan dibuka lewat `window.KedaiPesan.teksBayar` supaya ORD.04 memakai teks yang sama.
+- Temuan dari kode (bukan keputusan baru): satu menu boleh punya beberapa grup (`menu_grup_atur`, ada batas jumlah grup), dan tiap grup punya tepat satu pilihan bawaan, jadi customer memilih **satu opsi per grup**.
+- Batas item, jumlah per item, dan panjang catatan **tidak terbaca di aplikasi**: `status` hanya mengirim `alamat_maks` (`PENGATURAN_AMAN` di `kedai/index.ts`). Server yang menolak dan pesannya ditampilkan. Menambah batas ke `PENGATURAN_AMAN` berarti mengubah dan men-deploy `kedai` (berisiko, butuh "OK" ketua); ditunda.
+
+**Kontrak untuk giliran 2** (`window.KedaiPesan.tambah(menu, pilihan, jumlah)`, sudah ada di `pesan.js`):
+
+- `menu`: `{ id (teks uuid), nama, harga }`. `pilihan`: daftar `{ id (uuid opsi), teks ("Nama grup: Nama opsi") }`, satu per grup, **urut seperti grup di menu**; menu tanpa grup memakai daftar kosong. `jumlah`: bilangan bulat >= 1 (kosong = 1). Mengembalikan `true` bila masuk keranjang, `false` bila bentuknya salah.
+- Yang dikirim ke server dari `pilihan` hanya `id`-nya (`opsi_ids`). Teks hanya untuk tampilan di keranjang; susunan teks resmi disusun server.
+
+**Yang perlu dikerjakan di giliran 2:**
+
+- `menu.js`: `bacaGrupPelanggan` sekarang **membuang `id` grup dan id opsi**. Ubah agar id ikut terbawa (komentar di berkas ini menyebut bentuk dari server `[{ id, nama, opsi: [{ id, nama, bawaan }] }]`, **belum diverifikasi dengan balasan asli**; cek di tes). Di `buatKartuPelanggan` ("ORD: tombol pilih menu dan jumlah dipasang di sini"): tombol Tambah hanya untuk menu Tersedia. Menu tanpa grup langsung memanggil `KedaiPesan.tambah`; menu dengan grup membuka sheet detail untuk memilih. Ketukan pada tombol di dalam kartu sudah tidak membuka sheet (pengecekan `closest("button, a, input")` sudah ada).
+- `menu-detail.js`: sheet kini hanya menampilkan. Tambah pilihan satu per grup (bawaan sudah terpilih), jumlah, dan tombol "Tambah ke pesanan" yang memanggil `KedaiPesan.tambah`, lalu menutup sheet. Menu Habis tanpa tombol. **Aturan Tab di `tekanTombol` menahan fokus di tombol X saja** (komentarnya sudah menyebut ini harus disesuaikan saat tombol pilih ditambah). Semua teks lewat `textContent`.
+- `style.css`: hanya bila perlu (daftar pilihan di sheet, tampilan jumlah). Kelas yang sudah ada dan dipakai `pesan.js`: `.kartu`, `.menu-nama`, `.menu-harga`, `.isian*`, `.tombol*`, `.baris-tombol`.
+
+**Belum beres:**
+
+- **Belum dikonfirmasi:** (a) cek Keluar lalu Masuk lagi sebagai customer tanpa galat setelah giliran 1 (tab Pesan sudah tampil normal di HP uji); (b) keempat berkas di atas sudah di-push lewat tiga cek aman (`AGENTS.md` bagian 8); (c) tes PWA untuk `sw.js` `chata-v11`: versi baru muncul di HP, dan aplikasi tetap terbuka offline. `pesan.js` dan `sw.js` harus naik dalam satu commit (kalau `sw.js` naik duluan, pemasangan service worker baru gagal karena `pesan.js` belum ada).
+- **`pesan.js` baru diperiksa sintaksisnya, belum pernah dijalankan.** Tes sungguhan baru bisa setelah giliran 2. Tes ORD.03 (High-Risk, di HP Android dummy): order sah menu tanpa grup dan menu dengan dua grup (cek id opsi terkirim dan teks pilihan di `order_detail`); tipe Diambil dan Makan di warung tanpa alamat; Diantar tanpa alamat dipilih ditolak di layar; jam kosong ditolak; Kirim ditekan dua kali cepat hanya membuat satu order; menu jadi Habis saat Kirim (pesan server tampil dan daftar menu dimuat ulang); offline; Keluar mengosongkan keranjang dan alamat. **SEC-19 (jam HP digeser, cek `hari_target`) tetap di ORD.14.**
+- Tidak ada layar untuk melihat order yang baru dikirim (ORD.04 belum ada); verifikasi order lewat `order_daftar` dan `order_detail` di konsol (`window.KedaiAkun.panggilKedai`).
+- Opsional (belum diputuskan): setelah galat "menu habis", baris keranjang yang bersangkutan belum ditandai. Customer harus mencarinya sendiri. Bisa diatasi dengan `KedaiMenu` membuka status menu terbaru ke `pesan.js`.
+- `pesan.js` 765 baris, melewati kebiasaan "di bawah ~500 baris". Bila mau dipecah, bagian alamat paling mudah dipisah.
+- **Data uji (dummy) akan bertambah** (order uji dari tes ORD.03), tidak bisa dihapus, dibersihkan di LNC.01 bersama reset nomor order.
+
+**Saran giliran berikutnya:** giliran 2 ORD.03 (lampirkan `AGENTS.md` + `order.md` yang sudah memuat handoff ini + berkas terbaru dari repo: `pesan.js`, `menu.js`, `menu-detail.js`, `style.css`, `kerangka.js`). Mulai dengan konfirmasi tiga butir "Belum dikonfirmasi" di atas. Setelah giliran 2 dan tes lulus, ORD.03 selesai (pengingat centang di sheet). Berikutnya ORD.04 (Pesanan Saya), yang memakai `KedaiPesan.teksBayar` dan mengganti pesan "hasil tidak pasti" di `pesan.js`.
 ---
