@@ -1166,3 +1166,32 @@ body.sheet-terbuka {
     min-width: 0;
     overflow-wrap: anywhere;
 }
+
+/* ---- MNU.11: grup pilihan di sheet detail menu customer (hanya tampil, belum bisa dipilih) ---- */
+.sheet-menu__pilihan {
+    margin: 18px 0 0;
+    padding: 14px 0 0;
+    border-top: 1px solid var(--garis-tipis);
+}
+
+.sheet-menu__grup + .sheet-menu__grup {
+    margin: 14px 0 0;
+}
+
+.sheet-menu__grup-nama {
+    margin: 0;
+    font-size: var(--ukuran-teks);
+    font-weight: 700;
+    color: var(--marun);
+    overflow-wrap: anywhere;
+}
+
+.sheet-menu__opsi {
+    margin: 6px 0 0;
+    padding: 0 0 0 22px;
+}
+
+.sheet-menu__opsi li {
+    margin: 2px 0 0;
+    overflow-wrap: anywhere;
+}

@@ -617,6 +617,30 @@
   var sedangMuatPelanggan = false;
   var nomorMuatPelanggan = 0; // naik tiap muat dan reset; balasan lama (nomor tidak cocok) diabaikan
 
+  // MNU.11: grup pilihan gratis milik satu menu, hanya untuk DITAMPILKAN di sheet detail (menu-detail.js).
+  // Bentuk dari server: [{ id, nama, opsi: [{ id, nama, bawaan }] }], hanya grup dan opsi aktif.
+  // Elemen yang bentuknya salah dibuang satu per satu; grup tanpa opsi terbaca tidak dipakai. Bila field
+  // tidak ada atau bukan daftar, hasilnya daftar kosong (sheet tidak menampilkan bagian pilihan).
+  function bacaGrupPelanggan(g) {
+    var hasil = [];
+    if (!Array.isArray(g)) return hasil;
+    for (var i = 0; i < g.length; i++) {
+      var gr = g[i];
+      if (!gr || typeof gr.nama !== "string" || !Array.isArray(gr.opsi)) {
+        continue;
+      }
+      var opsi = [];
+      for (var j = 0; j < gr.opsi.length; j++) {
+        var o = gr.opsi[j];
+        if (o && typeof o.nama === "string" && o.nama.trim() !== "") {
+          opsi.push({ nama: o.nama, bawaan: o.bawaan === true });
+        }
+      }
+      if (opsi.length > 0) hasil.push({ nama: gr.nama, opsi: opsi });
+    }
+    return hasil;
+  }
+
   // Ambil hanya menu yang bentuknya benar dan aktif. null bila daftar tidak bisa dibaca sama sekali.
   // Bila server tidak mengirim field aktif (customer memang hanya mendapat menu aktif), dianggap aktif.
   function bacaMenuPelanggan(d) {
@@ -643,6 +667,8 @@
                 : "",
             // MNU.07: dipakai sheet detail (menu-detail.js); kosong bila tanpa deskripsi.
             deskripsi: typeof m.deskripsi === "string" ? m.deskripsi : "",
+            // MNU.11: grup pilihan untuk ditampilkan (read-only) di sheet detail.
+            grup: bacaGrupPelanggan(m.grup),
           });
         }
       } else {

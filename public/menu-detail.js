@@ -18,6 +18,9 @@
 //   belum dikirim server (MNU.07), bagian deskripsi tidak tampil.
 // - Animasi singkat; dimatikan lewat CSS bila HP mengurangi animasi.
 // - Tidak ada data yang disimpan: isi sheet dikosongkan saat ditutup.
+// MNU.11: bila menu punya grup pilihan (field `grup`: [{ nama, opsi: [{ nama, bawaan }] }]), sheet menampilkannya
+//   sebagai daftar BACA SAJA di bawah deskripsi, opsi bawaan ditandai emoji centang (\u2705; keputusan ketua, menggantikan tulisan "(bawaan)"). Memilih opsi dikerjakan di
+//   ORD (ketuk, keranjang, tersimpan di order), bukan di sini. Menu tanpa grup tidak menampilkan bagian ini.
 
 (function () {
   "use strict";
@@ -111,6 +114,29 @@
     return bungkus;
   }
 
+  // MNU.11: grup pilihan, hanya ditampilkan (tanpa tombol atau kotak pilih). Semua teks lewat textContent.
+  function buatGrup(daftar) {
+    var bungkus = buat("div", "sheet-menu__pilihan");
+    for (var i = 0; i < daftar.length; i++) {
+      var g = daftar[i];
+      if (!g || typeof g.nama !== "string" || !Array.isArray(g.opsi)) continue;
+      var kelompok = buat("div", "sheet-menu__grup");
+      kelompok.appendChild(buat("h3", "sheet-menu__grup-nama", g.nama));
+      var daftarOpsi = buat("ul", "sheet-menu__opsi");
+      for (var j = 0; j < g.opsi.length; j++) {
+        var o = g.opsi[j];
+        if (!o || typeof o.nama !== "string" || o.nama.trim() === "") continue;
+        daftarOpsi.appendChild(
+          buat("li", "", o.bawaan === true ? o.nama + " \u2705" : o.nama),
+        );
+      }
+      if (daftarOpsi.children.length === 0) continue;
+      kelompok.appendChild(daftarOpsi);
+      bungkus.appendChild(kelompok);
+    }
+    return bungkus.children.length > 0 ? bungkus : null;
+  }
+
   function isiSheet(m) {
     kosongkan(isi);
     isi.appendChild(buatFotoBesar(m));
@@ -143,6 +169,12 @@
     // Deskripsi opsional (MNU.07 yang mengisinya). Kosong atau belum ada: bagian ini tidak tampil.
     if (typeof m.deskripsi === "string" && m.deskripsi.trim() !== "") {
       isi.appendChild(buat("p", "sheet-menu__deskripsi", m.deskripsi.trim()));
+    }
+
+    // MNU.11: grup pilihan (opsional, hanya tampil). Tidak ada grup: bagian ini tidak dibuat.
+    if (Array.isArray(m.grup) && m.grup.length > 0) {
+      var pilihan = buatGrup(m.grup);
+      if (pilihan) isi.appendChild(pilihan);
     }
   }
 
