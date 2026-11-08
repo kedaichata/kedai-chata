@@ -572,7 +572,7 @@ Pilihan penulis tanpa keputusan ketua (alasan belum tercatat): `order_batal` tid
 
 **Saran giliran berikutnya:** ORD.05 (`order_setuju` dan `order_tolak`). Lampirkan `AGENTS.md` + `order.md` (sudah memuat handoff ini) + `supabase/functions/kedai/index.ts` + migration terbaru (`20261108_04_order_batal_pesan.sql`).
 
-### Handoff #9 | 2026-11-08 | [ISI NAMA PIC]
+### Handoff #9 | 2026-11-08 | [RAC]
 
 **Berkas tujuan:** `docs/order.md` bagian 9, ditempel paling bawah (di bawah Handoff #8). Yang paling akhir menang.
 
