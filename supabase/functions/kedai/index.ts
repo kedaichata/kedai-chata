@@ -16,6 +16,10 @@
 // ORD.04 (giliran 2): ditambah `order_batal` (customer: order miliknya saat Menunggu; owner: dari
 //         Disetujui sampai Siap, alasan opsional; penjaga ditolak). Kode galat baru dipetakan di
 //         PETA_GALAT_ORDER_BATAL. Fungsi SQL: 20261108_03_order_batal_fungsi.sql.
+// ORD.04 (perbaikan pesan 409): PETA_GALAT_ORDER_BATAL ditambah `sudah_dibatalkan` dan `sudah_ditolak`
+//         supaya order yang sudah Dibatalkan atau Ditolak tidak lagi dibilang "sudah diproses".
+//         Kode baru ini dikirim fungsi SQL `order_batal` versi baru (migration susulan, dijalankan
+//         SETELAH berkas ini dideploy). Sebelum SQL baru jalan, pemetaan ini belum terpakai (aman).
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -1107,6 +1111,13 @@ const PETA_GALAT_ORDER_BATAL: Record<string, [number, string]> = {
   tidak_bisa_dibatalkan: [
     409,
     "Pesanan dengan status ini tidak bisa dibatalkan. Segarkan daftar pesanan.",
+  ],
+  // Perbaikan pesan 409 (customer dan owner): order yang sudah Dibatalkan.
+  sudah_dibatalkan: [409, "Pesanan ini sudah dibatalkan."],
+  // Perbaikan pesan 409 (customer): order yang sudah Ditolak owner.
+  sudah_ditolak: [
+    409,
+    "Pesanan ini sudah ditolak sebelumnya, jadi tidak bisa dibatalkan lagi. Hubungi tim ChATA lewat WhatsApp bila perlu.",
   ],
 };
 
