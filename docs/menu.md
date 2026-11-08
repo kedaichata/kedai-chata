@@ -418,3 +418,28 @@ Tabel `menu` sudah live: kolom `deskripsi` adalah perubahan pada tabel yang ada.
 - Carry-over Handoff #3 sampai #8 tetap berlaku (fungsi `menu_simpan` 6 argumen masih ada; ukuran foto; nama kembar; handler fetch `sw.js` untuk foto menu; bukti MNU.06; menu dummy tidak bisa dihapus). `menu.js` sekitar 874 baris; berkas JS baru wajib didaftarkan di `sw.js` (butuh "OK").
 
 **Saran giliran berikutnya:** MNU.11, **read-only** (pilihan grup hanya tampil di sheet detail customer, memakai field `grup` yang sudah dibawa `menu_daftar`; pemilihan opsi ada di ORDER, lihat keputusan ketua di atas). Perkiraan satu giliran: tidak ada aksi server atau migration baru, perubahan di `menu-detail.js` dan sedikit tambahan `style.css`. Lampirkan `AGENTS.md` + `menu.md` (sudah memuat handoff ini) + `desain.md`, serta `menu.js`, `menu-detail.js`, `index.html`, `style.css`, dan `sw.js`. Sesudahnya sesi tes MNU.06 (ketua yang memutuskan urutannya).
+
+### Handoff #10 | 2026-11-08 | FREN
+
+**Berkas tujuan:** `docs/menu.md` bagian 9 (tempel paling bawah). Yang paling akhir menang.
+
+**Tugas:** MNU.11 **selesai** (pilihan grup tampil, hanya dibaca, di sheet detail customer). Tanpa aksi server, migration, atau perubahan `sw.js`, jadi tidak butuh "OK" ketua (cache tetap `chata-v10`). Hasil lihat langsung di layar sempit dan di HP Android (jalan, emoji dan keterangan tampil): menu dengan grup "Level pedas" menampilkan judul grup dan tiga opsi di bawah deskripsi, dengan garis pemisah; tanda centang hanya di "Tidak pedas". Tes DOM tiruan: menu tanpa grup dan grup tanpa opsi tidak menampilkan bagian pilihan. Bukti diperiksa di chat dan tidak disimpan. Sudah di-push (commit `8f9d8fd`).
+
+**Berkas diubah:** `public/menu-detail.js` (fungsi `buatGrup`, pemanggilan di `isiSheet`, komentar header), `public/menu.js` (fungsi `bacaGrupPelanggan` dan satu field `grup` di `bacaMenuPelanggan`), `public/style.css` (blok MNU.11 di akhir, termasuk `.sheet-menu__legenda`). Semuanya hanya tambahan; tidak ada kode lama yang dihapus atau diubah.
+
+**Keputusan baru:**
+
+- Opsi bawaan ditandai **emoji centang (✅)** setelah nama opsi (contoh "Tidak pedas ✅"), **menggantikan** tulisan "(bawaan)" yang tadinya dipakai di keputusan ketua 2026-11-08 (Handoff #9). Diputuskan ketua lewat perantara; alasan belum tercatat.
+- Di bawah semua grup ada satu baris keterangan kecil: **"✅ = otomatis dipilih kalau tidak diganti"**. Dipilih ketua dari dua usulan (yang lain "✅ = pilihan standar"); alasan belum tercatat.
+- Pilihan di sheet hanya **tulisan**: tanpa tombol, tombol radio, atau kotak pilih, supaya tidak terkesan bisa diketuk. Memilih opsi tetap di ORD.
+- `bacaGrupPelanggan` hanya meneruskan `nama` dan `bawaan` per opsi (id tidak dibawa karena belum dipakai). Elemen dengan bentuk salah dibuang; grup tanpa opsi terbaca tidak ditampilkan.
+- Menu Habis tetap menampilkan pilihannya.
+
+**Belum beres:**
+
+- Sudah dicek di Android dan jalan. iPhone belum dicek (tidak ada perangkat uji, `AGENTS.md` bagian 10 butir 7); bentuk emoji bisa sedikit beda, keluhan pengguna iPhone dihitung di review pemakaian.
+- Saat ORD menambah tombol di sheet, tahanan Tab di `tekanTombol` (`menu-detail.js`) perlu disesuaikan (sekarang hanya tombol X yang bisa difokus). Carry-over Handoff #5.
+- Pemilihan opsi oleh customer belum ada. Dikerjakan di ORD.01 (`opsi_periksa` dipanggil saat order dibuat; kode galat `pilihan_rusak` ikut dipetakan di `kedai`).
+- Carry-over Handoff #3 sampai #9 tetap berlaku: fungsi `menu_simpan` 6 argumen masih ada; target ukuran foto belum diputuskan; cara mengenali nama kembar (teks pesan atau kode); handler fetch `sw.js` ikut menyimpan foto menu; belum dibuktikan dengan data di MNU.06 (batas harga 200000, Nonaktifkan dan Aktifkan kembali dengan nama kembar, 403 untuk non-owner, aksi grup dengan data: Ubah grup, menonaktifkan opsi, mengganti bawaan, `grup_terlalu_banyak`); grup dan menu dummy tidak bisa dihapus (nonaktifkan atau pakai ulang sebelum peluncuran); berkas uji `20261107_04_menu_grup_pilihan_uji.sql` tidak boleh dijalankan lagi. `menu.js` kini sekitar 900 baris (pedoman sekitar 500); komponen baru sebaiknya berkas terpisah dan wajib didaftarkan di `sw.js` (butuh "OK").
+
+**Saran giliran berikutnya:** MNU.06 (sesi tes menu, High-Risk P0; bukti untuk hak owner, harga, dan aksi grup dengan data). Lampirkan `AGENTS.md` + `menu.md` (sudah memuat handoff ini) + `database.md` + `security.md`; dokumen `menu-test.md` dibuat di sesi tes. Pakai satu akun per peran (owner, penjaga, customer) dengan data dummy. Atau ORD.01 (migration order, butuh "OK" ketua) bila ketua memilih itu dulu; urutannya ketua yang memutuskan.
