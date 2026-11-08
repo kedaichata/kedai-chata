@@ -319,11 +319,46 @@
   // Tampilan
   // ------------------------------------------------------------
 
+  // Tombol pesanan melayang (permintaan ketua 2026-11-08): bulat, berisi emoji keranjang, ikut layar saat
+  // customer menggulir, dan duduk tepat di atas navigasi bawah. Dipasang di dalam panel Pesan supaya otomatis
+  // hilang saat tab lain dibuka. Tampil hanya di langkah menu dan bila keranjang tidak kosong. Tombol
+  // "Lihat pesanan" lama di atas disembunyikan (elemennya tetap ada; teks ringkasan keranjang tetap tampil).
+  var tombolMelayang = null;
+  var angkaMelayang = null;
+  (function pasangMelayang() {
+    var panel = el("panel-pesan");
+    if (!panel) return;
+    tombolMelayang = buat("button", "pesan-melayang");
+    tombolMelayang.type = "button";
+    tombolMelayang.hidden = true;
+    var ikon = buat("span", "pesan-melayang__ikon", "\uD83D\uDED2");
+    ikon.setAttribute("aria-hidden", "true");
+    tombolMelayang.appendChild(ikon);
+    angkaMelayang = buat("span", "pesan-melayang__angka", "0");
+    angkaMelayang.setAttribute("aria-hidden", "true");
+    tombolMelayang.appendChild(angkaMelayang);
+    tombolMelayang.addEventListener("click", function () {
+      lihatPesanan();
+    });
+    panel.appendChild(tombolMelayang);
+    var lama = el("pesan-lihat");
+    if (lama) lama.hidden = true;
+  })();
+
+  function renderMelayang() {
+    if (!tombolMelayang) return;
+    var n = jumlahItem();
+    tombolMelayang.hidden = n === 0 || langkah !== "menu";
+    angkaMelayang.textContent = n > 99 ? "99+" : String(n);
+    tombolMelayang.setAttribute("aria-label", "Lihat pesanan, " + n + " item");
+  }
+
   function tampilkanLangkah() {
     el("pesan-langkah-menu").hidden = langkah !== "menu";
     el("pesan-langkah-form").hidden = langkah !== "form";
     el("pesan-langkah-selesai").hidden = langkah !== "selesai";
     window.scrollTo(0, 0);
+    renderMelayang();
   }
 
   function renderRingkas() {
@@ -331,6 +366,7 @@
     kartu.hidden = keranjang.length === 0;
     el("pesan-ringkas-teks").textContent =
       jumlahItem() + " item, perkiraan " + rupiah(totalPerkiraan()) + ".";
+    renderMelayang();
   }
 
   function buatBarisItem(b) {

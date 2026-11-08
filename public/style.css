@@ -1263,3 +1263,63 @@ body.sheet-terbuka {
     color: var(--bahaya);
     font-weight: 700;
 }
+
+/* ---- Tombol pesanan melayang (permintaan ketua 2026-11-08): bulat, emoji keranjang, di atas navigasi bawah ---- */
+#panel-pesan {
+    padding-bottom: 72px; /* ruang supaya kartu menu terakhir tidak tertutup tombol melayang */
+}
+
+.pesan-melayang {
+    position: fixed;
+    right: 16px;
+    bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+    z-index: 12; /* di atas isi dan navigasi bawah (10), di bawah sheet detail menu (30) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    padding: 0;
+    border: 2px solid var(--emas-terang);
+    border-radius: 50%;
+    background: var(--marun);
+    color: var(--teks-terang);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    cursor: pointer;
+}
+
+.pesan-melayang[hidden] {
+    display: none;
+}
+
+.pesan-melayang:active {
+    background: var(--marun-sangat-gelap);
+}
+
+.pesan-melayang:focus-visible {
+    outline: 3px solid var(--emas-terang);
+    outline-offset: 3px;
+}
+
+.pesan-melayang__ikon {
+    font-size: 28px;
+    line-height: 1;
+}
+
+.pesan-melayang__angka {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    box-sizing: border-box;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 6px;
+    border: 2px solid var(--marun);
+    border-radius: 12px;
+    background: var(--emas-terang);
+    color: var(--marun-sangat-gelap);
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 20px;
+    text-align: center;
+}
