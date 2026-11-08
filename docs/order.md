@@ -546,4 +546,29 @@ Pilihan penulis tanpa keputusan ketua (alasan belum tercatat): `order_batal` tid
 **Belum teruji:** pesan untuk order **Ditolak** (customer), karena order Ditolak baru ada setelah ORD.05. Masukkan ke tes ORD.05.
 
 **Data uji (dummy):** order #10 sampai #14 kini Dibatalkan (milik customer 1). Dibersihkan di LNC.01 bersama reset nomor order.
+
+### Handoff #8 | 2026-11-08 | [Ketua]
+
+**Berkas tujuan:** `docs/order.md` bagian 9, ditempel paling bawah (di bawah blok "2026-11-08: Perbaikan pesan 409..."). Yang paling akhir menang.
+
+**Pertentangan dengan blok lama:** dua butir "Belum beres" pertama pada Handoff #7 (pesan 409 dan urutan daftar customer) sudah diputuskan dan selesai, lihat blok 2026-11-08 di atas. Butir lain pada Handoff #7 tetap berlaku.
+
+**Tugas:** perbaikan pesan 409 `order_batal` **selesai dan lulus tes**. ORD.04 tetap selesai. Tidak ada butir sheet baru yang perlu dicentang.
+
+**Berkas diubah** (commit `9ea7cc9`, `92b6252`, `39e92b1`, semua sudah di-push): `supabase/functions/kedai/index.ts` (sudah dideploy), `supabase/migrations/20261108_04_order_batal_pesan.sql` (sudah dijalankan), `..._batal.sql` (pembatal), `supabase/templates/20261108_04_order_batal_pesan_cek.sql`, dan `docs/order.md`. Tidak ada berkas di `public/` yang berubah.
+
+**Keputusan baru:** wording pesan 409 untuk Dibatalkan dan Ditolak; urutan daftar customer dibiarkan seperti sekarang. Rincian di blok 2026-11-08 di atas.
+
+**Perhatian untuk ORD.05:**
+
+- Versi terbaru fungsi `order_batal` ada di **`20261108_04_order_batal_pesan.sql`**, bukan versi 03. Bila ORD.05 menyentuhnya, pakai versi 04 sebagai dasar.
+- `order_setuju` dan `order_tolak` **wajib** mengunci order dengan `SELECT ... FOR UPDATE` seperti `order_batal` (O7, SEC-10).
+- Order Ditolak akan mulai ada setelah ORD.05. Pesan "sudah ditolak sebelumnya" (`sudah_ditolak`) **belum pernah dites**; masukkan ke tes ORD.05 (customer membatalkan dari tab basi setelah owner menolak).
+- Perubahan berisiko (fungsi SQL, `kedai`) butuh "OK" ketua. Bila yang bertugas bukan ketua, AI memberi ringkasan untuk diteruskan lewat WA (AGENTS.md aturan 12).
+
+**Masih terbuka (tidak menghalangi ORD.05):** pembeda "dibatalkan customer" dan "dibatalkan owner" di layar customer (usul: putuskan bersama ORD.15); catatan di detail menunggu ORD.10; tes owner membatalkan dari Disetujui sampai Diantar/Siap masuk ORD.14; tes pesan galat saat koneksi putus (P2, opsional); kosmetik variabel `pernahMuatDaftar` di `pesanan.js` (tidak terpakai).
+
+**Data uji (dummy):** order #10 sampai #14 Dibatalkan (milik customer 1), dibersihkan di LNC.01.
+
+**Saran giliran berikutnya:** ORD.05 (`order_setuju` dan `order_tolak`). Lampirkan `AGENTS.md` + `order.md` (sudah memuat handoff ini) + `supabase/functions/kedai/index.ts` + migration terbaru (`20261108_04_order_batal_pesan.sql`).
 ---
