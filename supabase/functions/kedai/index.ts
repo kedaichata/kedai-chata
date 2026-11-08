@@ -13,6 +13,9 @@
 // ORD.02 (giliran 2): ditambah `order_buat` (customer), `order_daftar` dan `order_detail` (semua peran
 //         yang aktif; hak lihat dijaga fungsi SQL, order.md O11). Kode galat baru dipetakan di
 //         PETA_GALAT_ORDER, termasuk `pilihan_rusak` dari opsi_periksa.
+// ORD.04 (giliran 2): ditambah `order_batal` (customer: order miliknya saat Menunggu; owner: dari
+//         Disetujui sampai Siap, alasan opsional; penjaga ditolak). Kode galat baru dipetakan di
+//         PETA_GALAT_ORDER_BATAL. Fungsi SQL: 20261108_03_order_batal_fungsi.sql.
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -1081,6 +1084,73 @@ async function aksiOrderDetail(
 }
 
 // ------------------------------------------------------------
+// Aksi: order_batal (ORD.04 giliran 2, order.md O9 dan blok 8 Nov 2026, security.md blok 8 Nov 2026)
+// Customer: hanya order MILIKNYA saat Menunggu. Owner: dari Disetujui sampai Diantar/Siap, alasan
+// opsional (maks 200 karakter, tampil ke customer). Penjaga ditolak di sini (lapis kedua, SEC-08).
+// Peran, status, dan kepemilikan sebenarnya dicek fungsi SQL (aturan 19); alasan dari customer
+// diabaikan. Aplikasi hanya mengirim id order dan alasan; id akun selalu dari token.
+// Push ke customer, owner, dan penjaga dipasang di NTF.06 (bukan di sini).
+// ------------------------------------------------------------
+
+// Kode galat fungsi SQL order_batal -> status dan pesan aman (AK14)
+// (id_kosong sengaja tidak dipetakan: jadi galat umum 500.)
+const PETA_GALAT_ORDER_BATAL: Record<string, [number, string]> = {
+  akun_nonaktif: [403, "Akun ini tidak aktif. Hubungi pengelola."],
+  profil_tidak_ada: [400, "Lengkapi profil dulu."],
+  peran_tidak_boleh: [403, "Aksi ini hanya untuk customer atau owner."],
+  alasan_terlalu_panjang: [400, "Alasan terlalu panjang."],
+  order_tidak_ditemukan: [404, "Pesanan tidak ditemukan."],
+  sudah_diproses: [
+    409,
+    "Pesanan sudah diproses, jadi tidak bisa dibatalkan dari sini. Segarkan daftar pesanan atau hubungi ChATA lewat WhatsApp.",
+  ],
+  tidak_bisa_dibatalkan: [
+    409,
+    "Pesanan dengan status ini tidak bisa dibatalkan. Segarkan daftar pesanan.",
+  ],
+};
+
+async function aksiOrderBatal(
+  req: Request,
+  pengguna: Pengguna,
+  isi: Record<string, unknown>,
+): Promise<Response> {
+  const p = await bacaPeran(pengguna.id);
+  if (p.jenis === "nonaktif") {
+    return galat(req, 403, "Akun ini tidak aktif. Hubungi pengelola.");
+  }
+  // Lapis kedua peran: staf selain owner (penjaga) ditolak (SEC-08). Customer dan owner lanjut.
+  if (p.jenis === "staf" && p.peran !== "owner") {
+    return galat(req, 403, "Aksi ini hanya untuk customer atau owner.");
+  }
+
+  // ID order dari aplikasi tidak dipercaya: fungsi SQL mengecek kepemilikan dan status (SEC-05, SEC-09).
+  if (typeof isi.id !== "string" || !REGEX_UUID.test(isi.id)) {
+    return galat(req, 400, "Data belum lengkap atau tidak valid.");
+  }
+
+  // Alasan: hanya dari owner, boleh kosong. Dari customer tidak diteruskan (diabaikan).
+  let alasan: string | null = null;
+  if (p.jenis === "staf" && isi.alasan !== undefined && isi.alasan !== null) {
+    if (typeof isi.alasan !== "string" || isi.alasan.length > BATAS_TEKS) {
+      return galat(req, 400, PETA_GALAT_ORDER_BATAL.alasan_terlalu_panjang[1]);
+    }
+    alasan = isi.alasan;
+  }
+
+  const { data, error } = await admin!.rpc("order_batal", {
+    p_akun: pengguna.id,
+    p_order_id: isi.id,
+    p_alasan: alasan,
+  });
+  if (error) {
+    return galatDariDb(req, error, PETA_GALAT_ORDER_BATAL, "order_batal");
+  }
+
+  return balas(req, 200, { ok: true, order: data });
+}
+
+// ------------------------------------------------------------
 // Pintu masuk
 // ------------------------------------------------------------
 
@@ -1159,6 +1229,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
         return await aksiOrderDaftar(req, pengguna, isi);
       case "order_detail":
         return await aksiOrderDetail(req, pengguna, isi);
+      case "order_batal":
+        return await aksiOrderBatal(req, pengguna, isi);
       default:
         return galat(req, 400, "Aksi tidak dikenal.");
     }
