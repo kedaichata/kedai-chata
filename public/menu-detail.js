@@ -19,7 +19,7 @@
 // - Animasi singkat; dimatikan lewat CSS bila HP mengurangi animasi.
 // - Tidak ada data yang disimpan: isi sheet dikosongkan saat ditutup.
 // MNU.11: bila menu punya grup pilihan (field `grup`: [{ nama, opsi: [{ nama, bawaan }] }]), sheet menampilkannya
-//   sebagai daftar BACA SAJA di bawah deskripsi, opsi bawaan ditandai emoji centang (\u2705; keputusan ketua, menggantikan tulisan "(bawaan)"). Memilih opsi dikerjakan di
+//   sebagai daftar BACA SAJA di bawah deskripsi, opsi bawaan ditandai emoji centang (\u2705; keputusan ketua, menggantikan tulisan "(bawaan)"), dengan keterangan "\u2705 = otomatis dipilih kalau tidak diganti" di bawah daftar. Memilih opsi dikerjakan di
 //   ORD (ketuk, keranjang, tersimpan di order), bukan di sini. Menu tanpa grup tidak menampilkan bagian ini.
 
 (function () {
@@ -134,7 +134,16 @@
       kelompok.appendChild(daftarOpsi);
       bungkus.appendChild(kelompok);
     }
-    return bungkus.children.length > 0 ? bungkus : null;
+    if (bungkus.children.length === 0) return null;
+    // Keterangan tanda centang (keputusan ketua 2026-11-08), satu kali di bawah semua grup.
+    bungkus.appendChild(
+      buat(
+        "p",
+        "sheet-menu__legenda",
+        "\u2705 = otomatis dipilih kalau tidak diganti",
+      ),
+    );
+    return bungkus;
   }
 
   function isiSheet(m) {
