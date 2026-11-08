@@ -388,3 +388,33 @@ Tabel `menu` sudah live: kolom `deskripsi` adalah perubahan pada tabel yang ada.
 - Grup dibuat **sekali**, lalu dipasang ke **banyak menu** (mekanisme yang sudah ada di server, MNU.09).
 - Pemasangan dilakukan dari **sisi grup**: di layar Kelola Grup, tiap grup menampilkan daftar menu dengan kotak centang (memanggil `menu_grup_atur`). Ketua belum punya preferensi; dipilih mengikuti rekomendasi AI. Alasan selebihnya belum tercatat.
 - Pemasangan dari form Ubah menu (sisi menu) **tidak dibuat** di MNU.10.
+
+### Handoff #9 | 2026-11-08 | [RAC]
+
+**Berkas tujuan:** `docs/menu.md` bagian 9. Yang paling akhir menang.
+
+**Tugas:** MNU.10 **selesai** (layar owner Kelola Grup pilihan: buat, ubah, nonaktifkan, aktifkan kembali grup beserta opsinya, dan pasang grup ke menu dengan kotak centang). "OK" ketua untuk perubahan `sw.js` sudah diberikan. Aplikasi di-push (commit `[hash commit]`). Hasil lihat langsung dengan akun owner di production: layar terbuka dari tombol "Kelola grup pilihan" di tab Menu dan `grup_daftar` terbaca; grup "Level pedas" (Tidak pedas bawaan, Sedang, Pedas) dibuat lewat `grup_simpan` dan tampil sebagai kartu Aktif; panel "Pasang ke menu" memuat empat menu dari `menu_daftar`; mencentang menu memasang grup dan ringkasan kartu berubah; centang tetap ada setelah Muat ulang; melepas centang berhasil; Nonaktifkan lalu Aktifkan kembali grup berhasil. Sebelum itu, `grup.js` dan `akun.js` lolos `node --check`, dan perilaku pemasangan diuji di browser dengan data tiruan (centang, lepas, galat 409 mengembalikan kotak). Bukti diperiksa di chat dan tidak disimpan.
+
+**Berkas diubah:** `public/grup.js` (baru, sekitar 1000 baris), `public/akun.js` (hanya tambahan: komentar header, `"grup"` di `LAYAR`, `KedaiGrup.reset()` di `keluar()`), `public/index.html` (hanya tambahan: tombol `menu-ke-grup`, section `layar-grup`, tag `grup.js`), `public/style.css` (hanya tambahan di akhir: `.pasang-menu` dan turunannya), `public/sw.js` (dua baris: `grup.js` masuk `DAFTAR_CACHE`, cache `chata-v9` jadi `chata-v10`). `menu.js`, `menu-detail.js`, dan `kerangka.js` tidak disentuh.
+
+**Keputusan baru (ketua, lewat perantara; pilihan A dari rekomendasi AI):**
+
+- Kelola Grup adalah **layar terpisah**, dibuka dari tombol "Kelola grup pilihan" di tab Menu. Tidak ada grup contoh: owner mendefinisikan sendiri, lalu dipasang ke banyak menu (grup = template yang dibuat sekali).
+- Pemasangan dilakukan **dari sisi grup**: tombol "Pasang ke menu" di kartu grup aktif membuka daftar menu dengan kotak centang; tiap ketukan langsung menyimpan lewat `menu_grup_atur`. Grup nonaktif tidak punya tombol pasang.
+- Yang dikirim ke `menu_grup_atur`: daftar lengkap grup aktif menu itu dengan urutan lama; grup yang baru dicentang di urutan terakhir (urutan tampil = urutan pemasangan). Batas jumlah grup per menu tidak dihitung di aplikasi; pesan penolakan server ditampilkan apa adanya dan kotak dikembalikan.
+- Menu yang datanya tidak punya daftar `grup` dianggap tidak terbaca (tidak dipakai), supaya satu ketukan tidak melepas grup lain dari menu itu. Menu nonaktif tetap bisa diberi grup (ditandai "(nonaktif)").
+- Editor opsi: opsi bawaan tidak punya tombol hapus; opsi baru "Hapus opsi", opsi lama "Nonaktifkan opsi" (dikirim `aktif: false`); grup baru mulai dengan 2 opsi kosong (pertama bawaan); opsi baru yang kosong diabaikan saat kirim. Validasi klien hanya kemudahan (nama grup 3–30, opsi 2–30, minimal 2 opsi aktif, tepat 1 bawaan, tidak kembar); keputusan akhir di server.
+- Nama grup dan opsi tampil persis seperti diketik (tidak diubah huruf besar-kecilnya).
+- Bentuk data yang terbukti benar di production: `grup_daftar` membawa `grup` berbentuk `{id, nama, aktif, opsi:[{id, nama, bawaan, aktif}]}`; `menu_daftar` membawa `grup` per menu.
+- Terbukti lewat tes langsung: menonaktifkan grup lalu mengaktifkannya kembali **tidak** melepas pemasangannya; grup yang tadi terpasang di menu langsung tercentang lagi tanpa dipasang ulang. Selama nonaktif, menu tidak menampilkannya sebagai terpasang.
+- Diputuskan ketua (2026-11-08): **MNU.11 hanya menampilkan** grup pilihan dan opsinya (read-only) di sheet detail customer, memakai field `grup` yang sudah dibawa `menu_daftar`; opsi bawaan ditandai "(bawaan)". **Memilih opsi** (ketuk, masuk keranjang, tersimpan di order) dikerjakan di **ORDER (ORD.01 dan seterusnya)**, bukan di MNU.11.
+
+**Belum beres:**
+
+- Belum dicoba dengan data nyata: Ubah grup (termasuk menonaktifkan opsi dan mengganti bawaan) dan penolakan batas jumlah grup per menu (`grup_terlalu_banyak`) lewat aplikasi. Penolakan nama grup kembar (server, 409) dan nama opsi kembar (cek di layar) sudah terbukti. Masuk butir sheet "Tes aksi grup dengan data" di sesi tes MNU.06.
+- Grup dan menu uji ("Level pedas" terpasang di satu menu atau lebih) tetap ada karena tidak bisa dihapus; nonaktifkan atau pakai ulang sebelum peluncuran. Berkas uji `20261107_04_menu_grup_pilihan_uji.sql` tidak boleh dijalankan lagi (sudah ada grup).
+- Tampilan pilihan di sheet detail customer = MNU.11, belum dikerjakan. `opsi_periksa` belum dipanggil siapa pun (ORD.01).
+- Pemilihan opsi oleh customer belum ada di aplikasi (sampai MNU.11, customer hanya bisa melihat opsi). Dikerjakan di ORD.01: tombol pilih di sheet detail atau keranjang, lalu `opsi_periksa` dipanggil saat order dibuat. Kode galat `pilihan_rusak` ikut dipetakan di `kedai` pada saat itu.
+- Carry-over Handoff #3 sampai #8 tetap berlaku (fungsi `menu_simpan` 6 argumen masih ada; ukuran foto; nama kembar; handler fetch `sw.js` untuk foto menu; bukti MNU.06; menu dummy tidak bisa dihapus). `menu.js` sekitar 874 baris; berkas JS baru wajib didaftarkan di `sw.js` (butuh "OK").
+
+**Saran giliran berikutnya:** MNU.11, **read-only** (pilihan grup hanya tampil di sheet detail customer, memakai field `grup` yang sudah dibawa `menu_daftar`; pemilihan opsi ada di ORDER, lihat keputusan ketua di atas). Perkiraan satu giliran: tidak ada aksi server atau migration baru, perubahan di `menu-detail.js` dan sedikit tambahan `style.css`. Lampirkan `AGENTS.md` + `menu.md` (sudah memuat handoff ini) + `desain.md`, serta `menu.js`, `menu-detail.js`, `index.html`, `style.css`, dan `sw.js`. Sesudahnya sesi tes MNU.06 (ketua yang memutuskan urutannya).
