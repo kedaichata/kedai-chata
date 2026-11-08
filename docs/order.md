@@ -448,4 +448,78 @@ Item **Pelanggan** ("Pelanggan tanpa akun", O16) untuk owner ada di **Home**, di
 
 - **Catatan nama berkas:** `supabase/migrations/20261108_order_batal.sql` (Handoff #1) adalah SQL pembatalan migration ORD.01, **bukan** fungsi `order_batal`. Fungsi dan aksi `order_batal` belum ada dan dikerjakan di ORD.04.
 
+### Handoff #6 | 2026-11-08 | KETUA
+
+**Berkas tujuan:** `docs/order.md` bagian 9, ditempel paling bawah (di bawah blok "Owner boleh membatalkan setelah Disetujui, dan aksi Alih hari"). Yang paling akhir menang.
+
+**Pertentangan dengan blok lama:** butir "Belum beres" pertama pada blok "Owner boleh membatalkan setelah Disetujui" (pagar antar-kolom tabel `order` belum dicek untuk order Dibatalkan) **sudah tidak berlaku**: sudah dicek, pagar memang menolak, dan sudah dilonggarkan (lihat di bawah). Butir lain pada blok itu tetap berlaku.
+
+**Tugas:** ORD.04 **belum selesai, jangan dicentang di sheet.** Bagian server selesai dan lulus tes: fungsi SQL `order_batal` (giliran 1) dan aksi `order_batal` di `kedai` (giliran 2). **Yang tersisa: layar Pesanan Saya (giliran 3), diteruskan ke adik ketua.**
+
+**Berkas diubah:**
+
+- Baru: `supabase/migrations/20261108_03_order_batal_fungsi.sql`, `supabase/migrations/20261108_03_order_batal_fungsi_batal.sql`, `supabase/templates/20261108_03_order_batal_fungsi_cek.sql`. Dijalankan di SQL Editor dengan "OK" ketua ("Success. No rows returned"), dicek lulus empat bagian. Di-push (commit `9e257c0`).
+- Diubah: `supabase/functions/kedai/index.ts` (hanya tambahan 72 baris: komentar kepala, `PETA_GALAT_ORDER_BATAL`, `aksiOrderBatal`, satu `case`; tidak ada baris lama dihapus atau diubah). Di-deploy ke project ChATA **tanpa** `--no-verify-jwt` lewat urutan aman bagian 8, token CLI sudah dibersihkan (dicek `[]`). Di-push (commit `429d1a0`).
+
+**Keputusan baru** (ketua menyetujui keempatnya; alasan belum tercatat):
+
+- **Tiga pagar di tabel `order` dilonggarkan** (`order_metode_status_cek`, `order_pemutus_cek`, `order_alasan_cek`). Dibatalkan boleh membawa metode bayar dan pemutus (keduanya sama-sama ada atau sama-sama kosong), dan alasan boleh ada pada Ditolak dan Dibatalkan. Aturan lain tidak berubah.
+- **Alasan batal disimpan di kolom `alasan_tolak` yang sudah ada** (bukan kolom baru), sehingga `order_daftar` dan `order_detail` tidak diubah dan alasannya langsung tampil ke customer. Isi kolom itu kini bisa alasan tolak **atau** alasan batal.
+- **Order yang dibatalkan owner tetap menyimpan metode bayar dan pemutus** (berguna untuk pengembalian uang lewat WA). Siapa yang membatalkan dan dari status apa ada di `riwayat_status` (hanya terlihat owner).
+- **Alasan dari customer diabaikan** (O8: alasan hanya untuk owner). Alasan owner juga disalin ke `riwayat_status.keterangan`.
+
+Pilihan penulis tanpa keputusan ketua (alasan belum tercatat): `order_batal` tidak mengembalikan id pemesan (bahan push NTF.06 ditambahkan nanti bila perlu); kode galat baru `peran_tidak_boleh`, `alasan_terlalu_panjang`, `sudah_diproses`, `tidak_bisa_dibatalkan`.
+
+**Kontrak untuk layar (giliran 3):**
+
+- Aksi `kedai`: `order_batal` dengan isian `{ id, alasan }` (`id` = id order; `alasan` hanya dipakai owner). Balasan sukses `{ ok: true, order: { id, nomor, status: "Dibatalkan", status_asal, oleh_peran } }`. Balasan galat `{ ok: false, pesan }`; **tampilkan `pesan` apa adanya** lewat `textContent`.
+- Galat yang mungkin untuk customer: **409** "Pesanan sudah diproses..." (order sudah bukan Menunggu; sebaiknya layar menyegarkan daftar), **404** "Pesanan tidak ditemukan." (bukan miliknya atau tidak ada), 400 id rusak.
+- `order_daftar` (isian kosong `{}` untuk customer) membalas `{ ok, daftar }`, terbaru dulu, riwayat lengkap, baris ringkas: `id`, `nomor`, `tipe`, `status`, `hari_target`, `jam_permintaan`, `total`, `alasan_tolak`, `ringkas`. `order_detail` memakai isian bernama **`id`** (bukan `order_id`) dan membalas `{ ok, order }` dengan item, pilihan, catatan, dan `alasan_tolak`. Customer **tidak** menerima `metode_bayar`, `pemutus_nama`, dan riwayat status. Balasan konsol berbentuk `{status, data}`.
+- Teks pembayaran O21: `window.KedaiPesan.teksBayar` (dari `pesan.js`), dipakai di detail order Menunggu.
+- Alasan tolak dan alasan batal sama-sama ada di `alasan_tolak`; pembedanya adalah `status` (Ditolak atau Dibatalkan).
+
+**Belum beres:**
+
+- **Layar Pesanan Saya belum ada** (ORD.04 giliran 3): daftar riwayat lengkap (O22), detail, status, alasan tolak atau batal, teks O21 pada order Menunggu, tombol Batalkan hanya saat Menunggu (usulan: dengan konfirmasi dulu). Ganti juga pesan "hasil tidak pasti" di `pesan.js` agar menyuruh cek Pesanan Saya (janji Handoff #4). **Berkas JS baru wajib didaftarkan di cache `sw.js`**; perubahan `sw.js` butuh "OK" ketua (lewat WA bila yang giliran bukan ketua, AGENTS.md aturan 12). Berkas JS baru dan `sw.js` harus naik **dalam satu commit** (pelajaran Handoff #4).
+- **Layar customer tidak bisa membedakan "dibatalkan customer" dan "dibatalkan owner"**: riwayat status hanya terlihat owner. Petunjuk yang ada: alasan terisi hanya bila owner yang membatalkan. Bila perlu pembeda, itu keputusan ketua.
+- **Belum teruji** (menunggu ORD.05 dan ORD.15, masuk ORD.14): owner membatalkan dari Disetujui, Diproses, Diantar/Siap (termasuk alasan tampil ke customer dan pagar baru yang membawa metode bayar dan pemutus); Batal dan Setujui bersamaan (SEC-10). **Pengingat untuk ORD.05:** `order_setuju` dan `order_tolak` wajib mengunci order dengan `SELECT ... FOR UPDATE` seperti `order_batal`, kalau tidak jaminan "satu pemenang" tidak berlaku.
+- **Push batal** (customer, owner, penjaga) dipasang di NTF.06, bukan di ORD.04. Sebelum itu, pembatalan berjalan tanpa push.
+- **Data uji (dummy):** order #14 sekarang Dibatalkan (milik customer 1). Order uji tidak bisa dihapus; dibersihkan di LNC.01 bersama reset nomor order.
+
+**Hasil tes server** (bukti diperiksa di chat lewat konsol, tidak disimpan; satu akun per peran dan customer kedua, semuanya dummy): customer batal order sendiri saat Menunggu lulus (status Dibatalkan, asal Menunggu, peran customer); alasan palsu dari customer diabaikan (`alasan_tolak` kosong); batal ulang order yang sudah Dibatalkan ditolak 409; id rusak ditolak 400; customer 2 batal order customer 1 dibalas 404 dan daftarnya kosong; penjaga ditolak 403; owner batal order Menunggu ditolak 409 dan order tidak berubah.
+
+**Saran giliran berikutnya:** ORD.04 giliran 3 (layar Pesanan Saya). Lampirkan `AGENTS.md` + `order.md` (sudah memuat handoff ini) + berkas terbaru dari repo: `pesan.js`, `kerangka.js`, `index.html`, `style.css`, `sw.js`, `akun.js`. Setelah layar jadi dan lulus tes (High-Risk untuk tombol Batalkan; layar lain Low-Risk), butir ORD.04 selesai dan baru boleh dicentang di sheet. Berikutnya ORD.05 (`order_setuju` dan `order_tolak`) yang butuh penjelasan dampak dan "OK" ketua.
+
+### Handoff #7 | 2026-11-08 | RAC
+
+**Berkas tujuan:** `docs/order.md` bagian 9, ditempel paling bawah (di bawah Handoff #6). Yang paling akhir menang.
+
+**Pertentangan dengan blok lama:** butir "Belum beres" pertama pada Handoff #6 ("Layar Pesanan Saya belum ada") **sudah tidak berlaku**: layar sudah jadi dan lulus tes. Janji Handoff #4 (mengganti pesan "hasil tidak pasti" di `pesan.js`) juga sudah dipenuhi. Butir lain pada Handoff #6 tetap berlaku.
+
+**Tugas:** ORD.04 **selesai dan lulus tes** (High-Risk untuk tombol Batalkan, bukti diperiksa di chat). Boleh dicentang di sheet.
+
+**Berkas diubah** (semua di `public/`, satu commit `885b3d9`, sudah di-push; "OK" ketua untuk `sw.js` lewat WA):
+
+- Baru: `pesanan.js` (layar Pesanan Saya: daftar, detail, alasan, teks O21, Batalkan dengan konfirmasi). Mengekspor `window.KedaiPesanan` (`tampil`, `reset`).
+- Diubah: `index.html` (tambah `panel-pesanan` dan `<script src="pesanan.js">`), `kerangka.js` (tab Pesanan Saya memakai panel baru; `tampil` dipanggil saat tab dibuka dan lewat Segarkan, `reset` saat Keluar), `pesan.js` (`PESAN_TIDAK_PASTI` kini menyuruh cek Pesanan Saya lalu Segarkan), `sw.js` (`pesanan.js` masuk `DAFTAR_CACHE`, `chata-v11` naik ke `chata-v12`). Baris lama dijadikan komentar, tidak ada yang dihapus.
+- `style.css` tidak diubah (semua kelas yang dipakai sudah ada).
+
+**Keputusan baru:**
+
+- Tombol Batalkan memakai kartu konfirmasi "Yakin batalkan?" dulu (disetujui RAC; alasan: pembatalan tidak bisa dihidupkan lagi).
+- Pilihan penulis tanpa keputusan ketua (alasan belum tercatat): tombol Batalkan hanya pada status Menunggu; nomor WA pemesan tidak ditampilkan; teks O21 hanya pada Menunggu; layar tidak mengurutkan ulang daftar (mengikuti urutan server); Segarkan pada halaman detail menyegarkan detail itu.
+
+**Belum beres (usulan, keputusan ketua):**
+
+- **Pesan galat 409 menyesatkan.** Saat customer membatalkan order yang sudah Dibatalkan (tes dua tab), server membalas "Pesanan sudah diproses, jadi tidak bisa dibatalkan dari sini. Segarkan daftar pesanan atau hubungi ChATA lewat WhatsApp." Untuk order yang sudah Dibatalkan, kata "diproses" keliru. Teks ini berasal dari server, bukan dari layar. Usulan: balasan terpisah untuk order yang sudah Dibatalkan, misalnya "Pesanan ini sudah dibatalkan.", sedangkan Disetujui dan seterusnya tetap "sudah diproses". Perubahannya di `supabase/functions/kedai/index.ts` (`PETA_GALAT_ORDER_BATAL`) dan/atau fungsi SQL `order_batal`; perlu "OK" ketua dan deploy lewat urutan aman bagian 8. Layar tidak perlu diubah.
+- **Urutan daftar customer.** Sekarang semua status terbaru dulu, urutannya datang dari server (`order_daftar`); layar tidak mengurutkan. Usulan: Dibatalkan (dan Ditolak, bila ketua setuju) ditaruh paling akhir, di bawah order aktif dan Selesai. Ini menyentuh keputusan O22, jadi perlu keputusan ketua. Dua jalan: (a) ubah `ORDER BY` di `order_daftar` untuk peran customer (migration baru ⚠️, "OK" ketua), atau (b) pisahkan di `pesanan.js` tanpa menyentuh server (cepat, tetapi aturan urutan jadi tersebar di dua tempat). Disarankan (a) supaya aturan urutan tetap di server seperti untuk owner dan penjaga.
+- **Pembeda "dibatalkan customer" dan "dibatalkan owner"** di layar customer masih belum ada (sama seperti Handoff #6; petunjuk hanya alasan terisi atau kosong).
+- **Catatan** (`catatan`) belum ditampilkan di detail; menunggu ORD.10.
+- **Belum teruji:** pesan galat khusus Pesanan Saya saat koneksi putus ketika layar sudah terbuka (tes offline hanya memunculkan layar "Tidak ada internet" bawaan aplikasi, tanpa crash); owner membatalkan dari Disetujui sampai Diantar/Siap dan alasannya tampil ke customer (menunggu ORD.05 dan ORD.15, masuk ORD.14).
+- Kosmetik: variabel `pernahMuatDaftar` di `pesanan.js` tidak terpakai, boleh dibersihkan kapan saja.
+- **Data uji (dummy):** order #11, #12, #13, #14 kini Dibatalkan (milik customer 1). Dibersihkan di LNC.01 bersama reset nomor order.
+
+**Hasil tes** (bukti di chat): batal order Menunggu sendiri lulus (kartu konfirmasi, status Dibatalkan, tombol dan teks O21 hilang; #12 dan #13); batal dari tab basi ditolak server dan status di layar ikut tersegarkan (#11); customer 2 mendapat 404 untuk `order_detail` dan `order_batal` milik customer 1 dan daftarnya kosong; offline tidak crash; Keluar lalu masuk sebagai customer 1 menampilkan 14 pesanan miliknya saja; `chata-v12` aktif, `chata-v11` terbuang, `pesanan.js` ada di cache, aplikasi tetap terbuka saat offline.
+
+**Saran giliran berikutnya:** (1) keputusan ketua untuk dua usulan di atas (teks 409 dan urutan daftar); keduanya kecil dan bisa dikerjakan sebelum atau bersama ORD.05. (2) ORD.05 (`order_setuju` dan `order_tolak`), yang butuh penjelasan dampak dan "OK" ketua, dan **wajib** mengunci order dengan `SELECT ... FOR UPDATE` seperti `order_batal`. Lampirkan `AGENTS.md` + `order.md` (sudah memuat handoff ini) + `supabase/functions/kedai/index.ts` + migration terbaru.
 ---
