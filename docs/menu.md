@@ -509,3 +509,29 @@ Dengan ini **MT-01 sampai MT-22 seluruhnya lulus**. Tersisa **MT-23 dan MT-24**,
 - ORD.01 sudah selesai dan hanya berisi migration tabel (tidak memanggil `opsi_periksa` dan tidak mengubah `kedai`).
 - Pemanggilan `opsi_periksa` dan pemetaan kode galat `pilihan_rusak` di `kedai` dikerjakan di **ORD.02** (`order_buat`). Tombol pilih opsi di aplikasi dikerjakan di **ORD.03**.
 - `order_item.pilihan` sudah siap menampung salinan pilihan (lihat `docs/order.md` Handoff #1). MT-23 dan MT-24 menunggu ORD.02.
+
+### Handoff #13 | 2026-11-08 | [FREN]
+
+**Berkas tujuan:** `docs/menu.md` bagian 9 (tempel paling bawah, di bawah blok `2026-11-08: Pemilihan opsi di order dikerjakan di ORD.02 dan ORD.03`). Yang paling akhir menang.
+
+**Tugas:** Sesi tes **MT-23 dan MT-24 selesai, keduanya lulus.** Dengan ini **seluruh kasus `docs/menu-test.md` (MT-01 sampai MT-24) sudah lulus.** Tidak ada kode aplikasi, SQL, atau Edge Function yang diubah. `docs/menu-test.md` tidak berubah (tetap v1.0). Tes lewat Console browser di aplikasi asli (`window.KedaiAkun.panggilKedai`) dengan akun dummy customer 1 dan owner. Bukti diperiksa di chat dan tidak disimpan.
+
+**Lulus di sesi ini:**
+
+- **MT-24 (isian palsu):** `order_buat` dikirim dengan `harga`, `total`, `status: "Disetujui"`, dan `harga` di tiap item. Balasan 200 dengan total 25000 (ayam karage x1 opsi Sedang + es teh manis x2), status Menunggu. `order_detail` menunjukkan harga satuan 15000 dan 5000, tidak ada angka palsu yang tersimpan.
+- **MT-24 (opsi di luar grup):** opsi "Pedas" (grup Level pedas) dikirim ke es teh manis yang tidak punya grup. Dibalas 409 "Pilihan menu berubah atau tidak valid. Muat ulang menu lalu coba lagi." (pemetaan `pilihan_rusak`). Daftar order sesudahnya tidak memuat order baru; nomor order berikutnya tetap terpakai berurutan (tidak loncat).
+- **MT-24 (teks pilihan):** pilihan tersalin sebagai "Level pedas: Sedang" di `order_item`.
+- **MT-23:** harga es teh manis diubah owner dari 5000 ke 7000 lewat layar Menu. Order baru (nomor 5) total 7000. Order lama (nomor 4) tetap harga satuan 5000 dan total 25000.
+
+**Keputusan baru:** tidak ada.
+
+**Pertentangan dengan Handoff #11 dan #12:** butir "MT-23 dan MT-24 menunggu order" dan "tersisa MT-23 dan MT-24" sudah tidak berlaku; keduanya kini lulus.
+
+**Data uji (dummy):**
+
+- Menu dipulihkan: es teh manis kembali Rp 5.000, Tersedia. Ayam karage (Rp 15.000, grup Level pedas terpasang) dan Ayam Katsu (Rp 12.000) tidak disentuh dan Tersedia.
+- Order uji milik customer 1 yang tertinggal: nomor 1 sampai 5. Tidak bisa dihapus; dibersihkan di LNC.01 bersama reset nomor order. Nomor 4 dan 5 dibuat di sesi ini.
+
+**Belum beres (carry-over yang masih berlaku):** fungsi `menu_simpan` 6 argumen masih ada (membuangnya butuh "OK" ketua); target ukuran foto belum diputuskan; handler fetch `sw.js` ikut menyimpan foto menu; menu dan grup dummy tidak bisa dihapus (nonaktifkan atau pakai ulang sebelum peluncuran); tahanan Tab di `tekanTombol` (`menu-detail.js`) perlu disesuaikan saat ORD menambah tombol di sheet; iPhone belum dicek; `menu.js` sekitar 900 baris (pedoman sekitar 500); berkas uji `20261107_04_menu_grup_pilihan_uji.sql` tidak boleh dijalankan lagi.
+
+**Saran giliran berikutnya:** ORD.03 (layar customer Pesan; **belum dikerjakan**, status sheet masih Belum). Lampirkan `AGENTS.md` + `order.md` + `akun.js`, `menu.js`, `menu-detail.js`, `kerangka.js`, `style.css`, dan `sw.js`. Berkas JS baru wajib didaftarkan di cache `sw.js` (perubahan `sw.js` butuh "OK" ketua). Tombol Kirim dikunci di layar karena server tidak menahan kirim ganda (`order.md` Handoff #2). Setelah itu ORD.04, lalu ORD.05 (butuh penjelasan dampak dan "OK" ketua).

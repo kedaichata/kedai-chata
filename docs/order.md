@@ -289,4 +289,13 @@ Item **Pelanggan** ("Pelanggan tanpa akun", O16) untuk owner ada di **Home**, di
 2. **ORD.03** (layar Pesan; lampirkan juga `akun.js`, `menu.js`, `menu-detail.js`, `kerangka.js`, `style.css`, `sw.js`). Berkas JS baru wajib didaftarkan di cache `sw.js` (perubahan `sw.js` butuh "OK" ketua). Tombol Kirim dikunci di layar karena server tidak menahan kirim ganda (Handoff #2).
 3. **ORD.05** (`order_setuju` dan `order_tolak`) butuh penjelasan dampak dan "OK" ketua.
 
+### 2026-11-08: MT-23 dan MT-24 selesai dan lulus
+
+**Berkas tujuan:** `docs/order.md` bagian 9 (tempel paling bawah, di bawah Handoff #3). Yang paling akhir menang. Rincian bukti dan hasil ada di Handoff #13 `docs/menu.md`.
+
+- **MT-23 dan MT-24 (`docs/menu-test.md`) sudah dikerjakan dan lulus.** Butir 1 di "Saran giliran berikutnya" Handoff #3 **tidak berlaku lagi**. Tidak ada kode yang diubah.
+- Yang terbukti lewat `order_buat`: isian palsu (`harga`, `total`, `status`, harga item) diabaikan; opsi di luar grup yang terpasang di menu dibalas 409 "Pilihan menu berubah atau tidak valid..." tanpa order terbentuk; harga menu diubah kemudian, order lama tetap harga lama dan order baru memakai harga baru.
+- **Data uji (dummy) bertambah:** order nomor 4 dan 5 milik customer 1, tidak bisa dihapus, dibersihkan di LNC.01 bersama reset nomor order. Harga es teh manis sudah dikembalikan ke 5000.
+- **ORD.03 belum dikerjakan** (status sheet Belum); saran Handoff #3 butir 2 tetap berlaku, begitu pula butir 3 (ORD.05 butuh penjelasan dampak dan "OK" ketua).
+
 ---
