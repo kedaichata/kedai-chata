@@ -280,12 +280,12 @@ Item **Pelanggan** ("Pelanggan tanpa akun", O16) untuk owner ada di **Home**, di
 - **SEC-19 jam HP** (digeser ke ORD.14, lihat di atas). Bagian "waktu catatan dari server" menunggu ORD.09.
 - **SEC yang baru sebagian:** SEC-05 (catatan belum ada aksinya), SEC-06 (ID pengguna dan aksi selain `order_buat`), SEC-07 (customer memanggil aksi owner: aksinya belum ada), SEC-08 (aksi owner-only oleh penjaga, order Ditolak dan Dibatalkan), SEC-09 (`order_batal`, `catatan_tambah`, dan lainnya). Sesi tes nanti tidak perlu mengulang yang sudah lulus di atas.
 - **Belum dites di aksi ORD.02:** customer memesan tipe Diambil atau Makan di warung (alamat diabaikan); filter hari dan filter status di `order_daftar` (termasuk galat filter status salah); urutan daftar untuk status Disetujui ke atas dan urutan terbaru dulu untuk customer; penjaga melihat order Disetujui (menunggu ORD.05).
-- **Data uji (dummy):** order nomor 1 sampai 3 milik customer 1, tidak bisa dihapus, dibersihkan di LNC.01 bersama reset nomor order. Menu uji: Ayam Katsu diubah jadi Habis dan harga es teh manis diubah jadi 6000 (aslinya 5000); **belum dikonfirmasi dikembalikan**, kembalikan lewat layar Menu owner sebelum ORD.03 atau MT-23 dan MT-24.
+- **Data uji (dummy):** order nomor 1 sampai 3 milik customer 1, tidak bisa dihapus, dibersihkan di LNC.01 bersama reset nomor order. Menu uji: Ayam Katsu diubah jadi Habis dan harga es teh manis diubah jadi 6000 (aslinya 5000); **sudah dikonfirmasi dikembalikan**, kembalikan lewat layar Menu owner sebelum ORD.03 atau MT-23 dan MT-24.
 - Catatan teknis untuk layar (ORD.03 dan ORD.04): isian `order_detail` bernama **`id`** (bukan `order_id`); balasan konsol berbentuk `{status, data}`.
 
 **Saran giliran berikutnya:**
 
-1. **MT-23 dan MT-24** oleh adik ketua (lampirkan `AGENTS.md` + `order.md` + `docs/menu-test.md`; akun dummy sudah ada; kembalikan Ayam Katsu ke Tersedia dulu).
+1. **MT-23 dan MT-24** lampirkan `AGENTS.md` + `order.md` + `docs/menu-test.md`; akun dummy sudah ada.
 2. **ORD.03** (layar Pesan; lampirkan juga `akun.js`, `menu.js`, `menu-detail.js`, `kerangka.js`, `style.css`, `sw.js`). Berkas JS baru wajib didaftarkan di cache `sw.js` (perubahan `sw.js` butuh "OK" ketua). Tombol Kirim dikunci di layar karena server tidak menahan kirim ganda (Handoff #2).
 3. **ORD.05** (`order_setuju` dan `order_tolak`) butuh penjelasan dampak dan "OK" ketua.
 
