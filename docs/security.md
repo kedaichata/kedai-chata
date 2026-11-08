@@ -126,10 +126,42 @@ Tes dilakukan di production dengan **akun, nomor WA, dan alamat dummy** (`AGENTS
 
 > Tempel blok baru di bawah garis ini. Format: `### YYYY-MM-DD: topik`. Yang paling akhir menang.
 
----
-
 ### 2026-11-05: Aturan 17 dan SEC-28, Secure password change mati
 
 - Keputusan ketua: "Secure password change" mati. Ini bertentangan dengan aturan 17 dan SEC-28 yang menyebut "dicek"; yang paling akhir menang.
 - SEC-28 memeriksa: Confirm email mati, panjang minimal password 8, Secure password change mati.
 - Alasan: ganti password memakai login ulang dengan password lama (akun.md AK11); verifikasi email berisiko mentok bagi customer ber-email asal-asalan.
+
+### 2026-11-08: Batal oleh owner, alih hari, dan push-nya: tambahan aturan dan uji
+
+**Berkas tujuan:** `docs/security.md` bagian 7 (tempel paling bawah, di bawah blok 2026-11-05). Sumber: keputusan ketua (OK 8 Nov 2026), lihat blok "Owner boleh membatalkan setelah Disetujui, dan aksi Alih hari" di `docs/order.md` bagian 9 dan blok "Push untuk batal oleh owner dan alih hari" di `docs/notifikasi.md` bagian 9. Yang paling akhir menang.
+
+**Pertentangan dengan blok lama:** tidak ada. Butir di bawah **menambah** aturan 10 dan SEC-07, SEC-08, SEC-10, SEC-15, SEC-16, SEC-18, SEC-19, SEC-22; isi lamanya tetap berlaku.
+
+**Hak per peran (dasar uji; aturan 2, 4, 5, 6, 8):**
+
+- `order_batal`: customer hanya untuk order **miliknya** saat **Menunggu**; owner untuk order dari **Disetujui sampai Diantar/Siap diambil/Siap disajikan**; **penjaga tidak boleh**; **Selesai tidak bisa dibatalkan siapa pun**.
+- `order_alih_hari`: **hanya owner**; dari Disetujui, Diproses, dan Diantar/Siap; hanya ke **Besok**; tidak dari Selesai, Menunggu, Ditolak, atau Dibatalkan. "Besok" dihitung server (aturan 6).
+- Hari tujuan, status, pemutus, dan waktu **tidak diterima dari aplikasi** (aturan 2).
+
+**Tambahan aturan 10:** alasan batal dan alasan alih hari tampil lewat `textContent`, seperti alasan tolak.
+
+**Tambahan uji (bukti: balasan server atau query baca-saja; bukti tidak disimpan, bagian 4 butir 6):**
+
+- **SEC-07:** customer memanggil `order_alih_hari`, dan `order_batal` pada order yang sudah Disetujui. Hasil benar: ditolak (403 untuk aksi owner).
+- **SEC-08:** penjaga memanggil `order_alih_hari` dan `order_batal`; penjaga membuka order Dibatalkan. Hasil benar: ditolak dan tidak terlihat.
+- **SEC-10:** customer Batalkan dan owner Setujui bersamaan pada order Menunggu. Hasil benar: satu berhasil, satu mendapat "sudah diproses".
+- **SEC-15:** kembali ke Disetujui dari Diantar/Siap lewat `order_status`. Hasil benar: ditolak. Kembali ke Disetujui hanya sah lewat `order_alih_hari` oleh owner, tidak dari Selesai, dan tercatat di riwayat (hari lama dan baru, siapa, kapan, alasan).
+- **SEC-16:** tambah catatan pada order Ditolak atau Dibatalkan. Hasil benar: ditolak. Setelah alih hari (status Disetujui), catatan terbuka lagi untuk customer pemilik dan owner (O12).
+- **SEC-18:** alasan batal dan alasan alih hari berisi tag HTML. Hasil benar: tampil sebagai teks biasa.
+- **SEC-19:** alih hari dengan hari tujuan selain Besok, atau tanggal dari aplikasi, atau jam HP digeser. Hasil benar: ditolak atau diabaikan; hari tujuan dan waktu tetap dari server.
+- **SEC-22:** push batal dan alih hari (customer dan penjaga) hanya memuat nomor order dan kata batal/alih hari; **tanpa nama, alamat, nomor WA, nama menu, dan alasan** (aturan 16). Bukti: screenshot layar kunci (data dummy).
+
+**Ditegaskan:**
+
+- Alasan batal dan alasan alih hari tampil ke customer pemilik order dan owner; **penjaga tidak melihat alasan** (penjaga tidak melihat order Dibatalkan, dan push tanpa alasan). Customer lain tidak bisa membacanya (SEC-05).
+- Sistem tidak memeriksa status pengerjaan saat owner membatalkan (keputusan ketua, koordinasi lewat WA). Ini **bukan celah**: hak membatalkan tetap owner saja, dan semua pembatalan tercatat di riwayat (siapa, kapan, dari status apa).
+
+**Dampak pada sheet:** SEC-07, SEC-08, SEC-10, SEC-15, SEC-18 sudah diubah; SEC-16, SEC-19, SEC-22 diubah dengan TSV baru; kolom Catatan kelima baris pertama dirujuk ulang ke blok ini.
+
+**Belum beres:** alasan keputusan di luar yang disebut di atas: alasan belum tercatat.

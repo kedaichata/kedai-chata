@@ -408,4 +408,44 @@ Item **Pelanggan** ("Pelanggan tanpa akun", O16) untuk owner ada di **Home**, di
 - **Masih terbuka (tidak berubah):** baris keranjang belum ditandai saat galat menu habis; `pesan.js` melewati ~500 baris; SEC-19 tetap di ORD.14.
 - **Berikutnya:** ORD.04 (Pesanan Saya), lihat saran giliran berikutnya di Handoff #5.
 
+### 2026-11-08: Owner boleh membatalkan setelah Disetujui, dan aksi Alih hari
+
+**Berkas tujuan:** `docs/order.md` bagian 9 (tempel paling bawah). Sumber: keputusan ketua lewat PIC, 8 Nov 2026. Push: lihat juga blok "Push untuk batal oleh owner dan alih hari" di `docs/notifikasi.md` bagian 9. Yang paling akhir menang.
+
+**Pertentangan dengan blok lama:**
+
+- O9, bagian 7, dan bagian 8 poin 3 ("setelah Disetujui tanpa tombol batal untuk siapa pun") **tidak berlaku lagi untuk owner**. Customer dan penjaga tetap tanpa tombol batal setelah Disetujui.
+- Tabel jalur status dan O5: Dibatalkan kini juga bisa dari Disetujui, Diproses, dan Diantar/Siap diambil/Siap disajikan (oleh owner), tidak hanya dari Menunggu.
+- O10: mundur satu langkah tetap berlaku. Alih hari adalah pengecualian tersendiri (lihat di bawah).
+- ORD.04 sebelumnya hanya layar. Kini juga memuat fungsi SQL dan aksi `order_batal` (belum pernah dibuat) dan menjadi ⚠️.
+
+**Keputusan baru (ketua):**
+
+- **Order Selesai tidak bisa dibatalkan atau dialihkan siapa pun.**
+- **Batal oleh owner:** hanya owner, dari status Disetujui, Diproses, dan Diantar/Siap diambil/Siap disajikan. **Alasan opsional dan tampil ke customer** seperti alasan tolak (O8; batas 200 karakter: bawaan). Statusnya tetap satu, Dibatalkan; riwayat mencatat siapa yang membatalkan (customer atau owner) dan dari status apa (bawaan).
+- **Customer** tetap hanya boleh membatalkan order miliknya saat Menunggu.
+- **Tanpa guard di sistem:** owner sudah berkoordinasi dengan penjaga lewat WA sebelum membatalkan atau mengalihkan, jadi sistem tidak menambah pengecekan status pengerjaan. O11 tidak berubah: penjaga tidak melihat order Dibatalkan, sehingga order hilang dari Antrean saat daftar disegarkan.
+- **Uang yang sudah diterima** dikembalikan owner di luar aplikasi lewat WA; tidak dicatat di aplikasi.
+- **Alih hari:** aksi owner terpisah dari batal (`order_alih_hari`, dikerjakan di ORD.07). Nomor order dan pembayaran tetap, hari antar berubah, status kembali ke **Disetujui** (pengecualian atas aturan mundur satu langkah O10, termasuk dari Diantar/Siap), tercatat di riwayat (hari lama dan baru, siapa, kapan, alasan). Boleh dari Disetujui, Diproses, dan Diantar/Siap. **Hari tujuan hanya Besok.** **Jam boleh diisi owner; bila tidak diisi, memakai jam yang sudah ada di order.** Alasan opsional dan tampil ke customer (bawaan). Karena status kembali ke Disetujui, catatan terbuka lagi (O12). Tanpa order baru dan tanpa order wakil.
+- **Customer tidak bisa mengubah hari atau jam sendiri** setelah order terkirim; perubahan lewat catatan (O12) atau owner.
+- **Push (keputusan ketua):** customer dikabari saat order dibatalkan owner atau dialihkan; owner dikabari saat customer membatalkan; **penjaga dikabari saat owner membatalkan order yang sudah Disetujui ke atas dan saat order dialihkan**. Penjaga tidak dikabari untuk order yang dibatalkan saat Menunggu (O11, O14). Isi push tanpa data pemesan dan tanpa alasan (NT2); notifikasi batal yang ditekan penjaga membuka Antrean, bukan detail order. Untuk order wakil (pemesan tanpa akun), hanya penjaga yang dikabari. Rincian di `notifikasi.md` bagian 9.
+- **Batal dan Setujui bersamaan:** satu yang berhasil, dijaga di fungsi SQL atomik (cek status di dalam fungsi), seperti O7.
+
+**Dampak pada langkah kerja:**
+
+- **ORD.04** menjadi ⚠️ dan memuat fungsi SQL dan aksi `order_batal` (customer saat Menunggu, owner dari Disetujui sampai Diantar/Siap).
+- **ORD.07** memuat aksi `order_alih_hari`.
+- **ORD.15 (baru):** layar owner untuk Batalkan, Alihkan hari, koreksi metode bayar, dan tombol status/mundur. Sebelumnya aksi ORD.07 belum punya langkah layar. Setelah ORD.06 dan ORD.07.
+- **ORD.14** diperluas dan menunggu ORD.15: batal vs setujui bersamaan, owner batal dari tiap status (Selesai ditolak), customer batal setelah Disetujui ditolak, alih hari dari tiap status (Selesai dan selain Besok ditolak), aksi owner oleh customer dan penjaga ditolak, penjaga menekan tombol status pada order yang sudah Dibatalkan.
+- **NTF.04, NTF.06, NTF.08** menyesuaikan (lihat `notifikasi.md` bagian 9).
+
+**Belum beres:**
+
+- Pagar antar-kolom tabel `order` (Handoff #1) membatasi metode bayar, pemutus, dan alasan menurut status. **Belum dicek** apakah menolak order Dibatalkan yang sudah punya metode bayar, pemutus, atau alasan. Bila menolak, perlu migration baru (⚠️, butuh "OK" ketua). Dicek di awal ORD.04 dengan `20261108_order.sql`.
+- "Hanya Besok" dihitung dari tanggal server saat aksi (bawaan): order yang hari targetnya sudah Besok tidak bisa dialihkan lagi. Perlu konfirmasi ketua.
+- Penjaga yang sedang membuka detail order lalu menekan tombol status saat order sudah dibatalkan: balasan server mengikuti kode yang ada (order tidak ditemukan); perilaku persisnya diuji di ORD.14.
+- Alasan keputusan di luar yang disebut di atas: alasan belum tercatat.
+
+- **Catatan nama berkas:** `supabase/migrations/20261108_order_batal.sql` (Handoff #1) adalah SQL pembatalan migration ORD.01, **bukan** fungsi `order_batal`. Fungsi dan aksi `order_batal` belum ada dan dikerjakan di ORD.04.
+
 ---

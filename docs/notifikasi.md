@@ -156,3 +156,28 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 ---
 
 _(belum ada blok)_
+
+### 2026-11-08: Push untuk batal oleh owner dan alih hari
+
+**Berkas tujuan:** `docs/notifikasi.md` bagian 9 (tempel paling bawah). Sumber: keputusan ketua lewat PIC 8 Nov 2026, lihat blok "Owner boleh membatalkan setelah Disetujui, dan aksi Alih hari" di `docs/order.md`. Yang paling akhir menang.
+
+**Menambah tabel 4.1** (tabel 4.1 lama tetap berlaku untuk kejadian lain):
+
+| Kejadian                                             | Penerima                     | Teks push (contoh)                                                                                               |
+| ---------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Owner membatalkan order yang sudah Disetujui ke atas | Customer pemilik dan penjaga | Customer: "Pesananmu dibatalkan. Buka aplikasi untuk detailnya." Penjaga: "Order #N dibatalkan."                 |
+| Owner mengalihkan hari (alih hari)                   | Customer pemilik dan penjaga | Customer: "Pesananmu dialihkan ke besok. Buka aplikasi untuk detailnya." Penjaga: "Order #N dialihkan ke besok." |
+
+**Ditegaskan:**
+
+- Baris "Customer membatalkan order (saat Menunggu) → Owner" kini **keputusan ketua**, bukan lagi (bawaan). Penjaga tidak dikabari untuk batal saat Menunggu (O11, O14).
+- **Alasan batal atau alih hari tidak masuk isi push** (NT2); dibaca di aplikasi, seperti alasan tolak.
+- **Alih hari tetap mengirim push** meskipun status kembali ke Disetujui: ini bukan "mundur satu langkah" (catatan 4.1, O10), yang tetap tanpa push.
+- **Order wakil (O15):** pemesan tanpa akun tidak dikabari; hanya penjaga yang dapat push. Pelaku (owner) tidak dikabari atas aksinya sendiri.
+- **Tag per order (NT9)** tetap: push batal atau alih menggantikan notifikasi lama untuk order yang sama.
+- **Pengecualian NT8:** notifikasi batal yang ditekan **penjaga membuka Antrean**, bukan detail order, karena order Dibatalkan tidak bisa dibuka penjaga (404). Untuk customer dan owner, tetap membuka detail order. Perubahan penanganan di `sw.js` ini butuh "OK" ketua (NTF.04).
+- Penjaga tidak mendapat penjelasan di aplikasi; penjelasan lewat WA (keputusan ketua).
+
+**Dampak pada langkah kerja:** NTF.06 memasang dua kejadian baru ini setelah aksinya ada (`order_batal` di ORD.04, `order_alih_hari` di ORD.07); sebelum itu order berjalan tanpa push (bag. 3). NTF.04 memuat pengecualian NT8; NTF.08 memuat tes: isi push tanpa data pribadi, penjaga menekan push batal membuka Antrean, order wakil tidak mengirim push ke customer.
+
+**Belum beres:** teks push di atas contoh, boleh disesuaikan ketua. Bila push untuk penjaga ternyata dirasa mengganggu, cukup hapus baris penjaga di tabel (alasan belum tercatat).
