@@ -475,3 +475,29 @@ Tabel `menu` sudah live: kolom `deskripsi` adalah perubahan pada tabel yang ada.
 - Carry-over Handoff #3 sampai #10 yang **masih berlaku**: fungsi `menu_simpan` 6 argumen masih ada (membuangnya butuh "OK" ketua); target ukuran foto belum diputuskan; handler fetch `sw.js` ikut menyimpan foto menu; menu dan grup dummy tidak bisa dihapus (nonaktifkan atau pakai ulang sebelum peluncuran); tahanan Tab di `tekanTombol` (`menu-detail.js`) perlu disesuaikan saat ORD menambah tombol di sheet; pemilihan opsi oleh customer dan pemetaan `pilihan_rusak` di ORD.01; iPhone belum dicek; `menu.js` sekitar 900 baris (pedoman sekitar 500); berkas uji `20261107_04_menu_grup_pilihan_uji.sql` tidak boleh dijalankan lagi.
 
 **Saran giliran berikutnya:** sesi singkat menutup MNU.06: MT-14, MT-12, lalu pulihkan data uji. Bila semuanya lulus, MNU.06 siap dicentang. Setelah itu urutan ditentukan ketua (ORD.01 butuh "OK" ketua karena migration). Lampirkan `AGENTS.md` + `menu.md` (sudah memuat handoff ini) + `menu-test.md` + `akun.js`. Untuk ORD.01 tambahkan `order.md`, `database.md`, dan `security.md`.
+
+### Handoff #12 | 2026-11-08 | [RAC]
+
+**Berkas tujuan:** `docs/menu.md` bagian 9 (tempel paling bawah, di bawah Handoff #11). Yang paling akhir menang.
+
+**Tugas:** Sesi tes MNU.06 **selesai**. **Silakan dicentang di sheet.** Tidak ada kode aplikasi, SQL, atau Edge Function yang diubah. `docs/menu-test.md` tidak berubah (tetap v1.0). Tes lewat akun dummy owner dan customer; MT-05 lewat Console browser. Bukti diperiksa di chat dan tidak disimpan.
+
+**Lulus di sesi ini:**
+
+- **MT-14**: nama grup dan nama opsi berisi tag HTML (`<b>`, `<img onerror>`, `<script>`) tampil sebagai tulisan di Kelola grup pilihan, panel "Pasang ke menu", dan sheet detail customer. Tidak ada popup.
+- **MT-12**: deskripsi 201 karakter di form Ubah menampilkan pesan merah "deskripsi terlalu panjang"; data tidak berubah (form Ubah dibuka lagi: nama, harga 1000, deskripsi kosong).
+- **MT-05 (diulang dengan isian lengkap)**: harga 200001, 0, -5, dan 1500.5 semuanya dibalas 400 "Harga tidak valid atau melebihi batas."; tidak ada menu terbuat.
+
+Dengan ini **MT-01 sampai MT-22 seluruhnya lulus**. Tersisa **MT-23 dan MT-24**, dikerjakan di sesi tes order (ORD.01 dan ORD.02).
+
+**Koreksi terhadap Handoff #11 (yang paling akhir menang):** catatan bahwa harga 200001, 0, dan -5 dibalas "Data belum lengkap atau tidak valid." berarti penolakan itu bukan karena harga. Dugaan: ada field wajib yang kurang di isian tes (misalnya `deskripsi`); penyebab pastinya belum tercatat. Setelah diulang dengan isian lengkap, semuanya dibalas pesan harga yang benar (lihat MT-05 di atas).
+
+**Temuan di lapangan:** `supabase/functions/kedai/index.ts` **tidak punya angka batas harga tertulis mati**. Yang ada hanya pagar kasar (harus bilangan bulat dan tidak melebihi batas integer 32-bit, `BATAS_INTEGER`); batas wajar dicek fungsi SQL dari pengaturan `harga_maks_menu`. Carry-over soal batas harga di `kedai` (Handoff #11) **terjawab**: tidak melanggar aturan angka di database.
+
+**Data uji sudah dipulihkan:** "menu tanpa gambar" nonaktif, harga 1000, tanpa foto, deskripsi, dan grup; grup bertag HTML, Grup Uji 2, dan Grup Uji 3 nonaktif; "Level pedas" aktif dan terpasang di "ayam karage". Menu dummy lain (ayam karage, Ayam Katsu, es teh manis) tidak disentuh.
+
+**Keputusan baru:** tidak ada.
+
+**Belum beres (carry-over yang masih berlaku):** fungsi `menu_simpan` 6 argumen masih ada (membuangnya butuh "OK" ketua); target ukuran foto belum diputuskan; handler fetch `sw.js` ikut menyimpan foto menu; menu dan grup dummy tidak bisa dihapus (nonaktifkan atau pakai ulang sebelum peluncuran); tahanan Tab di `tekanTombol` (`menu-detail.js`) perlu disesuaikan saat ORD menambah tombol di sheet; pemilihan opsi oleh customer dan pemetaan `pilihan_rusak` dikerjakan di ORD.01; iPhone belum dicek; `menu.js` sekitar 900 baris (pedoman sekitar 500); berkas uji `20261107_04_menu_grup_pilihan_uji.sql` tidak boleh dijalankan lagi.
+
+**Saran giliran berikutnya:** urutan ditentukan ketua. Kandidatnya ORD.01 (migration order, butuh "OK" ketua). Lampirkan `AGENTS.md` + `menu.md` (sudah memuat handoff ini) + `order.md`, `database.md`, dan `security.md`. MT-23 dan MT-24 dites setelah ORD.01 dan ORD.02 jalan, memakai `menu-test.md`.
