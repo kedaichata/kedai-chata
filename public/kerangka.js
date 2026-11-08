@@ -24,6 +24,12 @@
 // ORD.03: tab Pesan juga memanggil window.KedaiPesan (pesan.js): .tampil() saat tab dibuka (layar "selesai"
 // tidak ditahan) dan .reset() saat Keluar (keranjang, alamat, dan hasil order dikosongkan).
 //
+// ORD.06: tab Order Masuk (owner) memakai panel "ordermasuk" (orderowner.js): window.KedaiOrderOwner
+// .tampilMasuk() saat tab dibuka dan lewat Segarkan, .reset() saat Keluar.
+//
+// ORD.06 (giliran 2): tab Semua Order (owner) memakai panel "semuaorder" (orderowner.js): window.KedaiOrderOwner
+// .tampilSemua() saat tab dibuka dan lewat Segarkan. .reset() yang sama (Keluar) membersihkan kedua layar owner.
+//
 // Aturan yang dijaga:
 // - Peran datang dari balasan server (aksi status) lewat akun.js; aplikasi tidak pernah mengirim peran.
 //   Menyembunyikan tab di sini hanya kemudahan; yang menolak akses sebenarnya server.
@@ -49,8 +55,10 @@
   var TAB = {
     owner: [
       { id: "home", nama: "Home", panel: "akun" }, // HOM.01
-      { id: "order-masuk", nama: "Order Masuk", panel: "segera" },
-      { id: "semua-order", nama: "Semua Order", panel: "segera" },
+      // ORD.06: { id: "order-masuk", nama: "Order Masuk", panel: "segera" },
+      { id: "order-masuk", nama: "Order Masuk", panel: "ordermasuk" },
+      // ORD.06: { id: "semua-order", nama: "Semua Order", panel: "segera" },
+      { id: "semua-order", nama: "Semua Order", panel: "semuaorder" },
       { id: "buat-order", nama: "Buat Order", panel: "segera" },
       { id: "menu", nama: "Menu", panel: "menu" },
       // HOM.01: { id: "lainnya", nama: "Lainnya", panel: "lainnya" },
@@ -81,7 +89,17 @@
 
   // MNU.04: var PANEL = ["segera", "menu", "lainnya", "akun"];
   // ORD.04: var PANEL = ["segera", "menu", "lainnya", "akun", "pesan"];
-  var PANEL = ["segera", "menu", "lainnya", "akun", "pesan", "pesanan"];
+  // ORD.06: var PANEL = ["segera", "menu", "lainnya", "akun", "pesan", "pesanan"];
+  var PANEL = [
+    "segera",
+    "menu",
+    "lainnya",
+    "akun",
+    "pesan",
+    "pesanan",
+    "ordermasuk",
+    "semuaorder", // ORD.06 giliran 2
+  ];
 
   // HOM.02: tulisan lencana peran di kartu sapaan (HM4). Peran tak dikenal: lencana disembunyikan.
   var LABEL_PERAN = {
@@ -181,6 +199,24 @@
       typeof window.KedaiPesanan.tampil === "function"
     ) {
       window.KedaiPesanan.tampil();
+    }
+
+    // ORD.06: layar owner Order Masuk (daftar dan detail) di orderowner.js; dimuat saat tab dibuka dan lewat Segarkan.
+    if (
+      t.panel === "ordermasuk" &&
+      window.KedaiOrderOwner &&
+      typeof window.KedaiOrderOwner.tampilMasuk === "function"
+    ) {
+      window.KedaiOrderOwner.tampilMasuk();
+    }
+
+    // ORD.06 (giliran 2): layar owner Semua Order (filter, daftar, detail); dimuat saat tab dibuka dan lewat Segarkan.
+    if (
+      t.panel === "semuaorder" &&
+      window.KedaiOrderOwner &&
+      typeof window.KedaiOrderOwner.tampilSemua === "function"
+    ) {
+      window.KedaiOrderOwner.tampilSemua();
     }
   }
 
@@ -297,6 +333,13 @@
       typeof window.KedaiPesanan.reset === "function"
     ) {
       window.KedaiPesanan.reset();
+    }
+    // ORD.06: daftar, detail, nomor WA, dan alamat pemesan tidak boleh tersisa setelah Keluar.
+    if (
+      window.KedaiOrderOwner &&
+      typeof window.KedaiOrderOwner.reset === "function"
+    ) {
+      window.KedaiOrderOwner.reset();
     }
   }
 

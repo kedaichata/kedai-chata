@@ -1160,6 +1160,164 @@
                     </div>
                 </div>
 
+                <!-- Panel Order Masuk (owner): daftar order Menunggu, detail, Setuju, Tolak, Chat WA (ORD.06). Logika di orderowner.js -->
+                <div id="panel-ordermasuk" hidden>
+                    <!-- Langkah 1: daftar -->
+                    <div id="ordermasuk-langkah-daftar">
+                        <p
+                            class="isian__bantuan"
+                            id="ordermasuk-memuat"
+                            role="status"
+                            hidden
+                        >
+                            Memuat order...
+                        </p>
+                        <p
+                            class="isian__galat"
+                            id="ordermasuk-daftar-galat"
+                            role="alert"
+                            hidden
+                        ></p>
+                        <p class="isian__bantuan" id="ordermasuk-ringkas"></p>
+                        <div id="ordermasuk-daftar-isi"></div>
+                    </div>
+
+                    <!-- Langkah 2: detail -->
+                    <div id="ordermasuk-langkah-detail" hidden>
+                        <div class="baris-tombol">
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder"
+                                id="ordermasuk-kembali"
+                            >
+                                Kembali ke daftar
+                            </button>
+                        </div>
+                        <p
+                            class="isian__bantuan"
+                            id="ordermasuk-detail-memuat"
+                            role="status"
+                            hidden
+                        >
+                            Memuat order...
+                        </p>
+                        <p
+                            class="isian__galat"
+                            id="ordermasuk-detail-galat"
+                            role="alert"
+                            hidden
+                        ></p>
+                        <p
+                            class="isian__bantuan"
+                            id="ordermasuk-detail-info"
+                            role="status"
+                            hidden
+                        ></p>
+                        <div id="ordermasuk-detail-isi"></div>
+                    </div>
+                </div>
+
+                <!-- Panel Semua Order (owner): filter hari dan status, daftar, detail (ORD.06 giliran 2). Logika di orderowner.js -->
+                <div id="panel-semuaorder" hidden>
+                    <!-- Langkah 1: filter dan daftar -->
+                    <div id="semuaorder-langkah-daftar">
+                        <div class="kartu">
+                            <div class="isian">
+                                <label
+                                    class="isian__label"
+                                    for="semuaorder-filter-hari"
+                                    >Hari</label
+                                >
+                                <input
+                                    type="date"
+                                    class="isian__kolom"
+                                    id="semuaorder-filter-hari"
+                                />
+                                <p class="isian__bantuan">
+                                    Kosongkan untuk melihat Hari ini dan Besok.
+                                </p>
+                            </div>
+                            <div class="isian">
+                                <label
+                                    class="isian__label"
+                                    for="semuaorder-filter-status"
+                                    >Status</label
+                                >
+                                <select
+                                    class="isian__kolom"
+                                    id="semuaorder-filter-status"
+                                ></select>
+                            </div>
+                            <div class="baris-tombol">
+                                <button
+                                    type="button"
+                                    class="tombol tombol--sekunder"
+                                    id="semuaorder-filter-hapus"
+                                >
+                                    Hapus filter
+                                </button>
+                                <button
+                                    type="button"
+                                    class="tombol tombol--utama"
+                                    id="semuaorder-filter-terapkan"
+                                >
+                                    Terapkan
+                                </button>
+                            </div>
+                        </div>
+                        <p
+                            class="isian__bantuan"
+                            id="semuaorder-memuat"
+                            role="status"
+                            hidden
+                        >
+                            Memuat order...
+                        </p>
+                        <p
+                            class="isian__galat"
+                            id="semuaorder-daftar-galat"
+                            role="alert"
+                            hidden
+                        ></p>
+                        <p class="isian__bantuan" id="semuaorder-ringkas"></p>
+                        <div id="semuaorder-daftar-isi"></div>
+                    </div>
+
+                    <!-- Langkah 2: detail -->
+                    <div id="semuaorder-langkah-detail" hidden>
+                        <div class="baris-tombol">
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder"
+                                id="semuaorder-kembali"
+                            >
+                                Kembali ke daftar
+                            </button>
+                        </div>
+                        <p
+                            class="isian__bantuan"
+                            id="semuaorder-detail-memuat"
+                            role="status"
+                            hidden
+                        >
+                            Memuat order...
+                        </p>
+                        <p
+                            class="isian__galat"
+                            id="semuaorder-detail-galat"
+                            role="alert"
+                            hidden
+                        ></p>
+                        <p
+                            class="isian__bantuan"
+                            id="semuaorder-detail-info"
+                            role="status"
+                            hidden
+                        ></p>
+                        <div id="semuaorder-detail-isi"></div>
+                    </div>
+                </div>
+
                 <!-- Panel Lainnya (owner): Pelanggan dan Bantuan menyusul, Akun dipasang kerangka.js -->
                 <!-- HOM.01: tab Lainnya sudah tidak ada di navigasi, panel ini tidak terjangkau.
                      Pelanggan dan Bantuan pindah ke Home di HOM.03 dan HOM.04. -->
@@ -1652,6 +1810,8 @@
         <script src="pesan.js"></script>
         <!-- Layar Pesanan Saya customer (ORD.04): daftar, detail, Batalkan; harus setelah akun.js dan pesan.js (memakai KedaiPesan.teksBayar) -->
         <script src="pesanan.js"></script>
+        <!-- Layar owner Order Masuk (ORD.06): daftar, detail, Setuju, Tolak, Chat WA; harus setelah akun.js -->
+        <script src="orderowner.js"></script>
         <!-- Kerangka layar utama per peran (KRG.01); harus setelah akun.js dan menu.js -->
         <script src="kerangka.js"></script>
         <script>
