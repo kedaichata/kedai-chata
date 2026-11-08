@@ -72,6 +72,11 @@
     "Makan di warung": "Makan di warung jam ",
   };
   var REGEX_JAM = /^([01][0-9]|2[0-3]):[0-5][0-9]$/;
+  // Aturan ketua 2026-11-08: tipe Diantar terisi jam 11:00 (WIB) otomatis, customer tetap bisa mengubahnya.
+  // Diambil dan Makan di warung tetap kosong dan wajib diisi. Hanya nilai awal di layar; server tidak berubah
+  // dan tetap menerima jam apa pun yang dikirim (O2). Nilai ini ditulis di kode atas permintaan ketua.
+  var JAM_BAWAAN_ANTAR = "11:00";
+  var jamOtomatis = false; // true selama isi jam adalah bawaan 11:00 yang belum disentuh customer
   var JUMLAH_MAKS_FORMAT = 9999; // bentuk data (1 sampai 4 digit); batas sebenarnya diputuskan server
 
   var NAMA_HARI = [
@@ -513,6 +518,22 @@
     el("pesan-jam-label").textContent = LABEL_JAM[tipe] || "Jam";
   }
 
+  // Jam bawaan per tipe. Diantar: isi 11:00 bila jam masih kosong. Tipe lain: bawaan otomatis dikosongkan;
+  // jam yang sudah diketik atau diubah customer tidak pernah ditimpa.
+  function aturJamBawaan() {
+    var tipe = el("pesan-tipe").value;
+    var kolom = el("pesan-jam");
+    if (tipe === "Diantar") {
+      if (kolom.value === "") {
+        kolom.value = JAM_BAWAAN_ANTAR;
+        jamOtomatis = true;
+      }
+    } else if (jamOtomatis) {
+      kolom.value = "";
+      jamOtomatis = false;
+    }
+  }
+
   // ------------------------------------------------------------
   // Form pesanan
   // ------------------------------------------------------------
@@ -526,10 +547,13 @@
   function kosongkanForm() {
     el("pesan-tipe").value = "Diantar";
     el("pesan-hari").value = "Hari ini";
+    // el("pesan-jam").value = "";
     el("pesan-jam").value = "";
+    jamOtomatis = false;
     el("pesan-catatan").value = "";
     bersihkanGalat();
     tampilTipe();
+    aturJamBawaan(); // Diantar (tipe awal): jam terisi 11:00
   }
 
   function lihatPesanan() {
@@ -742,7 +766,15 @@
   el("pesan-tipe").addEventListener("change", function () {
     A.galatIsian("isian-pesan-alamat", "");
     tampilTipe();
+    aturJamBawaan();
     if (perluAlamat() && alamatStatus === "belum") muatAlamat();
+  });
+  // Customer mengubah jam sendiri: bukan bawaan lagi, jadi tidak ikut dikosongkan saat ganti tipe.
+  el("pesan-jam").addEventListener("input", function () {
+    jamOtomatis = false;
+  });
+  el("pesan-jam").addEventListener("change", function () {
+    jamOtomatis = false;
   });
   el("pesan-alamat").addEventListener("change", function () {
     A.galatIsian("isian-pesan-alamat", "");
@@ -775,6 +807,7 @@
   }
 
   // Keadaan awal: tipe Diantar, hari ini, jam kosong (customer wajib mengisi).
+  // Aturan ketua 2026-11-08 menggantikan "jam kosong" untuk Diantar: jam terisi 11:00 (kosongkanForm).
   kosongkanForm();
   renderAlamat();
   renderSemua();
