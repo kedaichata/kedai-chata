@@ -178,3 +178,37 @@ Item **Pelanggan** ("Pelanggan tanpa akun", O16) untuk owner ada di **Home**, di
 - Penjaga dan owner melihat pilihan di baris item pada detail order.
 - Ganti pilihan setelah order dikirim: lewat **catatan baru** (O12) selama belum Diproses (bawaan, sejalan O12).
 - Dampak ke urutan: ORD.01 dan ORD.02 memuat pilihan sejak awal, jadi `order_item` tidak perlu diubah setelah terisi.
+
+### Handoff #1 | 2026-11-08 | KETUA
+
+**Berkas tujuan:** `docs/order.md` bagian 9. Yang paling akhir menang.
+
+**Tugas:** ORD.01 **selesai** (migration tabel order). **Silakan dicentang di sheet.** Migration dijalankan di SQL Editor dengan "OK" ketua (hasil "Success. No rows returned"), lalu dicek dengan `20261108_order_cek.sql` bagian 1 sampai 8: semuanya sesuai harapan (RLS aktif di 6 tabel, tanpa policy, hak `service_role` sesuai `database.md` bagian 3 tanpa DELETE, `anon` dan `authenticated` nol, urutan nomor otomatis tertutup, 4 pengaturan terisi, jumlah pagar per tabel cocok, kolom `pilihan` bertipe ARRAY dan wajib diisi, keenam tabel kosong). Bukti diperiksa di chat dan tidak disimpan. Sudah di-push ke GitHub.
+
+**Berkas diubah (semuanya baru, tidak ada berkas lama yang diubah):**
+
+- `supabase/migrations/20261108_order.sql`
+- `supabase/migrations/20261108_order_batal.sql`
+- `supabase/templates/20261108_order_cek.sql`
+  `kedai/index.ts` dan berkas aplikasi tidak disentuh.
+
+**Keputusan baru** (ketua menyetujui bentuk kolom pilihan; selebihnya pilihan penulis, alasan belum tercatat):
+
+- **Pilihan menu di `order_item` = satu kolom daftar teks `pilihan`** (teks berformat "Nama grup: Nama opsi", tidak boleh kosong tetapi boleh daftar kosong). Alasan ketua: hanya catatan riwayat dan sederhana, sesuai kebutuhan warung. Tanpa tabel tambahan, dan tanpa aturan unik pada (order, menu) karena item sama dengan pilihan beda = baris terpisah.
+- **Nama tabel `order` wajib ditulis `public."order"`** (kutip ganda) di semua SQL, karena `order` adalah kata yang dipakai SQL sendiri.
+- **Nomor order mulai dari 1.** Order uji ikut memakai nomor; reset sebelum peluncuran masuk pembersihan LNC.01 (butuh "OK" ketua).
+- **`jam_permintaan` wajib diisi** (jam saja, tanpa tanggal). Melonggarkannya kelak mudah, mengetatkannya sulit.
+- **Pagar antar-kolom di tabel `order`** (pagar kedua di samping fungsi): tepat satu jenis pemesan (akun atau pelanggan tanpa akun); order wakil wajib punya pembuat owner; alamat hanya untuk tipe Diantar; metode bayar ada tepat saat status Disetujui ke atas; pemutus dan waktu diputuskan ada tepat saat status Ditolak atau Disetujui ke atas; alasan tolak hanya pada Ditolak. Untuk order wakil, **pemutus diisi owner pembuatnya** (O15).
+- Panjang nama pemesan (salinan) dan nama pelanggan tanpa akun: 3 sampai 30 karakter; keterangan pelanggan tanpa akun 3 sampai 100 (opsional).
+- Pelaku pada `riwayat_status`, `catatan_order`, dan `baca_catatan` merujuk ke **akun Supabase Auth** (bukan `profil` atau `staf`), karena pelakunya bisa customer atau staf.
+- Batas panjang atas catatan tidak ada di tabel; dijaga fungsi dari `catatan_maks_karakter` dan `catatan_maks_per_order`.
+  **Belum beres:**
+
+- **Pagar antar-kolom baru terbukti keberadaannya** (jumlahnya cocok), belum diuji dengan data. Diuji lewat ORD.02 dan sesi tes order (ORD.14), misalnya order wakil dan kecocokan metode bayar dengan status.
+- Pemanggilan `opsi_periksa` dan pemetaan kode galat `pilihan_rusak` di `kedai` **dikerjakan di ORD.02** (`order_buat`), bukan di ORD.01 yang hanya migration. Tombol pilih opsi di aplikasi di ORD.03. Ini meluruskan catatan di `docs/menu.md` Handoff #9 sampai #12 yang menyebut ORD.01.
+- `order_buat` perlu mengubah hasil `opsi_periksa` (`grup_nama`, `opsi_nama`) menjadi teks "Nama grup: Nama opsi" untuk kolom `pilihan`. Aturan susunan teksnya belum dipaku.
+- MT-23 dan MT-24 (`docs/menu-test.md`) menunggu ORD.02.
+- Order uji tidak bisa dihapus; dibersihkan di LNC.01 bersama reset nomor order.
+  **Saran giliran berikutnya:** ORD.02 (fungsi SQL dan aksi `order_buat`, `order_daftar`, `order_detail`; High-Risk, butuh "OK" ketua). Kemungkinan dua giliran seperti MNU.09: fungsi SQL lebih dulu (migration baru), lalu aksi di `kedai/index.ts`. Lampirkan `AGENTS.md` + `order.md` (sudah memuat handoff ini) + `database.md` + `security.md`, serta `supabase/functions/kedai/index.ts`, `20261108_order.sql`, `20261107_04_menu_grup_pilihan.sql` (memuat `opsi_periksa` dan `menu_daftar`), dan `20261105_akun.sql` (pola fungsi dan hak).
+
+---

@@ -501,3 +501,11 @@ Dengan ini **MT-01 sampai MT-22 seluruhnya lulus**. Tersisa **MT-23 dan MT-24**,
 **Belum beres (carry-over yang masih berlaku):** fungsi `menu_simpan` 6 argumen masih ada (membuangnya butuh "OK" ketua); target ukuran foto belum diputuskan; handler fetch `sw.js` ikut menyimpan foto menu; menu dan grup dummy tidak bisa dihapus (nonaktifkan atau pakai ulang sebelum peluncuran); tahanan Tab di `tekanTombol` (`menu-detail.js`) perlu disesuaikan saat ORD menambah tombol di sheet; pemilihan opsi oleh customer dan pemetaan `pilihan_rusak` dikerjakan di ORD.01; iPhone belum dicek; `menu.js` sekitar 900 baris (pedoman sekitar 500); berkas uji `20261107_04_menu_grup_pilihan_uji.sql` tidak boleh dijalankan lagi.
 
 **Saran giliran berikutnya:** urutan ditentukan ketua. Kandidatnya ORD.01 (migration order, butuh "OK" ketua). Lampirkan `AGENTS.md` + `menu.md` (sudah memuat handoff ini) + `order.md`, `database.md`, dan `security.md`. MT-23 dan MT-24 dites setelah ORD.01 dan ORD.02 jalan, memakai `menu-test.md`.
+
+### 2026-11-08: Pemilihan opsi di order dikerjakan di ORD.02 dan ORD.03
+
+**Berkas tujuan:** `docs/menu.md` bagian 9. Meluruskan Handoff #9 sampai #12. Yang paling akhir menang.
+
+- ORD.01 sudah selesai dan hanya berisi migration tabel (tidak memanggil `opsi_periksa` dan tidak mengubah `kedai`).
+- Pemanggilan `opsi_periksa` dan pemetaan kode galat `pilihan_rusak` di `kedai` dikerjakan di **ORD.02** (`order_buat`). Tombol pilih opsi di aplikasi dikerjakan di **ORD.03**.
+- `order_item.pilihan` sudah siap menampung salinan pilihan (lihat `docs/order.md` Handoff #1). MT-23 dan MT-24 menunggu ORD.02.

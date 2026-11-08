@@ -238,3 +238,22 @@ Angka yang bisa berubah **tidak ditulis mati di kode** (`AGENTS.md` bagian 1). N
 - **Bagian 5 (aksi `kedai`):** `grup_daftar`, `grup_simpan`, `grup_nonaktif`, `menu_grup_atur`, semuanya owner saja (lapis kedua peran di `kedai`). Rincian isian dan balasan ada di Handoff #8 (`docs/menu.md`).
 - **Berkas SQL:** `supabase/migrations/20261107_04_menu_grup_pilihan.sql` (dan `_batal`), `supabase/templates/20261107_04_menu_grup_pilihan_cek.sql` dan `_uji.sql`. Berkas uji hanya bisa dijalankan selama belum ada grup di database.
 - **Catatan untuk ORD.01:** `order_item` perlu menyalin nama grup dan nama opsi terpilih (seperti nama dan harga menu), dan memanggil `opsi_periksa` sebelum menyimpan; kode `pilihan_rusak` dipetakan di `kedai` saat itu.
+
+### 2026-11-08: Tabel order, bentuk persis (ORD.01)
+
+**Berkas tujuan:** `docs/database.md` bagian 9. Rujukan: `docs/order.md` bagian 9, Handoff #1. Yang paling akhir menang.
+
+- **Berkas SQL:** `supabase/migrations/20261108_order.sql` (dan `_batal`), `supabase/templates/20261108_order_cek.sql`. Dijalankan dan dicek 8 Nov 2026. Tidak menyentuh tabel lama.
+- **Bagian 2 (tabel baru, nama kolom persis):**
+  - `pelanggan_luar`: `id`, `nama`, `keterangan`, `nomor_wa`, `alamat_antar`, `aktif`, `dibuat_oleh` (staf), `dibuat_pada`.
+  - `order` (**ditulis `public."order"` di SQL**): `id`, `nomor` (urutan otomatis mulai 1, unik), `pemesan` (profil) atau `pelanggan_luar_id` (tepat satu), `nama_pemesan`, `nomor_wa_pemesan`, `tipe`, `hari_target`, `jam_permintaan` (wajib), `alias_alamat`, `isi_alamat`, `total`, `status` (bawaan Menunggu), `metode_bayar`, `pemutus`, `pemutus_nama`, `diputuskan_pada`, `alasan_tolak`, `dibuat_oleh`, `dibuat_oleh_nama` (penanda order wakil), `dibuat_pada`, `diubah_pada`.
+  - `order_item`: `id`, `order_id`, `menu_id`, `nama_menu`, `harga_satuan`, `jumlah`, `subtotal` (harus sama dengan harga × jumlah), **`pilihan`** (daftar teks "Nama grup: Nama opsi", salinan).
+  - `riwayat_status`: `id` (urutan otomatis), `order_id`, `status_asal` (kosong di baris pertama), `status_tujuan`, `oleh` (akun Auth), `waktu`, `keterangan`.
+  - `catatan_order`: `id` (urutan otomatis), `order_id`, `penulis` (akun Auth), `nama_penulis`, `peran_penulis` (customer atau owner), `isi`, `waktu`.
+  - `baca_catatan`: kunci utama (`akun`, `order_id`), `catatan_terakhir_id`, `waktu`.
+- **Bagian 2 (nilai tersimpan persis seperti di tabel "Nilai tetap"):** status dan tipe memakai tulisan lengkap berhuruf besar di awal (misalnya `Siap diambil`, `Makan di warung`); metode bayar `Transfer`, `Tunai`, `QRIS`.
+- **Bagian 3 (hak):** sesuai tabel yang ada, terbukti lewat query cek. Tambahan: **tiga urutan nomor otomatis** (nomor order, id riwayat, id catatan) **tanpa hak untuk siapa pun** selain pemilik; hanya fungsi `SECURITY DEFINER` yang mengisinya.
+- **Bagian 4 (pengaturan):** keempat kunci order sudah dibuat dengan nilai awal sesuai tabel (`item_maks_per_order` 10, `jumlah_maks_per_item` 10, `catatan_maks_karakter` 200, `catatan_maks_per_order` 10).
+- **Catatan untuk ORD.02:** semua SQL yang menyebut tabel order wajib memakai `public."order"`. Pagar antar-kolom di tabel (metode bayar dan pemutus mengikuti status, alamat hanya Diantar, pembuat wajib untuk order wakil) berarti `order_buat` dan `order_buat_wakil` harus mengisi kolom-kolom itu konsisten, atau ditolak database.
+
+---

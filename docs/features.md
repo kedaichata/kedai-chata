@@ -109,3 +109,10 @@ Karena hanya ada satu environment (production) dan aplikasi dipakai nyata, pelun
 > Tempel blok baru di bawah garis ini bila ada keputusan baru atau kejadian di lapangan. Format: `### YYYY-MM-DD: topik`. Yang paling akhir menang. Aturan lengkap: `AGENTS.md` bagian 2, aturan 7.
 
 _(belum ada blok)_
+
+### 2026-11-08: Reset nomor order di LNC.01
+
+**Berkas tujuan:** `docs/features.md`, Catatan Susulan. Sumber: `docs/order.md` Handoff #1. Yang paling akhir menang.
+
+- Nomor order berjalan terus (O18) dan mulai dari 1, sehingga order uji ikut memakai nomor. Pada pembersihan data uji **LNC.01**, nomor order direset supaya order sungguhan mulai dari awal.
+- Reset dilakukan **satu kali oleh ketua di SQL Editor**, setelah tabel order bersih, dengan penjelasan dampak dan "OK" (peran aplikasi tidak punya hak atas urutan nomor).
