@@ -522,4 +522,28 @@ Pilihan penulis tanpa keputusan ketua (alasan belum tercatat): `order_batal` tid
 **Hasil tes** (bukti di chat): batal order Menunggu sendiri lulus (kartu konfirmasi, status Dibatalkan, tombol dan teks O21 hilang; #12 dan #13); batal dari tab basi ditolak server dan status di layar ikut tersegarkan (#11); customer 2 mendapat 404 untuk `order_detail` dan `order_batal` milik customer 1 dan daftarnya kosong; offline tidak crash; Keluar lalu masuk sebagai customer 1 menampilkan 14 pesanan miliknya saja; `chata-v12` aktif, `chata-v11` terbuang, `pesanan.js` ada di cache, aplikasi tetap terbuka saat offline.
 
 **Saran giliran berikutnya:** (1) keputusan ketua untuk dua usulan di atas (teks 409 dan urutan daftar); keduanya kecil dan bisa dikerjakan sebelum atau bersama ORD.05. (2) ORD.05 (`order_setuju` dan `order_tolak`), yang butuh penjelasan dampak dan "OK" ketua, dan **wajib** mengunci order dengan `SELECT ... FOR UPDATE` seperti `order_batal`. Lampirkan `AGENTS.md` + `order.md` (sudah memuat handoff ini) + `supabase/functions/kedai/index.ts` + migration terbaru.
+
+### 2026-11-08: Perbaikan pesan 409 `order_batal` dan urutan daftar customer
+
+**Berkas tujuan:** `docs/order.md`, ditempel paling bawah (di bawah Handoff #7). Yang paling akhir menang.
+
+**Pertentangan dengan blok lama:** dua butir "Belum beres" pada Handoff #7 ("Pesan galat 409 menyesatkan" dan "Urutan daftar customer") **sudah diputuskan ketua**, lihat di bawah. Butir lain pada Handoff #7 tetap berlaku.
+
+**Keputusan ketua:**
+
+- **Pesan 409 diperbaiki.** Order yang sudah **Dibatalkan** dibalas "Pesanan ini sudah dibatalkan." (customer dan owner). Order yang sudah **Ditolak** (customer) dibalas "Pesanan ini sudah ditolak sebelumnya, jadi tidak bisa dibatalkan lagi. Hubungi tim ChATA lewat WhatsApp bila perlu." Disetujui sampai Selesai (customer) dan status lain (owner) tetap memakai pesan lama.
+- **Urutan daftar customer dibiarkan seperti sekarang** (semua status, terbaru dulu, urutan dari server). Usulan memindahkan Dibatalkan dan Ditolak ke bawah **tidak dikerjakan**; O22 tidak berubah. Alasan belum tercatat (ketua menyebut "dulu", jadi boleh dibuka lagi nanti).
+
+**Yang dikerjakan:**
+
+- Diubah: `supabase/functions/kedai/index.ts` (hanya tambahan: dua pemetaan `sudah_dibatalkan` dan `sudah_ditolak` di `PETA_GALAT_ORDER_BATAL`, plus komentar kepala). Di-deploy ke project ChATA tanpa `--no-verify-jwt` lewat urutan aman bagian 8; token CLI sudah dibersihkan (dicek `[]`). Commit `9ea7cc9`.
+- Baru: `supabase/migrations/20261108_04_order_batal_pesan.sql` (fungsi `order_batal` versi baru: kode galat `sudah_dibatalkan` untuk customer dan owner, `sudah_ditolak` untuk customer; baris lama dijadikan komentar), `supabase/migrations/20261108_04_order_batal_pesan_batal.sql` (pembatal: kembali ke fungsi versi 20261108_03), `supabase/templates/20261108_04_order_batal_pesan_cek.sql`. Dijalankan di SQL Editor dengan "OK" ketua ("Success. No rows returned"). Commit `92b6252`.
+- Tidak berubah: siapa boleh membatalkan, urutan pengecekan (order milik orang lain dicek paling dulu), penguncian `FOR UPDATE`, riwayat status, hak `EXECUTE` (hanya `service_role`), semua tabel dan data. Layar tidak diubah.
+- Pilihan penulis (alasan belum tercatat): nama kode galat `sudah_dibatalkan` dan `sudah_ditolak`.
+
+**Hasil tes** (bukti di chat): cek SQL bagian 1 sampai 4 lulus (fungsi `SECURITY DEFINER` dengan `search_path` kosong, `EXECUTE` hanya `service_role`, isi fungsi memuat kode baru dan lama serta `FOR UPDATE`, jumlah order per status tidak berubah); customer membatalkan order yang sudah Dibatalkan dari tab basi mendapat "Pesanan ini sudah dibatalkan." dan status di layar tetap Dibatalkan (#10); customer 2 membatalkan order milik customer 1 mendapat 404 "Pesanan tidak ditemukan." (tidak ada kebocoran status); owner (lewat konsol) membatalkan order yang sudah Dibatalkan mendapat 409 "Pesanan ini sudah dibatalkan."; membatalkan order Menunggu dengan fungsi baru tetap sukses.
+
+**Belum teruji:** pesan untuk order **Ditolak** (customer), karena order Ditolak baru ada setelah ORD.05. Masukkan ke tes ORD.05.
+
+**Data uji (dummy):** order #10 sampai #14 kini Dibatalkan (milik customer 1). Dibersihkan di LNC.01 bersama reset nomor order.
 ---
