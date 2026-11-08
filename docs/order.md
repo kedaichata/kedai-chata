@@ -347,4 +347,65 @@ Item **Pelanggan** ("Pelanggan tanpa akun", O16) untuk owner ada di **Home**, di
 - **Data uji (dummy) akan bertambah** (order uji dari tes ORD.03), tidak bisa dihapus, dibersihkan di LNC.01 bersama reset nomor order.
 
 **Saran giliran berikutnya:** giliran 2 ORD.03 (lampirkan `AGENTS.md` + `order.md` yang sudah memuat handoff ini + berkas terbaru dari repo: `pesan.js`, `menu.js`, `menu-detail.js`, `style.css`, `kerangka.js`). Mulai dengan konfirmasi tiga butir "Belum dikonfirmasi" di atas. Setelah giliran 2 dan tes lulus, ORD.03 selesai (pengingat centang di sheet). Berikutnya ORD.04 (Pesanan Saya), yang memakai `KedaiPesan.teksBayar` dan mengganti pesan "hasil tidak pasti" di `pesan.js`.
+
+### Handoff #5 | 2026-11-08 | [FREN]
+
+**Berkas tujuan:** `docs/order.md` bagian 9, ditempel paling bawah (di bawah Handoff #4). Yang paling akhir menang.
+
+**Pertentangan dengan blok lama:** Handoff #4 menulis keadaan awal form "jam kosong". Untuk tipe **Diantar** itu **tidak berlaku lagi** (lihat keputusan ketua di bawah). Diambil dan Makan di warung tetap kosong. Jam tetap **wajib diisi** untuk semua tipe.
+
+**Tugas:** ORD.03 (layar customer Pesan) giliran 2 selesai: tombol Tambah di kartu menu, pilihan dan jumlah di sheet detail, lalu masuk keranjang. Tiga butir "Belum dikonfirmasi" Handoff #4 (Keluar lalu Masuk, push empat berkas giliran 1 dengan email commit ketua, PWA `chata-v11` dan offline) sudah lulus.
+
+**Berkas diubah** (semuanya di `public/`; tidak ada berkas baru, `sw.js` tidak diubah; tidak ada kode lama dihapus, baris yang diganti dijadikan komentar):
+
+- `menu.js`: id grup dan id opsi ikut terbaca; tombol Tambah (menu tanpa grup, langsung masuk keranjang jumlah 1, lalu "Ditambahkan ✓" sebentar) atau Pilih (menu dengan grup, membuka sheet). Hanya menu Tersedia.
+- `menu-detail.js`: satu pilihan per grup (bawaan terpilih), jumlah, tombol "Tambah ke pesanan" yang memanggil `KedaiPesan.tambah`, lalu sheet menutup. Menu Habis tetap hanya tampil. Tab berputar di antara kontrol sheet.
+- `pesan.js` (788 baris; Handoff #4 menulis 765, selisih tidak dijelaskan): jam bawaan Diantar dan tombol pesanan melayang.
+- `style.css`: tambahan di akhir berkas untuk tombol Tambah, pilihan, jumlah, dan tombol melayang.
+- `kerangka.js` tidak diubah. Berkas `kerangka_1.js` hanya salinan identik, **jangan ikut di-push** (cek `git status`).
+
+**Keputusan baru dari ketua:**
+
+- **Jam bawaan Diantar 11:00 (WIB), terisi otomatis, customer tetap bisa mengubah.** Diambil dan Makan di warung kosong dan wajib diisi. Dikerjakan di frontend saja karena mengubahnya di server berarti merombak fungsi SQL; server tetap menerima jam apa pun (O2). Alasan lain belum tercatat.
+- **Tombol pesanan bulat melayang dengan emoji keranjang, ikut layar saat digulir, di atas navigasi bawah.** Alasan ketua: supaya tidak menabrak tombol navigasi.
+
+**Keputusan baru pilihan penulis** (alasan belum tercatat dari ketua):
+
+- Jam bawaan 11:00 dikosongkan lagi saat tipe pindah ke Diambil atau Makan di warung, **selama customer belum menyentuh jamnya**. Jam yang diketik atau diubah customer tidak pernah ditimpa. Pindah balik ke Diantar dengan jam kosong: terisi 11:00 lagi. Setelah order terkirim atau Keluar: kembali ke Diantar dengan 11:00.
+- Angka 11:00 ditulis di kode (`JAM_BAWAAN_ANTAR` di `pesan.js`) atas permintaan ketua. AGENTS bagian 1 menyebut angka yang bisa berubah idealnya di database; memindahkannya butuh ubah dan deploy `kedai` (berisiko, butuh "OK" ketua), jadi **ditunda**.
+- Tombol melayang dipasang dari `pesan.js` ke dalam panel Pesan, tampil hanya di langkah menu dan bila keranjang tidak kosong, dengan lencana jumlah item. Tombol "Lihat pesanan" lama di `index.html` **disembunyikan, bukan dihapus**; teks ringkasan keranjang tetap tampil. Posisi: 76 px di atas dasar layar, z-index 12 (di bawah sheet detail, 30).
+- Sheet detail: satu opsi per grup (bawaan terpilih), jumlah 1 sampai 9999 (hanya bentuk data; batas sebenarnya di server).
+
+**Hasil tes** (bukti diperiksa di chat, tidak disimpan):
+
+- Server: harga dan total dihitung server dengan benar; tipe Diantar punya alamat, Diambil dan Makan di warung tanpa alamat; jam bawaan 11:00 tersimpan; `hari_target` benar. Pilihan menu tersimpan di `order_detail`, termasuk opsi **non-bawaan** ("Sedang") dan bawaan ("Tidak pedas"); menu tanpa grup pilihannya kosong.
+- Layar: tombol Tambah, sheet, jam bawaan, dan tombol melayang dites ketua di Android dan dilaporkan jalan.
+
+**Belum beres:**
+
+- Butir High-Risk ORD.03 yang **belum dibuktikan satu per satu di chat** (ketua melaporkan "semuanya works" di Android, tanpa bukti rinci): Kirim ditekan dua kali cepat hanya membuat satu order; menu jadi Habis saat Kirim (pesan server tampil, menu dimuat ulang); offline; Diantar tanpa alamat ditolak; jam kosong ditolak; Keluar mengosongkan keranjang dan alamat. **Pengingat centang ORD.03 di sheet setelah PIC memastikan butir ini.** SEC-19 tetap di ORD.14.
+- Hasil tiga cek aman (folder, `git remote -v`, email commit) untuk push empat berkas giliran 2 **tidak ditempel** ke chat sesi ini; aplikasi sudah dites di production, jadi berkasnya terbit.
+- "Hari ini" dipesan setelah jam 11: jam bawaan 11:00 sudah lewat. Sistem tetap menerima; customer mengubah sendiri. Tidak diubah (sesuai aturan ketua).
+- Masih terbuka dari Handoff #4: baris keranjang belum ditandai saat galat "menu habis"; `pesan.js` melewati ~500 baris (bagian alamat paling mudah dipisah); batas item, jumlah, dan catatan tidak terbaca di aplikasi (ditunda).
+- **Data uji (dummy) bertambah:** order uji nomor 6 sampai 10 (mungkin lebih) di akun customer dummy. Tidak bisa dihapus, dibersihkan di LNC.01 bersama reset nomor order.
+
+**Saran giliran berikutnya:** ORD.04 (Pesanan Saya). Lampirkan `AGENTS.md` + `order.md` (sudah memuat handoff ini) + berkas terbaru dari repo: `pesan.js`, `kerangka.js`, `index.html`, `style.css`. ORD.04 memakai `KedaiPesan.teksBayar` dan mengganti pesan "hasil tidak pasti" di `pesan.js` agar menyuruh cek Pesanan Saya. Konsol `order_daftar` dan `order_detail` sudah terbukti bentuknya (isian `order_detail` bernama `id`). ORD.05 tetap butuh penjelasan dampak dan "OK" ketua.
+
+### 2026-11-08: ORD.03 lulus
+
+**Berkas tujuan:** `docs/order.md` bagian 9 (tempel paling bawah, di bawah Handoff #5). Yang paling akhir menang.
+
+**Pertentangan dengan blok lama:** butir "Belum beres" Handoff #5 tentang butir High-Risk ORD.03 yang belum dibuktikan **tidak berlaku lagi** untuk kirim dobel dan menu Habis saat Kirim (lihat di bawah). Butir lain di Handoff #5 tetap berlaku.
+
+- **ORD.03 selesai dan lulus.** Pengingat: butir ini sudah selesai, silakan dicentang di sheet.
+- **Terbukti dengan balasan server** (diperiksa di chat, tidak disimpan):
+  - Kirim ditekan tiga kali beruntun lewat konsol hanya membuat **satu** order (#13), tidak ada #14.
+  - Menu jadi Habis saat Kirim: server menolak dengan pesan "Ada menu yang sedang habis atau tidak tersedia. Muat ulang menu lalu coba lagi.", **tidak ada order terbentuk** (nomor berikutnya tidak loncat), daftar menu dimuat ulang otomatis, dan menu Habis tampil tanpa tombol Tambah.
+  - Pilihan menu tersimpan di `order_detail`, termasuk opsi **non-bawaan** ("Sedang") dan bawaan ("Tidak pedas"); menu tanpa grup pilihannya kosong.
+  - Harga dan total dihitung server; tipe Diantar punya alamat, Diambil dan Makan di warung tanpa alamat; jam bawaan Diantar 11:00 dan hari target benar.
+- **Dilaporkan ketua jalan di Android, tanpa bukti rinci di chat** (butir layar): offline, Diantar tanpa alamat ditolak, jam kosong ditolak, Keluar mengosongkan keranjang dan alamat, tombol pesanan melayang. Tidak diulang.
+- **Data uji (dummy) bertambah sampai order #14.** Tidak bisa dihapus, dibersihkan di LNC.01 bersama reset nomor order. Es teh manis sudah dikembalikan ke Tersedia.
+- **Masih terbuka (tidak berubah):** baris keranjang belum ditandai saat galat menu habis; `pesan.js` melewati ~500 baris; SEC-19 tetap di ORD.14.
+- **Berikutnya:** ORD.04 (Pesanan Saya), lihat saran giliran berikutnya di Handoff #5.
+
 ---
