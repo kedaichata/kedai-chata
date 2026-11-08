@@ -571,4 +571,57 @@ Pilihan penulis tanpa keputusan ketua (alasan belum tercatat): `order_batal` tid
 **Data uji (dummy):** order #10 sampai #14 Dibatalkan (milik customer 1), dibersihkan di LNC.01.
 
 **Saran giliran berikutnya:** ORD.05 (`order_setuju` dan `order_tolak`). Lampirkan `AGENTS.md` + `order.md` (sudah memuat handoff ini) + `supabase/functions/kedai/index.ts` + migration terbaru (`20261108_04_order_batal_pesan.sql`).
+
+### Handoff #9 | 2026-11-08 | [ISI NAMA PIC]
+
+**Berkas tujuan:** `docs/order.md` bagian 9, ditempel paling bawah (di bawah Handoff #8). Yang paling akhir menang.
+
+**Pertentangan dengan blok lama:**
+
+- Butir "Perhatian untuk ORD.05" pada Handoff #8 **sudah terpenuhi**: `order_setuju` dan `order_tolak` mengunci order dengan `SELECT ... FOR UPDATE`, dan pesan `sudah_ditolak` (customer membatalkan order Ditolak) **sudah dites dan lulus**. Butir "belum teruji" untuk pesan order Ditolak pada blok 2026-11-08 (perbaikan pesan 409) **tidak berlaku lagi**.
+- Pengingat "ORD.05 wajib FOR UPDATE" pada Handoff #6 dan #7 **terpenuhi**.
+- Butir lain pada Handoff #8 tetap berlaku.
+
+**Tugas:** ORD.05 **selesai dan lulus tes** (High-Risk, bukti diperiksa di chat). Sudah dicentang di sheet. Baris SEC di sheet **sengaja belum dicentang** (jadwalnya setelah ORD.14; ORD.05 baru menutup sebagian SEC-07, SEC-08, SEC-10, SEC-11).
+
+**Berkas diubah** (commit `8c01d34`, dengan `[skip ci]` sesuai instruksi ketua karena tidak ada berkas `public/` yang berubah; sudah di-push lewat tiga cek aman):
+
+- Baru: `supabase/migrations/20261108_05_order_setuju_tolak.sql` (fungsi `order_setuju` dan `order_tolak`), `supabase/migrations/20261108_05_order_setuju_tolak_batal.sql` (pembatal: hanya menghapus kedua fungsi), `supabase/templates/20261108_05_order_setuju_tolak_cek.sql` (lima bagian cek).
+- Diubah: `supabase/functions/kedai/index.ts` (hanya tambahan 106 baris: komentar kepala, `PETA_GALAT_ORDER_KEPUTUSAN`, `aksiOrderSetuju`, `aksiOrderTolak`, dua `case`; tidak ada baris lama yang dihapus atau diubah). Sudah di-deploy ke project ChATA **tanpa** `--no-verify-jwt` lewat urutan aman `AGENTS.md` bagian 8; token CLI sudah dibersihkan (dicek `[]`).
+- Migration dijalankan di SQL Editor dengan "OK" ketua (lewat PIC), hasil "Success. No rows returned", lalu dicek lima bagian: SECURITY DEFINER dan `search_path` kosong, `EXECUTE` hanya `service_role` (`anon` dan `authenticated` nol), tidak ada fungsi kembar, keduanya memuat `FOR UPDATE`, data order tidak berubah. Bukti diperiksa di chat dan tidak disimpan.
+- Pagar tabel `order` versi `20261108_03` sudah cocok; **tidak ada perubahan tabel**.
+- Catatan: query cek bagian 1 awalnya salah menilai `search_path` (false negatif karena tanda kutip escape); sudah diperbaiki di `_cek.sql` (memakai `proconfig @> ARRAY[...]`). Fungsinya sendiri benar.
+
+**Kontrak untuk layar owner (ORD.06):**
+
+- `order_setuju` dengan isian `{ id, metode }` (`metode` persis "Transfer", "Tunai", atau "QRIS"). Sukses: `{ ok: true, order: { id, nomor, status: "Disetujui", status_asal: "Menunggu", metode_bayar } }`.
+- `order_tolak` dengan isian `{ id, alasan }` (`alasan` opsional, maks 200 karakter, boleh kosong). Sukses: `{ ok: true, order: { id, nomor, status: "Ditolak", status_asal: "Menunggu" } }`.
+- Galat `{ ok: false, pesan }`: tampilkan `pesan` apa adanya lewat `textContent`. Kode yang mungkin: 400 (metode tidak valid, alasan terlalu panjang, id rusak), 403 (bukan owner, akun nonaktif), 404 (order tidak ditemukan), 409 (sudah diproses, sudah ditolak, sudah dibatalkan; layar sebaiknya menyegarkan daftar).
+- Customer menerima `alasan_tolak` di daftar dan detail; `metode_bayar`, `pemutus_nama`, dan `riwayat` hanya untuk owner (penjaga melihat `metode_bayar` saja).
+
+**Keputusan baru** (semuanya pilihan penulis; alasan belum tercatat dari ketua):
+
+- Galat order yang bukan Menunggu dibedakan: Disetujui ke atas = `sudah_diproses` (sesuai SEC-10), Ditolak = `sudah_ditolak`, Dibatalkan = `sudah_dibatalkan`. Pesan: "Pesanan sudah diproses. Segarkan daftar pesanan.", "Pesanan ini sudah ditolak.", "Pesanan ini sudah dibatalkan."
+- `riwayat_status.keterangan` pada Setujui berisi "Metode bayar: <metode>"; pada Tolak berisi alasan (kosong bila tanpa alasan). **ORD.07 (`order_metode_koreksi`, O23) sebaiknya memakai format keterangan yang sama** supaya metode lama dan baru terbaca konsisten.
+- `pemutus_nama` disalin dari `staf.nama_tampilan` saat keputusan (salinan).
+- Metode bayar dipangkas spasi lalu dicocokkan persis (huruf besar-kecil dibedakan); alasan tolak yang hanya spasi disimpan kosong.
+- Fungsi tidak mengembalikan id pemesan (bahan push ditambahkan di NTF bila perlu).
+- Lapis kedua peran di `kedai`: selain owner aktif (customer dan penjaga) dibalas 403 "Aksi ini hanya untuk owner."
+
+**Yang sudah terbukti** (ringkas): customer dan penjaga memanggil setuju/tolak = 403 dan order tidak berubah; penjaga tidak melihat order Menunggu (404) dan melihat order Disetujui dengan metode bayar tanpa nama pemutus dan riwayat; metode kosong, spasi, asing, huruf kecil, bukan teks, dan tanpa isian = 400; id rusak = 400, id tidak ada = 404; setuju sah, setuju dan tolak ulang = 409, metode tidak tertimpa; tolak dengan alasan, alasan 201 karakter = 400, alasan spasi disimpan kosong; setuju atas order Dibatalkan = 409; empat permintaan bersamaan (tiga Setujui, satu Tolak) pada dua order: tepat satu menang, riwayat 2 baris; customer melihat alasan tolak tanpa metode, pemutus, dan riwayat; customer membatalkan order Ditolak, Dibatalkan, dan Disetujui mendapat pesan yang benar.
+
+**Belum beres:**
+
+- **Belum ada layar** untuk Setujui dan Tolak (ORD.06); keduanya baru bisa dipakai lewat konsol (`window.KedaiAkun.panggilKedai`).
+- **Push belum ada** untuk setuju dan tolak (NTF); pembatalan, setuju, dan tolak berjalan tanpa push sampai NTF dikerjakan.
+- **Masuk ORD.14:** customer Batal dan owner Setujui bersamaan (SEC-10, butuh dua sesi login); skenario Tolak yang menang saat bersamaan (di dua putaran tes yang menang selalu Setujui); owner membatalkan dari Diproses dan Diantar/Siap (menunggu ORD.07 dan ORD.15; dari Disetujui sudah terbukti pada order #9, lihat di bawah).
+- Terbukti tidak sengaja: owner membatalkan order **Disetujui** (#9) lewat `order_batal` berhasil, status Dibatalkan, pagar tabel baru menerima order Dibatalkan yang membawa metode bayar dan pemutus.
+- Masih terbuka dari blok lama: pembeda "dibatalkan customer" dan "dibatalkan owner" di layar customer (putuskan bersama ORD.15); catatan di detail menunggu ORD.10; pesan galat saat koneksi putus (P2, opsional); variabel `pernahMuatDaftar` di `pesanan.js` tidak terpakai; `pesan.js` melewati ~500 baris.
+- **Data uji (dummy) yang berubah** dari tes ORD.05, tidak bisa dihapus, dibersihkan di LNC.01 bersama reset nomor order: #1, #4, #5 Disetujui; #2, #3 Ditolak; #9 Dibatalkan oleh owner. Order lain: #6 sampai #8 Menunggu; #10 sampai #14 Dibatalkan.
+
+**Saran giliran berikutnya:**
+
+1. **ORD.06** (layar owner: Order Masuk, Semua Order, detail dengan Setujui, Tolak, Chat WA; bergantung pada DSN.04). Lampirkan `AGENTS.md` + `order.md` (sudah memuat handoff ini) + berkas terbaru dari repo: `pesanan.js`, `kerangka.js`, `index.html`, `style.css`, `sw.js`, `akun.js`. Berkas JS baru wajib didaftarkan di cache `sw.js` (perubahan `sw.js` butuh "OK" ketua, lewat WA bila yang giliran bukan ketua) dan naik dalam satu commit dengan berkas barunya.
+2. **ORD.07** ⚠️ (`order_status`, `order_metode_koreksi`, `order_alih_hari`): butuh penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `20261108_05_order_setuju_tolak.sql` (pola terbaru fungsi keputusan owner) + `20261108_04_order_batal_pesan.sql`.
+
 ---
