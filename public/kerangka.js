@@ -21,6 +21,9 @@
 // MNU.04: tab Pesan (customer) memakai panel "pesan": daftar menu hanya dilihat, dimuat lewat
 // KedaiMenu.tampilPelanggan saat tab dibuka dan lewat Segarkan. Tombol pilih menyusul di ORD.
 //
+// ORD.03: tab Pesan juga memanggil window.KedaiPesan (pesan.js): .tampil() saat tab dibuka (layar "selesai"
+// tidak ditahan) dan .reset() saat Keluar (keranjang, alamat, dan hasil order dikosongkan).
+//
 // Aturan yang dijaga:
 // - Peran datang dari balasan server (aksi status) lewat akun.js; aplikasi tidak pernah mengirim peran.
 //   Menyembunyikan tab di sini hanya kemudahan; yang menolak akses sebenarnya server.
@@ -159,6 +162,15 @@
     ) {
       window.KedaiMenu.tampilPelanggan();
     }
+
+    // ORD.03: layar Pesan (keranjang dan form pesanan) di pesan.js.
+    if (
+      t.panel === "pesan" &&
+      window.KedaiPesan &&
+      typeof window.KedaiPesan.tampil === "function"
+    ) {
+      window.KedaiPesan.tampil();
+    }
   }
 
   // HOM.02: isi sapaan dan lencana peran. Teks dari server hanya lewat textContent.
@@ -263,6 +275,10 @@
     aturItemHome(null); // HOM.03, HOM.04: item Home per peran disembunyikan sampai masuk lagi
     if (window.KedaiMenu && typeof window.KedaiMenu.reset === "function") {
       window.KedaiMenu.reset();
+    }
+    // ORD.03: keranjang, alamat, dan hasil order tidak boleh tersisa setelah Keluar.
+    if (window.KedaiPesan && typeof window.KedaiPesan.reset === "function") {
+      window.KedaiPesan.reset();
     }
   }
 

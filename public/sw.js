@@ -6,7 +6,8 @@
 // Penanganan push ditambah nanti (notifikasi.md).
 
 // Naikkan angka versi ini bila daftar cache berubah, supaya salinan lama dibuang.
-var NAMA_CACHE = "chata-v10"; // MNU.10: naik dari chata-v9 karena grup.js masuk daftar cache
+// ORD.03: var NAMA_CACHE = "chata-v10"; // MNU.10: naik dari chata-v9 karena grup.js masuk daftar cache
+var NAMA_CACHE = "chata-v11"; // ORD.03: naik dari chata-v10 karena pesan.js masuk daftar cache
 
 // Semua path relatif (tanpa awalan /) supaya jalan di GitHub Pages.
 // Tiap berkas aplikasi baru (JS, style.css, pustaka, ikon) wajib ditambah di sini.
@@ -24,6 +25,7 @@ var DAFTAR_CACHE = [
   "menu-detail.js", // MNU.08
   "menu.js",
   "grup.js", // MNU.10
+  "pesan.js", // ORD.03
   "kerangka.js",
   "img/icon-192.png",
   "img/icon-512.png",

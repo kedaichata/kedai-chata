@@ -910,15 +910,203 @@
                 </div>
 
                 <!-- Panel Pesan (customer): daftar menu hanya dilihat (MNU.04). Tombol pilih menyusul di ORD. Logika di menu.js -->
+                <!-- ORD.03: panel Pesan kini punya tiga langkah (menu, pesanan, selesai). Keranjang dan form di pesan.js.
+                     Daftar menu (MNU.04, menu.js) tetap sama dan hanya dibungkus #pesan-langkah-menu. -->
                 <div id="panel-pesan" hidden>
-                    <p
-                        class="isian__galat"
-                        id="pelanggan-menu-galat"
-                        role="alert"
-                        hidden
-                    ></p>
-                    <p class="isian__bantuan" id="pelanggan-menu-ringkas"></p>
-                    <div id="pelanggan-menu-isi"></div>
+                    <!-- Langkah 1: menu -->
+                    <div id="pesan-langkah-menu">
+                        <div class="kartu" id="pesan-ringkas" hidden>
+                            <h2 class="kartu__judul">Pesanan kamu</h2>
+                            <p class="kartu__isi" id="pesan-ringkas-teks"></p>
+                            <div class="baris-tombol">
+                                <button
+                                    type="button"
+                                    class="tombol tombol--utama"
+                                    id="pesan-lihat"
+                                >
+                                    Lihat pesanan
+                                </button>
+                            </div>
+                        </div>
+                        <p
+                            class="isian__galat"
+                            id="pelanggan-menu-galat"
+                            role="alert"
+                            hidden
+                        ></p>
+                        <p
+                            class="isian__bantuan"
+                            id="pelanggan-menu-ringkas"
+                        ></p>
+                        <div id="pelanggan-menu-isi"></div>
+                    </div>
+
+                    <!-- Langkah 2: pesanan (ORD.03) -->
+                    <div id="pesan-langkah-form" hidden>
+                        <h1>Pesanan kamu</h1>
+                        <div id="pesan-item-isi"></div>
+                        <div class="baris-tombol">
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder"
+                                id="pesan-tambah-menu"
+                            >
+                                Tambah menu lain
+                            </button>
+                        </div>
+                        <p class="menu-harga" id="pesan-total"></p>
+                        <p class="isian__bantuan">
+                            Total ini perkiraan. Harga akhir dihitung saat
+                            pesanan dikirim.
+                        </p>
+
+                        <form id="form-pesan" novalidate>
+                            <div class="isian" id="isian-pesan-tipe">
+                                <label class="isian__label" for="pesan-tipe"
+                                    >Tipe pesanan</label
+                                >
+                                <select
+                                    class="isian__kolom"
+                                    id="pesan-tipe"
+                                    name="tipe"
+                                >
+                                    <option value="Diantar" selected>
+                                        Diantar
+                                    </option>
+                                    <option value="Diambil">Diambil</option>
+                                    <option value="Makan di warung">
+                                        Makan di warung
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="isian" id="isian-pesan-alamat">
+                                <label class="isian__label" for="pesan-alamat"
+                                    >Alamat antar</label
+                                >
+                                <select
+                                    class="isian__kolom"
+                                    id="pesan-alamat"
+                                    name="alamat"
+                                ></select>
+                                <p
+                                    class="isian__bantuan"
+                                    id="pesan-alamat-isi"
+                                    hidden
+                                ></p>
+                                <p
+                                    class="isian__bantuan"
+                                    id="pesan-alamat-ket"
+                                    hidden
+                                ></p>
+                                <p class="isian__galat" hidden></p>
+                                <div class="baris-tombol">
+                                    <button
+                                        type="button"
+                                        class="tombol tombol--sekunder"
+                                        id="pesan-alamat-muat"
+                                        hidden
+                                    >
+                                        Muat ulang alamat
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="tombol tombol--sekunder"
+                                        id="pesan-alamat-buku"
+                                    >
+                                        Buku alamat
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="isian" id="isian-pesan-hari">
+                                <label class="isian__label" for="pesan-hari"
+                                    >Hari</label
+                                >
+                                <select
+                                    class="isian__kolom"
+                                    id="pesan-hari"
+                                    name="hari"
+                                >
+                                    <option value="Hari ini" selected>
+                                        Hari ini
+                                    </option>
+                                    <option value="Besok">Besok</option>
+                                </select>
+                            </div>
+                            <div class="isian" id="isian-pesan-jam">
+                                <label
+                                    class="isian__label"
+                                    id="pesan-jam-label"
+                                    for="pesan-jam"
+                                    >Jam antar</label
+                                >
+                                <input
+                                    class="isian__kolom"
+                                    id="pesan-jam"
+                                    name="jam"
+                                    type="time"
+                                />
+                                <p class="isian__bantuan">
+                                    Isi jam yang kamu mau. Bila tidak bisa
+                                    dipenuhi, ChATA akan menghubungi lewat
+                                    WhatsApp.
+                                </p>
+                                <p class="isian__galat" hidden></p>
+                            </div>
+                            <div class="isian" id="isian-pesan-catatan">
+                                <label class="isian__label" for="pesan-catatan"
+                                    >Catatan (boleh dikosongkan)</label
+                                >
+                                <textarea
+                                    class="isian__kolom"
+                                    id="pesan-catatan"
+                                    name="catatan"
+                                    autocomplete="off"
+                                ></textarea>
+                                <p class="isian__bantuan">
+                                    Contoh: tanpa micin, cabe 3.
+                                </p>
+                            </div>
+                            <div class="isian" id="pesan-galat-bungkus" hidden>
+                                <p
+                                    class="isian__galat"
+                                    id="pesan-galat"
+                                    role="alert"
+                                ></p>
+                            </div>
+                            <button
+                                type="submit"
+                                class="tombol tombol--utama"
+                                id="tombol-pesan-kirim"
+                            >
+                                Kirim pesanan
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Langkah 3: selesai (ORD.03, teks pembayaran O21) -->
+                    <div id="pesan-langkah-selesai" hidden>
+                        <h1>Pesanan terkirim</h1>
+                        <div class="kartu">
+                            <h2
+                                class="kartu__judul"
+                                id="pesan-selesai-nomor"
+                            ></h2>
+                            <div id="pesan-selesai-rincian"></div>
+                            <p
+                                class="isian__bantuan"
+                                id="pesan-selesai-bayar"
+                            ></p>
+                        </div>
+                        <div class="baris-tombol">
+                            <button
+                                type="button"
+                                class="tombol tombol--utama"
+                                id="pesan-ulang"
+                            >
+                                Pesan lagi
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Panel Lainnya (owner): Pelanggan dan Bantuan menyusul, Akun dipasang kerangka.js -->
@@ -1409,6 +1597,8 @@
         <script src="menu.js"></script>
         <!-- Kelola Grup pilihan (MNU.10); harus setelah akun.js, dan setelah index ini memuat tombol menu-ke-grup -->
         <script src="grup.js"></script>
+        <!-- Layar Pesan customer (ORD.03): keranjang, form pesanan, Kirim; harus setelah akun.js (memakai window.KedaiAkun) -->
+        <script src="pesan.js"></script>
         <!-- Kerangka layar utama per peran (KRG.01); harus setelah akun.js dan menu.js -->
         <script src="kerangka.js"></script>
         <script>
