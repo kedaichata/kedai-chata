@@ -493,7 +493,7 @@ Blok 1 ditempel di **paling bawah `docs/order.md` bagian 9**. Blok 2 ditempel di
 **Commit:**
 
 - Layar Antrean: `21cdd81`, sudah di-push (pagar `AGENTS.md` bagian 8 lolos: folder, `git remote -v`, email noreply, semuanya milik ketua).
-- Badge tipe: [isi hash commit setelah di-push]. Bila belum di-commit, tulis "belum commit" dan jangan dianggap terpasang.
+- Badge tipe: 'f0ea828'.
 
 **Berkas:**
 
@@ -517,7 +517,6 @@ Blok 1 ditempel di **paling bawah `docs/order.md` bagian 9**. Blok 2 ditempel di
 - Tombol langkah berikutnya **tanpa dialog konfirmasi**.
 - Perubahan `sw.js` (v14 dan daftar cache) disetujui ketua.
 - **Badge tipe** berwarna di tiga layar, dengan warna yang konsisten antar peran, tanpa keterangan warna (alasan: tipe yang hanya dibedakan font kurang jelas).
-- Geser kartu sebagai pengganti tombol sempat dibahas dan **tidak dipakai** (menyulitkan penjaga yang kurang familiar; bila suatu saat dibuat, sebagai tambahan, bukan pengganti tombol).
 
 **Pilihan penulis** (alasan belum tercatat):
 
@@ -533,10 +532,10 @@ Blok 1 ditempel di **paling bawah `docs/order.md` bagian 9**. Blok 2 ditempel di
 - Angka tab dan pesan sukses mengikuti tiap perubahan. Detail menampilkan pilihan menu, Total, catatan baca-saja, dan alamat hanya untuk Diantar.
 - Keluar lalu masuk lagi: layar kembali ke tab Baru dengan data hasil muat ulang dari server.
 - Tes ketua di HP Android: semua jalan, termasuk mode offline.
+- **Badge tipe sudah dites tampilannya** di tiga layar (penjaga, owner, customer); cek satu order per tipe dan warna badge sama di ketiganya.
 
 **Masalah yang belum beres:**
 
-- **Badge tipe belum dites tampilannya** di tiga layar (penjaga, owner, customer); cek satu order per tipe dan warna badge sama di ketiganya.
 - **Owner membatalkan order lalu hilang dari Antrean** setelah Segarkan: belum teruji, karena tombol batal owner baru ada di ORD.15.
 - **Dua penjaga menekan tombol yang sama bersamaan** (SEC-10, order_status) dan penjaga menekan tombol pada order yang sudah Dibatalkan: dikerjakan di ORD.14. Baris SEC di sheet belum dicentang.
 - Push untuk status, koreksi, batal, dan alih hari belum ada (NTF.04, NTF.06, NTF.08).
