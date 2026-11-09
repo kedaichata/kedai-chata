@@ -18,6 +18,12 @@
 // ada logika order yang memakai jam HP. Tombol Hapus filter tetap mengosongkan semuanya (Hari ini dan Besok).
 // Dimuat SETELAH akun.js dan SEBELUM kerangka.js di index.html.
 //
+// ORD.15: detail order Disetujui ke atas kini punya kartu aksi owner (status maju dan mundur, koreksi metode
+// bayar, alihkan ke Besok, batalkan). Tampilan dan isiannya ada di orderowneraksi.js (window.KedaiOrderOwnerAksi,
+// dimuat sebelum berkas ini); pengirimannya tetap lewat fungsi kirim di bawah supaya kunci tombol, 409, dan
+// muat ulang detail sama dengan Setuju dan Tolak. Aksi server baru yang dipanggil layar ini: order_status,
+// order_metode_koreksi, order_alih_hari, order_batal (semua sudah ada dan lulus tes; tidak ada perubahan server).
+//
 // Aturan yang dijaga:
 // - Aplikasi hanya mengirim aksi, id order, metode bayar yang dipilih owner, dan alasan tolak.
 //   Status, harga, peran, dan pemutus tidak pernah dikirim. Yang menolak akses sebenarnya server
@@ -389,6 +395,7 @@
     var nomorMuatDetail = 0;
     var nomorKirim = 0;
     var awalTerisi = false; // filter bawaan (cfg.awal) sudah diisi sejak masuk
+    var aksiOwner = null; // ORD.15: kartu aksi owner (orderowneraksi.js), dibuat sekali per layar saat pertama dipakai
 
     function tampilkanLangkah() {
       e("langkah-daftar").hidden = langkah !== "daftar";
@@ -560,18 +567,52 @@
       var p = e("detail-galat");
       p.textContent = teks || "";
       p.hidden = !teks;
+      // ORD.15: tombol aksi ada di bagian bawah detail; pesan galat di atas harus ikut terlihat.
+      if (teks && typeof p.scrollIntoView === "function") {
+        p.scrollIntoView({ block: "nearest" });
+      }
     }
 
     function infoDetail(teks) {
       var p = e("detail-info");
       p.textContent = teks || "";
       p.hidden = !teks;
+      // ORD.15: sama dengan pesanDetail, info sukses harus terlihat setelah aksi di bagian bawah.
+      if (teks && typeof p.scrollIntoView === "function") {
+        p.scrollIntoView({ block: "nearest" });
+      }
     }
 
     function setelKeputusanBatal() {
       mode = "lihat";
       metodePilih = "";
       alasanTeks = "";
+      if (aksiOwner) aksiOwner.reset(); // ORD.15: isian aksi owner ikut dikosongkan
+    }
+
+    // ORD.15: buat kartu aksi owner saat pertama dibutuhkan. Bila orderowneraksi.js tidak termuat, kembali null
+    // dan layar tetap jalan seperti sebelumnya (Setuju dan Tolak).
+    function ambilAksi() {
+      if (
+        !aksiOwner &&
+        window.KedaiOrderOwnerAksi &&
+        typeof window.KedaiOrderOwnerAksi.buat === "function"
+      ) {
+        aksiOwner = window.KedaiOrderOwnerAksi.buat({
+          awalan: awalan,
+          buat: buat,
+          buatTombol: buatTombol,
+          jamIndo: jamIndo,
+          sedangKirim: function () {
+            return sedangKirim;
+          },
+          kirim: kirim,
+          pesan: pesanDetail,
+          info: infoDetail,
+          render: renderDetail,
+        });
+      }
+      return aksiOwner;
     }
 
     // Baris Chat WA (O13): tautan membuka WhatsApp ke nomor pemesan. Tanpa nomor: tidak tampil.
@@ -870,6 +911,12 @@
           wadah.appendChild(barisKeputusan);
         }
       }
+      // ORD.15: aksi owner untuk order Disetujui ke atas (kartu kosong/null untuk status lain).
+      var aksiKartu = ambilAksi();
+      if (aksiKartu) {
+        var kartuAksi = aksiKartu.kartu(o);
+        if (kartuAksi) wadah.appendChild(kartuAksi);
+      }
       var tombolWa = buatTombolWa(o);
       if (tombolWa) {
         var barisWa = buat("div", "baris-tombol");
@@ -945,10 +992,21 @@
     // Satu jalur kirim untuk Setuju dan Tolak.
     // aksi: "order_setuju" | "order_tolak"; isi: isian tanpa status atau peran; infoSukses: teks setelah berhasil.
     function kirim(aksi, isi, infoSukses, pesanUmum) {
+      // ORD.15: if (
+      //   sedangKirim ||
+      //   !detailTerbuka ||
+      //   detailTerbuka.status !== "Menunggu"
+      // ) {
+      //   return;
+      // }
+      // ORD.15: jalur ini juga dipakai aksi owner untuk order Disetujui ke atas (order_status, order_metode_koreksi,
+      // order_alih_hari, order_batal). Hanya Setuju dan Tolak yang tetap wajib berstatus Menunggu; sisanya
+      // diputuskan server (404, 409, 403). infoSukses boleh berupa fungsi(h) yang mengembalikan teks.
+      var hanyaMenunggu = aksi === "order_setuju" || aksi === "order_tolak";
       if (
         sedangKirim ||
         !detailTerbuka ||
-        detailTerbuka.status !== "Menunggu"
+        (hanyaMenunggu && detailTerbuka.status !== "Menunggu")
       ) {
         return;
       }
@@ -968,7 +1026,12 @@
             setelKeputusanBatal();
             // Muat ulang dari server supaya status yang tampil pasti dari server.
             muatDetail(id).then(function () {
-              if (nomor === nomorKirim) infoDetail(infoSukses);
+              // ORD.15: if (nomor === nomorKirim) infoDetail(infoSukses);
+              if (nomor === nomorKirim) {
+                infoDetail(
+                  typeof infoSukses === "function" ? infoSukses(h) : infoSukses,
+                );
+              }
             });
             return;
           }
