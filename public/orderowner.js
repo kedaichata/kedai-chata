@@ -12,6 +12,10 @@
 // status. Tanpa filter: Hari ini dan Besok (O22, urutan dari server). Filter hari (satu tanggal) dan filter
 // status dikirim ke order_daftar dan baru dipakai saat tombol Terapkan atau Segarkan ditekan (tanpa panggilan
 // server tiap isian berubah). Detail, Setuju, Tolak, dan Chat WA sama dengan Order Masuk.
+// Keputusan ketua (9 Nov 2026): saat tab Semua Order pertama dibuka sesudah masuk, filter terisi bawaan
+// Hari = tanggal hari ini menurut jam HP dan Status = Menunggu; owner bebas mengganti atau mengosongkannya.
+// Tanggal HP hanya mengisi kolom filter (tampilan); server tetap yang memvalidasi dan memfilter, dan tidak
+// ada logika order yang memakai jam HP. Tombol Hapus filter tetap mengosongkan semuanya (Hari ini dan Besok).
 // Dimuat SETELAH akun.js dan SEBELUM kerangka.js di index.html.
 //
 // Aturan yang dijaga:
@@ -228,6 +232,21 @@
     return angka.length >= 10 && angka.length <= 15 ? angka : "";
   }
 
+  // Tanggal hari ini menurut jam HP, "YYYY-MM-DD". HANYA untuk mengisi bawaan kolom filter (keputusan ketua);
+  // tidak dipakai menghitung apa pun di order. Server tetap memvalidasi tanggal yang dikirim.
+  function tanggalHpHariIni() {
+    var d = new Date();
+    var bln = String(d.getMonth() + 1);
+    var tgl = String(d.getDate());
+    return (
+      d.getFullYear() +
+      "-" +
+      (bln.length < 2 ? "0" + bln : bln) +
+      "-" +
+      (tgl.length < 2 ? "0" + tgl : tgl)
+    );
+  }
+
   function lencanaStatus(status) {
     var kelas = KELAS_STATUS[status] || "lencana--dibatalkan";
     return buat("span", "lencana " + kelas, teksAtauKosong(status));
@@ -330,7 +349,8 @@
   // Pabrik layar: satu layar = satu panel dengan daftar dan detail.
   // awalan : awalan id elemen di index.html (awalan-daftar-isi, awalan-kembali, dst.)
   // cfg    : { param(): isian order_daftar (dipakai bila tanpa filter), filter: true bila layar punya
-  //            kolom filter hari dan status, kosongJudul, kosongKet, ringkas(n, saringan) }
+  //            kolom filter hari dan status, awal(): isian filter bawaan saat pertama dibuka (opsional),
+  //            kosongJudul, kosongKet, ringkas(n, saringan) }
   // ------------------------------------------------------------
 
   function buatLayar(awalan, cfg) {
@@ -348,6 +368,7 @@
     var nomorMuatDaftar = 0; // naik tiap muat dan reset; balasan lama diabaikan
     var nomorMuatDetail = 0;
     var nomorKirim = 0;
+    var awalTerisi = false; // filter bawaan (cfg.awal) sudah diisi sejak masuk
 
     function tampilkanLangkah() {
       e("langkah-daftar").hidden = langkah !== "daftar";
@@ -395,6 +416,16 @@
       if (!cfg.filter) return;
       e("filter-hari").value = "";
       e("filter-status").value = "";
+    }
+
+    // Isi filter bawaan SEKALI sejak masuk (tab dibuka pertama kali). Sesudah itu pilihan owner dipertahankan.
+    function isiFilterAwal() {
+      if (!cfg.filter || !cfg.awal || awalTerisi) return;
+      var a = cfg.awal();
+      e("filter-hari").value = REGEX_TGL.test(a.hari) ? a.hari : "";
+      e("filter-status").value =
+        STATUS_FILTER.indexOf(a.status) === -1 ? "" : a.status;
+      awalTerisi = true;
     }
 
     // ---------------- Daftar ----------------
@@ -975,6 +1006,7 @@
 
     // Tab dibuka atau Segarkan ditekan: muat ulang layar yang sedang tampil.
     function tampil() {
+      isiFilterAwal(); // ORD.06 giliran 2: bawaan filter Semua Order (hanya sekali sejak masuk)
       if (langkah === "detail" && idDetail) {
         if (sedangKirim) return;
         muatDetail(idDetail);
@@ -996,6 +1028,7 @@
       kosongkan(e("daftar-isi"));
       kosongkan(e("detail-isi"));
       kosongkanFilter(); // ORD.06 giliran 2
+      awalTerisi = false; // masuk berikutnya mengisi filter bawaan lagi
       e("ringkas").textContent = "";
       e("memuat").hidden = true;
       e("detail-memuat").hidden = true;
@@ -1045,6 +1078,10 @@
   var layarSemua = buatLayar("semuaorder", {
     // Filter hari dan status dibaca dari isian layar (lihat ambilParam).
     filter: true,
+    // Keputusan ketua: bawaan Hari = hari ini (jam HP) dan Status = Menunggu.
+    awal: function () {
+      return { hari: tanggalHpHariIni(), status: "Menunggu" };
+    },
     kosongJudul: "Belum ada order",
     kosongKet: "Order Hari ini dan Besok akan muncul di sini.",
     ringkas: function (n, sar) {
