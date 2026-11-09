@@ -622,4 +622,55 @@ Alasan keputusan di luar yang disebut di atas: alasan belum tercatat.
 - Logout dashboard Supabase dan GitHub di Mac bersama sudah dikonfirmasi.
 
 **Saran giliran berikutnya:** ORD.10 ⚠️ (layar catatan dan tanda "Catatan baru"). `order_detail` dan `order_daftar` belum membawa penunjuk baca milik pemanggil, jadi kemungkinan butuh perubahan fungsi SQL ("OK" ketua); berangkat dari `20261109_03_order_detail_pembatal.sql` (versi aktif). Lalu ORD.11 sampai ORD.13, dan ORD.14.
+
+### Handoff #20 | 2026-11-09 | [FREN]
+
+**Tugas:** ORD.10 selesai dengan **versi B**: catatan tampil di detail order customer dan owner, dan customer serta owner bisa menambah catatan (O12). **Tanda "Catatan baru" di kartu daftar tidak dikerjakan**; ditunda ke NTF.07 bersama push catatan (keputusan ketua, lihat blok `2026-11-09: Tanda "Catatan baru" digeser dari ORD.10 ke NTF.07` di `docs/notifikasi.md` bagian 9, sudah ditempel). Tidak ada perubahan SQL, migration, tabel, atau `kedai`.
+
+**Commit:** `214dcf1` (inti ORD.10) sudah di-push, pagar `AGENTS.md` bagian 8 lolos. Susulan sesudahnya: perapihan jarak kartu Catatan (`style.css`, kelas `kartu--catatan`) sudah tayang di production (dikonfirmasi lewat layar). **Perbaikan galat kolom kosong di layar owner** (`orderownercatatan.js`, `orderowner.js`) sudah dibuat tetapi **belum dikonfirmasi di-commit, di-push, atau dites**: [isi hash dan hasil tes setelah dikerjakan].
+
+**Berkas:**
+
+- `public/orderownercatatan.js` (baru, `window.KedaiOrderOwnerCatatan.buat(alat)`): kartu form "Tambah catatan" owner dan penanda sudah dibaca. Tidak memanggil server untuk `catatan_tambah` sendiri; lewat `kirim` milik `orderowner.js`, jadi kunci tombol, 409, 404, dan muat ulang detail memakai jalur yang sama dengan Setuju dan Tolak.
+- `public/pesanan.js` (layar customer): `bacaDetail` membaca `catatan`; kartu Catatan, form tambah catatan, `catatan_dibaca`.
+- `public/orderowner.js`: hanya sambungan (`ambilCatatan`, kartu form sesudah kartu Catatan, `tandaiDibaca`, pengosongan isian, kelas `kartu--catatan`, dua isian alat `info` dan `render`). Baris lama tidak dihapus.
+- `public/index.html`: `orderownercatatan.js` dimuat sebelum `orderowner.js`.
+- `public/sw.js` (OK ketua): `chata-v16`, `orderownercatatan.js` masuk daftar cache. Berkas JS baru, `index.html`, dan `sw.js` harus naik satu commit.
+- `public/style.css`: blok baru di paling bawah (pemisah antar catatan, garis pemisah form). Aturan lama tidak disentuh.
+- `docs/notifikasi.md`: blok catatan tanda "Catatan baru".
+
+**Perilaku:**
+
+- **Customer** (Pesanan Saya, detail): kartu "Catatan" (penulis, waktu WIB, isi) dan form tambah catatan **hanya saat Menunggu atau Disetujui** (O12). Setelah sukses detail dimuat ulang dari server dan muncul "Catatan terkirim.". Kolom kosong ditolak di layar ("Tulis catatannya dulu.") tanpa panggilan server.
+- **Owner** (Order Masuk dan Semua Order, detail): daftar Catatan (baca saja, sudah ada dari ORD.06) dan kartu terpisah "Tambah catatan" **hanya saat Menunggu atau Disetujui**. Galat dari server (mis. 409) tampil di atas dan menggulung layar, sama seperti aksi owner lain. Kolom kosong: galat tampil di dalam kartu (perbaikan, belum dites).
+- **Penjaga:** tidak berubah (catatan baca-saja, O12).
+- `catatan_dibaca` dipanggil saat detail customer dan owner tampil, **hanya bila isi catatan berubah sejak terakhir ditandai** (kunci: id order, jumlah catatan, waktu catatan terakhir). Gagal diam-diam. Layar penjaga tidak memanggilnya.
+- Isian yang belum terkirim bertahan saat layar digambar ulang; dikosongkan saat pindah order, kembali ke daftar, setelah terkirim (atau ditolak 409 atau 404), dan saat Keluar. Penanda sudah dibaca dikosongkan saat Keluar.
+
+**Keputusan baru:**
+
+- **Ketua:** opsi B (tanpa tanda "Catatan baru" di ORD.10). Alasan ketua: tanda tanpa push belum berguna di tahap ini, karena daftar hanya dimuat saat layar dibuka, kembali ke layar, atau Segarkan. Ketua juga OK mengubah `sw.js`, dan meminta blok catatan di `notifikasi.md` serta Handoff ini.
+- Pilihan penulis (alasan belum tercatat): tanpa angka batas karakter di layar (batas ada di database dan tidak terbaca aplikasi, Handoff #4; server yang menolak dan pesannya ditampilkan); form owner di kartu terpisah (bukan di dalam kartu Catatan); form owner di berkas baru karena `orderowner.js` sudah panjang; label form owner "Catatan tampil ke customer pemilik order".
+
+**Pertentangan dengan catatan lama (yang paling akhir menang):** langkah 10 di bagian 5 (ORD.10 "dan tanda 'Catatan baru' di kartu order") tidak berlaku lagi untuk bagian tanda; tanda ada di NTF.07. Komentar kepala `pesanan.js` ("Catatan berlapis belum ditampilkan di sini") dan `orderowner.js` ("hanya DITAMPILKAN") tidak berlaku lagi; keterangannya ditambahkan di kode, barisnya tidak dihapus. Handoff #17 dan #19 ("ORD.10 butuh perubahan fungsi SQL") tidak berlaku untuk versi B.
+
+**Terbukti** (akun dummy, lewat layar; bukti di chat, tidak disimpan): customer melihat kartu Catatan di order Menunggu, mengirim catatan, catatan tampil dengan penulis dan waktu WIB, kolom kosong ditolak dengan pesan di dalam kartu; owner melihat kartu "Tambah catatan", mengirim catatan, catatan tampil di daftar; customer menerima catatan owner; jarak dan pemisah kartu di layar customer.
+
+**Masalah yang belum beres:**
+
+- **Belum dites:** perbaikan galat kolom kosong owner (kolom kosong menampilkan galat di dalam kartu, tanpa tulisan "Catatan terkirim." yang usang); form pada order **Disetujui** (customer dan owner); form **tidak ada** pada Diproses dan Selesai; 409 saat status berubah di layar; batas 10 catatan dan batas karakter lewat layar; HP Android.
+- **Belum diverifikasi:** `catatan_dibaca` benar-benar menggeser penunjuk (cek dengan query baca-saja di SQL Editor). Teks catatan berisi tag HTML tampil sebagai teks biasa (**SEC-18**, sekarang bisa dites lewat layar). Tes lain dari Handoff #19 tidak berubah: catatan di order wakil (ORD.12), dua sesi bersamaan catatan vs "Mulai proses" (SEC-10, ORD.14); ulangi query cek 8 dan 9 sesudahnya. Baris SEC di sheet belum dicentang.
+- Layar penjaga belum memakai kelas `kartu--catatan`, jadi catatan di sana masih tampil rapat (P2, satu baris di `orderpenjaga.js`).
+- Kosmetik (P2): label form owner turun dua baris di HP; `PESAN_TIDAK_PASTI` di `orderowner.js` berbunyi "keputusan sudah tersimpan" dan dipakai semua aksi owner, termasuk catatan.
+- `orderowner.js` (sekitar 1230 baris) dan `pesanan.js` (sekitar 935 baris) melewati patokan ~500 baris; memecahnya butuh penjelasan dampak dan "OK" ketua.
+- Push catatan (O14) dan tanda "Catatan baru" belum ada (NTF.06 dan NTF.07). Penjaga memakai tanda atau tidak belum diputuskan.
+- Order dummy #7 (Menunggu, Makan di warung) kini punya catatan dari customer dan owner. #25 masih penuh 10 dari 10 catatan. Order uji tidak bisa dihapus; dibersihkan di LNC.01.
+- Butir terbuka Handoff #11 sampai #19 yang tidak disebut di atas tidak berubah.
+
+**Saran giliran berikutnya:**
+
+1. Pastikan perbaikan galat owner sudah di-commit dan di-push (pagar bagian 8), lalu tes kolom kosong di layar owner dan form di order Disetujui. Setelah itu ORD.10 bisa dicentang di sheet; tes yang tersisa digabung ke ORD.14.
+2. Tes SEC-18 lewat layar (catatan berisi tag HTML harus tampil sebagai teks biasa) dan verifikasi `catatan_dibaca` lewat query baca-saja.
+3. Lanjut **ORD.11** ⚠️ (pelanggan tanpa akun: aksi daftar, simpan, nonaktifkan; item "Pelanggan" di Home sudah disiapkan, lihat blok 2026-11-07), lalu ORD.12, ORD.13, dan ORD.14. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + berkas `kedai` yang relevan + migration `20261108_order.sql`. Aksi baru `kedai` ditaruh di berkas terpisah (`AGENTS.md` bagian 12).
+
 ---

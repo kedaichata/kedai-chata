@@ -27,12 +27,13 @@
   var INFO_SUKSES = "Catatan terkirim.";
 
   // alat dari orderowner.js: awalan, buat, buatTombol, sedangKirim(), kirim(aksi, isi, infoSukses, pesanUmum),
-  // pesan(teks), panggil(aksi, isi) (hanya untuk catatan_dibaca).
+  // pesan(teks), info(teks), render(), panggil(aksi, isi) (hanya untuk catatan_dibaca).
   function buatCatatan(alat) {
     var buat = alat.buat;
     var buatTombol = alat.buatTombol;
     var draft = ""; // isi kolom yang belum terkirim; bertahan saat layar digambar ulang
     var kunciDibaca = ""; // catatan terakhir yang sudah ditandai dibaca (id order, jumlah, waktu terakhir)
+    var galat = ""; // pesan pemeriksaan isian (kolom kosong); tampil di dalam kartu, tidak menggulung layar
 
     function bolehTambah(o) {
       return !!o && (o.status === "Menunggu" || o.status === "Disetujui");
@@ -41,11 +42,13 @@
     // Kosongkan isian saja (pindah order, kembali ke daftar, catatan terkirim).
     function kosongkanIsian() {
       draft = "";
+      galat = "";
     }
 
     // Keluar: tidak ada yang tersisa.
     function reset() {
       draft = "";
+      galat = "";
       kunciDibaca = "";
     }
 
@@ -53,9 +56,15 @@
       if (alat.sedangKirim()) return;
       var isi = draft.trim();
       if (isi === "") {
-        alat.pesan(PESAN_KOSONG);
+        // Galat tampil di dalam kartu (seperti layar customer). Info sukses sebelumnya dihapus supaya tidak
+        // tampil bersama galat. Tanpa panggilan server.
+        galat = PESAN_KOSONG;
+        alat.pesan("");
+        alat.info("");
+        alat.render();
         return;
       }
+      galat = "";
       alat.kirim(
         "catatan_tambah",
         { id: o.id, isi: isi },
@@ -95,6 +104,9 @@
           "Catatan tidak bisa diubah atau dihapus. Kalau salah, tambah catatan baru.",
         ),
       );
+      if (galat) {
+        isian.appendChild(buat("p", "isian__galat", galat));
+      }
       k.appendChild(isian);
 
       var baris = buat("div", "baris-tombol");

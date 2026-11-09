@@ -638,6 +638,8 @@
           },
           kirim: kirim,
           pesan: pesanDetail,
+          info: infoDetail,
+          render: renderDetail,
           panggil: function (aksi, isi) {
             return A.panggilKedai(aksi, isi);
           },
