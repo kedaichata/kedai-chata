@@ -578,9 +578,11 @@
       p.textContent = teks || "";
       p.hidden = !teks;
       // ORD.15: sama dengan pesanDetail, info sukses harus terlihat setelah aksi di bagian bawah.
-      if (teks && typeof p.scrollIntoView === "function") {
-        p.scrollIntoView({ block: "nearest" });
-      }
+      // ORD.15 (revisi): info sukses TIDAK menggulung layar ke atas, supaya owner bisa memindah status berurutan
+      // tanpa menggulung turun lagi. Hanya pesan galat (pesanDetail) yang menggulung.
+      // if (teks && typeof p.scrollIntoView === "function") {
+      //   p.scrollIntoView({ block: "nearest" });
+      // }
     }
 
     function setelKeputusanBatal() {
