@@ -751,4 +751,37 @@ Alasan keputusan di luar yang disebut di atas: alasan belum tercatat.
 3. Lanjut **ORD.12** ⚠️ (`order_buat_wakil`), lalu **ORD.13** dan **ORD.14**. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` (versi terbaru) + `pelanggan_luar.ts` + berkas JS yang memuat `window.KedaiAkun` (nama berkas belum dipastikan; minta ke user) + migration `20261108_order.sql` dan `20261109_05_pelanggan_luar_fungsi.sql`. Aksi baru `kedai` ditaruh di berkas terpisah (`AGENTS.md` bagian 12).
 4. **Pesan ketua untuk ORD.13:** kemudahan layar bagi owner yang tidak terbiasa aplikasi (nyokap ketua, pemakai utama wizard dan Kelola Pelanggan di fase awal) harus dirancang sebaik mungkin supaya mereka kerasan memakainya; itu bukan urusan ORD.11.
 
+### Handoff #23 | 2026-11-10 | FREN
+
+**Tugas:** ORD.11 ⚠️ (pelanggan tanpa akun, sisi server) **selesai**: tes lulus, sudah di-commit dan di-push, dicentang di sheet (10 Nov 2026). Handoff ini menggantikan "Masalah yang belum beres" dan "Saran giliran berikutnya" di Handoff #22; selebihnya Handoff #22 tetap berlaku. Tidak ada kode yang diubah di sesi ini.
+
+**Commit** (pagar `AGENTS.md` bagian 8 lolos; `index.ts` 32 baris tambah, 0 hapus): `eb5548e` ORD.11 (tiga SQL, `pelanggan_luar.ts`, `index.ts`, `docs/order.md`); `ef8e009` md edit ketua (`AGENTS.md`, `docs/bonus.md`, `docs/desain.md`, `docs/gim.md`, bukan dari AI).
+
+**Terbukti** (konsol, akun dummy; bukti di chat, tidak disimpan):
+
+- Tambah hanya dengan nama; tambah lengkap (nomor `0812 3456 7890` tersimpan `6281234567890`); daftar urut abjad; ubah (id tetap); nonaktifkan; daftar biasa hanya yang aktif, `semua: true` memuat keduanya; aktifkan lagi; nonaktifkan dua kali tanpa galat.
+- Ditolak 400: nama 2 dan 31, keterangan 2 dan 101, alamat 9 dan 201, nomor WA salah, tiga kolom tidak dikirim, id rusak. 404: id tidak ada.
+- Nama kembar 409 (termasuk beda huruf besar-kecil); nama sama dengan keterangan beda lolos; aktifkan lagi yang membuat kembar 409.
+- `aktif: false` palsu diabaikan; dua simpan bersamaan dengan nama sama: tepat satu lolos, satu 409.
+- Customer dan penjaga memanggil ketiga aksi: 403 "Aksi ini hanya untuk owner."
+- Cek SQL 4: total 4, aktif 2; cek 5: 0 baris (tidak ada kembar aktif). Cek 1 sampai 3 sudah lulus di Handoff #22.
+
+**Keputusan baru:** tidak ada.
+
+**Masalah yang belum beres:**
+
+- Isian palsu `dibuat_oleh` belum terbukti (balasan server tidak memuatnya); `aktif` palsu sudah terbukti. Bisa dicek lewat query baca-saja di SQL Editor bila perlu.
+- Baris SEC di sheet belum dicentang; jadwalnya setelah ORD.14. Bukti sebagian untuk ORD.11: tiga aksi dibalas 403 untuk customer dan penjaga (SEC-07, SEC-14).
+- Layar daftar, layar Kelola Pelanggan, dan pengaktifan item **Pelanggan** di Home belum ada (digeser ke ORD.13, Handoff #22); item tetap "Segera".
+- ORD.12 harus menolak pelanggan **nonaktif** dan menyalin nama, WA, dan alamat pelanggan ke order.
+- Data dummy `pelanggan_luar` (4 baris, tidak bisa dihapus, dibersihkan di LNC.01): "Dummy Satu Ubah" (aktif, keterangan "Anak dummy"), "Dummy Dua" (nonaktif), "Dummy Satu Ubah" kedua (nonaktif, keterangan "Anak dummy"), "Dummy Kembar" (aktif).
+- Logout dashboard Supabase & GitHub sudah dikonfirmasi.
+- Pesan ketua untuk ORD.13 tetap: layar wizard dan Kelola Pelanggan harus mudah bagi owner yang tidak terbiasa aplikasi.
+- Butir terbuka Handoff #11 sampai #22 yang tidak disebut di atas tidak berubah.
+
+**Saran giliran berikutnya:**
+
+1. **ORD.12** ⚠️ (`order_buat_wakil`: atomik, langsung Disetujui, metode bayar, penanda pembuat), **sesi ketua**: butuh penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `pelanggan_luar.ts` + `catatan.ts` + migration `20261108_order.sql`, `20261108_02_order_fungsi.sql`, dan `20261109_05_pelanggan_luar_fungsi.sql`. Aksi baru `kedai` ditaruh di berkas terpisah (`AGENTS.md` bagian 12).
+2. Lalu **ORD.13** (wizard dan Kelola Pelanggan) dan **ORD.14** (sesi tes order).
+
 ---
