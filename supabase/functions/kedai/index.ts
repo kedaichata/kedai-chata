@@ -32,6 +32,11 @@
 //         (semua peran aktif; hak lihat dijaga fungsi SQL). Kodenya ada di BERKAS BARU `catatan.ts` (folder yang sama),
 //         diimpor di bawah; kode lama tidak dipindah. Fungsi SQL: 20261109_04_catatan_fungsi.sql (sudah dijalankan
 //         dan lulus cek SEBELUM berkas ini dideploy). Push catatan ada di NTF, bukan di sini.
+// ORD.11 (giliran 2): ditambah `pelanggan_luar_daftar`, `pelanggan_luar_simpan` (tambah, ubah, dan aktifkan lagi),
+//         dan `pelanggan_luar_nonaktif` (pelanggan tanpa akun, O16). Hanya owner; customer dan penjaga ditolak 403
+//         (SEC-07, SEC-14). Kodenya ada di BERKAS BARU `pelanggan_luar.ts` (folder yang sama), diimpor di bawah;
+//         kode lama tidak dipindah. Fungsi SQL: 20261109_05_pelanggan_luar_fungsi.sql (sudah dijalankan dan lulus
+//         cek SEBELUM berkas ini dideploy).
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -45,6 +50,8 @@ import { createClient } from "npm:@supabase/supabase-js@2.58.0";
 import { buatAksiOrderStatus } from "./order_status.ts";
 // ORD.09: aksi catatan_tambah dan catatan_dibaca ada di berkas terpisah.
 import { buatAksiCatatan } from "./catatan.ts";
+// ORD.11: aksi pelanggan_luar_daftar, pelanggan_luar_simpan, pelanggan_luar_nonaktif ada di berkas terpisah.
+import { buatAksiPelangganLuar } from "./pelanggan_luar.ts";
 
 // ------------------------------------------------------------
 // Pengaturan dasar
@@ -1310,6 +1317,25 @@ const { aksiCatatanTambah, aksiCatatanDibaca } = buatAksiCatatan({
 });
 
 // ------------------------------------------------------------
+// ORD.11: sambungan ke berkas pelanggan_luar.ts, dengan alat bantu yang sama seperti di atas.
+// ------------------------------------------------------------
+
+const {
+  aksiPelangganLuarDaftar,
+  aksiPelangganLuarSimpan,
+  aksiPelangganLuarNonaktif,
+} = buatAksiPelangganLuar({
+  // deno-lint-ignore no-explicit-any
+  klien: admin as any,
+  bacaPeran,
+  balas,
+  galat,
+  galatDariDb,
+  regexUuid: REGEX_UUID,
+  batasTeks: BATAS_TEKS,
+});
+
+// ------------------------------------------------------------
 // Pintu masuk
 // ------------------------------------------------------------
 
@@ -1404,6 +1430,12 @@ Deno.serve(async (req: Request): Promise<Response> => {
         return await aksiCatatanTambah(req, pengguna, isi);
       case "catatan_dibaca":
         return await aksiCatatanDibaca(req, pengguna, isi);
+      case "pelanggan_luar_daftar":
+        return await aksiPelangganLuarDaftar(req, pengguna, isi);
+      case "pelanggan_luar_simpan":
+        return await aksiPelangganLuarSimpan(req, pengguna, isi);
+      case "pelanggan_luar_nonaktif":
+        return await aksiPelangganLuarNonaktif(req, pengguna, isi);
       default:
         return galat(req, 400, "Aksi tidak dikenal.");
     }

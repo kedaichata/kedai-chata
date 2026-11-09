@@ -677,7 +677,7 @@ Alasan keputusan di luar yang disebut di atas: alasan belum tercatat.
 
 **Tugas:** lanjutan Handoff #20: tes ORD.10 di layar owner, customer, dan penjaga, plus perbaikan layar loncat ke atas. **ORD.10 sudah dicentang di sheet.** Tidak ada perubahan SQL, migration, tabel, `kedai`, atau `sw.js`. Handoff ini melengkapi "Masalah yang belum beres" dan "Saran giliran berikutnya" di Handoff #20; selebihnya #20 tetap berlaku.
 
-**Commit:** sudah di-push (pagar `AGENTS.md` bagian 8 lolos), hash: [isi].
+**Commit:** sudah di-push (pagar `AGENTS.md` bagian 8 lolos), hash: `26b5645`.
 
 **Berkas:**
 
@@ -705,4 +705,50 @@ Alasan keputusan di luar yang disebut di atas: alasan belum tercatat.
 - Push catatan dan tanda "Catatan baru" (NTF.06, NTF.07) belum ada.
 
 **Saran giliran berikutnya:** **ORD.11** ⚠️ (pelanggan tanpa akun: aksi daftar, simpan, nonaktifkan), lalu ORD.12 sampai ORD.14. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + berkas `kedai` yang relevan + migration `20261108_order.sql`. Aksi baru `kedai` ditaruh di berkas terpisah (`AGENTS.md` bagian 12).
+
+### Handoff #22 | 2026-11-09 | KETUA
+
+**Tugas:** ORD.11 ⚠️ (pelanggan tanpa akun, sisi server) **kode selesai dan ter-deploy di production; tes aksi baru belum dimulai.** Belum dicentang di sheet. **Belum di-commit dan di-push.**
+
+**Berkas:**
+
+- `supabase/migrations/20261109_05_pelanggan_luar_fungsi.sql` (tiga fungsi SQL: `pelanggan_luar_daftar`, `pelanggan_luar_simpan`, `pelanggan_luar_nonaktif`), pembatal `20261109_05_pelanggan_luar_fungsi_batal.sql`, dan cek `supabase/templates/20261109_05_pelanggan_luar_fungsi_cek.sql`. Sudah dijalankan di SQL Editor dan cek 1 sampai 5 lulus (tiga fungsi `SECURITY DEFINER`, `search_path` kosong, `EXECUTE` hanya `service_role`; hak tabel tetap INSERT, SELECT, UPDATE tanpa DELETE; tidak ada fungsi yang menghapus baris; tabel masih kosong). Tabel dan data tidak berubah.
+- `supabase/functions/kedai/pelanggan_luar.ts` (baru, pola sama dengan `catatan.ts`) dan `index.ts` (hanya tambahan: 32 baris, **0 baris lama dihapus**, dibuktikan dengan `diff` terhadap versi sebelumnya). Deploy `kedai --use-api` sukses (4 berkas terunggah), token CLI sudah dibersihkan (`[]`), logout dashboard Supabase dikonfirmasi.
+- **Belum ter-commit:** keempat berkas baru, `index.ts`, dan `docs/order.md` (edit ketua soal nama PIC, bukan dari AI). Pagar `AGENTS.md` bagian 8 wajib lolos sebelum push; cek `git status` dulu supaya tidak ada berkas nyasar.
+
+**Kontrak untuk layar (ORD.13):** balasan `{ status, data }` dari `panggilKedai`; galat `data = { ok: false, pesan }` (tampilkan `pesan` lewat `textContent`). Semua aksi **hanya owner** (customer dan penjaga 403).
+
+- `pelanggan_luar_daftar` isian `{ semua? }` (`true` = ikut yang nonaktif, bawaan `false`). Sukses `{ ok: true, daftar: [ { id, nama, keterangan, nomor_wa, alamat_antar, aktif } ] }`, urut abjad nama (yang aktif di atas bila ikut nonaktif), tanpa pembagian halaman. Pencarian dilakukan di layar, bukan di server.
+- `pelanggan_luar_simpan` isian `{ id?, nama, keterangan, nomor_wa, alamat_antar, aktifkan? }`. `id` kosong = tambah baru; terisi = ubah. **`keterangan`, `nomor_wa`, `alamat_antar` wajib ada di isian** (teks atau `null`; kosong = dikosongkan); tidak dikirim = 400. `aktifkan: true` mengaktifkan lagi yang nonaktif (diabaikan saat tambah baru). Sukses `{ ok: true, pelanggan: { id, nama, keterangan, nomor_wa, alamat_antar, aktif } }`.
+- `pelanggan_luar_nonaktif` isian `{ id }`. Sukses `{ ok: true, pelanggan: {...} }`; pelanggan yang sudah nonaktif: sukses tanpa perubahan.
+- Galat: 400 (nama 3 sampai 30; keterangan 3 sampai 100 atau kosong; nomor WA tidak valid; alamat 10 sampai 200 atau kosong; data rusak), 403 (bukan owner, akun nonaktif), 404 (pelanggan tidak ditemukan), 409 (`pelanggan_sudah_ada`: nama dan keterangan sama persis dengan pelanggan aktif lain, huruf besar-kecil dianggap sama).
+
+**Keputusan baru (ketua):**
+
+- **Opsi A:** ORD.11 hanya server. Layar daftar, layar Kelola Pelanggan, dan pengaktifan item **Pelanggan** di Home dikerjakan di **ORD.13** bersama wizard.
+- **Boleh diaktifkan lagi** lewat `pelanggan_luar_simpan` dengan `aktifkan: true` (pola sama dengan `menu_simpan`). Alasan ketua: nonaktif dipakai saat pelanggan yang tadinya dicatat owner akhirnya mendaftar akun sendiri; salah nonaktif atau pelanggan kembali minta dicatat tidak boleh buntu. Pelanggan tanpa akun **tidak digabung otomatis** dengan akun baru (O16 tetap).
+- **Satu alamat antar per pelanggan** (sesuai `database.md`). Banyak alamat per pelanggan ditunda; kandidat `bonus.md`, dilihat dulu apakah sering dibutuhkan di pemakaian nyata.
+- **Nama kembar boleh;** yang ditolak hanya nama dan keterangan yang sama persis di antara pelanggan aktif (berlaku juga saat mengaktifkan lagi).
+- **Pilihan penulis, disetujui ketua lewat OK** (alasan belum tercatat): (1) nomor WA: spasi dan tanda hubung dibuang dulu, jadi sedikit lebih longgar daripada `buat_profil`; (2) `pelanggan_luar_simpan` mengembalikan baris pelanggannya (termasuk id) supaya wizard "tambah baru di tempat" langsung memakainya; (3) penulisan diserialkan dengan `pg_advisory_xact_lock` supaya dua owner yang menyimpan nama sama bersamaan tidak sama-sama lolos; (4) `pelanggan_luar_nonaktif` pada yang sudah nonaktif tidak galat.
+
+**Pertentangan dengan catatan lama (yang paling akhir menang):** blok `2026-11-07: Pintu "Pelanggan tanpa akun" ada di Home (owner)` menyebut ORD.11 "tinggal mengaktifkannya dan membuat layar daftarnya". **Tidak berlaku lagi:** keduanya digeser ke ORD.13. Item Pelanggan di Home tetap "Segera" sampai ORD.13 selesai. Selain itu, tabel aksi di `database.md` hanya menyebut daftar, simpan, nonaktif; "aktifkan lagi" adalah tambahan dari keputusan di atas.
+
+**Terbukti:** deploy `kedai` tidak merusak aksi lama (layar owner Semua Order: daftar dan detail order tampil normal). Cek SQL 1 sampai 5 lulus (di atas).
+
+**Masalah yang belum beres:**
+
+- **Tes aksi baru lewat konsol belum dimulai.** Tertahan karena bentuk pemanggilan `window.KedaiAkun.panggilKedai` (urutan isian) belum ada di chat. Dapatkan lewat `console.log(String(window.KedaiAkun.panggilKedai))` di konsol (login owner dummy), atau tempel satu contoh perintah dari tes ORD.07.
+- **Belum dicentang di sheet** dan **belum di-commit atau di-push.**
+- Query cek 4 dan 5 di `20261109_05_pelanggan_luar_fungsi_cek.sql` diulang sesudah tes (butuh login dashboard Supabase, lalu logout).
+- Logout GitHub di Mac bersama dicek saat commit dan push.
+- Order wakil (ORD.12) belum ada: pastikan nanti menolak pelanggan **nonaktif** dan menyalin nama, WA, dan alamat pelanggan ke order.
+- Butir terbuka Handoff #11 sampai #21 tidak berubah.
+
+**Saran giliran berikutnya:**
+
+1. **Selesaikan tes ORD.11 lewat konsol** (akun dummy; bukti diperiksa di chat, tidak disimpan): tambah hanya dengan nama; tambah lengkap (nomor `0812 3456 7890` tersimpan `62...`); daftar; ubah; nonaktifkan lalu `semua: true`; aktifkan lagi; nonaktifkan dua kali; batas panjang (nama 2 dan 31, keterangan 2 dan 101, alamat 9 dan 201); nomor WA salah; kolom tidak dikirim = 400; id rusak = 400; id tidak ada = 404; nama kembar = 409 (termasuk beda huruf besar-kecil) tetapi nama sama dengan keterangan beda boleh; aktifkan lagi yang membuat kembar = 409; isian palsu (`aktif`, `dibuat_oleh`) diabaikan; dua simpan bersamaan nama sama: tepat satu lolos; customer dan penjaga memanggil ketiga aksi = 403 (SEC-07, SEC-14). Lalu ulangi query cek 4 dan 5.
+2. **Commit dan push** (satu commit: tiga SQL, `pelanggan_luar.ts`, `index.ts`, dan `docs/order.md`; pagar bagian 8), lalu ORD.11 bisa dicentang di sheet.
+3. Lanjut **ORD.12** ⚠️ (`order_buat_wakil`), lalu **ORD.13** dan **ORD.14**. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` (versi terbaru) + `pelanggan_luar.ts` + berkas JS yang memuat `window.KedaiAkun` (nama berkas belum dipastikan; minta ke user) + migration `20261108_order.sql` dan `20261109_05_pelanggan_luar_fungsi.sql`. Aksi baru `kedai` ditaruh di berkas terpisah (`AGENTS.md` bagian 12).
+4. **Pesan ketua untuk ORD.13:** kemudahan layar bagi owner yang tidak terbiasa aplikasi (nyokap ketua, pemakai utama wizard dan Kelola Pelanggan di fase awal) harus dirancang sebaik mungkin supaya mereka kerasan memakainya; itu bukan urusan ORD.11.
+
 ---
