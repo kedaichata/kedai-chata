@@ -549,4 +549,50 @@ Blok 1 ditempel di **paling bawah `docs/order.md` bagian 9**. Blok 2 ditempel di
 2. Setelah ORD.15: tes owner membatalkan order dan hilang dari Antrean penjaga (sisa ORD.08).
 3. Lalu ORD.09 (catatan berlapis), kemudian ORD.14 untuk sisa tes (SEC-10, SEC-19, dan lainnya).
 
+### Handoff #15 | 2026-11-09 | FREN
+
+**Tugas:** ORD.15 (tombol aksi owner di detail order) **selesai**: terpasang di production, tes lulus, sudah dicentang di sheet. ORD.16 dikerjakan terpisah (keputusan ketua, alasan belum tercatat). Tidak ada perubahan SQL, migration, `kedai`, `style.css`, atau `kerangka.js`.
+
+**Commit** (pagar `AGENTS.md` bagian 8 lolos dua kali: folder, `git remote -v`, email noreply, semuanya milik ketua):
+
+- `c7e4b04`: kartu aksi owner.
+- `c100ae1`: info sukses tidak lagi menggulung layar ke atas (lihat keputusan).
+
+**Berkas:**
+
+- `public/orderowneraksi.js` (baru, `window.KedaiOrderOwnerAksi.buat(alat)`): tampilan dan isian aksi owner. Tidak memanggil server sendiri; pengiriman lewat `kirim` milik `orderowner.js`. Dipisah ke berkas baru supaya `orderowner.js` tidak makin gemuk (permintaan ketua).
+- `public/orderowner.js` (sambungan saja; baris lama dijadikan komentar, tidak ada kode yang hilang): `ambilAksi`, guard `kirim` (hanya Setuju dan Tolak yang wajib Menunggu), pesan sukses boleh berupa fungsi, `pesanDetail` menggulung ke pesan galat.
+- `public/index.html` (satu tag script sebelum `orderowner.js`) dan `public/sw.js` (`chata-v15`, `orderowneraksi.js` masuk daftar cache; disetujui ketua).
+
+**Perilaku layar** (Order Masuk dan Semua Order, status Disetujui, Diproses, Diantar/Siap diambil/Siap disajikan):
+
+- **Langkah berikutnya** (label ikut tipe: Mulai proses; Antar sekarang, Siap diambil, atau Siap disajikan; Tandai selesai) dan **mundur satu langkah** (Kembalikan ke Disetujui dari Diproses; Kembalikan ke Diproses dari Siap; tidak dari Disetujui dan Selesai). Kirim `order_status` `{ id, arah, status_dilihat }`.
+- **Koreksi metode bayar** (`order_metode_koreksi`): metode sekarang tidak bisa dipilih; Simpan baru aktif setelah memilih metode lain.
+- **Alihkan ke Besok** (`order_alih_hari`): jam dan alasan (maks 100) opsional, kartu konfirmasi; hari tujuan tidak dikirim.
+- **Batalkan order** (`order_batal`): alasan opsional (maks 200, tampil ke customer), kartu konfirmasi.
+- Menunggu tetap Setuju dan Tolak. Selesai, Ditolak, Dibatalkan: tanpa aksi, hanya Chat WA.
+
+**Keputusan baru:**
+
+- Ketua (9 Nov, lewat PIC): **ORD.15 dan ORD.16 dipisah**; kode owner baru ditaruh di berkas terpisah; pendaftaran di `sw.js` disetujui.
+- Pilihan penulis (alasan belum tercatat): langkah maju dan mundur **tanpa dialog konfirmasi**, mengikuti layar penjaga (Handoff #14). Tombol Alihkan **selalu tampil** di status yang boleh; bila order sudah Besok, server menolak dan pesannya tampil (tanggal HP tidak dipakai, `AGENTS.md` bagian 7). Formulir yang terbuka ditutup dan isiannya dikosongkan bila detail dimuat ulang atau pindah order.
+- Atas permintaan FREN setelah tes: **pesan galat menggulung layar ke atas, info sukses tidak**. Alasan: menggulung saat tiap pindah status mengganggu urutan langkah.
+
+**Terbukti** (akun dummy, lewat layar; bukti di chat, tidak disimpan): maju dan mundur, tanpa tombol mundur di Disetujui, aksi hilang di Selesai; koreksi metode (metode sekarang mati); Batalkan dengan alasan tampil dan kartu aksi hilang; **order yang dibatalkan owner hilang dari Antrean penjaga setelah Segarkan** (sisa ORD.08 tutup); alih hari dengan jam kosong dan jam diisi, termasuk dari Siap diambil (jam lama tampil di bantuan form); alih hari kedua pada order yang sudah Besok ditolak server dengan pesannya.
+
+**Masalah yang belum beres:**
+
+- **Belum terbukti:** ketuk dua kali cepat pada tombol status (tidak bisa dites manual: tombol langsung berganti ke langkah berikutnya); server sudah menolak dobel-pencet (Handoff #13), SEC-10 dua sesi tetap di ORD.14. Revisi gulung layar (`c100ae1`) belum dicek di layar.
+- **Tandai selesai tanpa konfirmasi dan tidak bisa dimundurkan** (layar owner dan penjaga). Butuh keputusan ketua bila ingin dialog konfirmasi khusus tombol itu.
+- **ORD.16** belum: alasan alih hari belum tampil ke customer (⚠️, butuh ubah tabel atau fungsi). Layar customer juga belum membedakan "dibatalkan customer" dan "dibatalkan owner" (Handoff #11); keputusan ketua.
+- Push untuk status, koreksi, batal, dan alih hari belum ada (NTF.04, NTF.06, NTF.08).
+- Kosmetik (P2): tulisan "Simpan koreksi" turun dua baris di HP kecil. `orderowner.js` 1194 baris, melewati patokan ~500 (bagian pembantu bisa dipisah bila diputuskan; butuh penjelasan dampak dan "OK" ketua).
+- Order dummy: #21 (Diantar), #25 (Diambil, jam 12.30), #27 (Diantar) semuanya Disetujui, hari Selasa 10 Nov, dipakai ulang di ORD.14; #28 Dibatalkan, #29 Selesai. Order uji tidak bisa dihapus; dibersihkan di LNC.01.
+- Butir terbuka Handoff #11 sampai #14 yang tidak disebut di atas tidak berubah.
+
+**Saran giliran berikutnya:**
+
+1. **ORD.16** ⚠️ (alasan alih hari ke customer), sesi ketua: butuh penjelasan dampak dan "OK" ketua. Alasan alih hari kini hanya di `riwayat_status.keterangan` (Handoff #12, pilihan C), jadi perlu ubah fungsi atau tabel. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `order_status.ts` + `20261109_01_order_status_alih_hari.sql` + `public/pesanan.js`. Bahas sekalian pembeda "dibatalkan customer atau owner".
+2. **ORD.09** ⚠️ (catatan berlapis), lalu ORD.10, ORD.11 sampai ORD.13, dan **ORD.14** (sisa tes: SEC-10, SEC-19, batal vs setuju bersamaan).
+
 ---
