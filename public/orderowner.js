@@ -40,6 +40,9 @@
 // - Nomor WA dan alamat pemesan hanya tampil di detail, dan dikosongkan saat Keluar (reset).
 // - Tidak ada panggilan server baru selain aksi yang sudah ada (order_daftar, order_detail,
 //   order_setuju, order_tolak).
+//   ORD.10 (lanjutan): menambah catatan kini ada (aksi catatan_tambah dan catatan_dibaca), form-nya di
+//   orderownercatatan.js (window.KedaiOrderOwnerCatatan). Baris "hanya DITAMPILKAN" di atas tidak berlaku lagi untuk
+//   form; tanda "Catatan baru" di kartu daftar tetap TIDAK ada (ditunda ke NTF.07).
 
 (function () {
   "use strict";
@@ -396,6 +399,7 @@
     var nomorKirim = 0;
     var awalTerisi = false; // filter bawaan (cfg.awal) sudah diisi sejak masuk
     var aksiOwner = null; // ORD.15: kartu aksi owner (orderowneraksi.js), dibuat sekali per layar saat pertama dipakai
+    var catatanOwner = null; // ORD.10: form tambah catatan (orderownercatatan.js), dibuat sekali per layar saat pertama dipakai
 
     function tampilkanLangkah() {
       e("langkah-daftar").hidden = langkah !== "daftar";
@@ -615,6 +619,31 @@
         });
       }
       return aksiOwner;
+    }
+
+    // ORD.10: buat form tambah catatan saat pertama dibutuhkan. Bila orderownercatatan.js tidak termuat, kembali null
+    // dan layar tetap jalan seperti sebelumnya (catatan baca-saja).
+    function ambilCatatan() {
+      if (
+        !catatanOwner &&
+        window.KedaiOrderOwnerCatatan &&
+        typeof window.KedaiOrderOwnerCatatan.buat === "function"
+      ) {
+        catatanOwner = window.KedaiOrderOwnerCatatan.buat({
+          awalan: awalan,
+          buat: buat,
+          buatTombol: buatTombol,
+          sedangKirim: function () {
+            return sedangKirim;
+          },
+          kirim: kirim,
+          pesan: pesanDetail,
+          panggil: function (aksi, isi) {
+            return A.panggilKedai(aksi, isi);
+          },
+        });
+      }
+      return catatanOwner;
     }
 
     // Baris Chat WA (O13): tautan membuka WhatsApp ke nomor pemesan. Tanpa nomor: tidak tampil.
@@ -859,6 +888,13 @@
         wadah.appendChild(kartuCatatan);
       }
 
+      // ORD.10: form tambah catatan owner (O12), hanya Menunggu dan Disetujui (null untuk status lain).
+      var catatanKartu = ambilCatatan();
+      if (catatanKartu) {
+        var kartuTambah = catatanKartu.kartu(o);
+        if (kartuTambah) wadah.appendChild(kartuTambah);
+      }
+
       // Pembayaran dan keputusan (hanya bila sudah diputuskan).
       if (o.metode_bayar || o.pemutus_nama) {
         var kartuBayar = buat("div", "kartu");
@@ -942,6 +978,8 @@
               // Status sudah bukan Menunggu: kartu keputusan tidak berlaku lagi.
               if (o.status !== "Menunggu") setelKeputusanBatal();
               renderDetail();
+              var catatanDibaca = ambilCatatan(); // ORD.10
+              if (catatanDibaca) catatanDibaca.tandaiDibaca(o);
               return;
             }
           }
@@ -968,6 +1006,7 @@
       idDetail = id;
       detailTerbuka = null;
       setelKeputusanBatal();
+      if (catatanOwner) catatanOwner.kosongkanIsian(); // ORD.10: isian catatan order lain tidak terbawa
       infoDetail("");
       renderDetail();
       tampilkanLangkah();
@@ -980,6 +1019,7 @@
       langkah = "daftar";
       idDetail = "";
       detailTerbuka = null;
+      if (catatanOwner) catatanOwner.kosongkanIsian(); // ORD.10
       setelKeputusanBatal();
       pesanDetail("");
       infoDetail("");
@@ -1026,6 +1066,8 @@
           sedangKirim = false;
           if (h.status === 200 && h.data && h.data.ok === true) {
             setelKeputusanBatal();
+            if (aksi === "catatan_tambah" && catatanOwner)
+              catatanOwner.kosongkanIsian(); // ORD.10
             // Muat ulang dari server supaya status yang tampil pasti dari server.
             muatDetail(id).then(function () {
               // ORD.15: if (nomor === nomorKirim) infoDetail(infoSukses);
@@ -1047,6 +1089,8 @@
           // 409 (owner lain sudah memutuskan, atau order sudah batal) dan 404: status di layar usang.
           if (h.status === 409 || h.status === 404) {
             setelKeputusanBatal();
+            if (aksi === "catatan_tambah" && catatanOwner)
+              catatanOwner.kosongkanIsian(); // ORD.10
             muatDetail(id).then(function () {
               pesanDetail(pesan);
             });
@@ -1111,6 +1155,7 @@
       langkah = "daftar";
       idDetail = "";
       detailTerbuka = null;
+      if (catatanOwner) catatanOwner.reset(); // ORD.10: isian dan penanda baca dikosongkan saat Keluar
       setelKeputusanBatal();
       kosongkan(e("daftar-isi"));
       kosongkan(e("detail-isi"));

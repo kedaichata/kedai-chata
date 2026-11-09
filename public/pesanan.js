@@ -18,6 +18,11 @@
 // - Nomor WA pemesan ada di balasan detail tetapi tidak ditampilkan (itu milik customer sendiri,
 //   dan layar ini tidak membutuhkannya).
 // - Catatan berlapis belum ditampilkan di sini (ORD.10).
+//   ORD.10 (lanjutan, keputusan ketua 9 Nov 2026): baris di atas tidak berlaku lagi. Catatan berlapis (O12) kini tampil
+//   sebagai kartu "Catatan" di detail, lengkap dengan form tambah catatan hanya saat Menunggu atau Disetujui.
+//   Server yang memutuskan (catatan_tambah: 409 bila terkunci atau penuh). Tanda "Catatan baru" di kartu daftar
+//   TIDAK dikerjakan di sini (ditunda ke NTF.07). catatan_dibaca dipanggil saat detail tampil, hanya bila isi catatan
+//   berubah sejak terakhir ditandai, supaya hemat panggilan.
 // - ORD.16: alasan alih hari (isian `alasan_alih` dari order_detail) tampil sebagai kartu sendiri bila ada.
 //   Server hanya mengirimnya ke customer pemilik, selama order masih berjalan (bukan Selesai, Ditolak, Dibatalkan).
 // - ORD.17: pembeda pembatal (isian `dibatalkan_oleh` dan `dibatalkan_oleh_nama` dari order_detail) tampil sebagai
@@ -52,6 +57,14 @@
   var PESAN_BATAL_TIDAK_PASTI =
     "Belum bisa memastikan pesanan sudah dibatalkan. Tekan Segarkan untuk melihat status terbaru.";
   var TEKS_BATAL = "Ya, batalkan";
+  // ORD.10: teks catatan.
+  var PESAN_CATATAN_UMUM =
+    "Catatan belum bisa dikirim. Coba lagi sebentar lagi.";
+  var PESAN_CATATAN_KOSONG = "Tulis catatannya dulu.";
+  // Jaringan putus SETELAH permintaan terkirim: hasilnya tidak pasti.
+  var PESAN_CATATAN_TIDAK_PASTI =
+    "Belum bisa memastikan catatan sudah terkirim. Tekan Segarkan untuk memeriksa, lalu kirim lagi bila belum muncul.";
+  var PESAN_CATATAN_TERKIRIM = "Catatan terkirim.";
 
   // Kelas lencana per status (warna di style.css, desain.md 4.2).
   var KELAS_STATUS = {
@@ -106,6 +119,12 @@
   var nomorMuatDetail = 0;
   var nomorBatal = 0;
   var pernahMuatDaftar = false;
+  // ORD.10: catatan berlapis (O12).
+  var draftCatatan = ""; // isi kolom catatan yang belum terkirim; bertahan saat layar digambar ulang
+  var sedangKirimCatatan = false;
+  var nomorKirimCatatan = 0; // naik tiap kirim dan reset; balasan lama diabaikan
+  var pesanCatatan = { teks: "", galat: false }; // info atau galat di bawah kolom catatan
+  var kunciDibaca = ""; // catatan terakhir yang sudah ditandai dibaca (id order, jumlah, waktu terakhir)
 
   // ------------------------------------------------------------
   // Pembantu
@@ -139,6 +158,24 @@
 
   function teksAtauKosong(v) {
     return typeof v === "string" ? v : "";
+  }
+
+  // ORD.10: waktu catatan dari server (stempel waktu) ditulis dalam WIB. Hanya untuk tampilan.
+  function waktuIndo(s) {
+    var d = new Date(teksAtauKosong(s));
+    if (isNaN(d.getTime())) return "";
+    try {
+      return d.toLocaleString("id-ID", {
+        timeZone: "Asia/Jakarta",
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+    } catch (e) {
+      return "";
+    }
   }
 
   // Pesan dari fungsi kedai sendiri (ok:false + pesan) aman ditampilkan.
@@ -269,6 +306,19 @@
         });
       }
     }
+    // ORD.10: catatan berlapis dari order_detail (nama penulis, isi, waktu).
+    var catatan = [];
+    if (Array.isArray(o.catatan)) {
+      for (var c = 0; c < o.catatan.length; c++) {
+        var ct = o.catatan[c];
+        if (!ct || typeof ct.isi !== "string") continue;
+        catatan.push({
+          penulis: teksAtauKosong(ct.nama_penulis),
+          isi: ct.isi,
+          waktu: teksAtauKosong(ct.waktu),
+        });
+      }
+    }
     return {
       id: o.id,
       nomor: o.nomor,
@@ -286,6 +336,8 @@
       dibatalkanOleh: teksAtauKosong(o.dibatalkan_oleh),
       dibatalkanOlehNama: teksAtauKosong(o.dibatalkan_oleh_nama),
       item: item,
+      // ORD.10: catatan berlapis (urutan dari server).
+      catatan: catatan,
     };
   }
 
@@ -501,6 +553,67 @@
     }
     wadah.appendChild(kartuItem);
 
+    // ORD.10: catatan berlapis (O12). Daftar catatan baca-saja; form tambah hanya saat Menunggu atau Disetujui.
+    // Catatan tidak bisa diedit atau dihapus; berubah pikiran = tambah catatan baru. Semua teks lewat textContent.
+    var bolehTambahCatatan =
+      o.status === "Menunggu" || o.status === "Disetujui";
+    if (o.catatan.length > 0 || bolehTambahCatatan) {
+      var kartuCatatan = buat("div", "kartu");
+      kartuCatatan.appendChild(buat("h2", "kartu__judul", "Catatan"));
+      for (var c = 0; c < o.catatan.length; c++) {
+        var ct = o.catatan[c];
+        var kepala = ct.penulis;
+        var waktu = waktuIndo(ct.waktu);
+        if (waktu) kepala += (kepala ? ", " : "") + waktu;
+        if (kepala)
+          kartuCatatan.appendChild(buat("p", "isian__bantuan", kepala));
+        kartuCatatan.appendChild(buat("p", "kartu__isi", ct.isi));
+      }
+      if (bolehTambahCatatan) {
+        var isianCatatan = buat("div", "isian");
+        var labelCatatan = buat("label", "isian__label", "Tambah catatan");
+        labelCatatan.htmlFor = "pesanan-catatan-baru";
+        isianCatatan.appendChild(labelCatatan);
+        var kolomCatatan = buat("textarea", "isian__kolom");
+        kolomCatatan.id = "pesanan-catatan-baru";
+        kolomCatatan.rows = 3;
+        kolomCatatan.value = draftCatatan;
+        kolomCatatan.disabled = sedangKirimCatatan;
+        kolomCatatan.addEventListener("input", function () {
+          draftCatatan = kolomCatatan.value;
+        });
+        isianCatatan.appendChild(kolomCatatan);
+        isianCatatan.appendChild(
+          buat(
+            "p",
+            "isian__bantuan",
+            "Catatan tidak bisa diubah atau dihapus. Kalau berubah pikiran, tambah catatan baru.",
+          ),
+        );
+        if (pesanCatatan.teks) {
+          isianCatatan.appendChild(
+            buat(
+              "p",
+              pesanCatatan.galat ? "isian__galat" : "isian__bantuan",
+              pesanCatatan.teks,
+            ),
+          );
+        }
+        kartuCatatan.appendChild(isianCatatan);
+        var barisCatatan = buat("div", "baris-tombol");
+        barisCatatan.appendChild(
+          buatTombol(
+            sedangKirimCatatan ? "Mengirim..." : "Kirim catatan",
+            "tombol--utama",
+            kirimCatatan,
+            sedangKirimCatatan,
+          ),
+        );
+        kartuCatatan.appendChild(barisCatatan);
+      }
+      wadah.appendChild(kartuCatatan);
+    }
+
     // O21: teks pembayaran hanya pada pesanan Menunggu.
     if (o.status === "Menunggu") {
       var teksBayar =
@@ -587,6 +700,7 @@
           if (o) {
             detailTerbuka = o;
             renderDetail();
+            tandaiDibaca(o); // ORD.10
             return;
           }
         }
@@ -613,6 +727,9 @@
     idDetail = id;
     detailTerbuka = null;
     bersihkanKonfirmasi();
+    // ORD.10: isian catatan dari order lain tidak boleh terbawa.
+    draftCatatan = "";
+    pesanCatatan = { teks: "", galat: false };
     renderDetail();
     tampilkanLangkah();
     muatDetail(id);
@@ -621,6 +738,11 @@
   function kembaliKeDaftar() {
     if (sedangBatal) return;
     nomorMuatDetail++;
+    // ORD.10: balasan catatan yang masih jalan diabaikan; isian dikosongkan.
+    nomorKirimCatatan++;
+    sedangKirimCatatan = false;
+    draftCatatan = "";
+    pesanCatatan = { teks: "", galat: false };
     langkah = "daftar";
     idDetail = "";
     detailTerbuka = null;
@@ -682,6 +804,90 @@
   }
 
   // ------------------------------------------------------------
+  // Catatan berlapis (O12, ORD.10). Server yang memutuskan; aplikasi hanya mengirim id order dan isi.
+  // ------------------------------------------------------------
+
+  // Tandai catatan sudah dibaca (catatan_dibaca). Hanya dipanggil bila isi catatan berubah sejak terakhir
+  // ditandai (hemat panggilan, tanpa polling). Gagal diam-diam: tidak ada yang ditampilkan ke layar.
+  function tandaiDibaca(o) {
+    if (!o || !o.catatan || o.catatan.length === 0) return;
+    var terakhir = o.catatan[o.catatan.length - 1];
+    var kunci = o.id + ":" + o.catatan.length + ":" + terakhir.waktu;
+    if (kunci === kunciDibaca) return;
+    kunciDibaca = kunci;
+    A.panggilKedai("catatan_dibaca", { id: o.id }).catch(function () {
+      // Gagal (misalnya offline): coba lagi saat detail dimuat berikutnya.
+      if (kunciDibaca === kunci) kunciDibaca = "";
+    });
+  }
+
+  function kirimCatatan() {
+    if (sedangKirimCatatan || !detailTerbuka) return;
+    if (
+      detailTerbuka.status !== "Menunggu" &&
+      detailTerbuka.status !== "Disetujui"
+    ) {
+      return;
+    }
+    var isi = draftCatatan.trim();
+    if (isi === "") {
+      pesanCatatan = { teks: PESAN_CATATAN_KOSONG, galat: true };
+      renderDetail();
+      return;
+    }
+    var id = detailTerbuka.id;
+    // Kunci sebelum permintaan berangkat: dua ketukan cepat tidak boleh jadi dua panggilan.
+    sedangKirimCatatan = true;
+    var nomor = ++nomorKirimCatatan;
+    pesanCatatan = { teks: "", galat: false };
+    renderDetail();
+
+    A.panggilKedai("catatan_tambah", { id: id, isi: isi })
+      .then(function (h) {
+        if (nomor !== nomorKirimCatatan) return; // sudah kembali ke daftar atau Keluar
+        sedangKirimCatatan = false;
+        if (h.status === 200 && h.data && h.data.ok === true) {
+          draftCatatan = "";
+          pesanCatatan = { teks: PESAN_CATATAN_TERKIRIM, galat: false };
+          renderDetail(); // buka kunci kolom dulu, andai muat ulang gagal
+          muatDetail(id); // muat ulang dari server supaya catatan yang tampil pasti dari server
+          return;
+        }
+        if (h.status === 401 && !h.data) {
+          pesanCatatan = { teks: PESAN_SESI, galat: true };
+          renderDetail();
+          return;
+        }
+        var pesan = pesanServer(h) || PESAN_CATATAN_UMUM;
+        pesanCatatan = { teks: pesan, galat: true };
+        renderDetail();
+        // 409 (terkunci, penuh) dan 404: status di layar bisa usang, ambil yang terbaru.
+        if (h.status === 409 || h.status === 404) {
+          muatDetail(id).then(function () {
+            if (nomor !== nomorKirimCatatan) return;
+            var o2 = detailTerbuka;
+            // Kalau form sudah hilang (status berubah), pesan galat ditampilkan di tempat umum.
+            if (
+              !o2 ||
+              (o2.status !== "Menunggu" && o2.status !== "Disetujui")
+            ) {
+              pesanDetail(pesan);
+            }
+          });
+        }
+      })
+      .catch(function () {
+        if (nomor !== nomorKirimCatatan) return;
+        sedangKirimCatatan = false;
+        pesanCatatan = {
+          teks: navigator.onLine ? PESAN_CATATAN_TIDAK_PASTI : PESAN_OFFLINE,
+          galat: true,
+        };
+        renderDetail();
+      });
+  }
+
+  // ------------------------------------------------------------
   // Dipanggil kerangka.js
   // ------------------------------------------------------------
 
@@ -689,6 +895,7 @@
   function tampil() {
     if (langkah === "detail" && idDetail) {
       if (sedangBatal) return;
+      if (sedangKirimCatatan) return; // ORD.10
       muatDetail(idDetail);
     } else {
       muatDaftar();
@@ -706,6 +913,12 @@
     detailTerbuka = null;
     konfirmasiBuka = false;
     pernahMuatDaftar = false;
+    // ORD.10: catatan tidak boleh tersisa di layar (data pribadi).
+    nomorKirimCatatan++;
+    sedangKirimCatatan = false;
+    draftCatatan = "";
+    pesanCatatan = { teks: "", galat: false };
+    kunciDibaca = "";
     kosongkan(el("pesanan-daftar-isi"));
     kosongkan(el("pesanan-detail-isi"));
     el("pesanan-ringkas").textContent = "";

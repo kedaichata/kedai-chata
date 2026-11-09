@@ -181,3 +181,20 @@ _(belum ada blok)_
 **Dampak pada langkah kerja:** NTF.06 memasang dua kejadian baru ini setelah aksinya ada (`order_batal` di ORD.04, `order_alih_hari` di ORD.07); sebelum itu order berjalan tanpa push (bag. 3). NTF.04 memuat pengecualian NT8; NTF.08 memuat tes: isi push tanpa data pribadi, penjaga menekan push batal membuka Antrean, order wakil tidak mengirim push ke customer.
 
 **Belum beres:** teks push di atas contoh, boleh disesuaikan ketua. Bila push untuk penjaga ternyata dirasa mengganggu, cukup hapus baris penjaga di tabel (alasan belum tercatat).
+
+### 2026-11-09: Tanda "Catatan baru" digeser dari ORD.10 ke NTF.07
+
+**Berkas tujuan:** `docs/notifikasi.md` bagian 9 (tempel paling bawah). Sumber: keputusan ketua lewat PIC, 9 Nov 2026, sesi ORD.10. Yang paling akhir menang.
+
+**Keputusan (ketua):**
+
+- Tanda **"Catatan baru" di kartu order tidak dikerjakan di ORD.10**. ORD.10 dikerjakan tanpa tanda: catatan tampil di detail order (customer, owner, penjaga) dan customer serta owner bisa menambah catatan (O12). Alasan ketua: tanda tanpa push belum berguna di tahap ini, karena daftar hanya dimuat saat layar dibuka, kembali ke layar, atau Segarkan (bag. 4.2).
+- Tanda dikerjakan di **NTF.07**, **bersamaan dengan pengirim push catatan di NTF.06** (O14, tabel 4.1 baris catatan baru), supaya urutannya lengkap: push bunyi, orang membuka aplikasi, tanda menunjukkan order yang mana.
+
+**Yang perlu diingat saat NTF.07:**
+
+- `order_daftar` dan `order_detail` belum membawa penunjuk baca milik pemanggil (Handoff #17 dan #19 di `docs/order.md`), jadi tanda butuh perubahan **fungsi SQL** (⚠️, "OK" ketua). Perkiraan penulis, belum dicek di SQL-nya: cukup mengubah `order_daftar`, sedangkan `order_detail` kemungkinan tidak perlu disentuh. Bila `order_detail` tetap diubah, berangkat dari `20261109_03_order_detail_pembatal.sql` (versi aktif).
+- Aksi `catatan_dibaca` sudah ada (ORD.09); layar customer dan owner memanggilnya saat detail dibuka, sehingga penunjuk baca sudah terisi sejak ORD.10.
+- Penjaga: memakai tanda atau tidak **belum diputuskan** (O14 mengabari penjaga untuk order Disetujui ke atas). Putuskan di NTF.07.
+
+**Pertentangan dengan catatan lama:** langkah 10 di `docs/order.md` bagian 5 (ORD.10 "dan tanda 'Catatan baru' di kartu order") tidak berlaku lagi untuk bagian tanda; tanda ada di NTF.07.
