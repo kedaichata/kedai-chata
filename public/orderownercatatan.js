@@ -17,6 +17,8 @@
 // - Tanda "Catatan baru" di kartu daftar TIDAK dikerjakan di sini (ditunda ke NTF.07, keputusan ketua 9 Nov 2026).
 // - Semua teks dipasang lewat textContent, bukan innerHTML.
 // - Isian yang belum terkirim dikosongkan saat pindah order, kembali ke daftar, setelah terkirim, dan saat Keluar.
+// - Perbaikan layar loncat (9 Nov 2026): kolom kosong TIDAK lagi menggambar ulang seluruh detail (itu membuat halaman
+//   sesaat pendek dan gulungan tertarik ke atas). Pesan galat dipasang langsung di dalam kartu yang sudah tampil.
 // Dimuat SEBELUM orderowner.js di index.html (orderowner.js tetap aman bila berkas ini tidak termuat).
 
 (function () {
@@ -34,6 +36,9 @@
     var draft = ""; // isi kolom yang belum terkirim; bertahan saat layar digambar ulang
     var kunciDibaca = ""; // catatan terakhir yang sudah ditandai dibaca (id order, jumlah, waktu terakhir)
     var galat = ""; // pesan pemeriksaan isian (kolom kosong); tampil di dalam kartu, tidak menggulung layar
+    var elIsian = null; // blok isian pada kartu yang sedang tampil (untuk memasang galat tanpa gambar ulang)
+    var elBantuan = null; // paragraf bantuan; pesan galat dipasang tepat sesudahnya
+    var elGalat = null; // paragraf galat pada kartu yang sedang tampil (null bila belum ada)
 
     function bolehTambah(o) {
       return !!o && (o.status === "Menunggu" || o.status === "Disetujui");
@@ -52,6 +57,21 @@
       kunciDibaca = "";
     }
 
+    // Pasang atau perbarui pesan galat langsung di kartu yang sudah tampil, tanpa menggambar ulang detail.
+    // Bila kartu belum ada di layar (tidak seharusnya terjadi), kembali ke gambar ulang seperti semula.
+    function pasangGalatDiKartu() {
+      if (!elIsian || !elBantuan) {
+        alat.render();
+        return;
+      }
+      if (!elGalat) {
+        elGalat = buat("p", "isian__galat", galat);
+        elIsian.insertBefore(elGalat, elBantuan.nextSibling);
+      } else {
+        elGalat.textContent = galat;
+      }
+    }
+
     function kirimCatatan(o) {
       if (alat.sedangKirim()) return;
       var isi = draft.trim();
@@ -61,7 +81,8 @@
         galat = PESAN_KOSONG;
         alat.pesan("");
         alat.info("");
-        alat.render();
+        // alat.render(); // lama: menggambar ulang seluruh detail, halaman sesaat pendek lalu gulungan loncat ke atas.
+        pasangGalatDiKartu();
         return;
       }
       galat = "";
@@ -97,15 +118,18 @@
         draft = kolom.value;
       });
       isian.appendChild(kolom);
-      isian.appendChild(
-        buat(
-          "p",
-          "isian__bantuan",
-          "Catatan tidak bisa diubah atau dihapus. Kalau salah, tambah catatan baru.",
-        ),
+      var bantuan = buat(
+        "p",
+        "isian__bantuan",
+        "Catatan tidak bisa diubah atau dihapus. Kalau salah, tambah catatan baru.",
       );
+      isian.appendChild(bantuan);
+      elIsian = isian;
+      elBantuan = bantuan;
+      elGalat = null;
       if (galat) {
-        isian.appendChild(buat("p", "isian__galat", galat));
+        elGalat = buat("p", "isian__galat", galat);
+        isian.appendChild(elGalat);
       }
       k.appendChild(isian);
 
