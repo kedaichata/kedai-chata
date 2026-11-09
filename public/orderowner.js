@@ -43,6 +43,9 @@
 //   ORD.10 (lanjutan): menambah catatan kini ada (aksi catatan_tambah dan catatan_dibaca), form-nya di
 //   orderownercatatan.js (window.KedaiOrderOwnerCatatan). Baris "hanya DITAMPILKAN" di atas tidak berlaku lagi untuk
 //   form; tanda "Catatan baru" di kartu daftar tetap TIDAK ada (ditunda ke NTF.07).
+//   Perbaikan layar loncat (9 Nov 2026): renderDetail() kini membungkus gambarDetail() dan mengembalikan posisi
+//   gulung sesudah detail digambar ulang. Sebelumnya tiap aksi (Setuju, Tolak, status, catatan) menarik layar ke
+//   atas, baru terasa sesudah kartu Catatan membuat halaman detail panjang.
 
 (function () {
   "use strict";
@@ -798,7 +801,20 @@
       return kartu;
     }
 
+    // Semua pemanggil memakai renderDetail(). Isi detail dikosongkan lalu digambar ulang, dan itu membuat layar
+    // loncat ke atas pada halaman yang panjang. Posisi gulung dicatat sebelum digambar, lalu dikembalikan.
     function renderDetail() {
+      var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+      gambarDetail();
+      try {
+        window.scrollTo({ top: y, left: 0, behavior: "instant" });
+      } catch (err) {
+        window.scrollTo(0, y);
+      }
+    }
+
+    // Gambar detail (isi lama renderDetail, hanya ganti nama).
+    function gambarDetail() {
       var o = detailTerbuka;
       var wadah = e("detail-isi");
       kosongkan(wadah);
