@@ -875,6 +875,7 @@
       // Catatan (baca saja; menambah catatan di ORD.09 dan ORD.10).
       if (o.catatan.length > 0) {
         var kartuCatatan = buat("div", "kartu");
+        kartuCatatan.classList.add("kartu--catatan"); // ORD.10: jarak dan pemisah (style.css)
         kartuCatatan.appendChild(buat("h2", "kartu__judul", "Catatan"));
         for (var c = 0; c < o.catatan.length; c++) {
           var ct = o.catatan[c];

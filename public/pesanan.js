@@ -559,6 +559,7 @@
       o.status === "Menunggu" || o.status === "Disetujui";
     if (o.catatan.length > 0 || bolehTambahCatatan) {
       var kartuCatatan = buat("div", "kartu");
+      kartuCatatan.classList.add("kartu--catatan"); // ORD.10: jarak dan pemisah (style.css)
       kartuCatatan.appendChild(buat("h2", "kartu__judul", "Catatan"));
       for (var c = 0; c < o.catatan.length; c++) {
         var ct = o.catatan[c];

@@ -1518,3 +1518,28 @@ body.sheet-terbuka {
 .badge-tipe--warung {
     background: var(--tipe-warung);
 }
+
+/* ------------------------------------------------------------------
+   ORD.10: kartu Catatan (kelas kartu--catatan, dipasang di pesanan.js dan orderowner.js).
+   Pemisah tipis antar catatan, dan form tambah catatan dipisah garis dari daftar catatan.
+   Hanya menambah gaya baru; tidak mengubah aturan yang sudah ada.
+   ------------------------------------------------------------------ */
+.kartu--catatan .isian__bantuan:has(+ .kartu__isi) {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--garis-tipis);
+}
+
+/* Catatan pertama tepat di bawah judul: tanpa garis dan tanpa jarak tambahan */
+.kartu--catatan .kartu__judul + .isian__bantuan:has(+ .kartu__isi) {
+    margin-top: 6px;
+    padding-top: 0;
+    border-top: 0;
+}
+
+/* Form tambah catatan sesudah daftar catatan: diberi jarak dan garis pemisah */
+.kartu--catatan .kartu__isi + .isian {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--garis-tipis);
+}
