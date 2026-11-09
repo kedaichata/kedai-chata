@@ -881,4 +881,12 @@ Alasan keputusan di luar yang disebut di atas: alasan belum tercatat.
 1. **ORD.13** (adik ketua): wizard 5 langkah dan layar Kelola Pelanggan, dengan kontrak `order_buat_wakil` di Handoff #24 dan kontrak `pelanggan_luar_*` di Handoff #22. Lampirkan `AGENTS.md` + `order.md` + `desain.md` + `home.md` + `akun.js` (tempat `window.KedaiAkun.panggilKedai`) + `index.html` + `kerangka.js` + `style.css` + `sw.js` + `orderowner.js` (sebagai contoh pola layar owner). AI meminta berkas lain di awal sesi bila perlu; tidak ada perubahan SQL atau `kedai` yang direncanakan.
 2. Lalu **ORD.14** (sesi tes order): sisa tes ada di Handoff #11, #13, #14, #15, dan #21.
 
+### 2026-11-10: Keterangan pelanggan sengaja tidak disalin ke order wakil
+
+Keputusan ketua (10 Nov 2026, setelah Handoff #25). Alasan ketua: nomor WA dan alamat di order sudah cukup untuk membedakan pelanggan yang namanya sama, dan kejadian nama kembar jarang.
+
+- **Keterangan pelanggan tidak disalin ke order.** Tabel `order` tidak ditambah kolom keterangan dan `order_buat_wakil` tidak diubah.
+- **Menimpa Handoff #25 dan #24:** butir "Salin keterangan pelanggan ke order wakil" **tidak dibuat di sheet** dan bukan lagi masalah yang belum beres; keadaan sekarang disengaja.
+- **Dibuka lagi bila** di pemakaian nyata warung nama kembar sering membingungkan (perubahan tabel dan fungsi butuh penjelasan dampak dan "OK" ketua). Saran penulis di Handoff #25 tetap berlaku: wizard langkah 1 menampilkan keterangan di samping nama pelanggan, karena keterangan masih tersimpan di daftar Pelanggan tanpa akun.
+
 ---
