@@ -1325,3 +1325,159 @@ body.sheet-terbuka {
     line-height: 20px;
     text-align: center;
 }
+
+/* ============================================================
+   ORD.08: layar penjaga Antrean (empat tab warna: Baru, Diproses, Siap, Selesai)
+   Nama tab memakai warna tegas, isi di bawahnya warna lembut yang senada.
+   Warna di satu tempat (variabel di bawah); ubah di sini bila perlu.
+   ============================================================ */
+:root {
+    --antrean-baru-tegas: #0f3d7a; /* biru tua */
+    --antrean-baru-lembut: #e6f0ff;
+    --antrean-diproses-tegas: #8a5a00; /* oranye tua */
+    --antrean-diproses-lembut: #fff2d2;
+    --antrean-siap-tegas: #1f6b2a; /* hijau tua */
+    --antrean-siap-lembut: #e5f5df;
+    --antrean-selesai-tegas: #4a4640; /* abu tua */
+    --antrean-selesai-lembut: #eeece8;
+}
+
+.antrean-tab {
+    display: flex;
+    gap: 6px;
+    margin: 0 0 0;
+}
+
+.antrean-tab__butir {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 2px;
+    border: 0;
+    border-bottom: 5px solid transparent;
+    border-radius: 12px 12px 0 0;
+    color: #ffffff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.antrean-tab__butir[aria-selected="true"] {
+    opacity: 1;
+    border-bottom-color: var(--emas-terang);
+}
+
+.antrean-tab__butir:focus-visible {
+    outline: 3px solid var(--emas-terang);
+    outline-offset: 2px;
+}
+
+.antrean-tab__butir--baru {
+    background: var(--antrean-baru-tegas);
+}
+
+.antrean-tab__butir--diproses {
+    background: var(--antrean-diproses-tegas);
+}
+
+.antrean-tab__butir--siap {
+    background: var(--antrean-siap-tegas);
+}
+
+.antrean-tab__butir--selesai {
+    background: var(--antrean-selesai-tegas);
+}
+
+.antrean-tab__nama {
+    font-size: 0.95rem;
+    line-height: 1.2;
+}
+
+.antrean-tab__angka {
+    min-width: 28px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--teks-gelap);
+    font-size: 1rem;
+    line-height: 1.6;
+    text-align: center;
+}
+
+/* Isi tab: warna lembut, garis atas setebal tab supaya terasa menyambung */
+.antrean-isi {
+    padding: 12px;
+    border-top: 5px solid transparent;
+    border-radius: 0 0 12px 12px;
+}
+
+.antrean-isi--baru {
+    background: var(--antrean-baru-lembut);
+    border-top-color: var(--antrean-baru-tegas);
+}
+
+.antrean-isi--diproses {
+    background: var(--antrean-diproses-lembut);
+    border-top-color: var(--antrean-diproses-tegas);
+}
+
+.antrean-isi--siap {
+    background: var(--antrean-siap-lembut);
+    border-top-color: var(--antrean-siap-tegas);
+}
+
+.antrean-isi--selesai {
+    background: var(--antrean-selesai-lembut);
+    border-top-color: var(--antrean-selesai-tegas);
+}
+
+/* Kartu order: tetap putih (terbaca), garis kiri senada dengan tabnya */
+.antrean-kartu {
+    border-left-width: 6px;
+}
+
+.antrean-isi--baru .antrean-kartu {
+    border-left-color: var(--antrean-baru-tegas);
+}
+
+.antrean-isi--diproses .antrean-kartu {
+    border-left-color: var(--antrean-diproses-tegas);
+}
+
+.antrean-isi--siap .antrean-kartu {
+    border-left-color: var(--antrean-siap-tegas);
+}
+
+.antrean-isi--selesai .antrean-kartu {
+    border-left-color: var(--antrean-selesai-tegas);
+}
+
+/* Judul tanggal di dalam tab */
+.antrean-hari {
+    margin: 4px 0 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--teks-gelap);
+}
+
+.antrean-hari:not(:first-child) {
+    margin-top: 16px;
+}
+
+/* Tombol langkah berikutnya: besar dan jelas untuk penjaga */
+.antrean-aksi {
+    min-height: 56px;
+    font-size: 1.1rem;
+}
+
+/* Tombol mundur satu langkah: lebih kecil dan netral supaya tidak kepencet */
+.antrean-mundur {
+    min-height: 40px;
+    font-size: 0.9rem;
+}

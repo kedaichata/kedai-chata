@@ -30,6 +30,9 @@
 // ORD.06 (giliran 2): tab Semua Order (owner) memakai panel "semuaorder" (orderowner.js): window.KedaiOrderOwner
 // .tampilSemua() saat tab dibuka dan lewat Segarkan. .reset() yang sama (Keluar) membersihkan kedua layar owner.
 //
+// ORD.08: tab Antrean (penjaga) memakai panel "antrean" (orderpenjaga.js): window.KedaiOrderPenjaga
+// .tampil() saat tab dibuka dan lewat Segarkan, .reset() saat Keluar.
+//
 // Aturan yang dijaga:
 // - Peran datang dari balasan server (aksi status) lewat akun.js; aplikasi tidak pernah mengirim peran.
 //   Menyembunyikan tab di sini hanya kemudahan; yang menolak akses sebenarnya server.
@@ -73,7 +76,8 @@
     ],
     penjaga: [
       { id: "home", nama: "Home", panel: "akun" }, // HOM.01
-      { id: "antrean", nama: "Antrean", panel: "segera" },
+      // ORD.08: { id: "antrean", nama: "Antrean", panel: "segera" },
+      { id: "antrean", nama: "Antrean", panel: "antrean" },
       // HOM.01: { id: "akun", nama: "Akun", panel: "akun" },
     ],
     // Peran tak dikenal: hanya Akun (supaya tetap bisa keluar), tanpa navigasi bawah.
@@ -99,6 +103,7 @@
     "pesanan",
     "ordermasuk",
     "semuaorder", // ORD.06 giliran 2
+    "antrean", // ORD.08
   ];
 
   // HOM.02: tulisan lencana peran di kartu sapaan (HM4). Peran tak dikenal: lencana disembunyikan.
@@ -217,6 +222,15 @@
       typeof window.KedaiOrderOwner.tampilSemua === "function"
     ) {
       window.KedaiOrderOwner.tampilSemua();
+    }
+
+    // ORD.08: layar penjaga Antrean (tab, daftar, detail) di orderpenjaga.js; dimuat saat tab dibuka dan lewat Segarkan.
+    if (
+      t.panel === "antrean" &&
+      window.KedaiOrderPenjaga &&
+      typeof window.KedaiOrderPenjaga.tampil === "function"
+    ) {
+      window.KedaiOrderPenjaga.tampil();
     }
   }
 
@@ -340,6 +354,13 @@
       typeof window.KedaiOrderOwner.reset === "function"
     ) {
       window.KedaiOrderOwner.reset();
+    }
+    // ORD.08: daftar, detail, nomor WA, dan alamat pemesan tidak boleh tersisa setelah Keluar.
+    if (
+      window.KedaiOrderPenjaga &&
+      typeof window.KedaiOrderPenjaga.reset === "function"
+    ) {
+      window.KedaiOrderPenjaga.reset();
     }
   }
 

@@ -1318,6 +1318,134 @@
                     </div>
                 </div>
 
+                <!-- Panel Antrean (penjaga, ORD.08): empat tab (Baru, Diproses, Siap, Selesai), detail, tombol langkah berikutnya. Logika di orderpenjaga.js -->
+                <div id="panel-antrean" hidden>
+                    <!-- Langkah 1: tab dan daftar -->
+                    <div id="antrean-langkah-daftar">
+                        <div
+                            class="antrean-tab"
+                            role="tablist"
+                            aria-label="Tahap order"
+                        >
+                            <button
+                                type="button"
+                                role="tab"
+                                class="antrean-tab__butir antrean-tab__butir--baru"
+                                id="antrean-tab-baru"
+                                aria-selected="true"
+                            >
+                                <span class="antrean-tab__nama">Baru</span>
+                                <span
+                                    class="antrean-tab__angka"
+                                    id="antrean-angka-baru"
+                                    >0</span
+                                >
+                            </button>
+                            <button
+                                type="button"
+                                role="tab"
+                                class="antrean-tab__butir antrean-tab__butir--diproses"
+                                id="antrean-tab-diproses"
+                                aria-selected="false"
+                            >
+                                <span class="antrean-tab__nama">Diproses</span>
+                                <span
+                                    class="antrean-tab__angka"
+                                    id="antrean-angka-diproses"
+                                    >0</span
+                                >
+                            </button>
+                            <button
+                                type="button"
+                                role="tab"
+                                class="antrean-tab__butir antrean-tab__butir--siap"
+                                id="antrean-tab-siap"
+                                aria-selected="false"
+                            >
+                                <span class="antrean-tab__nama">Siap</span>
+                                <span
+                                    class="antrean-tab__angka"
+                                    id="antrean-angka-siap"
+                                    >0</span
+                                >
+                            </button>
+                            <button
+                                type="button"
+                                role="tab"
+                                class="antrean-tab__butir antrean-tab__butir--selesai"
+                                id="antrean-tab-selesai"
+                                aria-selected="false"
+                            >
+                                <span class="antrean-tab__nama">Selesai</span>
+                                <span
+                                    class="antrean-tab__angka"
+                                    id="antrean-angka-selesai"
+                                    >0</span
+                                >
+                            </button>
+                        </div>
+                        <p
+                            class="isian__bantuan"
+                            id="antrean-memuat"
+                            role="status"
+                            hidden
+                        >
+                            Memuat order...
+                        </p>
+                        <p
+                            class="isian__galat"
+                            id="antrean-daftar-galat"
+                            role="alert"
+                            hidden
+                        ></p>
+                        <p
+                            class="isian__bantuan"
+                            id="antrean-info"
+                            role="status"
+                            hidden
+                        ></p>
+                        <div
+                            id="antrean-daftar-isi"
+                            class="antrean-isi antrean-isi--baru"
+                            role="tabpanel"
+                        ></div>
+                    </div>
+
+                    <!-- Langkah 2: detail -->
+                    <div id="antrean-langkah-detail" hidden>
+                        <div class="baris-tombol">
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder"
+                                id="antrean-kembali"
+                            >
+                                Kembali ke daftar
+                            </button>
+                        </div>
+                        <p
+                            class="isian__bantuan"
+                            id="antrean-detail-memuat"
+                            role="status"
+                            hidden
+                        >
+                            Memuat order...
+                        </p>
+                        <p
+                            class="isian__galat"
+                            id="antrean-detail-galat"
+                            role="alert"
+                            hidden
+                        ></p>
+                        <p
+                            class="isian__bantuan"
+                            id="antrean-detail-info"
+                            role="status"
+                            hidden
+                        ></p>
+                        <div id="antrean-detail-isi" class="antrean-isi"></div>
+                    </div>
+                </div>
+
                 <!-- Panel Lainnya (owner): Pelanggan dan Bantuan menyusul, Akun dipasang kerangka.js -->
                 <!-- HOM.01: tab Lainnya sudah tidak ada di navigasi, panel ini tidak terjangkau.
                      Pelanggan dan Bantuan pindah ke Home di HOM.03 dan HOM.04. -->
@@ -1812,6 +1940,8 @@
         <script src="pesanan.js"></script>
         <!-- Layar owner Order Masuk (ORD.06): daftar, detail, Setuju, Tolak, Chat WA; harus setelah akun.js -->
         <script src="orderowner.js"></script>
+        <!-- Layar penjaga Antrean (ORD.08): tab Baru/Diproses/Siap/Selesai, detail, tombol status; harus setelah akun.js -->
+        <script src="orderpenjaga.js"></script>
         <!-- Kerangka layar utama per peran (KRG.01); harus setelah akun.js dan menu.js -->
         <script src="kerangka.js"></script>
         <script>
