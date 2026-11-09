@@ -627,7 +627,7 @@ Alasan keputusan di luar yang disebut di atas: alasan belum tercatat.
 
 **Tugas:** ORD.10 selesai dengan **versi B**: catatan tampil di detail order customer dan owner, dan customer serta owner bisa menambah catatan (O12). **Tanda "Catatan baru" di kartu daftar tidak dikerjakan**; ditunda ke NTF.07 bersama push catatan (keputusan ketua, lihat blok `2026-11-09: Tanda "Catatan baru" digeser dari ORD.10 ke NTF.07` di `docs/notifikasi.md` bagian 9, sudah ditempel). Tidak ada perubahan SQL, migration, tabel, atau `kedai`.
 
-**Commit:** `214dcf1` (inti ORD.10) sudah di-push, pagar `AGENTS.md` bagian 8 lolos. Susulan sesudahnya: perapihan jarak kartu Catatan (`style.css`, kelas `kartu--catatan`) sudah tayang di production (dikonfirmasi lewat layar). **Perbaikan galat kolom kosong di layar owner** (`orderownercatatan.js`, `orderowner.js`) sudah dibuat tetapi **belum dikonfirmasi di-commit, di-push, atau dites**: [isi hash dan hasil tes setelah dikerjakan].
+**Commit:** `214dcf1` (inti ORD.10) sudah di-push, pagar `AGENTS.md` bagian 8 lolos. Susulan sesudahnya: perapihan jarak kartu Catatan (`style.css`, kelas `kartu--catatan`) sudah tayang di production (dikonfirmasi lewat layar). **Perbaikan galat kolom kosong di layar owner** (`orderownercatatan.js`, `orderowner.js`) sudah dibuat tetapi **sudah dicommit, push, belum dites**: `c13cd77`.
 
 **Berkas:**
 
