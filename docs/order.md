@@ -2,11 +2,10 @@
 
 # 🧾 order.md: Order, Status, Setuju/Tolak, Catatan Berlapis, Order Wakil Owner
 
-> **Versi 1.3 (4 Nov 2026), hasil sesi strategi (final untuk sesi kode).** Perubahan 1.1 sampai 1.3: diagram alur dibuang (yang berlaku adalah md ini) dan daftar push dipindah ke `notifikasi.md` bagian 4 (1.1); tabel catatan dan pelanggan tanpa akun dibuat di ORD.01, bukan ORD.09 dan ORD.11, dan O6 diperjelas: uang tunai boleh dipegang penjaga secara fisik, tetapi hanya owner yang menyetujui (1.2); jam bebas tanpa daftar (O2), mundur satu langkah dan koreksi metode bayar (O5, O10, O23), tanpa tombol batal setelah Disetujui (O9), nomor order berjalan (O18), teks pembayaran setelah Kirim (O21), tampilan daftar (O22) (1.3). Bergantung pada `akun.md` (peran) dan `menu.md` (menu dan harga). Notifikasi ada di `notifikasi.md`, foto di `foto-bukti.md`.
-> **Status:** O1 sampai O23 disepakati ketua (sesi strategi 4 Nov 2026). Butir **(bawaan)** = pilihan penulis yang tidak ditanyakan satu per satu; ketua boleh mengubahnya sebelum dikerjakan. Belum ada yang dikerjakan.
-> **Cara pakai sesi kode:** lampirkan **`AGENTS.md` + berkas ini** (+ `database.md` dan `security.md` untuk langkah tabel, fungsi, dan aturan akses). Kerjakan langkah di bagian 5. Sesi kode **tidak merapikan atau menulis ulang berkas ini**; hanya menambah blok di bagian 9.
-> **Berkas yang diminta AI di awal sesi:** berkas migration terbaru, `supabase/functions/kedai/`, dan berkas JS order bila sudah ada.
-> **Tanpa kode dan tanpa isi SQL.** **Selisih:** `AGENTS.md` menang atas berkas ini. Yang paling akhir menang.
+> **Versi 1.3 (4 Nov 2026), hasil sesi strategi (final untuk sesi kode).** Bergantung pada `akun.md` (peran) dan `menu.md` (menu, harga). Notifikasi di `notifikasi.md`, foto di `foto-bukti.md`. Perubahan 1.1 sampai 1.3: diagram alur dibuang dan daftar push dipindah ke `notifikasi.md` bagian 4 (1.1); tabel catatan dan pelanggan tanpa akun dibuat di ORD.01 (bukan ORD.09 dan ORD.11), O6 diperjelas: tunai boleh dipegang penjaga secara fisik, tetapi hanya owner yang menyetujui (1.2); jam bebas tanpa daftar (O2), mundur satu langkah dan koreksi metode bayar (O5, O10, O23), tanpa tombol batal setelah Disetujui (O9), nomor order berjalan (O18), teks pembayaran setelah Kirim (O21), tampilan daftar (O22) (1.3).
+> **Status:** O1 sampai O23 disepakati ketua (sesi strategi 4 Nov 2026). Butir **(bawaan)** = pilihan penulis yang tidak ditanyakan satu per satu; ketua boleh mengubahnya sebelum dikerjakan.
+> **Cara pakai sesi kode:** lampirkan **`AGENTS.md` + berkas ini** (+ `database.md` dan `security.md` untuk langkah tabel, fungsi, aturan akses). Kerjakan langkah bagian 5. Sesi kode **tidak merapikan atau menulis ulang berkas ini**; hanya menambah blok di bagian 9. AI meminta di awal sesi: migration terbaru, `supabase/functions/kedai/`, dan berkas JS order bila sudah ada.
+> **Tanpa kode dan isi SQL.** **Selisih:** `AGENTS.md` menang atas berkas ini. Yang paling akhir menang.
 > **Fitur ini High-Risk (P0):** harga, status order, hak antar peran, data pelanggan. Tes teliti dan wajib ada bukti.
 
 ---
@@ -19,31 +18,31 @@ Mengganti catatan order di WhatsApp dengan sistem yang bisa dilihat tiga pihak s
 
 ## 2. Keputusan
 
-| No  | Keputusan                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Dasar                                                                                       |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| O1  | **Tipe order ada tiga:** **Diantar (default)**, **Diambil**, **Makan di warung**. Sekitar 90% order adalah Diantar.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Keputusan ketua.                                                                            |
-| O2  | **Hari dan jam:** customer memilih **Hari ini atau Besok** dan **jam antar/ambil yang diisi bebas** (pemilih jam bawaan HP, tanpa daftar pilihan; server hanya mengecek formatnya). "Hari ini" dan "Besok" dihitung **server (WIB)**. **Tanpa batas jam pesan** di versi 1: order di luar jam buka warung tetap bisa masuk dan sering tetap dilayani; bila tidak bisa (kesiangan atau menu habis), **owner menolak** lalu follow up lewat WA. Jam di kartu order ditulis sebagai permintaan ("Minta diantar jam 11.15"), bukan janji.                                                              | Keputusan ketua; waktu dari jam server (`security.md` aturan 6).                            |
-| O3  | **Isi order:** satu atau beberapa menu **yang tersedia** dengan jumlah (batas `item_maks_per_order` dan `jumlah_maks_per_item`). **Harga dihitung server**; nama dan harga satuan **disalin ke order**. Total = jumlah harga semua item. **Tanpa ongkir, diskon, atau biaya lain** di versi 1. **(bawaan)**                                                                                                                                                                                                                                                                                        | `menu.md` MN4; kandidat ongkir dan diskon ada di `bonus.md`.                                |
-| O4  | **Alamat:** untuk tipe Diantar customer memilih **satu dari alamat aktif** di buku alamatnya; **alias dan isi alamat disalin ke order**. Tipe Diambil dan Makan di warung **tanpa alamat**.                                                                                                                                                                                                                                                                                                                                                                                                        | Keputusan ketua; `akun.md` AK9.                                                             |
-| O5  | **Status dan jalur per tipe** (tabel di bagian 4). Order lahir **Menunggu**. Cabang akhir: **Ditolak** dan **Dibatalkan**. Status **tidak bisa loncat**; **mundur hanya satu langkah** sesuai O10 (server menolak selain itu).                                                                                                                                                                                                                                                                                                                                                                     | Alur ketua; `security.md` SEC-15.                                                           |
-| O6  | **Setujui berarti pembayaran sudah diterima.** Pembayaran selesai **di luar aplikasi** (transfer, QRIS, atau tunai; tunai boleh dititipkan ke penjaga secara fisik lalu dikabarkan ke owner lewat WA, koordinasinya di luar aplikasi). **Owner wajib memilih metode yang diterima** (Transfer, Tunai, atau QRIS) saat menekan Setujui; server menolak bila metode kosong. **Customer tidak memilih metode bayar.** **Penjaga tidak menyetujui atau mencatat pembayaran di aplikasi; hanya owner yang menekan Setujui.** Tidak ada bayar nanti atau utang di versi 1.                               | Keputusan ketua 4 Nov 2026; payment gateway dan utang masuk `bonus.md`.                     |
-| O7  | **Dua owner menekan Setujui/Tolak bersamaan** pada order yang sama: server hanya menerima **satu**, yang lain mendapat pesan "sudah diproses". Order mencatat **nama owner yang memutuskan** dan waktunya.                                                                                                                                                                                                                                                                                                                                                                                         | Atomik (`security.md` aturan 4, SEC-10); 5 owner bergantian.                                |
-| O8  | **Tolak:** owner boleh menulis **alasan (opsional, maks 200 karakter)** yang tampil ke customer. Follow up berikutnya lewat WA.                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Keputusan ketua.                                                                            |
-| O9  | **Batalkan:** customer hanya boleh membatalkan order **miliknya** saat status **Menunggu**. Setelah Disetujui **tidak ada tombol batal** untuk siapa pun; bila terjadi, diselesaikan kekeluargaan lewat WA (nominal kecil, belum pernah terjadi). Bila customer ingin order pengganti di hari berikutnya, owner membuat **order wakil** (O15).                                                                                                                                                                                                                                                     | Keputusan ketua 4 Nov 2026 (belum pernah terjadi; diselesaikan kekeluargaan).               |
-| O10 | **Siapa mengubah status pengerjaan:** Diproses, Diantar/Siap diambil/Siap disajikan, Selesai diubah **penjaga** (dan **owner**, bawaan, bila penjaga tidak ada). Tiap perubahan tercatat di **riwayat status** (siapa, kapan). **Salah pencet:** penjaga dan owner boleh **mundur satu langkah** (Diproses ke Disetujui, atau Diantar/Siap diambil/Siap disajikan ke Diproses), **tidak dari Selesai**, tercatat di riwayat; mundur tidak mengirim push ke customer **(bawaan)**. **Owner** boleh **mengoreksi metode bayar** selama order belum Selesai (O23).                                    | Alur ketua; hak di `akun.md` bagian 4; mundur satu langkah: keputusan ketua 4 Nov 2026.     |
-| O11 | **Visibilitas:** customer melihat **hanya order miliknya**. Owner melihat **semua**. Penjaga melihat order **Disetujui ke atas** (tidak melihat Menunggu, Ditolak, Dibatalkan). Penjaga dan owner melihat nomor WA dan alamat pemesan pada order yang terlihat **(bawaan: penjaga ikut melihat)**.                                                                                                                                                                                                                                                                                                 | Alur ketua; penjaga perlu menghubungi pemesan saat mengantar.                               |
-| O12 | **Catatan berlapis:** satu order punya banyak catatan, tiap catatan **terikat waktu server dan nama penulis**. Catatan awal customer saat membuat order jadi catatan pertama. **Customer pemilik dan owner** boleh menambah **selama order belum Diproses** (status Menunggu atau Disetujui). **Penjaga hanya membaca.** Catatan **tidak bisa diedit atau dihapus**; berubah pikiran = tambah catatan baru. Batas: `catatan_maks_karakter` dan `catatan_maks_per_order`. Setelah Diproses, catatan **terkunci** (bila status dimundurkan ke Disetujui, catatan terbuka lagi).                      | Keputusan ketua (contoh: 1 cabe jadi 3 cabe, tanpa micin).                                  |
-| O13 | **Tanpa chat di aplikasi.** Follow up lewat WA; hasilnya dicatat owner sebagai catatan di order. Owner punya tombol **"Chat WA"** pada order (membuka WA ke nomor pemesan). Chat di aplikasi masuk `bonus.md`.                                                                                                                                                                                                                                                                                                                                                                                     | Keputusan ketua (ragu soal chat, pilih WA + catatan).                                       |
-| O14 | **Catatan baru memicu push** ke pihak lain yang berhak melihat order itu, penulis dikecualikan: customer menulis, maka owner (dan penjaga bila order sudah Disetujui); owner menulis, maka customer pemilik (dan penjaga bila sudah Disetujui) **(bawaan)**. **Penjaga tidak dikabari untuk order Menunggu** (O11). Kartu order diberi tanda **"Catatan baru"** sampai dibaca. Daftar lengkap penerima ada di `notifikasi.md` bagian 4.                                                                                                                                                            | Keputusan ketua: catatan yang tidak terlihat sama dengan tidak ada; disesuaikan dengan O11. |
-| O15 | **Order wakil owner:** owner bisa membuat order untuk **pelanggan tanpa akun** lewat **wizard 5 langkah** (bagian 4). Hanya owner. Order langsung berstatus **Disetujui** (owner sendiri yang menerima pembayaran dan memilih metode di wizard), ditandai **"Dibuat oleh [nama owner]"**. Tidak ada push ke pemesan (tidak punya akun); penjaga tetap dapat push. Order wakil juga dipakai sebagai **order pengganti** (O9): untuk pemesan yang punya akun, owner mencatatnya dulu di daftar Pelanggan tanpa akun. **(bawaan)**                                                                    | Keputusan ketua.                                                                            |
-| O16 | **Pelanggan tanpa akun disimpan sebagai daftar** (nama, keterangan, nomor WA opsional, alamat antar). Hanya **owner** yang melihat dan mengelola; **tidak bisa dihapus, hanya dinonaktifkan**. Isi **disalin ke order** saat dibuat. **Tidak digabung otomatis** dengan akun yang mendaftar kemudian di versi 1. Data pribadi: aturan sama dengan nomor WA customer.                                                                                                                                                                                                                               | Keputusan ketua (supaya nyokap tidak "alergi" memakai aplikasi).                            |
-| O17 | **Order tidak bisa dihapus siapa pun**, hanya berubah status. Foto bukti dibersihkan setelah 14 hari, catatan dan order tetap.                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | `AGENTS.md` bagian 7; `foto-bukti.md`.                                                      |
-| O18 | **Nomor order berjalan terus** (tidak di-reset tiap hari, misalnya "#1042") ditampilkan di kartu untuk dipakai saat bicara lewat WA, supaya tidak ambigu antar hari.                                                                                                                                                                                                                                                                                                                                                                                                                               | Memudahkan owner dan customer menyebut order yang sama.                                     |
-| O19 | **Penyegaran data tanpa polling:** daftar order diambil saat layar dibuka atau aplikasi kembali ke layar, saat push masuk (bila terbuka), dan lewat tombol **Segarkan**.                                                                                                                                                                                                                                                                                                                                                                                                                           | Keputusan ketua; `notifikasi.md`.                                                           |
-| O20 | Semua aksi order lewat Edge Function `kedai`; logika (cek menu, hitung harga, setujui, ubah status, tambah catatan) di **fungsi SQL atomik**.                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `AGENTS.md` bagian 7; `database.md` bagian 5.                                               |
-| O21 | **Teks tetap setelah Kirim dan di detail order Menunggu:** "Pesanan diterima. Perwakilan ChATA akan menghubungi lewat WhatsApp untuk pembayaran. Pesanan diproses setelah pembayaran dikonfirmasi." Info rekening dan QRIS tidak disimpan di aplikasi; owner menyampaikannya lewat WA (tombol Chat WA, O13).                                                                                                                                                                                                                                                                                       | Keputusan ketua 4 Nov 2026 (kata-kata dari ketua; penulisan "ChATA" mengikuti nama resmi).  |
-| O22 | **Tampilan daftar:** daftar **owner dan penjaga** hanya menampilkan order dengan hari antar **Hari ini dan Besok**; order yang hari antarnya sudah lewat tidak tampil (tanpa tanda khusus dan tanpa tutup otomatis). Urutan: Hari ini dulu, lalu Besok; dalam tiap hari order yang sudah **Disetujui** (sudah dibayar) di atas, urut waktu disetujui (terlama dulu); order Selesai di bawah. **Owner** tetap bisa membuka hari lain lewat filter di Semua Order. **Customer** di Pesanan Saya melihat **riwayat lengkap** (foto bukti yang tersimpan 14 hari hanya bisa dibuka dari detail order). | Keputusan ketua 4 Nov 2026; ringkasan 7 hari untuk owner masuk `bonus.md` (B31).            |
-| O23 | **Koreksi metode bayar:** hanya **owner**, selama order belum Selesai, lewat aksi tersendiri; tercatat di riwayat (metode lama dan baru, siapa, kapan). Penjaga tidak bisa.                                                                                                                                                                                                                                                                                                                                                                                                                        | Keputusan ketua 4 Nov 2026; O6, O10.                                                        |
+| No  | Keputusan                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Dasar                                                                                       |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| O1  | **Tipe order:** **Diantar (default)**, **Diambil**, **Makan di warung**. Sekitar 90% order Diantar.                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Keputusan ketua.                                                                            |
+| O2  | **Hari dan jam:** customer memilih **Hari ini atau Besok** dan **jam antar/ambil bebas** (pemilih jam bawaan HP, tanpa daftar; server hanya cek format). "Hari ini" dan "Besok" dihitung **server (WIB)**. **Tanpa batas jam pesan** di versi 1: order di luar jam buka tetap bisa masuk dan sering tetap dilayani; bila tidak bisa (kesiangan, menu habis), **owner menolak** lalu follow up lewat WA. Jam di kartu ditulis sebagai permintaan ("Minta diantar jam 11.15"), bukan janji.                                                                               | Keputusan ketua; waktu dari jam server (`security.md` aturan 6).                            |
+| O3  | **Isi order:** satu atau beberapa menu **tersedia** dengan jumlah (batas `item_maks_per_order`, `jumlah_maks_per_item`). **Harga dihitung server**; nama dan harga satuan **disalin ke order**. Total = jumlah harga semua item. **Tanpa ongkir, diskon, atau biaya lain** di versi 1. **(bawaan)**                                                                                                                                                                                                                                                                     | `menu.md` MN4; kandidat ongkir dan diskon di `bonus.md`.                                    |
+| O4  | **Alamat:** tipe Diantar: customer memilih **satu dari alamat aktif** di buku alamatnya; **alias dan isi alamat disalin ke order**. Diambil dan Makan di warung **tanpa alamat**.                                                                                                                                                                                                                                                                                                                                                                                       | Keputusan ketua; `akun.md` AK9.                                                             |
+| O5  | **Status dan jalur per tipe** (tabel di bagian 4). Order lahir **Menunggu**. Cabang akhir: **Ditolak** dan **Dibatalkan**. Status **tidak bisa loncat**; **mundur hanya satu langkah** sesuai O10 (server menolak selain itu).                                                                                                                                                                                                                                                                                                                                          | Alur ketua; `security.md` SEC-15.                                                           |
+| O6  | **Setujui = pembayaran sudah diterima.** Pembayaran selesai **di luar aplikasi** (transfer, QRIS, atau tunai; tunai boleh dititipkan ke penjaga secara fisik lalu dikabarkan ke owner lewat WA). **Owner wajib memilih metode** (Transfer, Tunai, QRIS) saat Setujui; server menolak bila kosong. **Customer tidak memilih metode bayar.** **Penjaga tidak menyetujui atau mencatat pembayaran di aplikasi; hanya owner yang menekan Setujui.** Tidak ada bayar nanti atau utang di versi 1.                                                                            | Keputusan ketua 4 Nov 2026; payment gateway dan utang di `bonus.md`.                        |
+| O7  | **Dua owner menekan Setujui/Tolak bersamaan** pada order yang sama: server hanya menerima **satu**, yang lain mendapat pesan "sudah diproses". Order mencatat **nama owner pemutus** dan waktunya.                                                                                                                                                                                                                                                                                                                                                                      | Atomik (`security.md` aturan 4, SEC-10); 5 owner bergantian.                                |
+| O8  | **Tolak:** owner boleh menulis **alasan (opsional, maks 200 karakter)** yang tampil ke customer. Follow up lewat WA.                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Keputusan ketua.                                                                            |
+| O9  | **Batalkan:** customer hanya boleh membatalkan order **miliknya** saat **Menunggu**. Setelah Disetujui **tidak ada tombol batal** untuk siapa pun; bila terjadi, diselesaikan kekeluargaan lewat WA (nominal kecil, belum pernah terjadi). Order pengganti di hari berikutnya: owner membuat **order wakil** (O15).                                                                                                                                                                                                                                                     | Keputusan ketua 4 Nov 2026.                                                                 |
+| O10 | **Pengubah status pengerjaan:** Diproses, Diantar/Siap diambil/Siap disajikan, Selesai diubah **penjaga** (dan **owner**, bawaan, bila penjaga tidak ada). Tiap perubahan tercatat di **riwayat status** (siapa, kapan). **Salah pencet:** penjaga dan owner boleh **mundur satu langkah** (Diproses→Disetujui, atau Diantar/Siap diambil/Siap disajikan→Diproses), **tidak dari Selesai**, tercatat; mundur tidak mengirim push ke customer **(bawaan)**. **Owner** boleh **mengoreksi metode bayar** selama belum Selesai (O23).                                      | Alur ketua; hak di `akun.md` bagian 4; mundur satu langkah: keputusan ketua 4 Nov 2026.     |
+| O11 | **Visibilitas:** customer hanya order **miliknya**. Owner **semua**. Penjaga order **Disetujui ke atas** (tidak melihat Menunggu, Ditolak, Dibatalkan). Penjaga dan owner melihat nomor WA dan alamat pemesan pada order yang terlihat **(bawaan: penjaga ikut melihat)**.                                                                                                                                                                                                                                                                                              | Alur ketua; penjaga perlu menghubungi pemesan saat mengantar.                               |
+| O12 | **Catatan berlapis:** satu order banyak catatan, tiap catatan **terikat waktu server dan nama penulis**. Catatan awal customer jadi catatan pertama. **Customer pemilik dan owner** boleh menambah **selama belum Diproses** (Menunggu atau Disetujui). **Penjaga hanya membaca.** Catatan **tidak bisa diedit atau dihapus**; berubah pikiran = tambah catatan baru. Batas: `catatan_maks_karakter`, `catatan_maks_per_order`. Setelah Diproses catatan **terkunci** (bila status dimundurkan ke Disetujui, terbuka lagi).                                             | Keputusan ketua (contoh: 1 cabe jadi 3 cabe, tanpa micin).                                  |
+| O13 | **Tanpa chat di aplikasi.** Follow up lewat WA; hasilnya dicatat owner sebagai catatan di order. Owner punya tombol **"Chat WA"** (membuka WA ke nomor pemesan). Chat di aplikasi di `bonus.md`.                                                                                                                                                                                                                                                                                                                                                                        | Keputusan ketua (ragu soal chat, pilih WA + catatan).                                       |
+| O14 | **Catatan baru memicu push** ke pihak lain yang berhak melihat order itu, penulis dikecualikan: customer menulis → owner (dan penjaga bila sudah Disetujui); owner menulis → customer pemilik (dan penjaga bila sudah Disetujui) **(bawaan)**. **Penjaga tidak dikabari untuk order Menunggu** (O11). Kartu diberi tanda **"Catatan baru"** sampai dibaca. Daftar penerima di `notifikasi.md` bagian 4.                                                                                                                                                                 | Keputusan ketua: catatan yang tidak terlihat sama dengan tidak ada; disesuaikan dengan O11. |
+| O15 | **Order wakil owner:** owner membuat order untuk **pelanggan tanpa akun** lewat **wizard 5 langkah** (bagian 4). Hanya owner. Langsung **Disetujui** (owner menerima pembayaran dan memilih metode di wizard), ditandai **"Dibuat oleh [nama owner]"**. Tanpa push ke pemesan (tidak punya akun); penjaga tetap dapat push. Juga dipakai sebagai **order pengganti** (O9): untuk pemesan yang punya akun, owner mencatatnya dulu di daftar Pelanggan tanpa akun. **(bawaan)**                                                                                           | Keputusan ketua.                                                                            |
+| O16 | **Pelanggan tanpa akun disimpan sebagai daftar** (nama, keterangan, nomor WA opsional, alamat antar). Hanya **owner** yang melihat dan mengelola; **tidak bisa dihapus, hanya dinonaktifkan**. Isi **disalin ke order** saat dibuat. **Tidak digabung otomatis** dengan akun yang mendaftar kemudian di versi 1. Data pribadi: aturan sama dengan nomor WA customer.                                                                                                                                                                                                    | Keputusan ketua (supaya nyokap tidak "alergi" memakai aplikasi).                            |
+| O17 | **Order tidak bisa dihapus siapa pun**, hanya berubah status. Foto bukti dibersihkan setelah 14 hari, catatan dan order tetap.                                                                                                                                                                                                                                                                                                                                                                                                                                          | `AGENTS.md` bagian 7; `foto-bukti.md`.                                                      |
+| O18 | **Nomor order berjalan terus** (tidak di-reset harian, mis. "#1042") tampil di kartu untuk dipakai saat bicara lewat WA.                                                                                                                                                                                                                                                                                                                                                                                                                                                | Memudahkan owner dan customer menyebut order yang sama.                                     |
+| O19 | **Penyegaran tanpa polling:** daftar diambil saat layar dibuka atau aplikasi kembali ke layar, saat push masuk (bila terbuka), dan lewat tombol **Segarkan**.                                                                                                                                                                                                                                                                                                                                                                                                           | Keputusan ketua; `notifikasi.md`.                                                           |
+| O20 | Semua aksi order lewat Edge Function `kedai`; logika (cek menu, hitung harga, setujui, ubah status, tambah catatan) di **fungsi SQL atomik**.                                                                                                                                                                                                                                                                                                                                                                                                                           | `AGENTS.md` bagian 7; `database.md` bagian 5.                                               |
+| O21 | **Teks tetap setelah Kirim dan di detail order Menunggu:** "Pesanan diterima. Perwakilan ChATA akan menghubungi lewat WhatsApp untuk pembayaran. Pesanan diproses setelah pembayaran dikonfirmasi." Info rekening dan QRIS tidak disimpan di aplikasi; owner menyampaikannya lewat WA (tombol Chat WA, O13).                                                                                                                                                                                                                                                            | Keputusan ketua 4 Nov 2026 (kata-kata dari ketua; "ChATA" mengikuti nama resmi).            |
+| O22 | **Tampilan daftar:** daftar **owner dan penjaga** hanya menampilkan order dengan hari antar **Hari ini dan Besok**; yang hari antarnya sudah lewat tidak tampil (tanpa tanda khusus, tanpa tutup otomatis). Urutan: Hari ini dulu, lalu Besok; dalam tiap hari yang sudah **Disetujui** (sudah dibayar) di atas, urut waktu disetujui (terlama dulu); Selesai di bawah. **Owner** bisa membuka hari lain lewat filter di Semua Order. **Customer** di Pesanan Saya melihat **riwayat lengkap** (foto bukti yang tersimpan 14 hari hanya bisa dibuka dari detail order). | Keputusan ketua 4 Nov 2026; ringkasan 7 hari owner di `bonus.md` (B31).                     |
+| O23 | **Koreksi metode bayar:** hanya **owner**, selama belum Selesai, lewat aksi tersendiri; tercatat di riwayat (metode lama dan baru, siapa, kapan). Penjaga tidak bisa.                                                                                                                                                                                                                                                                                                                                                                                                   | Keputusan ketua 4 Nov 2026; O6, O10.                                                        |
 
 ---
 
@@ -66,7 +65,7 @@ Mengganti catatan order di WhatsApp dengan sistem yang bisa dilihat tiga pihak s
 
 Order wakil owner (O15) dibuat langsung di **Disetujui**, lalu mengikuti jalur sesuai tipenya.
 
-**Alur dan push:** urutan umumnya customer mengirim order, owner memutuskan (Setujui dengan metode bayar, atau Tolak), penjaga mengerjakan sampai Selesai, dan ketiganya melihat status yang sama. Siapa dikabari lewat push pada kejadian apa (order baru, catatan, setujui, tolak, status, foto) ditetapkan di `notifikasi.md` bagian 4, bukan di sini, supaya tidak tumpang tindih.
+**Alur dan push:** customer mengirim order, owner memutuskan (Setujui dengan metode bayar, atau Tolak), penjaga mengerjakan sampai Selesai, ketiganya melihat status yang sama. Siapa dikabari push pada kejadian apa (order baru, catatan, setujui, tolak, status, foto) ada di `notifikasi.md` bagian 4, bukan di sini, supaya tidak tumpang tindih.
 
 **Wizard order wakil owner (5 langkah, satu layar per langkah):**
 
@@ -98,34 +97,34 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 3. **ORD.03** Layar customer Pesan: menu, tipe, alamat, hari, jam (bebas diisi), catatan awal, kirim, lalu teks pembayaran (O21).
 4. **ORD.04** Layar Pesanan Saya: daftar, detail, status, alasan tolak, teks pembayaran pada order Menunggu (O21), tombol Batalkan saat Menunggu (`order_batal`); daftar menampilkan riwayat lengkap (O22).
 5. **ORD.05 ⚠️** Aksi owner `order_setuju` (wajib metode) dan `order_tolak`, atomik, aman dari dobel (O7).
-6. **ORD.06** Layar owner: Order Masuk, Semua Order (Hari ini dan Besok, filter hari lain; urutan O22), detail order dengan tombol Setujui, Tolak, dan Chat WA.
-7. **ORD.07 ⚠️** Aksi `order_status` untuk penjaga dan owner: jalur sesuai tipe, tanpa loncat, mundur hanya satu langkah dan tidak dari Selesai (O10), riwayat tercatat; ditambah aksi `order_metode_koreksi` untuk owner (O23).
+6. **ORD.06** Layar owner: Order Masuk, Semua Order (Hari ini dan Besok, filter hari lain; urutan O22), detail order dengan tombol Setujui, Tolak, Chat WA.
+7. **ORD.07 ⚠️** Aksi `order_status` untuk penjaga dan owner: jalur sesuai tipe, tanpa loncat, mundur hanya satu langkah dan tidak dari Selesai (O10), riwayat tercatat; plus `order_metode_koreksi` untuk owner (O23).
 8. **ORD.08** Layar penjaga: Antrean (Hari ini lalu Besok, O22), detail, tombol status berikutnya.
-9. **ORD.09 ⚠️** Catatan berlapis: aksi `catatan_tambah` dan `catatan_dibaca` (tabelnya sudah dibuat di ORD.01), aturan kunci saat Diproses, batas karakter dan jumlah.
+9. **ORD.09 ⚠️** Catatan berlapis: aksi `catatan_tambah` dan `catatan_dibaca` (tabel sudah dibuat di ORD.01), aturan kunci saat Diproses, batas karakter dan jumlah.
 10. **ORD.10** Tampilan catatan di detail order dan tanda "Catatan baru" di kartu order.
-11. **ORD.11 ⚠️** Pelanggan tanpa akun: aksi daftar, simpan, dan nonaktifkan (owner saja; tabel `pelanggan_luar` sudah dibuat di ORD.01).
+11. **ORD.11 ⚠️** Pelanggan tanpa akun: aksi daftar, simpan, nonaktifkan (owner saja; tabel `pelanggan_luar` sudah dibuat di ORD.01).
 12. **ORD.12 ⚠️** Aksi `order_buat_wakil` (atomik, langsung Disetujui, metode bayar, penanda pembuat).
 13. **ORD.13** Wizard 5 langkah owner dan layar Kelola Pelanggan.
-14. **ORD.14** Sesi tes order (dokumen `order-test.md` dibuat di sesi tes): 1 akun per peran + customer kedua, bukti untuk harga, hak, dobel-setujui, mundur satu langkah, dan koreksi metode bayar.
+14. **ORD.14** Sesi tes order (`order-test.md` dibuat di sesi tes): 1 akun per peran + customer kedua, bukti untuk harga, hak, dobel-setujui, mundur satu langkah, dan koreksi metode bayar.
 
 ---
 
 ## 6. Aturan yang paling sering terlanggar
 
-| Aturan                                                                            | Akibat bila dilanggar                                                                                            |
-| --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| Menerima harga, total, status, atau peran dari aplikasi                           | Order dengan harga sendiri atau status sembarang (SEC-06, SEC-12, SEC-15).                                       |
-| Order merujuk menu/alamat terbaru, bukan salinan                                  | Mengubah menu atau alamat mengacaukan order dan catatan lama.                                                    |
-| Customer bisa melihat order, catatan, atau alamat customer lain                   | Data pelanggan bocor (SEC-05).                                                                                   |
-| Penjaga bisa melihat order Menunggu atau memanggil Setujui/Tolak                  | Order lompat tanpa persetujuan owner (SEC-08).                                                                   |
-| Setujui diproses tanpa metode bayar, atau bisa dobel                              | Pembayaran tidak tercatat atau order tercatat dua kali (SEC-10, SEC-11).                                         |
-| Catatan bisa diedit, dihapus, atau ditambah setelah Diproses                      | Riwayat permintaan tidak bisa dipercaya; penjaga bekerja dengan catatan usang (SEC-16).                          |
-| Hari atau jam dihitung dari jam HP                                                | "Hari ini/Besok" salah (SEC-19).                                                                                 |
-| Memasang catatan, nama, alamat, atau alasan tolak lewat `innerHTML`               | Teks berisi tag bisa menjalankan skrip (SEC-18).                                                                 |
-| Menulis data pelanggan nyata (nama, WA, alamat) di repo, md, chat, atau bukti tes | Data pribadi terbuka di repo public (`security.md` aturan 7).                                                    |
-| Polling berkala untuk menyegarkan daftar order                                    | Kuota free tier cepat habis (`notifikasi.md`).                                                                   |
-| Menyediakan tombol hapus order                                                    | Catatan order hilang; gunakan status.                                                                            |
-| Membatasi pilihan jam atau menolak jam yang sudah lewat                           | Order di luar jam buka warung (yang sering tetap dilayani) tidak bisa dicatat; aplikasi jadi lebih kaku dari WA. |
+| Aturan                                                                            | Akibat bila dilanggar                                                                                       |
+| --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Menerima harga, total, status, atau peran dari aplikasi                           | Order dengan harga sendiri atau status sembarang (SEC-06, SEC-12, SEC-15).                                  |
+| Order merujuk menu/alamat terbaru, bukan salinan                                  | Mengubah menu atau alamat mengacaukan order dan catatan lama.                                               |
+| Customer bisa melihat order, catatan, atau alamat customer lain                   | Data pelanggan bocor (SEC-05).                                                                              |
+| Penjaga bisa melihat order Menunggu atau memanggil Setujui/Tolak                  | Order lompat tanpa persetujuan owner (SEC-08).                                                              |
+| Setujui diproses tanpa metode bayar, atau bisa dobel                              | Pembayaran tidak tercatat atau order tercatat dua kali (SEC-10, SEC-11).                                    |
+| Catatan bisa diedit, dihapus, atau ditambah setelah Diproses                      | Riwayat permintaan tidak bisa dipercaya; penjaga bekerja dengan catatan usang (SEC-16).                     |
+| Hari atau jam dihitung dari jam HP                                                | "Hari ini/Besok" salah (SEC-19).                                                                            |
+| Memasang catatan, nama, alamat, atau alasan tolak lewat `innerHTML`               | Teks berisi tag bisa menjalankan skrip (SEC-18).                                                            |
+| Menulis data pelanggan nyata (nama, WA, alamat) di repo, md, chat, atau bukti tes | Data pribadi terbuka di repo public (`security.md` aturan 7).                                               |
+| Polling berkala untuk menyegarkan daftar order                                    | Kuota free tier cepat habis (`notifikasi.md`).                                                              |
+| Menyediakan tombol hapus order                                                    | Catatan order hilang; gunakan status.                                                                       |
+| Membatasi pilihan jam atau menolak jam yang sudah lewat                           | Order di luar jam buka warung (yang sering tetap dilayani) tidak bisa dicatat; aplikasi lebih kaku dari WA. |
 
 ---
 
@@ -166,13 +165,13 @@ Sumber: `home.md` HM7 dan HOM.04. Item **Pelanggan** ("Pelanggan tanpa akun", O1
 
 Sumber: blok `2026-11-07: Deskripsi, sheet detail, dan pilihan menu` di `docs/menu.md`. Menambah O3 dan O12.
 
-- `order_item` menyimpan **teks pilihan yang disalin** (nama grup dan nama opsi, misal "Tingkat pedas: Tidak pedas"), sama seperti nama dan harga menu disalin. Mengubah atau menonaktifkan grup atau opsi kemudian tidak mengubah order lama.
-- Pilihan **selalu tersimpan eksplisit**, termasuk bila customer tidak mengubah bawaan, sehingga penjaga tidak perlu menebak.
+- `order_item` menyimpan **teks pilihan yang disalin** (nama grup dan nama opsi, mis. "Tingkat pedas: Tidak pedas"), seperti nama dan harga menu disalin. Mengubah atau menonaktifkan grup atau opsi kemudian tidak mengubah order lama.
+- Pilihan **selalu tersimpan eksplisit**, termasuk bila customer tidak mengubah bawaan, supaya penjaga tidak perlu menebak.
 - `order_buat` menerima **id menu, jumlah, dan id opsi** per item; server memvalidasi opsi terhadap grup yang terpasang di menu. Harga tetap dihitung server; pilihan gratis tidak mengubah total.
 - **Item yang sama dengan pilihan berbeda = baris terpisah** (Mie Ayam Tidak pedas x1 dan Mie Ayam Pedas x1).
 - Add-on berbayar adalah item menu biasa; tidak ada hubungan induk di order.
 - Penjaga dan owner melihat pilihan di baris item pada detail order.
-- Ganti pilihan setelah order dikirim: lewat **catatan baru** (O12) selama belum Diproses (bawaan, sejalan O12).
+- Ganti pilihan setelah order dikirim: lewat **catatan baru** (O12) selama belum Diproses (bawaan).
 - Dampak ke urutan: ORD.01 dan ORD.02 memuat pilihan sejak awal, jadi `order_item` tidak perlu diubah setelah terisi.
 
 ### Handoff #1 | 2026-11-08 | KETUA
@@ -183,7 +182,7 @@ Sumber: blok `2026-11-07: Deskripsi, sheet detail, dan pilihan menu` di `docs/me
 
 **Keputusan baru** (ketua menyetujui bentuk kolom pilihan; selebihnya pilihan penulis, alasan belum tercatat):
 
-- **Pilihan menu di `order_item` = satu kolom daftar teks `pilihan`** (berformat "Nama grup: Nama opsi", tidak boleh kosong tetapi boleh daftar kosong). Alasan ketua: hanya catatan riwayat dan sederhana, sesuai kebutuhan warung. Tanpa tabel tambahan, dan tanpa aturan unik pada (order, menu) karena item sama dengan pilihan beda = baris terpisah.
+- **Pilihan menu di `order_item` = satu kolom daftar teks `pilihan`** ("Nama grup: Nama opsi"; tidak boleh kosong tetapi boleh daftar kosong). Alasan ketua: hanya catatan riwayat dan sederhana, sesuai kebutuhan warung. Tanpa tabel tambahan dan tanpa aturan unik pada (order, menu), karena item sama dengan pilihan beda = baris terpisah.
 - **Nama tabel `order` wajib ditulis `public."order"`** (kutip ganda) di semua SQL, karena `order` adalah kata yang dipakai SQL sendiri.
 - **Nomor order mulai dari 1.** Order uji ikut memakai nomor; reset sebelum peluncuran masuk pembersihan LNC.01 (butuh "OK" ketua).
 - **`jam_permintaan` wajib diisi** (jam saja, tanpa tanggal). Melonggarkannya kelak mudah, mengetatkannya sulit.
@@ -198,9 +197,9 @@ Sumber: blok `2026-11-07: Deskripsi, sheet detail, dan pilihan menu` di `docs/me
 
 **Keputusan baru** (ketua menyetujui format teks pilihan "Nama grup: Nama opsi", disusun mengikuti urutan grup di menu; selebihnya pilihan penulis, alasan belum tercatat; rincian lengkap di kepala `20261108_02_order_fungsi.sql`):
 
-- `order_buat` menerima `tipe`, `alamat_id`, `hari` (teks persis "Hari ini" atau "Besok"), `jam` (HH:MM; jam yang sudah lewat tidak ditolak, O2), `item` (daftar `{menu_id, jumlah, opsi_ids}`), dan `catatan`. Isian lain dari aplikasi dibuang. Tipe selain Diantar: `alamat_id` diabaikan.
+- `order_buat` menerima `tipe`, `alamat_id`, `hari` (teks persis "Hari ini" atau "Besok"), `jam` (HH:MM; jam yang sudah lewat tidak ditolak, O2), `item` (daftar `{menu_id, jumlah, opsi_ids}`), dan `catatan`. Isian lain dibuang. Tipe selain Diantar: `alamat_id` diabaikan.
 - Menu nonaktif atau Habis = satu kode galat `menu_tidak_tersedia`. Item sama dengan pilihan sama yang dikirim dua kali = dua baris. **Tidak ada penahan kirim ganda di server**; tombol Kirim dikunci di layar (ORD.03). Fungsi tidak mengisi `baca_catatan`; tanda "Catatan baru" (ORD.10) menghitung catatan milik orang lain saja.
-- `order_daftar`: baris ringkas (tanpa nomor WA dan isi alamat; teks `ringkas` "Nama x jumlah"). Filter hari (tanggal `YYYY-MM-DD`) hanya dipakai owner; filter status untuk semua peran. Urutan owner dan penjaga: hari antar, lalu kelompok (Disetujui sampai siap, Menunggu, Selesai, Ditolak dan Dibatalkan), lalu waktu diputuskan atau dibuat terlama dulu. Customer: terbaru dulu, tanpa pembagian halaman.
+- `order_daftar`: baris ringkas (tanpa nomor WA dan isi alamat; teks `ringkas` "Nama x jumlah"). Filter hari (`YYYY-MM-DD`) hanya untuk owner; filter status untuk semua peran. Urutan owner dan penjaga: hari antar, lalu kelompok (Disetujui sampai siap, Menunggu, Selesai, Ditolak dan Dibatalkan), lalu waktu diputuskan atau dibuat terlama dulu. Customer: terbaru dulu, tanpa pembagian halaman.
 - `order_detail`: metode bayar tampil ke owner dan penjaga; nama pemutus dan riwayat status hanya owner. Order yang tidak ada dan yang tidak boleh dilihat memakai satu galat `order_tidak_ditemukan`. Urutan baris item: nama menu lalu pilihan.
 - Balasan `kedai`: `order_buat` memuat `order` (`id`, `nomor`, `status`, `total`, `hari_target`, `jam_permintaan`), `order_daftar` memuat `daftar`, `order_detail` memuat `order`.
 - `pilihan_rusak` dan `opsi_tidak_valid` dipetakan di `kedai`. Kode `id_kosong`, `pengaturan_rusak`, dan `total_terlalu_besar` sengaja tidak dipetakan (galat umum 500).
@@ -216,7 +215,7 @@ Sumber: blok `2026-11-07: Deskripsi, sheet detail, dan pilihan menu` di `docs/me
 
 ### 2026-11-08: MT-23 dan MT-24 selesai dan lulus
 
-`docs/menu-test.md` MT-23 dan MT-24 sudah dikerjakan dan lulus lewat `order_buat` (isian palsu diabaikan, opsi di luar grup dibalas 409 tanpa order terbentuk, harga menu diubah kemudian: order lama tetap harga lama). Rincian bukti ada di Handoff #13 `docs/menu.md`. Tidak ada kode yang diubah.
+`docs/menu-test.md` MT-23 dan MT-24 dikerjakan dan lulus lewat `order_buat` (isian palsu diabaikan, opsi di luar grup dibalas 409 tanpa order terbentuk, harga menu diubah kemudian: order lama tetap harga lama). Rincian bukti ada di Handoff #13 `docs/menu.md`. Tidak ada kode yang diubah.
 
 ### Handoff #4 | 2026-11-08 | [RAC]
 
@@ -224,7 +223,7 @@ Sumber: blok `2026-11-07: Deskripsi, sheet detail, dan pilihan menu` di `docs/me
 
 **Keputusan baru** (pilihan penulis; alasan belum tercatat dari ketua kecuali disebut):
 
-- Keranjang disimpan di `pesan.js` (bukan di daftar menu), karena `kerangka.js` memuat ulang daftar menu tiap tab Pesan dibuka. Baris keranjang: menu sama dengan kombinasi pilihan berbeda = baris terpisah; kombinasi sama digabung jumlahnya.
+- Keranjang disimpan di `pesan.js` (bukan di daftar menu), karena `kerangka.js` memuat ulang daftar menu tiap tab Pesan dibuka. Menu sama dengan kombinasi pilihan berbeda = baris terpisah; kombinasi sama digabung jumlahnya.
 - Yang dikirim ke `order_buat`: `tipe`, `alamat_id` (hanya Diantar), `hari`, `jam` (HH:MM), `item` (`menu_id`, `jumlah`, `opsi_ids`), `catatan`. Total di layar hanya perkiraan; angka resmi dari balasan server.
 - Alamat antar diambil lewat aksi `status` (`h.data.alamat`), tanpa aksi baru. Satu alamat: langsung terpilih. Lebih dari satu: customer wajib memilih sendiri (hindari salah antar). Kembali dari Buku alamat, daftar alamat dimuat ulang otomatis.
 - Jam wajib diisi (pemilih jam bawaan HP), tanpa daftar dan tanpa batas (O2). Label jam mengikuti tipe (Jam antar, Jam ambil, Jam datang).
@@ -232,14 +231,14 @@ Sumber: blok `2026-11-07: Deskripsi, sheet detail, dan pilihan menu` di `docs/me
 - Jaringan putus setelah permintaan terkirim (hasil tidak pasti): pesan menyuruh cek Pesanan Saya lalu Segarkan, jangan kirim ulang dulu. Offline dari awal: "Pesanan belum terkirim".
 - Galat 404 atau 409 yang berisi "Muat ulang menu" membuat daftar menu dimuat ulang otomatis; galat alamat tidak ditemukan membuat daftar alamat dimuat ulang.
 - Teks O21 ada di `pesan.js` dan dibuka lewat `window.KedaiPesan.teksBayar` supaya layar lain memakai teks yang sama.
-- Satu menu boleh punya beberapa grup (`menu_grup_atur`, ada batas jumlah grup), dan tiap grup punya tepat satu pilihan bawaan, jadi customer memilih **satu opsi per grup**.
+- Satu menu boleh punya beberapa grup (`menu_grup_atur`, ada batas jumlah grup), tiap grup punya tepat satu pilihan bawaan, jadi customer memilih **satu opsi per grup**.
 - Batas item, jumlah per item, dan panjang catatan **tidak terbaca di aplikasi**: `status` hanya mengirim `alamat_maks` (`PENGATURAN_AMAN` di `kedai/index.ts`). Server yang menolak dan pesannya ditampilkan. Menambah batas ke `PENGATURAN_AMAN` berarti mengubah dan men-deploy `kedai` (berisiko, butuh "OK" ketua); ditunda.
 - Kontrak `window.KedaiPesan.tambah(menu, pilihan, jumlah)`: `menu` = `{ id, nama, harga }`; `pilihan` = daftar `{ id (uuid opsi), teks ("Nama grup: Nama opsi") }`, satu per grup, urut seperti grup di menu (menu tanpa grup: daftar kosong); `jumlah` bilangan bulat >= 1. Mengembalikan `true` bila masuk keranjang. Yang dikirim ke server dari `pilihan` hanya `id`-nya; susunan teks resmi disusun server.
 - Berkas JS baru dan `sw.js` harus naik **dalam satu commit**: kalau `sw.js` naik duluan, pemasangan service worker baru gagal karena berkas barunya belum ada.
 
 ### Handoff #5 | 2026-11-08 | [FREN]
 
-**Tugas:** ORD.03 giliran 2: tombol Tambah di kartu menu, pilihan dan jumlah di sheet detail, lalu masuk keranjang. Perubahan di `menu.js` (id grup dan id opsi ikut terbaca; tombol Tambah untuk menu tanpa grup yang langsung masuk keranjang jumlah 1 lalu "Ditambahkan ✓" sebentar, atau Pilih untuk menu dengan grup yang membuka sheet; hanya menu Tersedia), `menu-detail.js` (satu pilihan per grup dengan bawaan terpilih, jumlah 1 sampai 9999 sebagai bentuk data saja, tombol "Tambah ke pesanan" yang memanggil `KedaiPesan.tambah` lalu menutup sheet; Tab berputar di antara kontrol sheet), `pesan.js`, dan `style.css`.
+**Tugas:** ORD.03 giliran 2: tombol Tambah di kartu menu, pilihan dan jumlah di sheet detail, lalu masuk keranjang. Perubahan di `menu.js` (id grup dan id opsi ikut terbaca; menu tanpa grup: Tambah langsung masuk keranjang jumlah 1 lalu "Ditambahkan ✓" sebentar; menu dengan grup: Pilih membuka sheet; hanya menu Tersedia), `menu-detail.js` (satu pilihan per grup dengan bawaan terpilih, jumlah 1 sampai 9999 sebagai bentuk data saja, "Tambah ke pesanan" memanggil `KedaiPesan.tambah` lalu menutup sheet; Tab berputar di antara kontrol sheet), `pesan.js`, dan `style.css`.
 
 **Keputusan baru dari ketua:**
 
@@ -255,11 +254,7 @@ Sumber: blok `2026-11-07: Deskripsi, sheet detail, dan pilihan menu` di `docs/me
 
 ### 2026-11-08: ORD.03 lulus
 
-ORD.03 selesai dan lulus. Terbukti dengan balasan server (bukti di chat, tidak disimpan):
-
-- Kirim ditekan tiga kali beruntun lewat konsol hanya membuat **satu** order.
-- Menu jadi Habis saat Kirim: server menolak dengan pesan "Ada menu yang sedang habis atau tidak tersedia. Muat ulang menu lalu coba lagi.", tidak ada order terbentuk (nomor tidak loncat), daftar menu dimuat ulang otomatis, dan menu Habis tampil tanpa tombol Tambah.
-- Pilihan menu tersimpan di `order_detail`, termasuk opsi non-bawaan ("Sedang") dan bawaan ("Tidak pedas"); menu tanpa grup pilihannya kosong. Harga dan total dihitung server; Diantar punya alamat, Diambil dan Makan di warung tanpa alamat; jam bawaan Diantar 11:00 dan hari target benar.
+ORD.03 selesai dan lulus (bukti di chat, tidak disimpan): Kirim ditekan tiga kali beruntun lewat konsol hanya membuat **satu** order; menu jadi Habis saat Kirim ditolak server tanpa membuat order (nomor tidak loncat), daftar menu dimuat ulang otomatis, dan menu Habis tampil tanpa tombol Tambah; pilihan menu (non-bawaan dan bawaan), harga, total, alamat per tipe, jam bawaan Diantar 11:00, dan hari target benar.
 
 Dilaporkan ketua jalan di Android, tanpa bukti rinci di chat: offline, Diantar tanpa alamat ditolak, jam kosong ditolak, Keluar mengosongkan keranjang dan alamat, tombol pesanan melayang. SEC-19 tetap di ORD.14.
 
@@ -294,7 +289,7 @@ Sumber: keputusan ketua lewat PIC, 8 Nov 2026. Push: lihat juga blok "Push untuk
 - **ORD.14** diperluas dan menunggu ORD.15: batal vs setujui bersamaan, owner batal dari tiap status (Selesai ditolak), customer batal setelah Disetujui ditolak, alih hari dari tiap status (Selesai dan selain Besok ditolak), aksi owner oleh customer dan penjaga ditolak, penjaga menekan tombol status pada order yang sudah Dibatalkan.
 - **NTF.04, NTF.06, NTF.08** menyesuaikan (lihat `notifikasi.md` bagian 9).
 
-**Belum diputuskan:** "hanya Besok" dihitung dari tanggal server saat aksi (bawaan): order yang hari targetnya sudah Besok tidak bisa dialihkan lagi. Perlu konfirmasi ketua. Alasan keputusan di luar yang disebut di atas: alasan belum tercatat.
+Alasan keputusan di luar yang disebut di atas: alasan belum tercatat.
 
 ### Handoff #6 | 2026-11-08 | KETUA
 
@@ -302,7 +297,7 @@ Sumber: keputusan ketua lewat PIC, 8 Nov 2026. Push: lihat juga blok "Push untuk
 
 **Keputusan baru** (ketua menyetujui keempatnya; alasan belum tercatat):
 
-- **Tiga pagar di tabel `order` dilonggarkan** (`order_metode_status_cek`, `order_pemutus_cek`, `order_alasan_cek`). Dibatalkan boleh membawa metode bayar dan pemutus (keduanya sama-sama ada atau sama-sama kosong), dan alasan boleh ada pada Ditolak dan Dibatalkan. Aturan lain tidak berubah.
+- **Tiga pagar di tabel `order` dilonggarkan** (`order_metode_status_cek`, `order_pemutus_cek`, `order_alasan_cek`). Dibatalkan boleh membawa metode bayar dan pemutus (sama-sama ada atau sama-sama kosong), dan alasan boleh ada pada Ditolak dan Dibatalkan. Aturan lain tidak berubah.
 - **Alasan batal disimpan di kolom `alasan_tolak` yang sudah ada** (bukan kolom baru), sehingga `order_daftar` dan `order_detail` tidak diubah dan alasannya langsung tampil ke customer. Isi kolom itu bisa alasan tolak **atau** alasan batal; pembedanya adalah `status` (Ditolak atau Dibatalkan).
 - **Order yang dibatalkan owner tetap menyimpan metode bayar dan pemutus** (berguna untuk pengembalian uang lewat WA). Siapa yang membatalkan dan dari status apa ada di `riwayat_status` (hanya terlihat owner).
 - **Alasan dari customer diabaikan** (O8: alasan hanya untuk owner). Alasan owner juga disalin ke `riwayat_status.keterangan`.
@@ -310,12 +305,12 @@ Sumber: keputusan ketua lewat PIC, 8 Nov 2026. Push: lihat juga blok "Push untuk
 
 **Kontrak untuk layar:**
 
-- `order_batal` dengan isian `{ id, alasan }` (`id` = id order; `alasan` hanya dipakai owner). Sukses `{ ok: true, order: { id, nomor, status: "Dibatalkan", status_asal, oleh_peran } }`. Galat `{ ok: false, pesan }`; tampilkan `pesan` apa adanya lewat `textContent`. Galat untuk customer: **409** (order sudah bukan Menunggu; sebaiknya layar menyegarkan daftar), **404** "Pesanan tidak ditemukan." (bukan miliknya atau tidak ada), 400 id rusak.
+- `order_batal` dengan isian `{ id, alasan }` (`id` = id order; `alasan` hanya dipakai owner). Sukses `{ ok: true, order: { id, nomor, status: "Dibatalkan", status_asal, oleh_peran } }`. Galat `{ ok: false, pesan }`; tampilkan `pesan` apa adanya lewat `textContent`. Galat untuk customer: **409** (order sudah bukan Menunggu; layar sebaiknya menyegarkan daftar), **404** "Pesanan tidak ditemukan." (bukan miliknya atau tidak ada), 400 id rusak.
 - `order_daftar` (isian `{}` untuk customer) membalas `{ ok, daftar }`, terbaru dulu, riwayat lengkap, baris ringkas: `id`, `nomor`, `tipe`, `status`, `hari_target`, `jam_permintaan`, `total`, `alasan_tolak`, `ringkas`. `order_detail` (isian `id`) membalas `{ ok, order }` dengan item, pilihan, catatan, dan `alasan_tolak`. Customer **tidak** menerima `metode_bayar`, `pemutus_nama`, dan riwayat status.
 
 ### Handoff #7 | 2026-11-08 | RAC
 
-**Tugas:** ORD.04 **selesai**: layar Pesanan Saya (daftar riwayat lengkap, detail, status, alasan tolak atau batal, teks O21 pada order Menunggu, tombol Batalkan hanya saat Menunggu). `public/pesanan.js` baru (mengekspor `window.KedaiPesanan`: `tampil`, `reset`); `index.html`, `kerangka.js` (`tampil` saat tab dibuka dan lewat Segarkan, `reset` saat Keluar), `pesan.js`, dan `sw.js` (cache `chata-v12`) diubah. `style.css` tidak berubah.
+**Tugas:** ORD.04 **selesai**: layar Pesanan Saya (daftar riwayat lengkap, detail, status, alasan tolak atau batal, teks O21 pada order Menunggu, tombol Batalkan hanya saat Menunggu). `public/pesanan.js` baru (`window.KedaiPesanan`: `tampil` saat tab dibuka dan lewat Segarkan, `reset` saat Keluar); `index.html`, `kerangka.js`, `pesan.js`, dan `sw.js` (cache `chata-v12`) diubah; `style.css` tidak.
 
 **Keputusan baru:**
 
@@ -349,7 +344,7 @@ Sumber: keputusan ketua lewat PIC, 8 Nov 2026. Push: lihat juga blok "Push untuk
 **Keputusan baru** (pilihan penulis; alasan belum tercatat dari ketua):
 
 - Galat order yang bukan Menunggu dibedakan: Disetujui ke atas = `sudah_diproses` (sesuai SEC-10), Ditolak = `sudah_ditolak`, Dibatalkan = `sudah_dibatalkan`. Pesan: "Pesanan sudah diproses. Segarkan daftar pesanan.", "Pesanan ini sudah ditolak.", "Pesanan ini sudah dibatalkan."
-- `riwayat_status.keterangan` pada Setujui berisi "Metode bayar: <metode>"; pada Tolak berisi alasan (kosong bila tanpa alasan). **ORD.07 (`order_metode_koreksi`, O23) memakai format keterangan yang sama** supaya metode lama dan baru terbaca konsisten.
+- `riwayat_status.keterangan` pada Setujui berisi "Metode bayar: <metode>"; pada Tolak berisi alasan (kosong bila tanpa alasan). Koreksi metode (O23) memakai format keterangan serupa (rincian di Handoff #12).
 - `pemutus_nama` disalin dari `staf.nama_tampilan` saat keputusan (salinan).
 - Metode bayar dipangkas spasi lalu dicocokkan persis (huruf besar-kecil dibedakan); alasan tolak yang hanya spasi disimpan kosong.
 - Fungsi tidak mengembalikan id pemesan (bahan push ditambahkan di NTF bila perlu).
@@ -357,7 +352,7 @@ Sumber: keputusan ketua lewat PIC, 8 Nov 2026. Push: lihat juga blok "Push untuk
 
 ### Handoff #10 | 2026-11-09 | [RAC]
 
-**Tugas:** ORD.06 (layar owner) kode selesai dan terpasang di production; tidak ada perubahan SQL, migration, atau `kedai/index.ts`. Perubahan: `public/orderowner.js` baru (Order Masuk dan Semua Order; satu pabrik `buatLayar` dipakai dua kali), `index.html` (panel `panel-ordermasuk` dan `panel-semuaorder`, script `orderowner.js` setelah `pesanan.js`), `kerangka.js`, `sw.js` (`chata-v13`).
+**Tugas:** ORD.06 (layar owner) kode selesai dan terpasang di production; tidak ada perubahan SQL, migration, atau `kedai/index.ts`. Perubahan: `public/orderowner.js` baru (satu pabrik `buatLayar` dipakai untuk Order Masuk dan Semua Order), `index.html`, `kerangka.js`, `sw.js` (`chata-v13`).
 
 **Perilaku layar:**
 
@@ -377,17 +372,15 @@ Sumber: keputusan ketua lewat PIC, 8 Nov 2026. Push: lihat juga blok "Push untuk
 
 **Tugas:** ORD.06 **selesai** (tes penutup lulus). Perubahan terakhir hanya CSS: dua baris tambahan di `.kartu__isi` di `style.css` (`overflow-wrap: anywhere`) supaya alasan atau catatan panjang tanpa spasi turun baris; kartu tetap selebar layar dan tingginya menyesuaikan. Berlaku juga untuk catatan dan teks metode bayar yang memakai kelas itu.
 
-**Terbukti** (akun dummy; bukti di chat, tidak disimpan): dua owner menekan Setuju bersamaan, jendela kedua dengan tab lama mendapat "Pesanan sudah diproses. Segarkan daftar pesanan.", lalu detail dimuat ulang menjadi Disetujui tanpa tombol aksi, dan metode bayar serta pemutus tidak tertimpa; Tolak dengan alasan 191 dan tepat 200 karakter tersimpan utuh dan tampil di layar owner dan customer; kolom alasan menahan ketikan di 200 karakter; Tolak tanpa alasan tidak menampilkan kartu alasan.
+**Terbukti** (akun dummy; bukti di chat): dua owner menekan Setuju bersamaan, yang kedua mendapat "Pesanan sudah diproses. Segarkan daftar pesanan.", detail dimuat ulang menjadi Disetujui, metode bayar dan pemutus tidak tertimpa; alasan Tolak 191 dan 200 karakter tersimpan utuh dan tampil di layar owner dan customer, kolom menahan ketikan di 200; Tolak tanpa alasan tidak menampilkan kartu alasan.
 
-**Masih terbuka (konsolidasi seluruh handoff):**
+**Masih terbuka:**
 
 - Tes ORD.06 di HP Android (ketua), metode Transfer (Tunai dan QRIS sudah terbukti), dan pesan galat saat koneksi putus ketika layar sudah terbuka (P2, opsional).
-- Baris SEC di sheet sengaja belum dicentang; jadwalnya setelah ORD.14. Yang sudah punya bukti sebagian: SEC-07 dan SEC-08 (aksi `order_setuju`, `order_tolak`, `order_batal` oleh customer dan penjaga), SEC-09 (`order_batal`), SEC-10 (dua owner di layar). Yang masih menunggu: SEC-05 (catatan belum ada aksinya), SEC-06 (aksi selain `order_buat`), SEC-19 (jam HP, digeser ke ORD.14: di HP Android dummy geser tanggal HP, pesan lewat layar, cek `hari_target`; bagian "waktu catatan dari server" menunggu ORD.09).
-- Dimasukkan ke ORD.14: customer batal vs owner setuju bersamaan (SEC-10, dua sesi login); skenario Tolak yang menang saat bersamaan; owner membatalkan dari Diproses dan Diantar/Siap (menunggu ORD.07 dan ORD.15; dari Disetujui sudah terbukti); penjaga menekan tombol status pada order yang sudah Dibatalkan; urutan daftar owner dan penjaga menurut O22 belum tercatat dibuktikan.
+- Baris SEC di sheet sengaja belum dicentang; jadwalnya setelah ORD.14. Bukti sebagian: SEC-07 dan SEC-08 (`order_setuju`, `order_tolak`, `order_batal` oleh customer dan penjaga), SEC-09 (`order_batal`), SEC-10 (dua owner di layar). Menunggu: SEC-05 (catatan belum ada aksinya), SEC-06 (aksi selain `order_buat`), SEC-19 (jam HP, digeser ke ORD.14: di HP Android dummy geser tanggal HP, pesan lewat layar, cek `hari_target`; bagian "waktu catatan dari server" menunggu ORD.09).
+- Dimasukkan ke ORD.14: customer batal vs owner setuju bersamaan (SEC-10, dua sesi login); skenario Tolak yang menang saat bersamaan; owner membatalkan dari Diproses dan Diantar/Siap (dari Disetujui sudah terbukti); urutan daftar owner dan penjaga menurut O22 belum tercatat dibuktikan.
 - Pagar antar-kolom tabel `order` baru teruji untuk Menunggu, Disetujui, Ditolak, dan Dibatalkan lewat fungsi yang ada; sisanya (order wakil, kecocokan metode bayar dengan status) lewat ORD.12 dan ORD.14.
-- Push belum ada untuk setuju, tolak, dan batal (NTF; pembatalan, setuju, dan tolak berjalan tanpa push sampai itu).
-- Layar customer tidak bisa membedakan "dibatalkan customer" dan "dibatalkan owner" (riwayat status hanya terlihat owner; petunjuk yang ada hanya alasan terisi atau kosong). Bila perlu pembeda, keputusan ketua, usul: putuskan bersama ORD.15.
-- "Hanya Besok" untuk alih hari dihitung dari tanggal server saat aksi (bawaan); perlu konfirmasi ketua.
+- Push belum ada untuk setuju, tolak, dan batal (NTF); ketiganya berjalan tanpa push sampai itu.
 - Catatan belum tampil di detail customer (ORD.10).
 - Baris keranjang belum ditandai saat galat "menu habis"; customer mencarinya sendiri.
 - `pesan.js` dan `orderowner.js` melewati ~500 baris (bagian alamat `pesan.js` paling mudah dipisah).
@@ -395,34 +388,18 @@ Sumber: keputusan ketua lewat PIC, 8 Nov 2026. Push: lihat juga blok "Push untuk
 - Kosmetik: variabel `pernahMuatDaftar` di `pesanan.js` tidak terpakai.
 - Order uji tidak bisa dihapus; dibersihkan di LNC.01 bersama reset nomor order.
 
-**Saran giliran berikutnya:**
-
-1. **ORD.07** ⚠️ (`order_status`, `order_metode_koreksi`, `order_alih_hari`), dikerjakan di sesi ketua: butuh penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `20261108_05_order_setuju_tolak.sql` + `20261108_04_order_batal_pesan.sql`. Format keterangan koreksi metode sama dengan "Metode bayar: <metode>" (Handoff #9).
-2. Setelah ORD.07: ORD.15 (tombol aksi owner di layar) dan ORD.08 (layar penjaga). Berkas JS baru wajib didaftarkan di `sw.js` (butuh "OK" ketua) dan naik dalam satu commit dengan berkas barunya.
-
-# Siap tempel (2 blok)
-
-Blok 1 ditempel di **paling bawah `docs/order.md` bagian 9**. Blok 2 ditempel di **`AGENTS.md` bagian 12**, di bawah garis (teks "(belum ada blok)" dibiarkan, append-only).
-
----
-
-## BLOK 1: tempel di `docs/order.md` bagian 9
-
 ### Handoff #12 | 2026-11-09 | KETUA
 
-**Tugas:** ORD.07 ⚠️ kode selesai dan **sudah ter-deploy di production**. **Tes belum dijalankan** dan **belum commit atau push**, jadi ORD.07 belum boleh dicentang di sheet.
+**Tugas:** ORD.07 ⚠️ kode selesai dan **ter-deploy di production** (tes dan commit di Handoff #13).
 
-**Berkas:**
-
-- `supabase/migrations/20261109_01_order_status_alih_hari.sql` (+ `_batal.sql`, dan `supabase/templates/20261109_01_order_status_alih_hari_cek.sql`). Sudah dijalankan di SQL Editor dan lulus cek: 3 fungsi ada, `SECURITY DEFINER`, `search_path` kosong, `anon` dan `authenticated` tanpa `EXECUTE`, pagar tabel tidak berubah. Tidak ada tabel atau data yang berubah.
-- `supabase/functions/kedai/order_status.ts` (baru) dan `index.ts` (hanya tambahan: catatan kepala, 1 import, 1 blok sambungan, 3 `case`; **0 baris lama dihapus**). Deploy `kedai --use-api` sukses; ini deploy multi-berkas pertama dan terbukti jalan. Token CLI sudah dibersihkan.
+**Berkas:** `supabase/migrations/20261109_01_order_status_alih_hari.sql` (+ `_batal.sql`, cek di `supabase/templates/20261109_01_order_status_alih_hari_cek.sql`), sudah dijalankan di SQL Editor dan lulus cek (3 fungsi, `SECURITY DEFINER`, `search_path` kosong, `anon` dan `authenticated` tanpa `EXECUTE`, pagar tabel tidak berubah; tabel dan data tidak berubah); `supabase/functions/kedai/order_status.ts` (baru) dan `index.ts` (hanya tambahan, **0 baris lama dihapus**). Deploy `kedai --use-api` sukses (deploy multi-berkas pertama, terbukti jalan); token CLI sudah dibersihkan.
 
 **Keputusan baru (ketua):**
 
-- **"Hanya Besok" untuk alih hari** dihitung dari tanggal server saat aksi (menutup butir "Belum diputuskan" di blok 8 Nov). Order yang hari targetnya sudah Besok atau lebih ditolak (`sudah_besok`); hari ini atau yang sudah lewat boleh dialihkan ke Besok.
-- **Pilihan C:** alasan alih hari **hanya masuk `riwayat_status.keterangan`**, tidak masuk `alasan_tolak` (pagar `order_alasan_cek` hanya mengizinkan Ditolak dan Dibatalkan). Ini menunda bagian "alasan tampil ke customer" di blok 8 Nov; jadi butir baru sheet.
+- **"Hanya Besok" untuk alih hari** dihitung dari tanggal server saat aksi. Order yang hari targetnya sudah Besok atau lebih ditolak (`sudah_besok`); hari ini atau yang sudah lewat boleh dialihkan ke Besok.
+- **Pilihan C:** alasan alih hari **hanya masuk `riwayat_status.keterangan`**, tidak masuk `alasan_tolak` (pagar `order_alasan_cek` hanya mengizinkan Ditolak dan Dibatalkan). Ini menunda bagian "alasan tampil ke customer" di blok 8 Nov; diselesaikan di ORD.16 (Handoff #16).
 - **Kode baru `kedai` di berkas terpisah** mulai ORD.07; kode lama tidak dipindah dan tidak ada refactor yang direncanakan. Alat bantu diberikan lewat parameter `buatAksiOrderStatus(alat)`. Alasan ketua: `index.ts` sudah sangat panjang. Aman untuk free tier (hitungan panggilan dan batas ukuran tidak terpengaruh).
-- **Lima pilihan penulis yang disetujui ketua:** (1) alasan alih hari maks 100 karakter, format keterangan "Alih hari 2026-11-09 ke 2026-11-10[, jam 11:00 ke 12:30][. Alasan: ...]" (karena `keterangan` maks 200); (2) koreksi metode berketerangan "Metode bayar: <baru> (sebelumnya <lama>)", metode sama ditolak (`metode_sama`); (3) alih hari ditolak bila hari target sudah Besok atau lebih; (4) dari Diantar/Siap, Disetujui tidak bisa dicapai lewat `order_status` (hanya lewat alih hari), **sedangkan mundur Diproses ke Disetujui tetap boleh (O10)**; butir ini sempat tertulis terlalu luas dan yang berlaku mengikuti O10; (5) `order_status` menerima `status_dilihat` hanya sebagai pembanding (beda dengan server: 409 `status_berubah`), status tujuan selalu ditentukan server.
+- **Lima pilihan penulis yang disetujui ketua:** (1) alasan alih hari maks 100 karakter, format keterangan "Alih hari 2026-11-09 ke 2026-11-10[, jam 11:00 ke 12:30][. Alasan: ...]" (karena `keterangan` maks 200); (2) koreksi metode berketerangan "Metode bayar: <baru> (sebelumnya <lama>)", metode sama ditolak (`metode_sama`); (3) alih hari ditolak bila hari target sudah Besok atau lebih; (4) dari Diantar/Siap, Disetujui tidak bisa dicapai lewat `order_status` (hanya lewat alih hari), sedangkan mundur Diproses ke Disetujui tetap boleh (O10); (5) `order_status` menerima `status_dilihat` hanya sebagai pembanding (beda dengan server: 409 `status_berubah`), status tujuan selalu ditentukan server.
 - **Pilihan penulis lain** (alasan belum tercatat): mundur berketerangan "Mundur satu langkah"; penjaga yang memanggil `order_status` pada order Menunggu, Ditolak, atau Dibatalkan dibalas `order_tidak_ditemukan` (O11); koreksi metode hanya untuk Disetujui sampai Diantar/Siap (Dibatalkan dikecualikan, supaya metode dan pemutusnya tetap jadi bahan pengembalian uang lewat WA); alih hari boleh untuk order wakil owner; fungsi tidak mengembalikan id pemesan.
 
 **Kontrak untuk layar (ORD.15 dan ORD.08):** balasan `{ status, data }` dari `panggilKedai`; sukses `data = { ok: true, order: {...} }`, galat `data = { ok: false, pesan }` (tampilkan `pesan` lewat `textContent`; 409 sebaiknya menyegarkan daftar atau detail).
@@ -431,74 +408,32 @@ Blok 1 ditempel di **paling bawah `docs/order.md` bagian 9**. Blok 2 ditempel di
 - `order_metode_koreksi` (owner), isian `{ id, metode }`. Sukses: `order = { id, nomor, status, metode_bayar, metode_sebelumnya }`.
 - `order_alih_hari` (owner), isian `{ id, jam?, alasan? }` (jam `JJ:MM`, kosong = jam lama; alasan maks 100). Sukses: `order = { id, nomor, status: "Disetujui", status_asal, hari_lama, hari_baru, jam_permintaan, oleh_peran }`. Hari tujuan tidak pernah dikirim aplikasi.
 
-**Masalah yang belum beres:**
-
-- **Tes ORD.07 belum jalan** (lihat saran di bawah). Sampai ada bukti, SEC-07, SEC-08, SEC-10, SEC-11, SEC-15 (bagian ORD.07), dan SEC-19 (hari dari aplikasi diabaikan) belum boleh dicentang.
-- **Belum commit dan push.** Kondisi terakhir `git status`: `index.ts` modified; `order_status.ts` dan tiga berkas SQL untracked; tidak ada berkas lain.
-- Alasan alih hari belum tampil ke customer: **butir baru sheet** "Tampilkan alasan alih hari ke customer" (kerjakan bersama ORD.15; butuh perubahan tabel atau fungsi, jadi ⚠️).
-- Push belum ada untuk status, koreksi, dan alih hari (NTF.04, NTF.06, NTF.08 menyesuaikan).
-- Belum dikonfirmasi: logout dashboard Supabase dan GitHub di Mac bersama setelah deploy.
-- Butir terbuka dari Handoff #11 yang tidak berubah: tes ORD.06 di Android, pembeda "dibatalkan customer atau owner" di layar customer, dan lainnya.
-
-**Saran giliran berikutnya:**
-
-1. **Tes ORD.07** (sesi tes; lampirkan `AGENTS.md` + `order.md` + `security.md` + berkas cek). Lewat konsol `window.KedaiAkun.panggilKedai(aksi, data)` dengan akun dummy (owner, penjaga, customer; tambah customer kedua bila perlu). Siapkan **beberapa order dummy**, karena order Selesai tidak bisa dikembalikan. Kasus:
-   - Jalur maju per tipe (Diantar, Diambil: Siap diambil, Makan di warung: Siap disajikan) dan mundur satu langkah oleh penjaga dan owner; riwayat tercatat.
-   - Ditolak: loncat, `status_dilihat` basi atau dobel pencet (409), mundur dari Selesai, mundur dari Disetujui, `arah` salah.
-   - Hak: customer memanggil ketiga aksi (403); penjaga memanggil koreksi metode dan alih hari (403); penjaga `order_status` pada order Dibatalkan (404).
-   - Koreksi metode oleh owner (keterangan riwayat benar); metode sama atau asing (400); order Selesai atau Dibatalkan ditolak.
-   - Alih hari dari Disetujui, Diproses, Diantar/Siap: hari target jadi Besok dari server, status Disetujui, jam berubah atau tidak, alasan 100 lolos dan 101 ditolak; order yang sudah Besok (409); dari Selesai (409); isian `hari` palsu diabaikan.
-   - Bukti: balasan server dan query baca-saja `riwayat_status` (bagian 4 berkas cek). Bukti tidak disimpan.
-2. Setelah lulus: git dengan pagar `AGENTS.md` bagian 8 (folder aktif, `git remote -v`, email commit, semuanya milik ketua), **satu commit** untuk `index.ts`, `order_status.ts`, dan tiga berkas SQL. Lalu centang ORD.07 di sheet.
-3. Berikutnya ORD.15 (tombol aksi owner di layar) dan ORD.08 (layar penjaga). Berkas JS baru wajib didaftarkan di `sw.js` (butuh "OK" ketua) dan naik satu commit dengan berkasnya.
-
----
+**Masalah yang belum beres:** push belum ada untuk status, koreksi, dan alih hari (NTF.04, NTF.06, NTF.08 menyesuaikan). Butir terbuka Handoff #11 tidak berubah.
 
 ### Handoff #13 | 2026-11-09 | [FREN]
 
-**Tugas:** tes ORD.07 ⚠️ (lanjutan Handoff #12, sesi ketua) dijalankan dan **lulus**. ORD.07 sudah dicentang di sheet. Commit `0d9cb2e` sudah di-push ke repo ChATA (pagar `AGENTS.md` bagian 8 lolos: folder, `git remote -v`, email noreply). Tidak ada kode yang diubah di sesi ini.
+**Tugas:** tes ORD.07 ⚠️ (lanjutan Handoff #12) dijalankan dan **lulus**. ORD.07 sudah dicentang di sheet. Commit `0d9cb2e` sudah di-push ke repo ChATA (pagar `AGENTS.md` bagian 8 lolos). Tidak ada kode yang diubah di sesi ini.
 
-**Berkas:** tidak ada yang diubah. Yang ter-commit hanya hasil sesi ketua: `index.ts`, `order_status.ts`, dua SQL migration (+ pembatal), berkas cek, dan blok catatan di `AGENTS.md` dan `docs/order.md`. Satu baris terhapus: placeholder `_(belum ada blok)_` di `AGENTS.md` bagian 12, diganti blok catatan ketua (sudah dicek, tidak ada aturan lama yang hilang).
+**Berkas:** tidak ada yang diubah; yang ter-commit hanya hasil sesi ketua. Satu baris terhapus: placeholder `_(belum ada blok)_` di `AGENTS.md` bagian 12, diganti blok catatan ketua (tidak ada aturan lama yang hilang).
 
-**Terbukti** (konsol, akun dummy; bukti di chat, tidak disimpan):
+**Terbukti** (konsol, akun dummy; bukti di chat): jalur maju dan mundur satu langkah untuk tiga tipe sampai Selesai oleh owner dan penjaga (`oleh_peran` benar). Ditolak: mundur dari Disetujui (409), `arah` salah (400), status basi dan dobel pencet (409), semua aksi pada order Selesai, Menunggu, Ditolak, dan Dibatalkan (409). Hak: customer memanggil ketiga aksi (403); penjaga memanggil koreksi metode dan alih hari (403) dan `order_status` pada order Menunggu, Ditolak, Dibatalkan (404). Koreksi metode sama atau asing (400). Alih hari dari Disetujui, Diproses, Diantar: alasan 100 karakter lolos dan 101 ditolak (400), jam berubah hanya bila dikirim, isian `hari` palsu diabaikan, order yang sudah Besok ditolak (409). Riwayat (query baca-saja bagian 4 berkas cek, `LIMIT` dinaikkan ke 30 hanya di editor) berketerangan "Mundur satu langkah", "Metode bayar: Transfer (sebelumnya Tunai)", "Alih hari ... ke ..."; aksi yang ditolak tidak meninggalkan baris. Mundur dari Diantar mendarat di Diproses; kembali ke Disetujui hanya lewat alih hari (SEC-15).
 
-- Jalur maju dan mundur satu langkah untuk tiga tipe (Diambil, Diantar, Makan di warung sampai Selesai), oleh owner dan penjaga; `oleh_peran` tercatat benar.
-- Ditolak: mundur dari Disetujui (409), `arah` salah (400), status basi dan dobel pencet (409), semua aksi pada order Selesai (409), ketiga aksi pada order Menunggu, Ditolak, dan Dibatalkan (409).
-- Hak: customer memanggil ketiga aksi (403); penjaga memanggil koreksi metode dan alih hari (403); penjaga `order_status` pada order Menunggu, Ditolak, dan Dibatalkan (404).
-- Koreksi metode: sukses, metode sama (400), metode asing (400).
-- Alih hari: dari Disetujui, Diproses, dan Diantar; alasan 100 karakter lolos dan 101 ditolak (400); jam berubah bila dikirim dan tetap bila tidak; isian `hari` palsu diabaikan (hari baru dari server); order yang sudah Besok ditolak (409).
-- Riwayat (query baca-saja bagian 4 berkas cek, `LIMIT` dinaikkan ke 30 hanya di editor): keterangan "Mundur satu langkah", "Metode bayar: Transfer (sebelumnya Tunai)", dan "Alih hari ... ke ..." (jam dan alasan bila ada) sesuai. Aksi yang ditolak tidak meninggalkan baris (id riwayat berurutan, tanpa lubang).
-- Mundur dari Diantar mendarat di Diproses, bukan Disetujui; kembali ke Disetujui dari Diantar hanya lewat alih hari (SEC-15).
-  **Keputusan baru:** tidak ada.
+**Keputusan baru:** tidak ada.
 
 **Masalah yang belum beres:**
 
 - Belum terbukti: dua sesi menekan tombol bersamaan untuk `order_status` (SEC-10) dan jam HP digeser (SEC-19). Keduanya dikerjakan di ORD.14. Baris SEC di sheet belum dicentang.
-- Alasan alih hari belum tampil ke customer: butir baru sheet **ORD.16** "Tampilkan alasan alih hari ke customer" (⚠️, P1, bareng ORD.15), dari Handoff #12.
 - Push belum ada untuk status, koreksi, dan alih hari (NTF.04, NTF.06, NTF.08).
-- Order dummy tersisa: #21 (Diantar, Disetujui, hari Besok) dan #24 (Diambil, Menunggu) dipakai ulang di ORD.14; #17 dan #22 Selesai; #23 Dibatalkan. Order uji tidak bisa dihapus; dibersihkan di LNC.01.
 - Logout dashboard Supabase dan GitHub di Mac bersama setelah deploy belum dikonfirmasi.
-- Butir terbuka dari Handoff #11 tidak berubah (tes ORD.06 di Android, pembeda "dibatalkan customer atau owner" di layar customer, dan lainnya).
-  **Saran giliran berikutnya:**
-
-1. **ORD.15** ⚠️ (tombol aksi owner di layar) memakai kontrak balasan `{ status, data }` di Handoff #12. Lalu **ORD.08** (layar penjaga). Berkas JS baru wajib didaftarkan di `sw.js` (butuh "OK" ketua) dan naik dalam satu commit dengan berkas barunya.
-2. Setelahnya ORD.09 (catatan berlapis), lalu ORD.14 untuk sisa tes yang digeser di atas.
-
-# Siap tempel: paling bawah `docs/order.md` bagian 9
+- Butir terbuka dari Handoff #11 tidak berubah.
 
 ### Handoff #14 | 2026-11-09 | RAC
 
 **Tugas:** ORD.08 (layar penjaga Antrean) **selesai**: terpasang di production, tes lulus (termasuk di HP Android ketua dan mode offline), sudah dicentang di sheet. Ditambah permintaan ketua setelah tes: **badge tipe order berwarna** di layar customer, owner, dan penjaga. Tidak ada perubahan SQL, migration, atau `kedai`.
 
-**Commit:**
+**Commit:** layar Antrean `21cdd81` (sudah di-push; pagar `AGENTS.md` bagian 8 lolos: folder, `git remote -v`, email noreply, semuanya milik ketua); badge tipe `f0ea828`.
 
-- Layar Antrean: `21cdd81`, sudah di-push (pagar `AGENTS.md` bagian 8 lolos: folder, `git remote -v`, email noreply, semuanya milik ketua).
-- Badge tipe: 'f0ea828'.
-
-**Berkas:**
-
-- ORD.08 (`21cdd81`): `public/orderpenjaga.js` (baru; `window.KedaiOrderPenjaga` dengan `tampil` dan `reset`), `public/index.html` (hanya tambahan: panel `panel-antrean` dan satu tag script), `public/kerangka.js` (tab Antrean penjaga ke panel `antrean`, hook `tampil` dan `reset`; baris lama jadi komentar), `public/style.css` (blok ORD.08 di akhir; warna tab di variabel `--antrean-*`), `public/sw.js` (`chata-v14`, `orderpenjaga.js` masuk daftar cache; baris lama jadi komentar).
-- Badge tipe: `public/orderpenjaga.js`, `public/orderowner.js`, `public/pesanan.js` (helper `badgeTipe` dan `barisTipe`; dua baris tulisan tipe lama di tiap berkas dijadikan komentar), dan `public/style.css` (blok badge di akhir; warna di variabel `--tipe-*`). `sw.js` tidak berubah (tanpa berkas baru).
+**Berkas:** ORD.08 (`21cdd81`): `public/orderpenjaga.js` (baru; `window.KedaiOrderPenjaga`: `tampil`, `reset`), `index.html`, `kerangka.js`, `style.css` (warna tab di variabel `--antrean-*`), `sw.js` (`chata-v14`, `orderpenjaga.js` masuk daftar cache). Badge tipe: `orderpenjaga.js`, `orderowner.js`, `pesanan.js` (helper `badgeTipe` dan `barisTipe`), `style.css` (warna di variabel `--tipe-*`); `sw.js` tidak berubah. Baris lama yang diganti dijadikan komentar, bukan dihapus.
 
 **Perilaku layar Antrean:**
 
@@ -516,7 +451,7 @@ Blok 1 ditempel di **paling bawah `docs/order.md` bagian 9**. Blok 2 ditempel di
 - Nama tab **Baru, Diproses, Siap, Selesai**; nama tab berwarna tegas (biru tua, oranye tua, hijau tua, abu tua) dan isi di bawahnya warna lembut senada.
 - Tombol langkah berikutnya **tanpa dialog konfirmasi**.
 - Perubahan `sw.js` (v14 dan daftar cache) disetujui ketua.
-- **Badge tipe** berwarna di tiga layar, dengan warna yang konsisten antar peran, tanpa keterangan warna (alasan: tipe yang hanya dibedakan font kurang jelas).
+- **Badge tipe** berwarna di tiga layar, warna konsisten antar peran, tanpa keterangan warna (alasan: tipe yang hanya dibedakan font kurang jelas).
 
 **Pilihan penulis** (alasan belum tercatat):
 
@@ -524,45 +459,22 @@ Blok 1 ditempel di **paling bawah `docs/order.md` bagian 9**. Blok 2 ditempel di
 - Kartu daftar penjaga tidak menampilkan harga. Detail menampilkan jumlah, pilihan, dan Total tanpa harga satuan.
 - Warna badge tipe (ungu, pink magenta, tosca) usulan penulis; ketua boleh mengganti lewat variabel `--tipe-*`.
 
-**Terbukti** (akun dummy; bukti di chat, tidak disimpan):
-
-- Daftar penjaga terisi dengan isian `{}`, termasuk order Selesai. Order Menunggu tidak terlihat penjaga sampai owner menekan Setuju (O11).
-- Jalur maju untuk tiga tipe: Diantar sampai Selesai, Diambil sampai Siap, Makan di warung sampai Selesai; label tombol sesuai tipe.
-- Mundur Siap ke Diproses dan Diproses ke Baru, kartu pindah tab. Tombol mundur tidak ada di Baru dan Selesai.
-- Angka tab dan pesan sukses mengikuti tiap perubahan. Detail menampilkan pilihan menu, Total, catatan baca-saja, dan alamat hanya untuk Diantar.
-- Keluar lalu masuk lagi: layar kembali ke tab Baru dengan data hasil muat ulang dari server.
-- Tes ketua di HP Android: semua jalan, termasuk mode offline.
-- **Badge tipe sudah dites tampilannya** di tiga layar (penjaga, owner, customer); cek satu order per tipe dan warna badge sama di ketiganya.
+**Terbukti** (akun dummy; bukti di chat): daftar penjaga dengan isian `{}` (order Menunggu tak terlihat sampai owner menekan Setuju, O11), jalur maju tiga tipe dengan label tombol sesuai tipe, mundur Siap ke Diproses dan Diproses ke Baru (tombol mundur tidak ada di Baru dan Selesai), angka tab dan pesan sukses, detail (pilihan, Total, catatan, alamat hanya Diantar), Keluar-masuk kembali ke tab Baru, HP Android ketua termasuk offline, dan badge tipe di tiga layar.
 
 **Masalah yang belum beres:**
 
-- **Owner membatalkan order lalu hilang dari Antrean** setelah Segarkan: belum teruji, karena tombol batal owner baru ada di ORD.15.
-- **Dua penjaga menekan tombol yang sama bersamaan** (SEC-10, order_status) dan penjaga menekan tombol pada order yang sudah Dibatalkan: dikerjakan di ORD.14. Baris SEC di sheet belum dicentang.
+- Dua penjaga menekan tombol yang sama bersamaan (SEC-10, `order_status`): dikerjakan di ORD.14. Baris SEC di sheet belum dicentang.
 - Push untuk status, koreksi, batal, dan alih hari belum ada (NTF.04, NTF.06, NTF.08).
-- `orderpenjaga.js` sekitar 880 baris, melewati patokan ~500 baris (bagian pembantu yang sama dengan `orderowner.js` bisa dipisah bila nanti diputuskan; butuh penjelasan dampak dan "OK" ketua).
-- Order dummy tersisa: **#25** (Diambil, Disetujui, hari ini) dan **#21** (Diantar, Disetujui, Selasa 10 Nov) dipakai ulang di ORD.14; **#24** (Diambil, Menunggu); #15 dan #26 sudah Selesai. Order uji tidak bisa dihapus; dibersihkan di LNC.01.
-- Butir terbuka dari Handoff #11, #12, dan #13 tidak berubah (pembeda "dibatalkan customer atau owner" di layar customer, ORD.16 alasan alih hari ke customer, logout dashboard Supabase dan GitHub di Mac bersama, dan lainnya).
-
-**Saran giliran berikutnya:**
-
-1. **ORD.15** ⚠️ (tombol aksi owner di layar: Batalkan, Alihkan hari, koreksi metode bayar, tombol status dan mundur), memakai kontrak balasan `{ status, data }` di Handoff #12; kerjakan bersama **ORD.16** (alasan alih hari ke customer, perlu perubahan tabel atau fungsi, jadi butuh "OK" ketua). Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `order_status.ts` + `orderowner.js` + `index.html` + `kerangka.js` + `style.css`. Berkas JS baru wajib didaftarkan di `sw.js` dan naik satu commit dengan berkasnya.
-2. Setelah ORD.15: tes owner membatalkan order dan hilang dari Antrean penjaga (sisa ORD.08).
-3. Lalu ORD.09 (catatan berlapis), kemudian ORD.14 untuk sisa tes (SEC-10, SEC-19, dan lainnya).
+- `orderpenjaga.js` sekitar 880 baris, melewati patokan ~500 baris (bagian pembantu yang sama dengan `orderowner.js` bisa dipisah bila diputuskan; butuh penjelasan dampak dan "OK" ketua).
+- Butir terbuka dari Handoff #11 sampai #13 tidak berubah.
 
 ### Handoff #15 | 2026-11-09 | FREN
 
 **Tugas:** ORD.15 (tombol aksi owner di detail order) **selesai**: terpasang di production, tes lulus, sudah dicentang di sheet. ORD.16 dikerjakan terpisah (keputusan ketua, alasan belum tercatat). Tidak ada perubahan SQL, migration, `kedai`, `style.css`, atau `kerangka.js`.
 
-**Commit** (pagar `AGENTS.md` bagian 8 lolos dua kali: folder, `git remote -v`, email noreply, semuanya milik ketua):
+**Commit** (pagar `AGENTS.md` bagian 8 lolos dua kali): `c7e4b04` kartu aksi owner; `c100ae1` info sukses tidak lagi menggulung layar ke atas (lihat keputusan).
 
-- `c7e4b04`: kartu aksi owner.
-- `c100ae1`: info sukses tidak lagi menggulung layar ke atas (lihat keputusan).
-
-**Berkas:**
-
-- `public/orderowneraksi.js` (baru, `window.KedaiOrderOwnerAksi.buat(alat)`): tampilan dan isian aksi owner. Tidak memanggil server sendiri; pengiriman lewat `kirim` milik `orderowner.js`. Dipisah ke berkas baru supaya `orderowner.js` tidak makin gemuk (permintaan ketua).
-- `public/orderowner.js` (sambungan saja; baris lama dijadikan komentar, tidak ada kode yang hilang): `ambilAksi`, guard `kirim` (hanya Setuju dan Tolak yang wajib Menunggu), pesan sukses boleh berupa fungsi, `pesanDetail` menggulung ke pesan galat.
-- `public/index.html` (satu tag script sebelum `orderowner.js`) dan `public/sw.js` (`chata-v15`, `orderowneraksi.js` masuk daftar cache; disetujui ketua).
+**Berkas:** `public/orderowneraksi.js` (baru, `window.KedaiOrderOwnerAksi.buat(alat)`): tampilan dan isian aksi owner, tidak memanggil server sendiri (pengiriman lewat `kirim` milik `orderowner.js`); dipisah supaya `orderowner.js` tidak makin gemuk (permintaan ketua). `orderowner.js` (sambungan saja; baris lama dijadikan komentar, tidak ada kode yang hilang; guard `kirim` hanya mewajibkan Menunggu untuk Setuju dan Tolak), `index.html`, dan `sw.js` (`chata-v15`, disetujui ketua).
 
 **Perilaku layar** (Order Masuk dan Semua Order, status Disetujui, Diproses, Diantar/Siap diambil/Siap disajikan):
 
@@ -578,33 +490,22 @@ Blok 1 ditempel di **paling bawah `docs/order.md` bagian 9**. Blok 2 ditempel di
 - Pilihan penulis (alasan belum tercatat): langkah maju dan mundur **tanpa dialog konfirmasi**, mengikuti layar penjaga (Handoff #14). Tombol Alihkan **selalu tampil** di status yang boleh; bila order sudah Besok, server menolak dan pesannya tampil (tanggal HP tidak dipakai, `AGENTS.md` bagian 7). Formulir yang terbuka ditutup dan isiannya dikosongkan bila detail dimuat ulang atau pindah order.
 - Atas permintaan FREN setelah tes: **pesan galat menggulung layar ke atas, info sukses tidak**. Alasan: menggulung saat tiap pindah status mengganggu urutan langkah.
 
-**Terbukti** (akun dummy, lewat layar; bukti di chat, tidak disimpan): maju dan mundur, tanpa tombol mundur di Disetujui, aksi hilang di Selesai; koreksi metode (metode sekarang mati); Batalkan dengan alasan tampil dan kartu aksi hilang; **order yang dibatalkan owner hilang dari Antrean penjaga setelah Segarkan** (sisa ORD.08 tutup); alih hari dengan jam kosong dan jam diisi, termasuk dari Siap diambil (jam lama tampil di bantuan form); alih hari kedua pada order yang sudah Besok ditolak server dengan pesannya.
+**Terbukti** (akun dummy, lewat layar; bukti di chat): maju dan mundur, koreksi metode, Batalkan dengan alasan (order hilang dari Antrean penjaga setelah Segarkan), alih hari dengan jam kosong dan jam diisi termasuk dari Siap diambil, dan alih hari kedua pada order yang sudah Besok ditolak server.
 
 **Masalah yang belum beres:**
 
 - **Belum terbukti:** ketuk dua kali cepat pada tombol status (tidak bisa dites manual: tombol langsung berganti ke langkah berikutnya); server sudah menolak dobel-pencet (Handoff #13), SEC-10 dua sesi tetap di ORD.14. Revisi gulung layar (`c100ae1`) belum dicek di layar.
 - **Tandai selesai tanpa konfirmasi dan tidak bisa dimundurkan** (layar owner dan penjaga). Butuh keputusan ketua bila ingin dialog konfirmasi khusus tombol itu.
-- **ORD.16** belum: alasan alih hari belum tampil ke customer (⚠️, butuh ubah tabel atau fungsi). Layar customer juga belum membedakan "dibatalkan customer" dan "dibatalkan owner" (Handoff #11); keputusan ketua.
 - Push untuk status, koreksi, batal, dan alih hari belum ada (NTF.04, NTF.06, NTF.08).
 - Kosmetik (P2): tulisan "Simpan koreksi" turun dua baris di HP kecil. `orderowner.js` 1194 baris, melewati patokan ~500 (bagian pembantu bisa dipisah bila diputuskan; butuh penjelasan dampak dan "OK" ketua).
-- Order dummy: #21 (Diantar), #25 (Diambil, jam 12.30), #27 (Diantar) semuanya Disetujui, hari Selasa 10 Nov, dipakai ulang di ORD.14; #28 Dibatalkan, #29 Selesai. Order uji tidak bisa dihapus; dibersihkan di LNC.01.
+- Order dummy: #21 (Diantar), #25 (Diambil, jam 12.30), #27 (Diantar) semuanya Disetujui, hari Selasa 10 Nov, dipakai ulang di ORD.14; #24 (Diambil, Menunggu); #28 dan #23 Dibatalkan; #29, #26, #15, #17, #22 Selesai. Order uji tidak bisa dihapus; dibersihkan di LNC.01.
 - Butir terbuka Handoff #11 sampai #14 yang tidak disebut di atas tidak berubah.
-
-**Saran giliran berikutnya:**
-
-1. **ORD.16** ⚠️ (alasan alih hari ke customer), sesi ketua: butuh penjelasan dampak dan "OK" ketua. Alasan alih hari kini hanya di `riwayat_status.keterangan` (Handoff #12, pilihan C), jadi perlu ubah fungsi atau tabel. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `order_status.ts` + `20261109_01_order_status_alih_hari.sql` + `public/pesanan.js`. Bahas sekalian pembeda "dibatalkan customer atau owner".
-2. **ORD.09** ⚠️ (catatan berlapis), lalu ORD.10, ORD.11 sampai ORD.13, dan **ORD.14** (sisa tes: SEC-10, SEC-19, batal vs setuju bersamaan).
 
 ### Handoff #16 | 2026-11-09 | KETUA
 
-**Tugas:** ORD.16 ⚠️ (alasan alih hari tampil ke customer) **selesai**: terpasang di production, tes lulus (termasuk di HP Android), sudah dicentang di sheet. Commit `ce7b614` sudah di-push (pagar `AGENTS.md` bagian 8 lolos: folder, `git remote -v`, email noreply, semuanya milik ketua). Tidak ada perubahan tabel, `kedai`, `sw.js`, atau `orderowneraksi.js`.
+**Tugas:** ORD.16 ⚠️ (alasan alih hari tampil ke customer) **selesai**: terpasang di production, tes lulus (termasuk di HP Android), sudah dicentang di sheet. Commit `ce7b614` sudah di-push (pagar `AGENTS.md` bagian 8 lolos). Tidak ada perubahan tabel, `kedai`, `sw.js`, atau `orderowneraksi.js`.
 
-**Berkas:**
-
-- `supabase/migrations/20261109_02_order_detail_alasan_alih.sql`: `order_detail` diganti dengan `CREATE OR REPLACE` (nama, parameter, dan tipe kembalian sama). Sudah dijalankan di SQL Editor dan lulus cek. Satu variabel, satu blok pengambil alasan, dan satu isian baru `alasan_alih` di balasan; selebihnya sama persis dengan versi di `20261108_02_order_fungsi.sql`.
-- `supabase/migrations/20261109_02_order_detail_alasan_alih_batal.sql`: `order_detail` versi lama persis, untuk pembatalan.
-- `supabase/templates/20261109_02_order_detail_alasan_alih_cek.sql`: cek baca-saja.
-- `public/pesanan.js` (hanya tambahan; 0 baris lama dihapus): `bacaDetail` membaca `alasan_alih`, dan kartu "Alasan alih hari" tampil bila ada.
+**Berkas:** `supabase/migrations/20261109_02_order_detail_alasan_alih.sql` (`order_detail` diganti dengan `CREATE OR REPLACE`; nama, parameter, dan tipe kembalian sama; selebihnya persis versi `20261108_02_order_fungsi.sql` ditambah isian `alasan_alih`), pembatal `..._batal.sql` (mengembalikan versi lama persis), dan cek `supabase/templates/20261109_02_order_detail_alasan_alih_cek.sql`; sudah dijalankan di SQL Editor dan lulus cek. `public/pesanan.js` (hanya tambahan: kartu "Alasan alih hari").
 
 **Perilaku:** `order_detail` mengirim `alasan_alih` **hanya ke customer pemilik order**, **hanya saat status Disetujui, Diproses, Diantar, Siap diambil, atau Siap disajikan**, dan **hanya dari alih hari terakhir** (bila alih terakhir tanpa alasan, kosong). Penjaga dan owner menerima `null` (penjaga tidak melihat alasan sesuai `security.md`; owner sudah punya alasannya di `riwayat`). Nilainya dibaca dari teks `riwayat_status.keterangan`, yaitu sesudah ". Alasan: " pada baris berformat "Alih hari YYYY-MM-DD ke ".
 
@@ -615,44 +516,33 @@ Blok 1 ditempel di **paling bawah `docs/order.md` bagian 9**. Blok 2 ditempel di
 - **Keterkaitan yang harus diingat:** bila format keterangan di `order_alih_hari` diubah, `order_detail` harus ikut diubah (ada komentar peringatan di migration). Bila tidak, kartu di layar customer rusak tanpa pesan galat.
 - `orderowneraksi.js` tidak diubah: form Alihkan owner sudah bertuliskan alasan tampil ke customer.
 
-**Terbukti** (akun dummy; bukti di chat, tidak disimpan): cek SQL 1 sampai 8 lolos (fungsi ada, `SECURITY DEFINER`, `search_path` kosong, hak `EXECUTE` hanya `service_role`, isi memuat `alasan_alih`, semua keterangan alih hari terbaca). Customer pemilik menerima alasan pada #27; order Selesai, Ditolak, dan Dibatalkan `null`. Penjaga: `200`, `alasan_alih` null, `riwayat` 0. Owner: `200`, `alasan_alih` null, `riwayat` 3. Layar customer menampilkan kartu pada #27 dan Android lolos.
+**Terbukti** (akun dummy; bukti di chat): cek SQL 1 sampai 8 lolos; customer pemilik menerima alasan pada #27, order Selesai, Ditolak, Dibatalkan `null`; penjaga dan owner menerima `alasan_alih` null; layar customer dan Android lolos.
 
 **Masalah yang belum beres:**
 
-- **Butir baru sheet** ([ORD.17 sesuai sheet]) "Tampilkan pembeda batal customer atau owner di layar customer" (⚠️, P1; belum dikerjakan). Usul teks: "Dibatalkan oleh pemesan" dan "Dibatalkan oleh pihak ChATA", tanpa nama owner. Dihitung dari baris riwayat pembatalan di `order_detail`, tanpa ubah tabel. Perlu dipastikan dulu riwayat `order_batal` mencatat siapa pembatalnya; bila tidak, `order_batal` ikut diubah.
 - Kasus alih hari terakhir tanpa alasan belum dites eksplisit lewat layar (#21 dan #25 menerima null, konsisten tetapi belum dibuktikan).
 - Push untuk alih hari belum ada (NTF.08).
 - Logout dashboard Supabase dikonfirmasi ketua; GitHub belum disebut.
 - Order dummy #21, #25, dan #27 (Disetujui, hari Selasa 10 Nov) kini sudah Besok, jadi alih hari lagi ditolak server (`sudah_besok`) sampai harinya lewat. Untuk tes alih hari baru, buat order dummy Hari ini. Order uji tidak bisa dihapus; dibersihkan di LNC.01.
-- Butir terbuka dari Handoff #11 sampai #15 yang tidak disebut di atas tidak berubah (ketuk dua kali pada tombol status, Tandai selesai tanpa konfirmasi, `orderowner.js` 1194 baris, dan lainnya).
-
-**Saran giliran berikutnya:**
-
-1. **Butir pembeda batal** ⚠️ (sesi ketua; butuh penjelasan dampak dan "OK" ketua karena `order_detail` dipakai semua peran). Lampirkan `AGENTS.md` + `order.md` + `security.md` + `20261109_02_order_detail_alasan_alih.sql` + `20261108_03_order_batal_fungsi.sql` + `20261108_04_order_batal_pesan.sql` + `public/pesanan.js`.
-2. **ORD.09** ⚠️ (catatan berlapis), lalu ORD.10, ORD.11 sampai ORD.13, dan **ORD.14** (sisa tes: SEC-10, SEC-19, batal vs setuju bersamaan).
+- Butir terbuka dari Handoff #11 sampai #15 yang tidak disebut di atas tidak berubah (ketuk dua kali pada tombol status, Tandai selesai tanpa konfirmasi, `orderowner.js` 1194 baris, push alih hari NTF.08, dan lainnya).
 
 ### Handoff #17 | 2026-11-09 | KETUA
 
-**Tugas:** ORD.17 ⚠️ (pembeda batal customer atau owner di layar customer) **selesai**: terpasang di production, tes lulus, sudah dicentang di sheet. Commit `f04b787` sudah di-push (pagar `AGENTS.md` bagian 8 lolos: folder, `git remote -v`, email noreply, semuanya milik ketua). Tidak ada perubahan tabel, `order_batal`, `kedai`, `sw.js`, atau `orderowneraksi.js`. Handoff #16 menyebut butir ini sebagai belum dikerjakan; blok ini menggantikannya (yang paling akhir menang).
+**Tugas:** ORD.17 ⚠️ (pembeda batal customer atau owner di layar customer) **selesai**: terpasang di production, tes lulus, sudah dicentang di sheet. Commit `f04b787` sudah di-push (pagar `AGENTS.md` bagian 8 lolos). Tidak ada perubahan tabel, `order_batal`, `kedai`, `sw.js`, atau `orderowneraksi.js`.
 
-**Berkas:**
-
-- `supabase/migrations/20261109_03_order_detail_pembatal.sql`: `order_detail` diganti dengan `CREATE OR REPLACE`, dibangun di atas versi ORD.16 (bukan versi asli), jadi `alasan_alih` tetap ada. Sudah dijalankan di SQL Editor dan lulus cek. Hanya tambahan: dua variabel, satu blok pembaca pembatal, dan dua isian baru di balasan.
-- `supabase/migrations/20261109_03_order_detail_pembatal_batal.sql`: mengembalikan `order_detail` ke versi ORD.16 persis (bukan ke versi asli; untuk itu jalankan `20261109_02_order_detail_alasan_alih_batal.sql` sesudahnya).
-- `supabase/templates/20261109_03_order_detail_pembatal_cek.sql`: cek baca-saja.
-- `public/pesanan.js` (hanya tambahan; 0 baris lama dihapus).
+**Berkas:** `supabase/migrations/20261109_03_order_detail_pembatal.sql` (`order_detail` diganti dengan `CREATE OR REPLACE`, dibangun di atas versi ORD.16 sehingga `alasan_alih` tetap ada; sudah dijalankan dan lulus cek), pembatal `..._pembatal_batal.sql` (mengembalikan ke versi ORD.16 persis, bukan versi asli; untuk itu jalankan `20261109_02_order_detail_alasan_alih_batal.sql` sesudahnya), cek `supabase/templates/20261109_03_order_detail_pembatal_cek.sql`, dan `public/pesanan.js` (hanya tambahan).
 
 **Perilaku:** `order_detail` mengirim `dibatalkan_oleh` (`customer` atau `owner`) dan `dibatalkan_oleh_nama` (nama tampilan owner; kosong bila pembatalnya customer) **hanya ke customer pemilik order yang berstatus Dibatalkan**. Peran lain menerima `null`. Nilainya dibaca dari baris `riwayat_status` pembatalan terakhir (`order_batal` selalu mencatat `oleh` = akun pembatal): `customer` bila `oleh` sama dengan pemesan order, selain itu `owner`. Layar customer menampilkan kartu "Dibatalkan oleh customer" atau "Dibatalkan oleh pihak ChATA (nama)", **walau alasan pembatalan kosong**; kartu "Alasan pembatalan" yang sudah ada tidak berubah.
 
 **Keputusan baru:**
 
 - **Ketua: nama owner yang membatalkan tampil ke customer pemilik order.** Alasan: ada 5 owner; tanpa nama, customer tidak tahu siapa yang harus dihubungi. Teks mengikuti sheet.
-- **Pertentangan dengan catatan lama (yang paling akhir menang):** (1) komentar kepala `pesanan.js` "Customer tidak bisa melihat siapa yang membatalkan" dan Handoff #11 (layar customer tidak bisa membedakan pembatal) tidak berlaku lagi; (2) Handoff #6 (siapa yang membatalkan di `riwayat_status`, hanya terlihat owner) kini hanya berlaku untuk riwayat lengkap, sebab **nama pembatal** juga sampai ke customer pemilik order itu. Yang **tetap tertutup untuk customer**: `pemutus_nama`, riwayat lengkap, dan metode bayar.
+- **Pertentangan dengan catatan lama (yang paling akhir menang):** (1) komentar kepala `pesanan.js` "Customer tidak bisa melihat siapa yang membatalkan" tidak berlaku lagi; (2) Handoff #6 (siapa yang membatalkan di `riwayat_status`, hanya terlihat owner) kini hanya berlaku untuk riwayat lengkap, sebab **nama pembatal** juga sampai ke customer pemilik order itu. Yang **tetap tertutup untuk customer**: `pemutus_nama`, riwayat lengkap, dan metode bayar.
 - **Nama diambil dari riwayat pembatalan, bukan dari `order.pemutus_nama`.** `pemutus_nama` adalah owner yang dulu menekan Setujui (tetap disimpan pada order Dibatalkan untuk bahan pengembalian uang), jadi memakainya akan menampilkan nama owner yang salah.
 - Pilihan penulis (alasan belum tercatat): nama mengikuti nama tampilan owner **saat ini** (bukan salinan saat pembatalan); bila tidak ada baris riwayat pembatalan, layar tidak menampilkan kartu pembatal.
 - **Untuk sesi berikutnya:** versi `order_detail` yang aktif di production adalah `20261109_03_order_detail_pembatal.sql`. Perubahan `order_detail` berikutnya harus berangkat dari berkas itu, bukan dari `20261108_02_order_fungsi.sql` atau versi ORD.16, supaya `alasan_alih` dan isian pembatal tidak hilang.
 
-**Terbukti** (akun dummy; bukti di chat, tidak disimpan): cek SQL 1 sampai 9 lolos (fungsi ada, `SECURITY DEFINER`, `search_path` kosong, hak `EXECUTE` hanya `service_role`, isi memuat isian baru dan `alasan_alih`, tidak ada order Dibatalkan tanpa baris riwayat pembatalan). Customer menerima pembatal yang benar untuk semua 8 order Dibatalkan (6 oleh customer, 2 oleh owner dengan nama dummy). Penjaga: semua `200`, isian pembatal dan `alasan_alih` null, `riwayat` 0, order Dibatalkan tidak terlihat. Owner: semua `200` termasuk order Dibatalkan, isian pembatal null, `riwayat` lebih dari 0. Layar customer menampilkan kartu pembatal pada #28 (owner) dan #13 (customer).
+**Terbukti** (akun dummy; bukti di chat): cek SQL 1 sampai 9 lolos (termasuk tidak ada order Dibatalkan tanpa baris riwayat pembatalan); customer menerima pembatal yang benar untuk 8 order Dibatalkan (6 oleh customer, 2 oleh owner dengan nama dummy); penjaga dan owner menerima isian pembatal null (penjaga tidak melihat order Dibatalkan); layar customer menampilkan kartu pada #28 (owner) dan #13 (customer).
 
 **Masalah yang belum beres:**
 
@@ -660,12 +550,12 @@ Blok 1 ditempel di **paling bawah `docs/order.md` bagian 9**. Blok 2 ditempel di
 - Owner pembatal tanpa nama tampilan belum diuji; layar akan menulis "Dibatalkan oleh pihak ChATA" tanpa kurung.
 - Push untuk pembatalan belum ada (NTF.06).
 - Logout dashboard Supabase untuk sesi ORD.17 belum dikonfirmasi.
-- Butir terbuka dari Handoff #11 sampai #16 yang tidak disebut di atas tidak berubah (ketuk dua kali pada tombol status, Tandai selesai tanpa konfirmasi, `orderowner.js` 1194 baris, push alih hari NTF.08, dan lainnya). Butir "pembeda dibatalkan customer atau owner" dari Handoff #11 dan #15 **sudah tutup** lewat ORD.17.
-- Order dummy tidak berubah dari Handoff #16 (tidak ada order baru di sesi ini). Order uji tidak bisa dihapus; dibersihkan di LNC.01.
+- Butir terbuka dari Handoff #11 sampai #16 yang tidak disebut di atas tidak berubah (ketuk dua kali pada tombol status, Tandai selesai tanpa konfirmasi, `orderowner.js` 1194 baris, push alih hari NTF.08, dan lainnya).
+- Order dummy tidak berubah dari Handoff #16. Order uji tidak bisa dihapus; dibersihkan di LNC.01.
 
 **Saran giliran berikutnya:**
 
-1. **ORD.09** ⚠️ (catatan berlapis: `catatan_tambah` dan `catatan_dibaca`, aturan kunci saat Diproses, batas karakter dan jumlah), sesi ketua: butuh penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `order_status.ts` + `20261109_03_order_detail_pembatal.sql` + migration terbaru tentang tabel catatan (`20261108_order.sql`). Aksi baru `kedai` ditaruh di berkas terpisah sesuai `AGENTS.md` bagian 12.
+1. **ORD.09** ⚠️ (catatan berlapis: `catatan_tambah` dan `catatan_dibaca`, aturan kunci saat Diproses, batas karakter dan jumlah), sesi ketua: butuh penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `order_status.ts` + `20261109_03_order_detail_pembatal.sql` + migration tabel catatan (`20261108_order.sql`). Aksi baru `kedai` ditaruh di berkas terpisah sesuai `AGENTS.md` bagian 12.
 2. Lalu ORD.10, ORD.11 sampai ORD.13, dan **ORD.14** (sisa tes: SEC-10, SEC-19, batal vs setuju bersamaan).
 
 ---
