@@ -18,6 +18,8 @@
 // - Nomor WA pemesan ada di balasan detail tetapi tidak ditampilkan (itu milik customer sendiri,
 //   dan layar ini tidak membutuhkannya).
 // - Catatan berlapis belum ditampilkan di sini (ORD.10).
+// - ORD.16: alasan alih hari (isian `alasan_alih` dari order_detail) tampil sebagai kartu sendiri bila ada.
+//   Server hanya mengirimnya ke customer pemilik, selama order masih berjalan (bukan Selesai, Ditolak, Dibatalkan).
 // - Data diambil saat tab dibuka dan lewat tombol Segarkan. Tanpa polling (O19).
 // - Pesan galat dari server ditampilkan apa adanya lewat textContent. Galat mentah tidak ditampilkan.
 // - Semua teks dipasang lewat textContent, bukan innerHTML.
@@ -275,6 +277,8 @@
       alias_alamat: teksAtauKosong(o.alias_alamat),
       isi_alamat: teksAtauKosong(o.isi_alamat),
       alasan: teksAtauKosong(o.alasan_tolak),
+      // ORD.16: alasan alih hari terakhir (kosong bila tidak ada).
+      alasanAlih: teksAtauKosong(o.alasan_alih),
       item: item,
     };
   }
@@ -440,6 +444,14 @@
       );
       kartuAlasan.appendChild(buat("p", "kartu__isi", o.alasan));
       wadah.appendChild(kartuAlasan);
+    }
+
+    // ORD.16: alasan alih hari (hanya bila ada; server hanya mengirimnya selama order berjalan).
+    if (o.alasanAlih) {
+      var kartuAlih = buat("div", "kartu");
+      kartuAlih.appendChild(buat("h2", "kartu__judul", "Alasan alih hari"));
+      kartuAlih.appendChild(buat("p", "kartu__isi", o.alasanAlih));
+      wadah.appendChild(kartuAlih);
     }
 
     // Item dan pilihan.
