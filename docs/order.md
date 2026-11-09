@@ -680,4 +680,49 @@ Pilihan penulis tanpa keputusan ketua (alasan belum tercatat): `order_batal` tid
 2. **ORD.07** ⚠️ (`order_status`, `order_metode_koreksi`, `order_alih_hari`), **dikerjakan di sesi ketua**: butuh penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `20261108_05_order_setuju_tolak.sql` + `20261108_04_order_batal_pesan.sql`. Format keterangan koreksi metode sebaiknya sama dengan "Metode bayar: <metode>" (Handoff #9). "Hanya Besok" untuk alih hari masih perlu konfirmasi ketua (blok 8 Nov).
 3. Setelah ORD.07: ORD.15 (tombol aksi owner di layar) dan ORD.08 (layar penjaga).
 
+### Handoff #11 | 2026-11-09 | FREN
+
+**Berkas tujuan:** `docs/order.md` bagian 9, ditempel paling bawah (di bawah Handoff #10). Yang paling akhir menang.
+
+**Pertentangan dengan blok lama:**
+
+- Butir "Belum dites: dua owner menekan Setuju bersamaan" pada Handoff #10 **tidak berlaku lagi**: tes sudah lulus (lihat di bawah). Syarat "ORD.06 dicentang setelah tes ini lulus" terpenuhi.
+- Butir "Belum dites (P1 dan P2)" pada Handoff #10: **Tolak tanpa alasan** dan **alasan 200 karakter** sudah dites dan lulus. Yang masih belum: metode Transfer, pesan saat koneksi putus, dan tampilan di HP Android sungguhan.
+- Handoff #10 menyebut tidak ada perubahan selain JS dan `sw.js`; kini ada satu perubahan CSS kecil (lihat Berkas diubah). Butir lain pada Handoff #10 tetap berlaku.
+
+**Tugas:** menutup tes ORD.06 dan merapikan tampilan alasan yang panjang. **ORD.06 selesai**, silakan dicentang di sheet bila belum. Baris SEC di sheet tetap belum dicentang (jadwal setelah ORD.14).
+
+**Berkas diubah:**
+
+- `public/style.css`: dua baris tambahan di `.kartu__isi` (satu komentar dan `overflow-wrap: anywhere`). Tidak ada baris lama yang dihapus atau diubah. Berlaku juga untuk catatan dan teks metode bayar yang memakai kelas yang sama.
+- Tidak ada perubahan SQL, migration, `kedai/index.ts`, `sw.js` (`style.css` sudah ada di daftar cache), `orderowner.js`, atau `pesanan.js`.
+- Sudah terpasang di production dan dicek visual di layar owner dan customer. Hash commit belum dicatat.
+
+**Keputusan baru** (pilihan PIC; alasan belum tercatat dari ketua selain tampilan kepotong):
+
+- Teks alasan panjang tanpa spasi diperbaiki lewat CSS. Kartu tetap selebar layar seperti kartu lain; yang menyesuaikan adalah tingginya (teks turun baris). Alasan pendek tetap satu baris.
+
+**Yang sudah terbukti** (ringkas, di aplikasi asli dengan akun dummy; bukti diperiksa di chat):
+
+- **Dua owner bersamaan (order #17):** jendela A Setuju (Tunai) sukses; jendela B yang masih membuka tab lama menekan Setuju (QRIS) dan mendapat "Pesanan sudah diproses. Segarkan daftar pesanan.", lalu detail dimuat ulang menjadi Disetujui tanpa tombol aksi. Metode bayar tetap Tunai dan pemutus tetap Owner Uji (tidak tertimpa).
+- **Tolak dengan alasan:** #18 (191 karakter) dan #19 (tepat 200 karakter, dihitung dengan alat) tersimpan utuh dan tampil di layar owner dan customer.
+- **Kolom alasan** membatasi ketikan di 200 karakter (karakter ke-201 tidak masuk). Penolakan server untuk 201 karakter tidak dites lewat layar; sudah terbukti di ORD.05 lewat konsol.
+- **Tolak tanpa alasan (#20):** status Ditolak tanpa galat, kartu "Alasan ditolak" tidak tampil.
+- **Teks panjang tanpa spasi** turun baris di dalam kartu, di layar owner (#18) dan customer (#19).
+- Catatan proses: teks uji pertama ternyata 191 karakter, bukan 201 (salah hitung penulis, bukan temuan aplikasi). Teks uji panjang dihitung dengan alat sebelum dipakai.
+
+**Belum beres:**
+
+- **Belum dites:** tampilan di HP Android sungguhan (bagian ketua), metode Transfer (P1; Tunai dan QRIS sudah terbukti), pesan galat saat koneksi putus (P2, opsional).
+- **SEC di sheet belum dicentang.** Bukti bertambah: SEC-10 untuk tes bersamaan di layar owner.
+- Masih terbuka dari Handoff #10 dan sebelumnya: pembeda "dibatalkan customer" dan "dibatalkan owner" di layar customer (putuskan bersama ORD.15), push belum ada untuk setuju, tolak, dan batal (NTF), variabel `pernahMuatDaftar` di `pesanan.js` tidak terpakai, `pesan.js` dan `orderowner.js` melewati ~500 baris.
+- Order #20 punya hari antar Besok sehingga tidak tampil di Semua Order bawaan (filter hari ini); tetap terlihat di Order Masuk dan lewat Hapus filter. Sesuai keputusan Handoff #10.
+- **Data uji (dummy) yang berubah**, tidak bisa dihapus, dibersihkan di LNC.01 bersama reset nomor order: #17 Disetujui (Tunai), #18 Ditolak (alasan 191 karakter), #19 Ditolak (alasan 200 karakter), #20 Ditolak (tanpa alasan, hari antar Besok). Order lain tidak berubah dari Handoff #10 (#15 Disetujui; #16 Ditolak; #1, #4, #5 Disetujui; #2, #3 Ditolak; #6 sampai #8 Menunggu; #9 sampai #14 Dibatalkan).
+
+**Saran giliran berikutnya:**
+
+1. **ORD.07** ⚠️ (`order_status`, `order_metode_koreksi`, `order_alih_hari`), dikerjakan di sesi ketua: butuh penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md` + `order.md` (sudah memuat handoff ini) + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `20261108_05_order_setuju_tolak.sql` + `20261108_04_order_batal_pesan.sql`. Format keterangan koreksi metode sebaiknya sama dengan "Metode bayar: <metode>" (Handoff #9). "Hanya Besok" untuk alih hari masih perlu konfirmasi ketua.
+2. Setelah ORD.07: ORD.15 (tombol aksi owner di layar) dan ORD.08 (layar penjaga).
+3. Tes ORD.06 di HP Android oleh ketua (cek sekilas, tidak menghalangi giliran lain).
+
 ---
