@@ -453,3 +453,35 @@ Blok 1 ditempel di **paling bawah `docs/order.md` bagian 9**. Blok 2 ditempel di
 3. Berikutnya ORD.15 (tombol aksi owner di layar) dan ORD.08 (layar penjaga). Berkas JS baru wajib didaftarkan di `sw.js` (butuh "OK" ketua) dan naik satu commit dengan berkasnya.
 
 ---
+
+### Handoff #13 | 2026-11-09 | [FREN]
+
+**Tugas:** tes ORD.07 ⚠️ (lanjutan Handoff #12, sesi ketua) dijalankan dan **lulus**. ORD.07 sudah dicentang di sheet. Commit `0d9cb2e` sudah di-push ke repo ChATA (pagar `AGENTS.md` bagian 8 lolos: folder, `git remote -v`, email noreply). Tidak ada kode yang diubah di sesi ini.
+
+**Berkas:** tidak ada yang diubah. Yang ter-commit hanya hasil sesi ketua: `index.ts`, `order_status.ts`, dua SQL migration (+ pembatal), berkas cek, dan blok catatan di `AGENTS.md` dan `docs/order.md`. Satu baris terhapus: placeholder `_(belum ada blok)_` di `AGENTS.md` bagian 12, diganti blok catatan ketua (sudah dicek, tidak ada aturan lama yang hilang).
+
+**Terbukti** (konsol, akun dummy; bukti di chat, tidak disimpan):
+
+- Jalur maju dan mundur satu langkah untuk tiga tipe (Diambil, Diantar, Makan di warung sampai Selesai), oleh owner dan penjaga; `oleh_peran` tercatat benar.
+- Ditolak: mundur dari Disetujui (409), `arah` salah (400), status basi dan dobel pencet (409), semua aksi pada order Selesai (409), ketiga aksi pada order Menunggu, Ditolak, dan Dibatalkan (409).
+- Hak: customer memanggil ketiga aksi (403); penjaga memanggil koreksi metode dan alih hari (403); penjaga `order_status` pada order Menunggu, Ditolak, dan Dibatalkan (404).
+- Koreksi metode: sukses, metode sama (400), metode asing (400).
+- Alih hari: dari Disetujui, Diproses, dan Diantar; alasan 100 karakter lolos dan 101 ditolak (400); jam berubah bila dikirim dan tetap bila tidak; isian `hari` palsu diabaikan (hari baru dari server); order yang sudah Besok ditolak (409).
+- Riwayat (query baca-saja bagian 4 berkas cek, `LIMIT` dinaikkan ke 30 hanya di editor): keterangan "Mundur satu langkah", "Metode bayar: Transfer (sebelumnya Tunai)", dan "Alih hari ... ke ..." (jam dan alasan bila ada) sesuai. Aksi yang ditolak tidak meninggalkan baris (id riwayat berurutan, tanpa lubang).
+- Mundur dari Diantar mendarat di Diproses, bukan Disetujui; kembali ke Disetujui dari Diantar hanya lewat alih hari (SEC-15).
+  **Keputusan baru:** tidak ada.
+
+**Masalah yang belum beres:**
+
+- Belum terbukti: dua sesi menekan tombol bersamaan untuk `order_status` (SEC-10) dan jam HP digeser (SEC-19). Keduanya dikerjakan di ORD.14. Baris SEC di sheet belum dicentang.
+- Alasan alih hari belum tampil ke customer: butir baru sheet **ORD.16** "Tampilkan alasan alih hari ke customer" (⚠️, P1, bareng ORD.15), dari Handoff #12.
+- Push belum ada untuk status, koreksi, dan alih hari (NTF.04, NTF.06, NTF.08).
+- Order dummy tersisa: #21 (Diantar, Disetujui, hari Besok) dan #24 (Diambil, Menunggu) dipakai ulang di ORD.14; #17 dan #22 Selesai; #23 Dibatalkan. Order uji tidak bisa dihapus; dibersihkan di LNC.01.
+- Logout dashboard Supabase dan GitHub di Mac bersama setelah deploy belum dikonfirmasi.
+- Butir terbuka dari Handoff #11 tidak berubah (tes ORD.06 di Android, pembeda "dibatalkan customer atau owner" di layar customer, dan lainnya).
+  **Saran giliran berikutnya:**
+
+1. **ORD.15** ⚠️ (tombol aksi owner di layar) memakai kontrak balasan `{ status, data }` di Handoff #12. Lalu **ORD.08** (layar penjaga). Berkas JS baru wajib didaftarkan di `sw.js` (butuh "OK" ketua) dan naik dalam satu commit dengan berkas barunya.
+2. Setelahnya ORD.09 (catatan berlapis), lalu ORD.14 untuk sisa tes yang digeser di atas.
+
+---
