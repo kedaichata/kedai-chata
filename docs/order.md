@@ -624,4 +624,60 @@ Pilihan penulis tanpa keputusan ketua (alasan belum tercatat): `order_batal` tid
 1. **ORD.06** (layar owner: Order Masuk, Semua Order, detail dengan Setujui, Tolak, Chat WA; bergantung pada DSN.04). Lampirkan `AGENTS.md` + `order.md` (sudah memuat handoff ini) + berkas terbaru dari repo: `pesanan.js`, `kerangka.js`, `index.html`, `style.css`, `sw.js`, `akun.js`. Berkas JS baru wajib didaftarkan di cache `sw.js` (perubahan `sw.js` butuh "OK" ketua, lewat WA bila yang giliran bukan ketua) dan naik dalam satu commit dengan berkas barunya.
 2. **ORD.07** ⚠️ (`order_status`, `order_metode_koreksi`, `order_alih_hari`): butuh penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `20261108_05_order_setuju_tolak.sql` (pola terbaru fungsi keputusan owner) + `20261108_04_order_batal_pesan.sql`.
 
+### Handoff #10 | 2026-11-09 | [RAC]
+
+**Berkas tujuan:** `docs/order.md` bagian 9, ditempel paling bawah (di bawah Handoff #9). Yang paling akhir menang.
+
+**Pertentangan dengan blok lama:**
+
+- Saran Handoff #9 butir 1 (ORD.06) **dikerjakan**. Butir 2 (ORD.07) **ditunda ke sesi ketua** (keputusan ketua).
+- Catatan sheet ORD.06 menyebut Semua Order "Hari ini dan Besok, filter hari lain". Kini tampilan awalnya memakai **filter bawaan** (lihat Keputusan baru). Hapus filter tetap mengembalikan Hari ini dan Besok.
+- `AGENTS.md` bagian 7 dan `security.md` aturan 6 ("waktu hanya dari jam server"): ada **satu pengecualian disengaja**, jam HP hanya dipakai mengisi bawaan kolom filter (lihat Keputusan baru).
+- Usul awal "Order Masuk berisi semua order Menunggu dari hari apa pun" **tidak bisa tanpa mengubah server**: `order_daftar` untuk owner tanpa filter hari hanya mengembalikan Hari ini dan Besok (O22). Order Menunggu yang hari antarnya sudah lewat hanya terlihat lewat filter hari di Semua Order. Server tidak diubah.
+
+**Tugas:** ORD.06 (layar owner) **kode selesai dan sudah terpasang di production**, tes sebagian besar lulus. **Belum dicentang di sheet**: tunggu tes "dua owner bersamaan di layar" (lihat Belum beres). Hash commit belum dicatat.
+
+**Berkas diubah** (semuanya di `public/`; tidak ada perubahan SQL, migration, atau `kedai/index.ts`):
+
+- Baru: `public/orderowner.js` (layar Order Masuk dan Semua Order; satu pabrik `buatLayar` dipakai dua kali; ~1080 baris, melewati batas ~500 baris).
+- Diubah: `public/index.html` (panel `panel-ordermasuk` dan `panel-semuaorder`, tag `<script src="orderowner.js">` setelah `pesanan.js`), `public/kerangka.js` (tab Order Masuk dan Semua Order ke panel baru, `PANEL`, pemanggilan `tampilMasuk`, `tampilSemua`, dan `reset`), `public/sw.js` (`orderowner.js` masuk daftar cache, `chata-v12` naik ke `chata-v13`; "OK" ketua sudah ada).
+- Tidak ada baris lama yang dihapus; baris yang diganti dijadikan komentar.
+
+**Perilaku layar (ringkas):**
+
+- **Order Masuk:** `order_daftar` dengan `{ status: "Menunggu" }` (server membatasi ke Hari ini dan Besok). Detail dari `order_detail`: pemesan, nomor WA, alamat, isi order dan pilihan, **catatan (baca saja)**, dan kartu Keputusan (metode bayar dan nama pemutus) bila sudah diputuskan.
+- **Setuju:** wajib pilih Transfer, Tunai, atau QRIS (tombol mati sebelum dipilih), kirim `order_setuju` `{ id, metode }`. **Tolak:** alasan opsional maks 200 karakter, kirim `order_tolak` `{ id, alasan }`. Tombol dikunci sebelum permintaan berangkat. Setelah sukses, detail dimuat ulang dari server. Galat 409 dan 404 menampilkan pesan server lalu memuat ulang detail.
+- **Chat WA:** tautan `https://wa.me/<angka>`; tombol tidak tampil bila nomor kosong. Nomor WA tersimpan sudah berawalan 62; normalisasi awalan 0 atau 8 hanya cadangan.
+- **Semua Order:** filter Hari (satu tanggal) dan Status (9 status), dikirim ke `order_daftar` hanya saat **Terapkan** atau Segarkan. **Hapus filter** mengosongkan semuanya.
+- Order selain Menunggu belum punya tombol aksi (menunggu ORD.07 dan ORD.15). Daftar, detail, nomor WA, alamat, dan isian filter dikosongkan saat Keluar.
+
+**Keputusan baru:**
+
+- **Filter bawaan Semua Order** (ketua, 9 Nov 2026): saat tab dibuka pertama kali sesudah masuk, **Hari = tanggal hari ini menurut jam HP** dan **Status = Menunggu**; owner bebas mengganti. Alasan: tidak mengubah server (dari ketua). Konsekuensi: order **Besok** tidak tampil di bawaan, tetapi tetap terlihat di tab Order Masuk dan lewat Hapus filter. Bawaan terisi sekali sejak masuk dan terisi lagi setelah Keluar. Jam HP tidak dipakai menghitung apa pun di order; server tetap memvalidasi dan menyaring.
+- **Nama tombol "Setuju"** (bukan "Setujui") di layar owner, atas permintaan ketua.
+- **Pilihan penulis, alasan belum tercatat:** catatan order ikut ditampilkan baca-saja di detail owner (sedikit mendahului ORD.10; menambah catatan dan tanda "Catatan baru" tetap ORD.09 dan ORD.10); waktu catatan ditulis WIB hanya untuk tampilan; layar Order Masuk dan Semua Order memakai kode detail yang sama.
+
+**Yang sudah terbukti** (ringkas, di aplikasi asli dengan akun dummy; bukti diperiksa di chat):
+
+- Order Masuk memuat order Menunggu; detail memuat alamat (Diantar) dan tidak (Diambil); kartu Catatan dan jamnya cocok; Chat WA membuka nomor yang benar.
+- Setuju: tombol mati sebelum metode dipilih; QRIS tercatat dengan pemutus; status ikut ke daftar owner (hilang dari filter Menunggu) dan ke customer.
+- Tolak dengan alasan: customer melihat alasan tanpa metode bayar, pemutus, dan riwayat; tidak ada tombol Batalkan dan teks O21 setelah Disetujui atau Ditolak.
+- Filter bawaan dan filter manual (Hari, Status, Terapkan, Hapus filter, pesan "Tidak ada order yang cocok").
+- Customer dan penjaga memanggil `order_setuju` dan `order_tolak` lewat konsol: keduanya **403** "Aksi ini hanya untuk owner."; penjaga hanya melihat order Disetujui ke atas.
+- Setelah Keluar: detail dan daftar kedua panel 0, filter kosong, tidak ada nomor WA atau alamat tersisa.
+
+**Belum beres:**
+
+- **Belum dites:** dua owner menekan Setuju bersamaan di layar (pesan 409 di layar owner adalah kode baru; servernya sudah terbukti di ORD.05). Caranya: order baru (#17), dua jendela login owner (satu biasa, satu privat), keduanya buka detail; jendela A Setuju sampai selesai, jendela B Setuju. Yang benar di jendela B: muncul pesan "Pesanan sudah diproses...", lalu detail dimuat ulang menjadi Disetujui tanpa tombol aksi. **ORD.06 dicentang setelah tes ini lulus.**
+- **Belum dites (P1 dan P2):** Tolak tanpa alasan, metode Transfer dan Tunai, alasan lebih dari 200 karakter, pesan saat koneksi putus, dan tampilan di HP Android sungguhan (cek sekilas).
+- **SEC di sheet sengaja belum dicentang** (jadwal setelah ORD.14). Yang bertambah bukti: SEC-07 dan SEC-08 untuk `order_setuju` dan `order_tolak` oleh customer dan penjaga; SEC-10 sisa tes bersamaan di layar.
+- Masih terbuka dari Handoff #9 dan sebelumnya: pembeda "dibatalkan customer" dan "dibatalkan owner" di layar customer (putuskan bersama ORD.15), push belum ada untuk setuju, tolak, dan batal (NTF), variabel `pernahMuatDaftar` di `pesanan.js` tidak terpakai, `pesan.js` dan `orderowner.js` melewati ~500 baris.
+- **Data uji (dummy) yang berubah**, tidak bisa dihapus, dibersihkan di LNC.01 bersama reset nomor order: #15 Disetujui (QRIS, diputuskan Owner Uji), #16 Ditolak (alasan dummy). Order lain tidak berubah dari Handoff #9 (#1, #4, #5 Disetujui; #2, #3 Ditolak; #6 sampai #8 Menunggu; #9 sampai #14 Dibatalkan).
+
+**Saran giliran berikutnya:**
+
+1. **Selesaikan tes 409 ORD.06** (singkat, lalu centang ORD.06 di sheet). Lampirkan `AGENTS.md` + `order.md` (sudah memuat handoff ini).
+2. **ORD.07** ⚠️ (`order_status`, `order_metode_koreksi`, `order_alih_hari`), **dikerjakan di sesi ketua**: butuh penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `20261108_05_order_setuju_tolak.sql` + `20261108_04_order_batal_pesan.sql`. Format keterangan koreksi metode sebaiknya sama dengan "Metode bayar: <metode>" (Handoff #9). "Hanya Besok" untuk alih hari masih perlu konfirmasi ketua (blok 8 Nov).
+3. Setelah ORD.07: ORD.15 (tombol aksi owner di layar) dan ORD.08 (layar penjaga).
+
 ---
