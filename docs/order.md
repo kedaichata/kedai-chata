@@ -844,4 +844,41 @@ Alasan keputusan di luar yang disebut di atas: alasan belum tercatat.
 1. **Lanjutkan tes ORD.12** dari "Sisa tes" nomor 1 (sesi ketua atau PIC lain yang punya akun owner, penjaga, dan customer dummy). Lampirkan `AGENTS.md` + `order.md` (dengan Handoff #24) + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `order_wakil.ts` + `pelanggan_luar.ts` + `20261110_06_order_wakil_fungsi.sql` dan `_cek.sql`. Tes tidak mengubah kode kecuali ada temuan.
 2. Sesudah tes lulus: commit dan push, centang ORD.12, lalu **ORD.13** (wizard 5 langkah dan layar Kelola Pelanggan, kontrak di atas; **pesan ketua tetap**: mudah bagi owner yang tidak terbiasa aplikasi) dan **ORD.14** (sesi tes order).
 
+### Handoff #25 | 2026-11-10 | KETUA
+
+**Tugas:** ORD.12 ⚠️ (`order_buat_wakil`, sisi server) **selesai**: semua sisa tes lulus, sudah di-commit dan di-push (`3ae033d`; pagar `AGENTS.md` bagian 8 lolos: folder ChATA, remote `kedaichata/kedai-chata`, email noreply milik ketua), dan dicentang di sheet. Handoff ini menggantikan "Sisa tes", "Masalah yang belum beres", dan "Saran giliran berikutnya" di Handoff #24; selebihnya Handoff #24 (termasuk **kontrak untuk layar**) tetap berlaku.
+
+**Berkas:** tidak ada yang berubah di sesi ini selain yang ter-commit: `supabase/functions/kedai/order_wakil.ts` (baru), `supabase/functions/kedai/index.ts` (26 baris tambah, **0 dihapus**), tiga SQL `20261110_06_order_wakil_fungsi` (migration, pembatal, cek), dan `docs/order.md`. Blok catatan `database.md` disiapkan di sesi ini dan ditempel ketua terpisah.
+
+**Terbukti** (konsol dan layar, akun dummy; bukti di chat, tidak disimpan): enam kasus pelanggan dan alamat (nonaktif 409, id tidak ada 404, Diantar tanpa alamat 400, alamat 9 dan 201 karakter 400, alamat spasi 400); tujuh isian salah (metode kosong dan huruf kecil, hari, jam, tipe, item kosong semuanya 400; jumlah 11 = 409); Diambil dengan alamat dikirim: order sukses dan alamat diabaikan; customer dan penjaga memanggil = 403 "Aksi ini hanya untuk owner."; menu Habis = 409 tanpa membuat order; order wakil tampil di Antrean penjaga (Hari ini lalu Besok, O22); owner menambah catatan di order wakil (penulis dari server, isian palsu diabaikan); cek SQL 5: #30, #31, #32 semuanya `tanpa_akun` dan `pemutus_sama_pembuat` true; layar Semua Order dan detail order owner normal sesudah deploy. Tidak ada order yang kebentuk dari kasus gagal (nomor lanjut #32 tanpa loncat).
+
+**Keputusan baru:**
+
+- **Ketua (10 Nov): ORD.13 dikerjakan adik ketua.** Alasan ketua: fungsi order wakil adalah **inti peralihan owner dari kebiasaan memakai WA ke aplikasi ini**. Kalau wizard terasa lebih ribet daripada mengetik di WA, owner kembali ke WA dan tujuan proyek (merapikan catatan order) tidak tercapai. Karena itu wizard harus dibuat **seintuitif mungkin**, lebih penting daripada fitur tambahan.
+- **Ketua (10 Nov): jam bawaan wizard = 11:00.** Mengikuti layar customer (Handoff #5): tipe **Diantar** terisi 11:00 dan owner tetap bisa mengubahnya; **Diambil dan Makan di warung kosong dan wajib diisi**; 11:00 dikosongkan lagi saat tipe pindah ke Diambil atau Makan di warung **selama jam belum disentuh**, dan jam yang sudah diubah owner tidak pernah ditimpa. Alasan belum tercatat. Dikerjakan di frontend saja; server tetap menerima jam apa pun (O2). Angka 11:00 ditulis di kode seperti `JAM_BAWAAN_ANTAR` di `pesan.js` (pengecualian "angka di database" yang sama, Handoff #5); pakai ulang nilai itu bila bisa, atau tulis satu konstanta dan catat. Bila maksud ketua semua tipe terisi 11:00, ubah blok ini.
+- Pilihan penulis, alasan belum tercatat: tidak ada keputusan teknis lain di sesi ini.
+
+**Pesan untuk ORD.13 (wizard 5 langkah dan Kelola Pelanggan):**
+
+- **Pemakai sebenarnya:** owner yang tidak terbiasa memakai aplikasi (Handoff #22), sering mengisi dengan **satu tangan, di HP, sambil mengerjakan hal lain**. Ukuran berhasil: owner bisa membuat satu order wakil **tanpa dipandu siapa pun**.
+- **Pegangan** (diturunkan dari keputusan yang sudah ada, bukan keputusan baru): satu layar satu tujuan (`order.md` bagian 4); tombol besar dan mobile-first (`AGENTS.md` bagian 3); bahasa sehari-hari, urutan dan istilah sedekat mungkin dengan cara owner menulis pesanan di WA (siapa, pesan apa, kapan, bayar apa); alamat tersimpan pelanggan muncul sebagai bawaan dan **hanya diminta bila pelanggan belum punya** (Handoff #24); pelanggan baru bisa ditambah **di tempat** tanpa keluar dari wizard (langkah 1, bagian 4); pencarian pelanggan dilakukan di layar, bukan di server (Handoff #22).
+- **Saran penulis (bukan keputusan, adik ketua dan ketua boleh mengubah):** (1) langkah 1 menampilkan **keterangan** pelanggan di samping nama, karena nama kembar boleh dan keterangan tidak tersalin ke order (lihat "Masalah yang belum beres"); (2) pesan galat server tampil apa adanya lewat `textContent` dan **tidak menghapus isian** langkah-langkah sebelumnya; (3) tombol Simpan **dikunci** sejak ditekan sampai balasan datang, karena server tidak punya penahan kirim ganda (Handoff #24); (4) sesudah sukses, tampilkan **nomor order yang jelas** dan jalan keluar yang mudah (kembali ke Order Masuk atau buat order lagi); (5) tidak ada pilihan atau isian yang tidak dibutuhkan fungsi (tanpa catatan awal, tanpa harga).
+- **Uji bersama:** tes ORD.13 sebaiknya meminta **owner yang paling tidak terbiasa aplikasi** mencoba tanpa penjelasan, dan hasilnya (di mana ia berhenti atau bingung) dicatat sebagai bahan perbaikan. Ini saran penulis.
+- Layar baru wajib mengikuti pagar yang sudah ada: berkas JS baru ditaruh terpisah (patokan ~500 baris) dan **didaftarkan di cache `sw.js`** (butuh "OK" ketua, `AGENTS.md` bagian 7); item **Pelanggan** di Home diaktifkan, dan wizard tetap di tab Buat Order (blok `2026-11-07` di bagian ini). Perubahan di server (misalnya menyalin keterangan pelanggan ke order) butuh penjelasan dampak dan "OK" ketua; bila yang bertugas bukan ketua, ringkasan bisa diteruskan lewat WA (`AGENTS.md` aturan 12).
+
+**Masalah yang belum beres:**
+
+- **Keterangan pelanggan tidak tersalin ke order** (tabel `order` belum punya kolom keterangan): dua pelanggan bernama sama dengan keterangan beda tampil sama di order. Butir baru untuk sheet: "Salin keterangan pelanggan ke order wakil". Kolom baru butuh "OK" ketua.
+- Baris SEC (SEC-07, SEC-08, SEC-13 untuk `order_buat_wakil`) belum dicentang; jadwalnya setelah ORD.14. Bukti 403 untuk customer dan penjaga sudah ada.
+- Push untuk order wakil ke penjaga belum ada (NTF; O15). Pemesan tanpa akun memang tidak dapat push.
+- Query cek 8 dan 9 (Handoff #19 dan #21) diulang sesudah semua tes ORD.14 selesai; butir ORD.14 lain tidak berubah.
+- Logout GitHub di Mac bersama belum dikonfirmasi. Push memakai kunci SSH khusus proyek ini; pastikan tidak ada sesi GitHub terbuka di browser.
+- **Data dummy:** order #30 (Diantar, Tunai, 35000), #31 (Diantar, Besok, QRIS, 12000, alamat timpaan), dan **#32** (Diambil, Hari ini 10 Nov, QRIS, 5000, ada satu catatan owner, id `9fb19795-e8b0-4346-b4fd-8c8c5b1acda0`) untuk Dummy Kembar; semuanya dibersihkan di LNC.01. Menu "menu tanpa gambar" sudah dikembalikan ke Tersedia. Data dummy lain di Handoff #24 tidak berubah (Dummy Kembar beralamat; Dummy Satu Ubah tanpa alamat, cocok untuk menguji dua cabang alamat di wizard).
+- Butir terbuka Handoff #11 sampai #24 yang tidak disebut di sini tidak berubah.
+
+**Saran giliran berikutnya:**
+
+1. **ORD.13** (adik ketua): wizard 5 langkah dan layar Kelola Pelanggan, dengan kontrak `order_buat_wakil` di Handoff #24 dan kontrak `pelanggan_luar_*` di Handoff #22. Lampirkan `AGENTS.md` + `order.md` + `desain.md` + `home.md` + `akun.js` (tempat `window.KedaiAkun.panggilKedai`) + `index.html` + `kerangka.js` + `style.css` + `sw.js` + `orderowner.js` (sebagai contoh pola layar owner). AI meminta berkas lain di awal sesi bila perlu; tidak ada perubahan SQL atau `kedai` yang direncanakan.
+2. Lalu **ORD.14** (sesi tes order): sisa tes ada di Handoff #11, #13, #14, #15, dan #21.
+
 ---

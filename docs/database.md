@@ -264,4 +264,18 @@ Angka yang bisa berubah **tidak ditulis mati di kode** (`AGENTS.md` bagian 1). N
 - **Kode galat baru:** `catatan_kosong`, `catatan_terlalu_panjang`, `catatan_terlalu_banyak`, `catatan_terkunci`.
 - **Panjang nama penulis catatan:** tabel `catatan_order` menolak `nama_penulis` di luar 3 sampai 30 karakter. Untuk owner nama disalin dari `staf.nama_tampilan`, dan **panjang nama staf belum punya aturan tercatat** di dokumen ini. Ketua (9 Nov 2026) menyatakan nama staf berupa nama orang biasa, 3 sampai 30 karakter. Cek 9 Nov 2026: dari 2 staf dan 5 profil, 0 di luar batas. Pagar panjang di tabel `staf` belum diverifikasi. Bila nama staf diubah di luar 3 sampai 30, `catatan_tambah` oleh owner itu gagal dengan galat umum 500.
 
+### 2026-11-10: Fungsi `order_buat_wakil` dan kode galat barunya (ORD.12)
+
+Sumber: `docs/order.md` Handoff #24 dan #25; SQL di `supabase/migrations/20261110_06_order_wakil_fungsi.sql` (pembatal `_batal.sql`, cek di `supabase/templates/20261110_06_order_wakil_fungsi_cek.sql`). Bila tabel aksi atau daftar fungsi di bagian lain berbeda dari blok ini, **yang paling akhir menang**. Alasan keputusan di luar yang disebut: alasan belum tercatat.
+
+- **Fungsi baru `public.order_buat_wakil(uuid, uuid, text, text, text, text, jsonb, text)`**: `SECURITY DEFINER`, `search_path` kosong, `EXECUTE` hanya `service_role` (terbukti cek SQL 1 sampai 4). Hak tabel tidak berubah dan tetap tanpa DELETE. **Tabel dan data lama tidak diubah.**
+- **Atomik:** cek pelanggan tanpa akun (aktif), cek menu dan opsi, hitung harga di server, simpan order **langsung Disetujui**, simpan item, dan catat riwayat. Baris pelanggan dikunci `FOR SHARE` selama transaksi, jadi menonaktifkan pelanggan yang bersamaan menunggu.
+- **Yang disalin dari pelanggan ke order:** nama dan nomor WA; alamat hanya untuk tipe Diantar (lihat bawah). **Keterangan pelanggan tidak ikut tersalin** (tabel `order` belum punya kolomnya). Alias alamat selalu kosong.
+- **Batas** jumlah item per order dan jumlah per item dibaca dari tabel `pengaturan` (`item_maks_per_order`, `jumlah_maks_per_item`), tidak ditulis mati. Aturan menu, pilihan (lewat `opsi_periksa`), dan harga sama dengan `order_buat`.
+- **Alamat (tipe Diantar):** alamat yang dikirim dipakai **untuk order itu saja** dan alamat tersimpan pelanggan tidak berubah; bila tidak dikirim, dipakai alamat tersimpan; bila tidak ada keduanya, galat. Panjang 10 sampai 200 karakter. Tipe Diambil dan Makan di warung: alamat yang dikirim diabaikan (terbukti, `isi_alamat` kosong).
+- **Pemutus dan pembuat** diisi nama owner pembuat (O15). Riwayat satu baris: status asal kosong, tujuan Disetujui, keterangan "Order wakil. Metode bayar: <metode>". Tanpa catatan awal.
+- **Tanpa penahan kirim ganda di server**, sama seperti `order_buat`; tombol Simpan di layar wajib dikunci.
+- **Kode galat baru** dipetakan di `supabase/functions/kedai/order_wakil.ts`: `pelanggan_tidak_aktif` (409), `alamat_wajib` (400), `alamat_tidak_valid` (400), `metode_tidak_valid` (400). Daftar lengkap kode yang bisa dilempar fungsi ada di kepala berkas migration; pemetaan ke status HTTP ada di `order_wakil.ts`.
+- **Aksi `kedai`:** `order_buat_wakil`, hanya owner (customer dan penjaga dibalas 403). Kontrak isian dan balasan untuk layar ada di `docs/order.md` Handoff #24.
+
 ---
