@@ -595,4 +595,77 @@ Blok 1 ditempel di **paling bawah `docs/order.md` bagian 9**. Blok 2 ditempel di
 1. **ORD.16** ⚠️ (alasan alih hari ke customer), sesi ketua: butuh penjelasan dampak dan "OK" ketua. Alasan alih hari kini hanya di `riwayat_status.keterangan` (Handoff #12, pilihan C), jadi perlu ubah fungsi atau tabel. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `order_status.ts` + `20261109_01_order_status_alih_hari.sql` + `public/pesanan.js`. Bahas sekalian pembeda "dibatalkan customer atau owner".
 2. **ORD.09** ⚠️ (catatan berlapis), lalu ORD.10, ORD.11 sampai ORD.13, dan **ORD.14** (sisa tes: SEC-10, SEC-19, batal vs setuju bersamaan).
 
+### Handoff #16 | 2026-11-09 | KETUA
+
+**Tugas:** ORD.16 ⚠️ (alasan alih hari tampil ke customer) **selesai**: terpasang di production, tes lulus (termasuk di HP Android), sudah dicentang di sheet. Commit `ce7b614` sudah di-push (pagar `AGENTS.md` bagian 8 lolos: folder, `git remote -v`, email noreply, semuanya milik ketua). Tidak ada perubahan tabel, `kedai`, `sw.js`, atau `orderowneraksi.js`.
+
+**Berkas:**
+
+- `supabase/migrations/20261109_02_order_detail_alasan_alih.sql`: `order_detail` diganti dengan `CREATE OR REPLACE` (nama, parameter, dan tipe kembalian sama). Sudah dijalankan di SQL Editor dan lulus cek. Satu variabel, satu blok pengambil alasan, dan satu isian baru `alasan_alih` di balasan; selebihnya sama persis dengan versi di `20261108_02_order_fungsi.sql`.
+- `supabase/migrations/20261109_02_order_detail_alasan_alih_batal.sql`: `order_detail` versi lama persis, untuk pembatalan.
+- `supabase/templates/20261109_02_order_detail_alasan_alih_cek.sql`: cek baca-saja.
+- `public/pesanan.js` (hanya tambahan; 0 baris lama dihapus): `bacaDetail` membaca `alasan_alih`, dan kartu "Alasan alih hari" tampil bila ada.
+
+**Perilaku:** `order_detail` mengirim `alasan_alih` **hanya ke customer pemilik order**, **hanya saat status Disetujui, Diproses, Diantar, Siap diambil, atau Siap disajikan**, dan **hanya dari alih hari terakhir** (bila alih terakhir tanpa alasan, kosong). Penjaga dan owner menerima `null` (penjaga tidak melihat alasan sesuai `security.md`; owner sudah punya alasannya di `riwayat`). Nilainya dibaca dari teks `riwayat_status.keterangan`, yaitu sesudah ". Alasan: " pada baris berformat "Alih hari YYYY-MM-DD ke ".
+
+**Keputusan baru:**
+
+- **Opsi A (ketua):** tanpa ubah tabel; alasan dibaca dari keterangan riwayat. Opsi B (kolom baru di tabel `order`) tidak dipilih.
+- Disetujui ketua: hanya alih hari terakhir yang tampil, hanya selama order berjalan, dan hanya untuk customer pemilik.
+- **Keterkaitan yang harus diingat:** bila format keterangan di `order_alih_hari` diubah, `order_detail` harus ikut diubah (ada komentar peringatan di migration). Bila tidak, kartu di layar customer rusak tanpa pesan galat.
+- `orderowneraksi.js` tidak diubah: form Alihkan owner sudah bertuliskan alasan tampil ke customer.
+
+**Terbukti** (akun dummy; bukti di chat, tidak disimpan): cek SQL 1 sampai 8 lolos (fungsi ada, `SECURITY DEFINER`, `search_path` kosong, hak `EXECUTE` hanya `service_role`, isi memuat `alasan_alih`, semua keterangan alih hari terbaca). Customer pemilik menerima alasan pada #27; order Selesai, Ditolak, dan Dibatalkan `null`. Penjaga: `200`, `alasan_alih` null, `riwayat` 0. Owner: `200`, `alasan_alih` null, `riwayat` 3. Layar customer menampilkan kartu pada #27 dan Android lolos.
+
+**Masalah yang belum beres:**
+
+- **Butir baru sheet** ([ORD.17 sesuai sheet]) "Tampilkan pembeda batal customer atau owner di layar customer" (⚠️, P1; belum dikerjakan). Usul teks: "Dibatalkan oleh pemesan" dan "Dibatalkan oleh pihak ChATA", tanpa nama owner. Dihitung dari baris riwayat pembatalan di `order_detail`, tanpa ubah tabel. Perlu dipastikan dulu riwayat `order_batal` mencatat siapa pembatalnya; bila tidak, `order_batal` ikut diubah.
+- Kasus alih hari terakhir tanpa alasan belum dites eksplisit lewat layar (#21 dan #25 menerima null, konsisten tetapi belum dibuktikan).
+- Push untuk alih hari belum ada (NTF.08).
+- Logout dashboard Supabase dikonfirmasi ketua; GitHub belum disebut.
+- Order dummy #21, #25, dan #27 (Disetujui, hari Selasa 10 Nov) kini sudah Besok, jadi alih hari lagi ditolak server (`sudah_besok`) sampai harinya lewat. Untuk tes alih hari baru, buat order dummy Hari ini. Order uji tidak bisa dihapus; dibersihkan di LNC.01.
+- Butir terbuka dari Handoff #11 sampai #15 yang tidak disebut di atas tidak berubah (ketuk dua kali pada tombol status, Tandai selesai tanpa konfirmasi, `orderowner.js` 1194 baris, dan lainnya).
+
+**Saran giliran berikutnya:**
+
+1. **Butir pembeda batal** ⚠️ (sesi ketua; butuh penjelasan dampak dan "OK" ketua karena `order_detail` dipakai semua peran). Lampirkan `AGENTS.md` + `order.md` + `security.md` + `20261109_02_order_detail_alasan_alih.sql` + `20261108_03_order_batal_fungsi.sql` + `20261108_04_order_batal_pesan.sql` + `public/pesanan.js`.
+2. **ORD.09** ⚠️ (catatan berlapis), lalu ORD.10, ORD.11 sampai ORD.13, dan **ORD.14** (sisa tes: SEC-10, SEC-19, batal vs setuju bersamaan).
+
+### Handoff #17 | 2026-11-09 | KETUA
+
+**Tugas:** ORD.17 ⚠️ (pembeda batal customer atau owner di layar customer) **selesai**: terpasang di production, tes lulus, sudah dicentang di sheet. Commit `f04b787` sudah di-push (pagar `AGENTS.md` bagian 8 lolos: folder, `git remote -v`, email noreply, semuanya milik ketua). Tidak ada perubahan tabel, `order_batal`, `kedai`, `sw.js`, atau `orderowneraksi.js`. Handoff #16 menyebut butir ini sebagai belum dikerjakan; blok ini menggantikannya (yang paling akhir menang).
+
+**Berkas:**
+
+- `supabase/migrations/20261109_03_order_detail_pembatal.sql`: `order_detail` diganti dengan `CREATE OR REPLACE`, dibangun di atas versi ORD.16 (bukan versi asli), jadi `alasan_alih` tetap ada. Sudah dijalankan di SQL Editor dan lulus cek. Hanya tambahan: dua variabel, satu blok pembaca pembatal, dan dua isian baru di balasan.
+- `supabase/migrations/20261109_03_order_detail_pembatal_batal.sql`: mengembalikan `order_detail` ke versi ORD.16 persis (bukan ke versi asli; untuk itu jalankan `20261109_02_order_detail_alasan_alih_batal.sql` sesudahnya).
+- `supabase/templates/20261109_03_order_detail_pembatal_cek.sql`: cek baca-saja.
+- `public/pesanan.js` (hanya tambahan; 0 baris lama dihapus).
+
+**Perilaku:** `order_detail` mengirim `dibatalkan_oleh` (`customer` atau `owner`) dan `dibatalkan_oleh_nama` (nama tampilan owner; kosong bila pembatalnya customer) **hanya ke customer pemilik order yang berstatus Dibatalkan**. Peran lain menerima `null`. Nilainya dibaca dari baris `riwayat_status` pembatalan terakhir (`order_batal` selalu mencatat `oleh` = akun pembatal): `customer` bila `oleh` sama dengan pemesan order, selain itu `owner`. Layar customer menampilkan kartu "Dibatalkan oleh customer" atau "Dibatalkan oleh pihak ChATA (nama)", **walau alasan pembatalan kosong**; kartu "Alasan pembatalan" yang sudah ada tidak berubah.
+
+**Keputusan baru:**
+
+- **Ketua: nama owner yang membatalkan tampil ke customer pemilik order.** Alasan: ada 5 owner; tanpa nama, customer tidak tahu siapa yang harus dihubungi. Teks mengikuti sheet.
+- **Pertentangan dengan catatan lama (yang paling akhir menang):** (1) komentar kepala `pesanan.js` "Customer tidak bisa melihat siapa yang membatalkan" dan Handoff #11 (layar customer tidak bisa membedakan pembatal) tidak berlaku lagi; (2) Handoff #6 (siapa yang membatalkan di `riwayat_status`, hanya terlihat owner) kini hanya berlaku untuk riwayat lengkap, sebab **nama pembatal** juga sampai ke customer pemilik order itu. Yang **tetap tertutup untuk customer**: `pemutus_nama`, riwayat lengkap, dan metode bayar.
+- **Nama diambil dari riwayat pembatalan, bukan dari `order.pemutus_nama`.** `pemutus_nama` adalah owner yang dulu menekan Setujui (tetap disimpan pada order Dibatalkan untuk bahan pengembalian uang), jadi memakainya akan menampilkan nama owner yang salah.
+- Pilihan penulis (alasan belum tercatat): nama mengikuti nama tampilan owner **saat ini** (bukan salinan saat pembatalan); bila tidak ada baris riwayat pembatalan, layar tidak menampilkan kartu pembatal.
+- **Untuk sesi berikutnya:** versi `order_detail` yang aktif di production adalah `20261109_03_order_detail_pembatal.sql`. Perubahan `order_detail` berikutnya harus berangkat dari berkas itu, bukan dari `20261108_02_order_fungsi.sql` atau versi ORD.16, supaya `alasan_alih` dan isian pembatal tidak hilang.
+
+**Terbukti** (akun dummy; bukti di chat, tidak disimpan): cek SQL 1 sampai 9 lolos (fungsi ada, `SECURITY DEFINER`, `search_path` kosong, hak `EXECUTE` hanya `service_role`, isi memuat isian baru dan `alasan_alih`, tidak ada order Dibatalkan tanpa baris riwayat pembatalan). Customer menerima pembatal yang benar untuk semua 8 order Dibatalkan (6 oleh customer, 2 oleh owner dengan nama dummy). Penjaga: semua `200`, isian pembatal dan `alasan_alih` null, `riwayat` 0, order Dibatalkan tidak terlihat. Owner: semua `200` termasuk order Dibatalkan, isian pembatal null, `riwayat` lebih dari 0. Layar customer menampilkan kartu pembatal pada #28 (owner) dan #13 (customer).
+
+**Masalah yang belum beres:**
+
+- Tes ORD.17 di HP Android belum dijalankan (P2; kartunya memakai kelas yang sama dengan kartu lain, ORD.16 sudah lolos di Android).
+- Owner pembatal tanpa nama tampilan belum diuji; layar akan menulis "Dibatalkan oleh pihak ChATA" tanpa kurung.
+- Push untuk pembatalan belum ada (NTF.06).
+- Logout dashboard Supabase untuk sesi ORD.17 belum dikonfirmasi.
+- Butir terbuka dari Handoff #11 sampai #16 yang tidak disebut di atas tidak berubah (ketuk dua kali pada tombol status, Tandai selesai tanpa konfirmasi, `orderowner.js` 1194 baris, push alih hari NTF.08, dan lainnya). Butir "pembeda dibatalkan customer atau owner" dari Handoff #11 dan #15 **sudah tutup** lewat ORD.17.
+- Order dummy tidak berubah dari Handoff #16 (tidak ada order baru di sesi ini). Order uji tidak bisa dihapus; dibersihkan di LNC.01.
+
+**Saran giliran berikutnya:**
+
+1. **ORD.09** ⚠️ (catatan berlapis: `catatan_tambah` dan `catatan_dibaca`, aturan kunci saat Diproses, batas karakter dan jumlah), sesi ketua: butuh penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `order_status.ts` + `20261109_03_order_detail_pembatal.sql` + migration terbaru tentang tabel catatan (`20261108_order.sql`). Aksi baru `kedai` ditaruh di berkas terpisah sesuai `AGENTS.md` bagian 12.
+2. Lalu ORD.10, ORD.11 sampai ORD.13, dan **ORD.14** (sisa tes: SEC-10, SEC-19, batal vs setuju bersamaan).
+
 ---
