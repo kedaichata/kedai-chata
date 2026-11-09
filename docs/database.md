@@ -256,4 +256,12 @@ Angka yang bisa berubah **tidak ditulis mati di kode** (`AGENTS.md` bagian 1). N
 - **Bagian 4 (pengaturan):** keempat kunci order sudah dibuat dengan nilai awal sesuai tabel (`item_maks_per_order` 10, `jumlah_maks_per_item` 10, `catatan_maks_karakter` 200, `catatan_maks_per_order` 10).
 - **Catatan untuk ORD.02:** semua SQL yang menyebut tabel order wajib memakai `public."order"`. Pagar antar-kolom di tabel (metode bayar dan pemutus mengikuti status, alamat hanya Diantar, pembuat wajib untuk order wakil) berarti `order_buat` dan `order_buat_wakil` harus mengisi kolom-kolom itu konsisten, atau ditolak database.
 
+### 2026-11-09: Fungsi catatan (ORD.09) dan panjang nama penulis catatan
+
+**Berkas tujuan:** `docs/database.md` bagian 9. Rujukan: `docs/order.md` bagian 9, Handoff #18. Yang paling akhir menang.
+
+- **Bagian 5 (fungsi SQL, `EXECUTE` hanya `service_role`):** `catatan_tambah(p_akun, p_order_id, p_isi)` dan `catatan_dibaca(p_akun, p_order_id)`, di `supabase/migrations/20261109_04_catatan_fungsi.sql` (pembatal dan cek menyertai). Tabel, hak tabel, dan pengaturan tidak berubah; nilai terbaca: `catatan_maks_karakter` 200, `catatan_maks_per_order` 10.
+- **Kode galat baru:** `catatan_kosong`, `catatan_terlalu_panjang`, `catatan_terlalu_banyak`, `catatan_terkunci`.
+- **Panjang nama penulis catatan:** tabel `catatan_order` menolak `nama_penulis` di luar 3 sampai 30 karakter. Untuk owner nama disalin dari `staf.nama_tampilan`, dan **panjang nama staf belum punya aturan tercatat** di dokumen ini. Ketua (9 Nov 2026) menyatakan nama staf berupa nama orang biasa, 3 sampai 30 karakter. Cek 9 Nov 2026: dari 2 staf dan 5 profil, 0 di luar batas. Pagar panjang di tabel `staf` belum diverifikasi. Bila nama staf diubah di luar 3 sampai 30, `catatan_tambah` oleh owner itu gagal dengan galat umum 500.
+
 ---

@@ -558,4 +558,47 @@ Alasan keputusan di luar yang disebut di atas: alasan belum tercatat.
 1. **ORD.09** ⚠️ (catatan berlapis: `catatan_tambah` dan `catatan_dibaca`, aturan kunci saat Diproses, batas karakter dan jumlah), sesi ketua: butuh penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `order_status.ts` + `20261109_03_order_detail_pembatal.sql` + migration tabel catatan (`20261108_order.sql`). Aksi baru `kedai` ditaruh di berkas terpisah sesuai `AGENTS.md` bagian 12.
 2. Lalu ORD.10, ORD.11 sampai ORD.13, dan **ORD.14** (sisa tes: SEC-10, SEC-19, batal vs setuju bersamaan).
 
+### Handoff #18 | 2026-11-09 | [RAC]
+
+**Tugas:** ORD.09 ⚠️ (catatan berlapis: `catatan_tambah` dan `catatan_dibaca`) kode selesai dan **ter-deploy di production**; tes konsol **sebagian** lulus (di bawah). **Belum dicentang di sheet** dan **belum di-commit atau di-push**.
+
+**Berkas:** `supabase/migrations/20261109_04_catatan_fungsi.sql` (+ `_batal.sql`, cek di `supabase/templates/20261109_04_catatan_fungsi_cek.sql`), sudah dijalankan di SQL Editor dan cek 1 sampai 7 lulus. `supabase/functions/kedai/catatan.ts` (baru) dan `index.ts` (hanya tambahan, **0 baris lama dihapus**: komentar kepala, satu import, satu blok sambungan, dua `case`). Deploy `kedai --use-api` sukses (tiga berkas terunggah), token CLI sudah dibersihkan, logout dashboard Supabase dikonfirmasi. Tabel, hak tabel, pengaturan, dan `order_detail` tidak diubah.
+
+**Kontrak untuk layar (ORD.10):** balasan `{ status, data }` dari `panggilKedai`; galat `data = { ok: false, pesan }` (tampilkan `pesan` lewat `textContent`).
+
+- `catatan_tambah` isian `{ id, isi }`. Sukses: `{ ok: true, catatan: { id, nama_penulis, peran_penulis, isi, waktu }, order: { id, nomor, status }, jumlah_catatan }`. Galat: 400 (isi kosong, terlalu panjang, data rusak), 403 (penjaga), 404 (order tidak ada atau bukan milik customer itu), 409 (batas jumlah, atau status Diproses ke atas, Ditolak, Dibatalkan, Selesai; layar sebaiknya menyegarkan detail).
+- `catatan_dibaca` isian `{ id }`. Sukses: `{ ok: true, order_id, catatan_terakhir_id }` (null bila order belum punya catatan). Galat: 403, 404.
+
+**Terbukti** (akun dummy lewat konsol; bukti di chat, tidak disimpan):
+
+- Cek SQL 1 sampai 7: hak `EXECUTE` hanya `service_role`; `catatan_order` tanpa ubah dan hapus; `baca_catatan` tanpa hapus; `anon` dan `authenticated` nol; batas 200 dan 10 terbaca; nama staf dan profil di dalam 3 sampai 30; tidak ada penunjuk silang antar order.
+- Owner dan customer pemilik menambah catatan; isian palsu (`peran`, `nama_penulis`, `waktu`) diabaikan (peran dan nama dari server, waktu hari ini); spasi di tepi dipangkas.
+- Isi kosong atau spasi saja, 201 dan 501 karakter, bukan teks, tanpa isi, dan id rusak ditolak 400; tepat 200 karakter lolos.
+- Batas 10 catatan per order (catatan awal dihitung): percobaan ke-10 pada #25 ditolak 409.
+- Order Selesai, Dibatalkan, Ditolak ditolak 409; id tidak ada 404.
+- `catatan_dibaca`: penunjuk naik ke catatan terbaru, dipanggil ulang tidak berubah, isian palsu `catatan_id` diabaikan, order tanpa catatan sukses dengan null.
+- Customer kedua: tambah dan dibaca pada order orang lain 404 (termasuk order Selesai, tidak bocor status); kepanjangan di order orang lain 400.
+
+**Keputusan baru** (ketua menyetujui ringkasan dampak dan deploy; selebihnya pilihan penulis, alasan belum tercatat):
+
+- Batas `catatan_maks_per_order` menghitung **semua** catatan order itu, termasuk catatan awal dari `order_buat`.
+- Isi dipangkas seperti `order_buat` (spasi, tab, baris kosong di tepi). Cek urutan: akun, peran, pengaturan, isi, kepemilikan, baru status (customer tidak bisa menebak status order orang lain).
+- `catatan_tambah` mengunci baris order (`FOR UPDATE`) tetapi tidak mengubah kolom order dan tidak menulis `riwayat_status`.
+- `catatan_dibaca`: penunjuk hanya maju dan dihitung server dari catatan terbaru; order tanpa catatan sukses tanpa menulis (kolom penunjuk wajib terisi).
+- Kode galat baru dipetakan di `catatan.ts`: `catatan_kosong`, `catatan_terlalu_panjang`, `catatan_terlalu_banyak`, `catatan_terkunci`, `peran_tidak_boleh`; `sudah_ditolak` dan `sudah_dibatalkan` memakai kode lama. `id_kosong` dan `pengaturan_rusak` sengaja tidak dipetakan (500 umum).
+- Pagar kasar di `kedai`: isi lebih dari `BATAS_TEKS` (500) ditolak 400 sebelum ke SQL.
+
+**Masalah yang belum beres:**
+
+- **Tes belum selesai:** (1) penjaga (tambah 403; dibaca 404 untuk Menunggu dan Dibatalkan, 200 untuk Disetujui dan Selesai) belum dijalankan; (2) catatan terbuka lagi setelah status dimundurkan ke Disetujui atau dialihkan; (3) owner menambah catatan di order wakil (menunggu ORD.12); (4) dua sesi bersamaan, catatan vs "Mulai proses" (SEC-10, ORD.14); (5) query cek 8 dan 9 diulang sesudah tes selesai; (6) teks berisi tag HTML tampil sebagai teks biasa (SEC-18, menunggu layar ORD.10). Baris SEC di sheet belum dicentang.
+- **Belum di-commit dan di-push:** satu commit untuk tiga berkas migration (fungsi, pembatal, cek), `catatan.ts`, dan `index.ts`; pagar `AGENTS.md` bagian 8 (folder, `git remote -v`, email commit milik ketua) wajib lolos dulu.
+- Order dummy: #25 sudah penuh 10 dari 10 catatan (tidak bisa ditambah lagi, tidak bisa dihapus); #24 berisi 5 catatan; #21 belum punya catatan. Customer dummy punya penunjuk baca di #24. Dibersihkan di LNC.01.
+- Push catatan (O14) belum ada (NTF). Logout GitHub di Mac bersama belum dikonfirmasi.
+- Butir terbuka Handoff #11 sampai #17 yang tidak disebut di atas tidak berubah.
+
+**Saran giliran berikutnya:**
+
+1. Selesaikan tes yang tersisa (daftar di atas), jalankan ulang query cek 8 dan 9, lalu commit dan push. Setelah itu butir ORD.09 bisa dicentang di sheet.
+2. **ORD.10:** layar catatan dan tanda "Catatan baru". Catatan: `order_detail` dan `order_daftar` **belum membawa penunjuk baca** milik pemanggil, jadi tanda itu belum bisa dihitung. Kemungkinan butuh perubahan fungsi SQL (⚠️, "OK" ketua). Bila `order_detail` diubah, berangkat dari `20261109_03_order_detail_pembatal.sql` (versi aktif).
+
 ---

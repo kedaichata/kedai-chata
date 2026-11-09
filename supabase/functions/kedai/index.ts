@@ -28,6 +28,10 @@
 //         (owner saja). Kodenya ada di BERKAS BARU `order_status.ts` (folder yang sama), diimpor di bawah;
 //         kode lama di berkas ini tidak dipindah (keputusan ketua 9 Nov 2026). Fungsi SQL:
 //         20261109_01_order_status_alih_hari.sql (sudah dijalankan dan lulus cek SEBELUM berkas ini dideploy).
+// ORD.09 (giliran 2): ditambah `catatan_tambah` (customer pemilik dan owner; penjaga ditolak 403) dan `catatan_dibaca`
+//         (semua peran aktif; hak lihat dijaga fungsi SQL). Kodenya ada di BERKAS BARU `catatan.ts` (folder yang sama),
+//         diimpor di bawah; kode lama tidak dipindah. Fungsi SQL: 20261109_04_catatan_fungsi.sql (sudah dijalankan
+//         dan lulus cek SEBELUM berkas ini dideploy). Push catatan ada di NTF, bukan di sini.
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -39,6 +43,8 @@
 import { createClient } from "npm:@supabase/supabase-js@2.58.0";
 // ORD.07: aksi order_status, order_metode_koreksi, order_alih_hari ada di berkas terpisah.
 import { buatAksiOrderStatus } from "./order_status.ts";
+// ORD.09: aksi catatan_tambah dan catatan_dibaca ada di berkas terpisah.
+import { buatAksiCatatan } from "./catatan.ts";
 
 // ------------------------------------------------------------
 // Pengaturan dasar
@@ -1289,6 +1295,21 @@ const { aksiOrderStatus, aksiOrderMetodeKoreksi, aksiOrderAlihHari } =
   });
 
 // ------------------------------------------------------------
+// ORD.09: sambungan ke berkas catatan.ts, dengan alat bantu yang sama seperti di atas.
+// ------------------------------------------------------------
+
+const { aksiCatatanTambah, aksiCatatanDibaca } = buatAksiCatatan({
+  // deno-lint-ignore no-explicit-any
+  klien: admin as any,
+  bacaPeran,
+  balas,
+  galat,
+  galatDariDb,
+  regexUuid: REGEX_UUID,
+  batasTeks: BATAS_TEKS,
+});
+
+// ------------------------------------------------------------
 // Pintu masuk
 // ------------------------------------------------------------
 
@@ -1379,6 +1400,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
         return await aksiOrderMetodeKoreksi(req, pengguna, isi);
       case "order_alih_hari":
         return await aksiOrderAlihHari(req, pengguna, isi);
+      case "catatan_tambah":
+        return await aksiCatatanTambah(req, pengguna, isi);
+      case "catatan_dibaca":
+        return await aksiCatatanDibaca(req, pengguna, isi);
       default:
         return galat(req, 400, "Aksi tidak dikenal.");
     }
