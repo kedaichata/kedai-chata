@@ -601,4 +601,25 @@ Alasan keputusan di luar yang disebut di atas: alasan belum tercatat.
 1. Selesaikan tes yang tersisa (daftar di atas), jalankan ulang query cek 8 dan 9, lalu commit dan push. Setelah itu butir ORD.09 bisa dicentang di sheet.
 2. **ORD.10:** layar catatan dan tanda "Catatan baru". Catatan: `order_detail` dan `order_daftar` **belum membawa penunjuk baca** milik pemanggil, jadi tanda itu belum bisa dihitung. Kemungkinan butuh perubahan fungsi SQL (⚠️, "OK" ketua). Bila `order_detail` diubah, berangkat dari `20261109_03_order_detail_pembatal.sql` (versi aktif).
 
+### Handoff #19 | 2026-11-09 | RAC
+
+**Tugas:** lanjutan Handoff #18: tes ORD.09 ⚠️ yang bisa dikerjakan sekarang selesai dan lulus. Commit `19ca148` sudah di-push (pagar `AGENTS.md` bagian 8 lolos). Butir ORD.09 dicentang di sheet. Tidak ada kode yang diubah. Handoff ini menggantikan "Masalah yang belum beres" dan "Saran giliran berikutnya" di Handoff #18; selebihnya Handoff #18 tetap berlaku.
+
+**Terbukti** (akun dummy, bukti di chat):
+
+- Penjaga: `catatan_tambah` 403 di order Disetujui, Selesai, dan Menunggu; `catatan_dibaca` 200 di Disetujui dan Selesai, 404 di Menunggu dan Dibatalkan. Daftar penjaga (8 order) tidak memuat Menunggu dan Dibatalkan.
+- Kunci catatan: tambah saat Disetujui 200, maju ke Diproses lalu tambah 409, mundur ke Disetujui lalu tambah 200.
+- Customer kedua: tambah dan dibaca di order orang lain 404; kepanjangan 400.
+- Cek SQL 1 sampai 9 lulus semua (bagian 8: penulis hanya customer dan owner, waktu dari server; bagian 9: penunjuk baca tidak pernah melewati catatan terbaru).
+
+**Keputusan baru:** tidak ada.
+
+**Masalah yang belum beres:**
+
+- Tes yang menunggu tugas lain: catatan di order wakil (ORD.12), dua sesi bersamaan catatan vs "Mulai proses" (SEC-10, ORD.14), teks bertag HTML tampil sebagai teks biasa (SEC-18, ORD.10). Ulangi query cek 8 dan 9 setelah ketiganya. Baris SEC di sheet belum dicentang.
+- Push catatan (O14) belum ada (NTF).
+- Order dummy: #25 penuh 10 dari 10 catatan, #21 punya 2, #24 punya 5. Dibersihkan di LNC.01.
+- Logout dashboard Supabase dan GitHub di Mac bersama sudah dikonfirmasi.
+
+**Saran giliran berikutnya:** ORD.10 ⚠️ (layar catatan dan tanda "Catatan baru"). `order_detail` dan `order_daftar` belum membawa penunjuk baca milik pemanggil, jadi kemungkinan butuh perubahan fungsi SQL ("OK" ketua); berangkat dari `20261109_03_order_detail_pembatal.sql` (versi aktif). Lalu ORD.11 sampai ORD.13, dan ORD.14.
 ---
