@@ -784,4 +784,64 @@ Alasan keputusan di luar yang disebut di atas: alasan belum tercatat.
 1. **ORD.12** ⚠️ (`order_buat_wakil`: atomik, langsung Disetujui, metode bayar, penanda pembuat), **sesi ketua**: butuh penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `pelanggan_luar.ts` + `catatan.ts` + migration `20261108_order.sql`, `20261108_02_order_fungsi.sql`, dan `20261109_05_pelanggan_luar_fungsi.sql`. Aksi baru `kedai` ditaruh di berkas terpisah (`AGENTS.md` bagian 12).
 2. Lalu **ORD.13** (wizard dan Kelola Pelanggan) dan **ORD.14** (sesi tes order).
 
+<!-- Berkas tujuan: docs/order.md, tempel PALING BAWAH bagian 9 (di bawah Handoff #23). Append-only. -->
+
+### Handoff #24 | 2026-11-10 | KETUA
+
+**Tugas:** ORD.12 ⚠️ (`order_buat_wakil`, sisi server): SQL sudah dijalankan dan lulus cek, aksi `kedai` sudah ter-deploy di production, **tes aksi baru baru separuh jalan** (lihat "Terbukti" dan "Sisa tes"). **Belum di-commit dan di-push. Belum dicentang di sheet.** Handoff ini tidak mengubah Handoff #23 kecuali bagian ORD.12 (yang di #23 disebut "harus menolak pelanggan nonaktif dan menyalin nama, WA, alamat": sudah dikerjakan di fungsi).
+
+**Berkas (semua baru kecuali `index.ts`; belum ter-commit):**
+
+- `supabase/migrations/20261110_06_order_wakil_fungsi.sql` (fungsi `public.order_buat_wakil(uuid, uuid, text, text, text, text, jsonb, text)`), pembatal `_batal.sql`, cek `supabase/templates/20261110_06_order_wakil_fungsi_cek.sql`. Sudah dijalankan di SQL Editor; cek 1 sampai 4 lulus (SECURITY DEFINER, `search_path` kosong, EXECUTE hanya `service_role`, hak tabel tidak berubah dan tanpa DELETE). Cek 5 (order wakil) saat itu 0 baris, **diulang sesudah tes**.
+- `supabase/functions/kedai/order_wakil.ts` (baru, `buatAksiOrderWakil(alat)`, pola sama dengan `pelanggan_luar.ts`) dan `index.ts` (tambahan saja: 26 baris, **0 baris lama dihapus**, dibuktikan `git diff --stat`: `26 insertions(+)`). Deploy `kedai --use-api` sukses (5 berkas terunggah), token CLI sudah dibersihkan (`[]`). Dashboard Supabase sudah logout sebelum deploy.
+- Pagar `AGENTS.md` bagian 8: `git status --short` bersih selain berkas ORD.12; lanjut cek folder, `git remote -v`, dan email commit saat push.
+
+**Kontrak untuk layar (ORD.13):** `panggilKedai("order_buat_wakil", isian)` mengembalikan `{ status, data }`; galat `data = { ok: false, pesan }` (tampilkan `pesan` lewat `textContent`). **Hanya owner** (customer dan penjaga 403).
+
+- Isian: `{ pelanggan_id, tipe, alamat?, hari, jam, item: [{ menu_id, jumlah, opsi_ids? }], metode }`. `hari` persis "Hari ini" atau "Besok"; `jam` "HH:MM"; `metode` Transfer, Tunai, atau QRIS. Isian lain (harga, total, status, pemutus, `dibuat_oleh`) diabaikan.
+- Sukses: `{ ok: true, order: { id, nomor, status: "Disetujui", total, hari_target, jam_permintaan, metode_bayar } }`.
+- **Alamat (tipe Diantar):** layar menampilkan alamat tersimpan pelanggan (dari `pelanggan_luar_daftar`) sebagai bawaan. Bila `alamat` dikirim, itu yang dipakai **untuk order ini saja**; bila tidak dikirim, server memakai alamat tersimpan; bila tidak ada keduanya: 400 "Alamat antar wajib diisi." Jadi layar **wajib meminta alamat bila pelanggan belum punya alamat tersimpan**. Alamat 10 sampai 200 karakter (dipangkas; spasi saja dianggap tidak dikirim). Tipe Diambil dan Makan di warung: alamat dikirim pun diabaikan.
+- Galat: 400 (metode, hari, jam, tipe, item, alamat wajib atau tidak valid, data rusak), 403 (bukan owner, akun nonaktif), 404 (pelanggan atau menu tidak ditemukan), 409 (pelanggan nonaktif, menu habis atau nonaktif, pilihan menu berubah, batas item atau jumlah).
+- Tanpa catatan awal (wizard tidak punya isiannya). Tanpa push (NTF). Tanpa penahan kirim ganda: tombol Simpan wizard wajib dikunci di layar.
+
+**Keputusan baru (ketua):**
+
+- **Alamat:** alamat yang sudah ada di server dipakai sebagai bawaan; di layar baru wajib diisi bila server tidak punya. Owner boleh menimpa alamat di wizard, **berlaku untuk order ini saja**, alamat tersimpan pelanggan tidak berubah (diubah lewat `pelanggan_luar_simpan` di Kelola Pelanggan). Sejalan dengan wizard langkah 3 di bagian 4, jadi **tidak ada pertentangan** dengan catatan lama.
+- **Pilihan penulis, disetujui ketua lewat "gas"** (alasan belum tercatat): (1) tanpa catatan awal; (2) riwayat satu baris (status asal kosong, tujuan Disetujui, keterangan "Order wakil. Metode bayar: <metode>"); (3) yang disalin dari pelanggan hanya nama, nomor WA, dan alamat, **bukan keterangan** (tabel `order` belum punya kolom keterangan); (4) baris pelanggan dikunci `FOR SHARE` selama transaksi, jadi nonaktifkan yang bersamaan menunggu; (5) tanpa penahan kirim ganda; (6) `bacaItemKiriman` dan `PETA_GALAT_ORDER` dari `index.ts` dipakai ulang lewat alat bantu (tidak ditulis ulang).
+
+**Terbukti** (konsol, akun owner dummy; bukti di chat, tidak disimpan):
+
+- Sesudah deploy, `menu_daftar` dan `pelanggan_luar_daftar` masih 200.
+- Sukses Diantar tanpa alamat dikirim: alamat disalin dari alamat tersimpan; total 35000 dari harga server (isian palsu `total: 1`, harga item palsu, `status: "Selesai"`, `pemutus` dan `dibuat_oleh` "palsu" **diabaikan**); status Disetujui; pemutus dan dibuat oleh = nama owner; alias alamat kosong; pilihan bawaan "Level pedas: Tidak pedas" tersalin; satu baris riwayat.
+- Alamat ditimpa, hari Besok, QRIS: order memakai alamat timpaan; alamat tersimpan pelanggan **tetap** (dibaca ulang lewat `pelanggan_luar_daftar`). Hari dihitung server (WIB).
+
+**Sisa tes (urutan yang disarankan):**
+
+1. **Enam kasus gagal alamat dan pelanggan** (perintah sudah diberikan di chat, hasil belum ditempel): pelanggan nonaktif 409; id tidak ada 404; Diantar tanpa alamat pada pelanggan tanpa alamat tersimpan 400 "Alamat antar wajib diisi."; alamat 9 dan 201 karakter 400; alamat spasi saja 400 "Alamat antar wajib diisi." Tidak satu pun boleh membuat order baru.
+2. Metode kosong atau salah (huruf kecil `tunai`) 400; hari atau jam salah 400; tipe salah 400; item kosong 400; menu habis 409 (set Habis lewat `menu_stok`, kembalikan sesudahnya); jumlah di atas batas (10) 409; Diambil dengan alamat dikirim: `isi_alamat` kosong (diabaikan).
+3. **Customer dan penjaga** memanggil `order_buat_wakil`: 403 "Aksi ini hanya untuk owner." (SEC-07, SEC-08, SEC-13).
+4. Order wakil tampil di **Antrean penjaga** (hanya hari ini dan besok, O22) dan di Semua Order owner; owner **menambah catatan** di order wakil lewat `catatan_tambah` (tes yang tertunda dari Handoff #19 sampai #21).
+5. Ulangi **cek SQL 5** (login dashboard, lalu logout): tiap baris `tanpa_akun` = true, `pemutus_sama_pembuat` = true, status Disetujui ke atas, metode terisi.
+6. Pastikan layar **Semua Order** owner masih normal sesudah deploy (hasilnya belum dilaporkan).
+7. **Commit dan push** (satu commit: `index.ts`, `order_wakil.ts`, tiga SQL, `docs/order.md`; pagar bagian 8), lalu ORD.12 bisa dicentang di sheet.
+
+**Masalah yang belum beres:**
+
+- Tes di atas belum selesai; belum commit dan push; ORD.12 dan baris SEC (SEC-07, SEC-08, SEC-13) belum dicentang.
+- **Data dummy baru** (tidak bisa dihapus, dibersihkan di LNC.01): order **#30** (Dummy Kembar, Diantar, Hari ini 10 Nov, Tunai, 35000) dan **#31** (Dummy Kembar, Diantar, Besok 11 Nov, QRIS, 12000, alamat timpaan). **Dummy Kembar kini punya alamat tersimpan** ("Jl. Dummy No. 1, Kota Dummy"); Handoff #23 mencatatnya tanpa alamat. Order #30 hari antarnya 10 Nov, jadi tes Antrean penjaga paling mudah hari ini; sesudahnya buat order baru "Hari ini".
+- **Keterangan pelanggan tidak tersalin ke order:** dua pelanggan bernama sama dengan keterangan beda tampil sama di order. Butir untuk ORD.13 atau `bonus.md`; menambah kolom di tabel `order` butuh penjelasan dampak dan "OK".
+- **Blok catatan `database.md`** (fungsi `order_buat_wakil`, kode galat baru `pelanggan_tidak_aktif`, `alamat_wajib` dan `alamat_tidak_valid` di aksi baru, `metode_tidak_valid`) **belum ditempel**; tanya ketua dulu (aturan 7).
+- Butir terbuka Handoff #11 sampai #23 yang tidak disebut di atas tidak berubah.
+
+**Data dummy untuk tes (semuanya dummy, id boleh dipakai di konsol):**
+
+- Pelanggan: Dummy Kembar `8e2ff764-4c13-4348-99af-16bfc93a7d30` (aktif, **beralamat**); Dummy Satu Ubah `b0d8076b-79ca-4b25-82e8-e1f486cb705a` (aktif, **tanpa alamat**); Dummy Dua `d7da24fd-525d-4aca-9692-acd4df303ce4` (nonaktif); Dummy Satu Ubah kedua `1ea99f38-88b0-49d5-8274-3973fefe9518` (nonaktif).
+- Menu: ayam karage `e013e969-c16d-4847-bbe9-74a864c578ed` (15000, grup Level pedas), Ayam Katsu `41b3fc91-4f9e-4314-bdc6-41432d14b2aa` (12000), es teh manis `35887069-209b-4663-99c6-b2cbb20dbd48` (5000), menu tanpa gambar `86c7addf-9548-4329-998f-84e61998ec6b` (1000).
+- Konsol: `window.KedaiAkun.panggilKedai(aksi, data)` mengembalikan `{ status, data }`. Bungkus perintah tes dalam fungsi `(async () => { ... })()` supaya `const` tidak bentrok saat dijalankan berulang.
+
+**Saran giliran berikutnya:**
+
+1. **Lanjutkan tes ORD.12** dari "Sisa tes" nomor 1 (sesi ketua atau PIC lain yang punya akun owner, penjaga, dan customer dummy). Lampirkan `AGENTS.md` + `order.md` (dengan Handoff #24) + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `order_wakil.ts` + `pelanggan_luar.ts` + `20261110_06_order_wakil_fungsi.sql` dan `_cek.sql`. Tes tidak mengubah kode kecuali ada temuan.
+2. Sesudah tes lulus: commit dan push, centang ORD.12, lalu **ORD.13** (wizard 5 langkah dan layar Kelola Pelanggan, kontrak di atas; **pesan ketua tetap**: mudah bagi owner yang tidak terbiasa aplikasi) dan **ORD.14** (sesi tes order).
+
 ---

@@ -37,6 +37,10 @@
 //         (SEC-07, SEC-14). Kodenya ada di BERKAS BARU `pelanggan_luar.ts` (folder yang sama), diimpor di bawah;
 //         kode lama tidak dipindah. Fungsi SQL: 20261109_05_pelanggan_luar_fungsi.sql (sudah dijalankan dan lulus
 //         cek SEBELUM berkas ini dideploy).
+// ORD.12 (giliran 2): ditambah `order_buat_wakil` (order wakil owner untuk pelanggan tanpa akun, O15). Hanya owner;
+//         customer dan penjaga ditolak 403 (SEC-07, SEC-08, SEC-13). Kodenya ada di BERKAS BARU `order_wakil.ts`
+//         (folder yang sama), diimpor di bawah; kode lama tidak dipindah. Fungsi SQL: 20261110_06_order_wakil_fungsi.sql
+//         (sudah dijalankan dan lulus cek SEBELUM berkas ini dideploy). Push ada di NTF, bukan di sini.
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -52,6 +56,8 @@ import { buatAksiOrderStatus } from "./order_status.ts";
 import { buatAksiCatatan } from "./catatan.ts";
 // ORD.11: aksi pelanggan_luar_daftar, pelanggan_luar_simpan, pelanggan_luar_nonaktif ada di berkas terpisah.
 import { buatAksiPelangganLuar } from "./pelanggan_luar.ts";
+// ORD.12: aksi order_buat_wakil ada di berkas terpisah.
+import { buatAksiOrderWakil } from "./order_wakil.ts";
 
 // ------------------------------------------------------------
 // Pengaturan dasar
@@ -1336,6 +1342,24 @@ const {
 });
 
 // ------------------------------------------------------------
+// ORD.12: sambungan ke berkas order_wakil.ts, dengan alat bantu yang sama seperti di atas, ditambah
+// `bacaItemKiriman` dan `PETA_GALAT_ORDER` (dipakai ulang dari aksi order_buat, tidak ditulis ulang).
+// ------------------------------------------------------------
+
+const { aksiOrderBuatWakil } = buatAksiOrderWakil({
+  // deno-lint-ignore no-explicit-any
+  klien: admin as any,
+  bacaPeran,
+  balas,
+  galat,
+  galatDariDb,
+  regexUuid: REGEX_UUID,
+  batasTeks: BATAS_TEKS,
+  bacaItemKiriman,
+  petaGalatOrder: PETA_GALAT_ORDER,
+});
+
+// ------------------------------------------------------------
 // Pintu masuk
 // ------------------------------------------------------------
 
@@ -1436,6 +1460,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
         return await aksiPelangganLuarSimpan(req, pengguna, isi);
       case "pelanggan_luar_nonaktif":
         return await aksiPelangganLuarNonaktif(req, pengguna, isi);
+      case "order_buat_wakil":
+        return await aksiOrderBuatWakil(req, pengguna, isi);
       default:
         return galat(req, 400, "Aksi tidak dikenal.");
     }
