@@ -265,6 +265,8 @@ textarea {
 
 .kartu__isi {
     margin: 0;
+    /* Teks panjang tanpa spasi (alasan tolak, catatan) turun baris, tidak keluar dari kartu */
+    overflow-wrap: anywhere;
 }
 
 /* Kartu order: nomor + lencana di baris atas, lalu pemesan, jam, tipe, total */
