@@ -673,4 +673,36 @@ Alasan keputusan di luar yang disebut di atas: alasan belum tercatat.
 2. Tes SEC-18 lewat layar (catatan berisi tag HTML harus tampil sebagai teks biasa) dan verifikasi `catatan_dibaca` lewat query baca-saja.
 3. Lanjut **ORD.11** ⚠️ (pelanggan tanpa akun: aksi daftar, simpan, nonaktifkan; item "Pelanggan" di Home sudah disiapkan, lihat blok 2026-11-07), lalu ORD.12, ORD.13, dan ORD.14. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + berkas `kedai` yang relevan + migration `20261108_order.sql`. Aksi baru `kedai` ditaruh di berkas terpisah (`AGENTS.md` bagian 12).
 
+### Handoff #21 | 2026-11-09 | [RAC]
+
+**Tugas:** lanjutan Handoff #20: tes ORD.10 di layar owner, customer, dan penjaga, plus perbaikan layar loncat ke atas. **ORD.10 sudah dicentang di sheet.** Tidak ada perubahan SQL, migration, tabel, `kedai`, atau `sw.js`. Handoff ini melengkapi "Masalah yang belum beres" dan "Saran giliran berikutnya" di Handoff #20; selebihnya #20 tetap berlaku.
+
+**Commit:** sudah di-push (pagar `AGENTS.md` bagian 8 lolos), hash: [isi].
+
+**Berkas:**
+
+- `public/orderowner.js`: `renderDetail()` kini membungkus `gambarDetail()` (isi lama, hanya ganti nama) dan mengembalikan posisi gulung. Sebelumnya tiap aksi owner di bagian bawah detail menarik layar ke atas.
+- `public/orderownercatatan.js`: kolom kosong memasang pesan galat langsung di kartu tanpa gambar ulang (`alat.render()` lama dikomentari).
+- `AGENTS.md` bagian 12: blok bahan belajar layar loncat (penyebab, perbaikan, pencegahan).
+
+**Keputusan baru:** tidak ada. Blok bahan belajar ditaruh di `AGENTS.md` (bukan `order.md`) atas permintaan penguji, supaya terbawa ke semua sesi.
+
+**Terbukti** (akun dummy, lewat layar, HP Android; bukti di chat, tidak disimpan):
+
+- Owner: kolom kosong menampilkan galat di dalam kartu tanpa layar loncat; Setuju, Tolak, Kembali ke daftar, tombol status maju, dan kirim catatan tidak loncat; form ada di order Disetujui, hilang di Diproses, muncul lagi saat dimundurkan.
+- Customer: form di order Disetujui, catatan terkirim.
+- Penjaga: catatan tampil baca-saja tanpa form (#25 dan #21).
+- SEC-18: catatan berisi tag HTML tampil sebagai teks biasa di tiga layar.
+- `catatan_dibaca`: query 9 (baca-saja), semua penunjuk sama dengan catatan terbaru, tidak ada yang lebih besar.
+
+**Masalah yang belum beres:**
+
+- Belum dites: 409 saat status berubah di layar, batas 10 catatan dan batas karakter lewat layar, Android penuh. Digabung ke ORD.14 bersama catatan di order wakil (ORD.12) dan dua sesi bersamaan (SEC-10); ulangi query cek 8 dan 9 sesudahnya. Baris SEC di sheet belum dicentang.
+- Layar penjaga (`orderpenjaga.js`) belum dicek untuk pola layar loncat yang sama.
+- Order #7 (hari antar Minggu 8 Nov) disetujui sesudah harinya lewat, jadi tidak tampil di Antrean penjaga (sesuai O22, bukan bug). Belum ada keputusan untuk kasus ini.
+- P2 kosmetik tidak berubah: label form owner turun dua baris di HP, catatan di layar penjaga masih rapat, `PESAN_TIDAK_PASTI` memakai kalimat umum.
+- Order dummy: #25 penuh 10 dari 10 catatan, #21 berisi catatan bertag HTML, #7 kini Disetujui dengan 4 catatan. Dibersihkan di LNC.01.
+- Push catatan dan tanda "Catatan baru" (NTF.06, NTF.07) belum ada.
+
+**Saran giliran berikutnya:** **ORD.11** ⚠️ (pelanggan tanpa akun: aksi daftar, simpan, nonaktifkan), lalu ORD.12 sampai ORD.14. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + berkas `kedai` yang relevan + migration `20261108_order.sql`. Aksi baru `kedai` ditaruh di berkas terpisah (`AGENTS.md` bagian 12).
 ---

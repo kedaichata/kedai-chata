@@ -200,3 +200,13 @@ Keputusan ketua (sesi ORD.07). Alasan: `supabase/functions/kedai/index.ts` sudah
 - Sesi kode `kedai` melampirkan `index.ts` dan berkas kelompok yang relevan. Sesuai aturan 3, berkas yang berubah dikirim **utuh**.
 
 ---
+
+### 2026-11-09: Layar loncat ke atas di detail order owner (bahan belajar)
+
+Kejadian di lapangan, ketemu saat tes ORD.10. Penempatan blok ini di `AGENTS.md` (bukan `docs/order.md`) atas permintaan penguji, supaya terbawa ke semua sesi.
+
+- **Apa yang rusak:** di layar owner (Order Masuk dan Semua Order), tiap aksi di bagian bawah detail order (Setuju, Tolak, tombol status, kirim catatan kosong) membuat layar loncat ke atas. Baru terasa setelah kartu Catatan dan form Tambah catatan membuat halaman detail panjang; tes sebelumnya lolos karena halamannya pendek.
+- **Penyebab:** `renderDetail()` di `orderowner.js` mengosongkan seluruh isi detail lalu menggambarnya ulang, dan dipanggil tiap aksi (sebelum permintaan berangkat dan sesudah detail dimuat ulang). Gulungan layar tertarik ke atas.
+- **Perbaikan:** `renderDetail()` kini membungkus `gambarDetail()` (isi lama, hanya ganti nama) dan mengembalikan posisi gulung (`orderowner.js`). Kolom kosong di form catatan owner kini memasang pesan galat di tempat, tanpa gambar ulang (`orderownercatatan.js`). Terbukti lewat layar dengan akun dummy: Setuju, Tolak, Kembali ke daftar, maju dan mundur status, kirim catatan.
+- **Pencegahan:** layar yang menggambar ulang dengan mengosongkan wadah wajib menjaga posisi gulung. Tes aksi di bagian bawah halaman yang panjang, bukan hanya di bagian atas.
+- **Belum dicek:** layar penjaga (`orderpenjaga.js`) untuk pola yang sama. Layar customer tidak mengalami (pengamatan penguji).
