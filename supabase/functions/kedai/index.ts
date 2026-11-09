@@ -24,6 +24,10 @@
 //         alasan opsional). Hanya owner; customer dan penjaga ditolak 403 (SEC-07, SEC-08). Kode galat
 //         baru dipetakan di PETA_GALAT_ORDER_KEPUTUSAN. Fungsi SQL: 20261108_05_order_setuju_tolak.sql
 //         (sudah dijalankan dan lulus cek SEBELUM berkas ini dideploy). Push ada di NTF, bukan di sini.
+// ORD.07 (giliran 2): ditambah `order_status` (penjaga dan owner), `order_metode_koreksi` dan `order_alih_hari`
+//         (owner saja). Kodenya ada di BERKAS BARU `order_status.ts` (folder yang sama), diimpor di bawah;
+//         kode lama di berkas ini tidak dipindah (keputusan ketua 9 Nov 2026). Fungsi SQL:
+//         20261109_01_order_status_alih_hari.sql (sudah dijalankan dan lulus cek SEBELUM berkas ini dideploy).
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -33,6 +37,8 @@
 // SUPABASE_URL diisi otomatis oleh platform.
 
 import { createClient } from "npm:@supabase/supabase-js@2.58.0";
+// ORD.07: aksi order_status, order_metode_koreksi, order_alih_hari ada di berkas terpisah.
+import { buatAksiOrderStatus } from "./order_status.ts";
 
 // ------------------------------------------------------------
 // Pengaturan dasar
@@ -1265,6 +1271,24 @@ async function aksiOrderTolak(
 }
 
 // ------------------------------------------------------------
+// ORD.07: sambungan ke berkas order_status.ts. Alat bantu di atas diberikan lewat parameter
+// (berkas itu tidak mengimpor index.ts). `admin` pasti ada bila sampai ke aksi, karena
+// verifikasiToken menolak (401) lebih dulu bila `admin` kosong.
+// ------------------------------------------------------------
+
+const { aksiOrderStatus, aksiOrderMetodeKoreksi, aksiOrderAlihHari } =
+  buatAksiOrderStatus({
+    // deno-lint-ignore no-explicit-any
+    klien: admin as any,
+    bacaPeran,
+    balas,
+    galat,
+    galatDariDb,
+    regexUuid: REGEX_UUID,
+    batasTeks: BATAS_TEKS,
+  });
+
+// ------------------------------------------------------------
 // Pintu masuk
 // ------------------------------------------------------------
 
@@ -1349,6 +1373,12 @@ Deno.serve(async (req: Request): Promise<Response> => {
         return await aksiOrderSetuju(req, pengguna, isi);
       case "order_tolak":
         return await aksiOrderTolak(req, pengguna, isi);
+      case "order_status":
+        return await aksiOrderStatus(req, pengguna, isi);
+      case "order_metode_koreksi":
+        return await aksiOrderMetodeKoreksi(req, pengguna, isi);
+      case "order_alih_hari":
+        return await aksiOrderAlihHari(req, pengguna, isi);
       default:
         return galat(req, 400, "Aksi tidak dikenal.");
     }

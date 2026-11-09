@@ -189,4 +189,14 @@ Tes dilakukan langsung di production dengan **akun, nomor WA, dan alamat dummy**
 
 ---
 
-_(belum ada blok)_
+### 2026-11-09: Kode baru `kedai` di berkas terpisah
+
+Keputusan ketua (sesi ORD.07). Alasan: `supabase/functions/kedai/index.ts` sudah sangat panjang (lebih dari 1300 baris), dan tiap sesi kode harus menempel berkasnya utuh.
+
+- **Mulai ORD.07, aksi baru `kedai` ditaruh di berkas baru** di `supabase/functions/kedai/` (satu berkas per fitur atau kelompok aksi), bukan ditambahkan ke `index.ts`. `index.ts` hanya menerima satu import, sambungan alat bantu, dan `case` baru.
+- **Alat bantu diberikan lewat parameter**, bukan diimpor dari `index.ts` (yang langsung menjalankan server): klien database, `bacaPeran`, `balas`, `galat`, `galatDariDb`, `REGEX_UUID`, `BATAS_TEKS`. Contoh yang sudah jalan: `buatAksiOrderStatus(alat)` di `order_status.ts`.
+- **Kode lama tidak dipindah** dan tidak ada refactor yang direncanakan. Bila nanti diputuskan memecah kode lama, itu butuh penjelasan dampak dan "OK" ketua (aturan 2 dan 5).
+- `kedai` tetap **satu fungsi** (bagian 3: dua fungsi saja). Deploy tetap satu perintah (bagian 8) dan membawa semua berkas di folder; terbukti jalan pada 9 Nov 2026. Berkas baru ikut masuk commit yang sama dengan `index.ts` dan fungsi SQL-nya.
+- Sesi kode `kedai` melampirkan `index.ts` dan berkas kelompok yang relevan. Sesuai aturan 3, berkas yang berubah dikirim **utuh**.
+
+---

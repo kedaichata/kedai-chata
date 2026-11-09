@@ -399,3 +399,57 @@ Sumber: keputusan ketua lewat PIC, 8 Nov 2026. Push: lihat juga blok "Push untuk
 
 1. **ORD.07** ⚠️ (`order_status`, `order_metode_koreksi`, `order_alih_hari`), dikerjakan di sesi ketua: butuh penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `20261108_05_order_setuju_tolak.sql` + `20261108_04_order_batal_pesan.sql`. Format keterangan koreksi metode sama dengan "Metode bayar: <metode>" (Handoff #9).
 2. Setelah ORD.07: ORD.15 (tombol aksi owner di layar) dan ORD.08 (layar penjaga). Berkas JS baru wajib didaftarkan di `sw.js` (butuh "OK" ketua) dan naik dalam satu commit dengan berkas barunya.
+
+# Siap tempel (2 blok)
+
+Blok 1 ditempel di **paling bawah `docs/order.md` bagian 9**. Blok 2 ditempel di **`AGENTS.md` bagian 12**, di bawah garis (teks "(belum ada blok)" dibiarkan, append-only).
+
+---
+
+## BLOK 1: tempel di `docs/order.md` bagian 9
+
+### Handoff #12 | 2026-11-09 | KETUA
+
+**Tugas:** ORD.07 ⚠️ kode selesai dan **sudah ter-deploy di production**. **Tes belum dijalankan** dan **belum commit atau push**, jadi ORD.07 belum boleh dicentang di sheet.
+
+**Berkas:**
+
+- `supabase/migrations/20261109_01_order_status_alih_hari.sql` (+ `_batal.sql`, dan `supabase/templates/20261109_01_order_status_alih_hari_cek.sql`). Sudah dijalankan di SQL Editor dan lulus cek: 3 fungsi ada, `SECURITY DEFINER`, `search_path` kosong, `anon` dan `authenticated` tanpa `EXECUTE`, pagar tabel tidak berubah. Tidak ada tabel atau data yang berubah.
+- `supabase/functions/kedai/order_status.ts` (baru) dan `index.ts` (hanya tambahan: catatan kepala, 1 import, 1 blok sambungan, 3 `case`; **0 baris lama dihapus**). Deploy `kedai --use-api` sukses; ini deploy multi-berkas pertama dan terbukti jalan. Token CLI sudah dibersihkan.
+
+**Keputusan baru (ketua):**
+
+- **"Hanya Besok" untuk alih hari** dihitung dari tanggal server saat aksi (menutup butir "Belum diputuskan" di blok 8 Nov). Order yang hari targetnya sudah Besok atau lebih ditolak (`sudah_besok`); hari ini atau yang sudah lewat boleh dialihkan ke Besok.
+- **Pilihan C:** alasan alih hari **hanya masuk `riwayat_status.keterangan`**, tidak masuk `alasan_tolak` (pagar `order_alasan_cek` hanya mengizinkan Ditolak dan Dibatalkan). Ini menunda bagian "alasan tampil ke customer" di blok 8 Nov; jadi butir baru sheet.
+- **Kode baru `kedai` di berkas terpisah** mulai ORD.07; kode lama tidak dipindah dan tidak ada refactor yang direncanakan. Alat bantu diberikan lewat parameter `buatAksiOrderStatus(alat)`. Alasan ketua: `index.ts` sudah sangat panjang. Aman untuk free tier (hitungan panggilan dan batas ukuran tidak terpengaruh).
+- **Lima pilihan penulis yang disetujui ketua:** (1) alasan alih hari maks 100 karakter, format keterangan "Alih hari 2026-11-09 ke 2026-11-10[, jam 11:00 ke 12:30][. Alasan: ...]" (karena `keterangan` maks 200); (2) koreksi metode berketerangan "Metode bayar: <baru> (sebelumnya <lama>)", metode sama ditolak (`metode_sama`); (3) alih hari ditolak bila hari target sudah Besok atau lebih; (4) dari Diantar/Siap, Disetujui tidak bisa dicapai lewat `order_status` (hanya lewat alih hari), **sedangkan mundur Diproses ke Disetujui tetap boleh (O10)**; butir ini sempat tertulis terlalu luas dan yang berlaku mengikuti O10; (5) `order_status` menerima `status_dilihat` hanya sebagai pembanding (beda dengan server: 409 `status_berubah`), status tujuan selalu ditentukan server.
+- **Pilihan penulis lain** (alasan belum tercatat): mundur berketerangan "Mundur satu langkah"; penjaga yang memanggil `order_status` pada order Menunggu, Ditolak, atau Dibatalkan dibalas `order_tidak_ditemukan` (O11); koreksi metode hanya untuk Disetujui sampai Diantar/Siap (Dibatalkan dikecualikan, supaya metode dan pemutusnya tetap jadi bahan pengembalian uang lewat WA); alih hari boleh untuk order wakil owner; fungsi tidak mengembalikan id pemesan.
+
+**Kontrak untuk layar (ORD.15 dan ORD.08):** balasan `{ status, data }` dari `panggilKedai`; sukses `data = { ok: true, order: {...} }`, galat `data = { ok: false, pesan }` (tampilkan `pesan` lewat `textContent`; 409 sebaiknya menyegarkan daftar atau detail).
+
+- `order_status` (penjaga dan owner), isian `{ id, arah: "maju" | "mundur", status_dilihat }` (status yang sedang tampil di layar). Sukses: `order = { id, nomor, status, status_asal, arah, oleh_peran }`. Galat: 400 (data rusak), 403, 404, 409 (`status_berubah`, belum disetujui, sudah ditolak, dibatalkan, atau selesai, tidak bisa mundur).
+- `order_metode_koreksi` (owner), isian `{ id, metode }`. Sukses: `order = { id, nomor, status, metode_bayar, metode_sebelumnya }`.
+- `order_alih_hari` (owner), isian `{ id, jam?, alasan? }` (jam `JJ:MM`, kosong = jam lama; alasan maks 100). Sukses: `order = { id, nomor, status: "Disetujui", status_asal, hari_lama, hari_baru, jam_permintaan, oleh_peran }`. Hari tujuan tidak pernah dikirim aplikasi.
+
+**Masalah yang belum beres:**
+
+- **Tes ORD.07 belum jalan** (lihat saran di bawah). Sampai ada bukti, SEC-07, SEC-08, SEC-10, SEC-11, SEC-15 (bagian ORD.07), dan SEC-19 (hari dari aplikasi diabaikan) belum boleh dicentang.
+- **Belum commit dan push.** Kondisi terakhir `git status`: `index.ts` modified; `order_status.ts` dan tiga berkas SQL untracked; tidak ada berkas lain.
+- Alasan alih hari belum tampil ke customer: **butir baru sheet** "Tampilkan alasan alih hari ke customer" (kerjakan bersama ORD.15; butuh perubahan tabel atau fungsi, jadi ⚠️).
+- Push belum ada untuk status, koreksi, dan alih hari (NTF.04, NTF.06, NTF.08 menyesuaikan).
+- Belum dikonfirmasi: logout dashboard Supabase dan GitHub di Mac bersama setelah deploy.
+- Butir terbuka dari Handoff #11 yang tidak berubah: tes ORD.06 di Android, pembeda "dibatalkan customer atau owner" di layar customer, dan lainnya.
+
+**Saran giliran berikutnya:**
+
+1. **Tes ORD.07** (sesi tes; lampirkan `AGENTS.md` + `order.md` + `security.md` + berkas cek). Lewat konsol `window.KedaiAkun.panggilKedai(aksi, data)` dengan akun dummy (owner, penjaga, customer; tambah customer kedua bila perlu). Siapkan **beberapa order dummy**, karena order Selesai tidak bisa dikembalikan. Kasus:
+   - Jalur maju per tipe (Diantar, Diambil: Siap diambil, Makan di warung: Siap disajikan) dan mundur satu langkah oleh penjaga dan owner; riwayat tercatat.
+   - Ditolak: loncat, `status_dilihat` basi atau dobel pencet (409), mundur dari Selesai, mundur dari Disetujui, `arah` salah.
+   - Hak: customer memanggil ketiga aksi (403); penjaga memanggil koreksi metode dan alih hari (403); penjaga `order_status` pada order Dibatalkan (404).
+   - Koreksi metode oleh owner (keterangan riwayat benar); metode sama atau asing (400); order Selesai atau Dibatalkan ditolak.
+   - Alih hari dari Disetujui, Diproses, Diantar/Siap: hari target jadi Besok dari server, status Disetujui, jam berubah atau tidak, alasan 100 lolos dan 101 ditolak; order yang sudah Besok (409); dari Selesai (409); isian `hari` palsu diabaikan.
+   - Bukti: balasan server dan query baca-saja `riwayat_status` (bagian 4 berkas cek). Bukti tidak disimpan.
+2. Setelah lulus: git dengan pagar `AGENTS.md` bagian 8 (folder aktif, `git remote -v`, email commit, semuanya milik ketua), **satu commit** untuk `index.ts`, `order_status.ts`, dan tiga berkas SQL. Lalu centang ORD.07 di sheet.
+3. Berikutnya ORD.15 (tombol aksi owner di layar) dan ORD.08 (layar penjaga). Berkas JS baru wajib didaftarkan di `sw.js` (butuh "OK" ketua) dan naik satu commit dengan berkasnya.
+
+---
