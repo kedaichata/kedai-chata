@@ -1481,3 +1481,40 @@ body.sheet-terbuka {
     min-height: 40px;
     font-size: 0.9rem;
 }
+
+/* ============================================================
+   Badge tipe order: Diantar, Diambil, Makan di warung.
+   Warna sama di layar customer, owner, dan penjaga. Sengaja berbeda dari warna status
+   (lencana, pil pucat) dan warna tab Antrean: badge ini kotak bulat, warna pekat, tulisan putih.
+   Tanpa keterangan warna (tulisan di dalam badge sudah cukup). Ganti warna di variabel ini.
+   ============================================================ */
+:root {
+    --tipe-diantar: #6a1b9a; /* ungu */
+    --tipe-diambil: #ad1457; /* pink magenta */
+    --tipe-warung: #00796b; /* tosca */
+    --tipe-lain: #5d5750; /* tipe tak dikenal */
+}
+
+.badge-tipe {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 8px;
+    background: var(--tipe-lain);
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+.badge-tipe--diantar {
+    background: var(--tipe-diantar);
+}
+
+.badge-tipe--diambil {
+    background: var(--tipe-diambil);
+}
+
+.badge-tipe--warung {
+    background: var(--tipe-warung);
+}

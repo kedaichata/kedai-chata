@@ -484,4 +484,70 @@ Blok 1 ditempel di **paling bawah `docs/order.md` bagian 9**. Blok 2 ditempel di
 1. **ORD.15** ⚠️ (tombol aksi owner di layar) memakai kontrak balasan `{ status, data }` di Handoff #12. Lalu **ORD.08** (layar penjaga). Berkas JS baru wajib didaftarkan di `sw.js` (butuh "OK" ketua) dan naik dalam satu commit dengan berkas barunya.
 2. Setelahnya ORD.09 (catatan berlapis), lalu ORD.14 untuk sisa tes yang digeser di atas.
 
+# Siap tempel: paling bawah `docs/order.md` bagian 9
+
+### Handoff #14 | 2026-11-09 | RAC
+
+**Tugas:** ORD.08 (layar penjaga Antrean) **selesai**: terpasang di production, tes lulus (termasuk di HP Android ketua dan mode offline), sudah dicentang di sheet. Ditambah permintaan ketua setelah tes: **badge tipe order berwarna** di layar customer, owner, dan penjaga. Tidak ada perubahan SQL, migration, atau `kedai`.
+
+**Commit:**
+
+- Layar Antrean: `21cdd81`, sudah di-push (pagar `AGENTS.md` bagian 8 lolos: folder, `git remote -v`, email noreply, semuanya milik ketua).
+- Badge tipe: [isi hash commit setelah di-push]. Bila belum di-commit, tulis "belum commit" dan jangan dianggap terpasang.
+
+**Berkas:**
+
+- ORD.08 (`21cdd81`): `public/orderpenjaga.js` (baru; `window.KedaiOrderPenjaga` dengan `tampil` dan `reset`), `public/index.html` (hanya tambahan: panel `panel-antrean` dan satu tag script), `public/kerangka.js` (tab Antrean penjaga ke panel `antrean`, hook `tampil` dan `reset`; baris lama jadi komentar), `public/style.css` (blok ORD.08 di akhir; warna tab di variabel `--antrean-*`), `public/sw.js` (`chata-v14`, `orderpenjaga.js` masuk daftar cache; baris lama jadi komentar).
+- Badge tipe: `public/orderpenjaga.js`, `public/orderowner.js`, `public/pesanan.js` (helper `badgeTipe` dan `barisTipe`; dua baris tulisan tipe lama di tiap berkas dijadikan komentar), dan `public/style.css` (blok badge di akhir; warna di variabel `--tipe-*`). `sw.js` tidak berubah (tanpa berkas baru).
+
+**Perilaku layar Antrean:**
+
+- Empat tab: **Baru** (Disetujui), **Diproses**, **Siap** (Diantar, Siap diambil, Siap disajikan), **Selesai**, masing-masing dengan angka jumlah order. Satu panggilan `order_daftar` dengan isian `{}` (server menyaring menurut peran, O11 dan O22), lalu dibagi ke tab di layar; pindah tab tanpa panggilan server. Di dalam tab, order dikelompokkan per tanggal antar, urutan dari server.
+- **Tombol langkah berikutnya langsung di kartu, tanpa dialog konfirmasi** (keputusan ketua; salah pencet ditutup mundur satu langkah, O10). Label ikut tipe: `Mulai proses`; dari Diproses: `Antar sekarang` (Diantar), `Siap diambil` (Diambil), `Siap disajikan` (Makan di warung); dari Siap: `Tandai selesai`. Label hanya tulisan; status tujuan ditentukan server.
+- **Mundur satu langkah** hanya di detail, tombol kecil: `Kembalikan ke Baru` (dari Diproses) dan `Kembalikan ke Diproses` (dari Siap). Tidak ada di tab Baru dan Selesai (server menolaknya, Handoff #13).
+- Aplikasi hanya mengirim `order_status` `{ id, arah, status_dilihat }`. Setelah sukses, daftar atau detail dimuat ulang dari server dan muncul pesan, misalnya "Order #15 pindah ke Diproses." Galat 409 dan 404 menampilkan pesan server lalu memuat ulang. Tombol dikunci sebelum permintaan berangkat.
+- Detail: nama pemesan, nomor WA (teks), tipe, jam, alamat (hanya Diantar), isi order dengan pilihan menu, Total, dan catatan baca-saja. Tanpa tombol Chat WA (khusus owner, O13).
+- Keluar mengosongkan daftar, detail, angka tab, dan mengembalikan layar ke tab Baru.
+
+**Perilaku badge tipe:** tulisan tipe kecil di kartu daftar dan detail diganti badge (kotak bulat, warna pekat, tulisan putih), **warna sama di tiga peran**: Diantar ungu, Diambil pink magenta, Makan di warung tosca; tipe tak dikenal abu. Tanpa keterangan warna. Sengaja berbeda dari lencana status (pil pucat) dan warna tab Antrean. Layar Pesan customer (`pesan.js`) tidak diubah.
+
+**Keputusan baru (ketua, dibicarakan lewat PIC):**
+
+- Nama tab **Baru, Diproses, Siap, Selesai**; nama tab berwarna tegas (biru tua, oranye tua, hijau tua, abu tua) dan isi di bawahnya warna lembut senada.
+- Tombol langkah berikutnya **tanpa dialog konfirmasi**.
+- Perubahan `sw.js` (v14 dan daftar cache) disetujui ketua.
+- **Badge tipe** berwarna di tiga layar, dengan warna yang konsisten antar peran, tanpa keterangan warna (alasan: tipe yang hanya dibedakan font kurang jelas).
+- Geser kartu sebagai pengganti tombol sempat dibahas dan **tidak dipakai** (menyulitkan penjaga yang kurang familiar; bila suatu saat dibuat, sebagai tambahan, bukan pengganti tombol).
+
+**Pilihan penulis** (alasan belum tercatat):
+
+- Judul pemisah di tiap tab memakai **tanggal dari server** ("Senin, 9 Nov 2026"), bukan "Hari ini/Besok". Label itu butuh tahu hari ini menurut server; jam HP tidak dipakai (`AGENTS.md` bagian 7). Bila ingin label "Hari ini/Besok", butuh field dari server atau keputusan ketua.
+- Kartu daftar penjaga tidak menampilkan harga. Detail menampilkan jumlah, pilihan, dan Total tanpa harga satuan.
+- Warna badge tipe (ungu, pink magenta, tosca) usulan penulis; ketua boleh mengganti lewat variabel `--tipe-*`.
+
+**Terbukti** (akun dummy; bukti di chat, tidak disimpan):
+
+- Daftar penjaga terisi dengan isian `{}`, termasuk order Selesai. Order Menunggu tidak terlihat penjaga sampai owner menekan Setuju (O11).
+- Jalur maju untuk tiga tipe: Diantar sampai Selesai, Diambil sampai Siap, Makan di warung sampai Selesai; label tombol sesuai tipe.
+- Mundur Siap ke Diproses dan Diproses ke Baru, kartu pindah tab. Tombol mundur tidak ada di Baru dan Selesai.
+- Angka tab dan pesan sukses mengikuti tiap perubahan. Detail menampilkan pilihan menu, Total, catatan baca-saja, dan alamat hanya untuk Diantar.
+- Keluar lalu masuk lagi: layar kembali ke tab Baru dengan data hasil muat ulang dari server.
+- Tes ketua di HP Android: semua jalan, termasuk mode offline.
+
+**Masalah yang belum beres:**
+
+- **Badge tipe belum dites tampilannya** di tiga layar (penjaga, owner, customer); cek satu order per tipe dan warna badge sama di ketiganya.
+- **Owner membatalkan order lalu hilang dari Antrean** setelah Segarkan: belum teruji, karena tombol batal owner baru ada di ORD.15.
+- **Dua penjaga menekan tombol yang sama bersamaan** (SEC-10, order_status) dan penjaga menekan tombol pada order yang sudah Dibatalkan: dikerjakan di ORD.14. Baris SEC di sheet belum dicentang.
+- Push untuk status, koreksi, batal, dan alih hari belum ada (NTF.04, NTF.06, NTF.08).
+- `orderpenjaga.js` sekitar 880 baris, melewati patokan ~500 baris (bagian pembantu yang sama dengan `orderowner.js` bisa dipisah bila nanti diputuskan; butuh penjelasan dampak dan "OK" ketua).
+- Order dummy tersisa: **#25** (Diambil, Disetujui, hari ini) dan **#21** (Diantar, Disetujui, Selasa 10 Nov) dipakai ulang di ORD.14; **#24** (Diambil, Menunggu); #15 dan #26 sudah Selesai. Order uji tidak bisa dihapus; dibersihkan di LNC.01.
+- Butir terbuka dari Handoff #11, #12, dan #13 tidak berubah (pembeda "dibatalkan customer atau owner" di layar customer, ORD.16 alasan alih hari ke customer, logout dashboard Supabase dan GitHub di Mac bersama, dan lainnya).
+
+**Saran giliran berikutnya:**
+
+1. **ORD.15** ⚠️ (tombol aksi owner di layar: Batalkan, Alihkan hari, koreksi metode bayar, tombol status dan mundur), memakai kontrak balasan `{ status, data }` di Handoff #12; kerjakan bersama **ORD.16** (alasan alih hari ke customer, perlu perubahan tabel atau fungsi, jadi butuh "OK" ketua). Lampirkan `AGENTS.md` + `order.md` + `database.md` + `security.md` + `supabase/functions/kedai/index.ts` + `order_status.ts` + `orderowner.js` + `index.html` + `kerangka.js` + `style.css`. Berkas JS baru wajib didaftarkan di `sw.js` dan naik satu commit dengan berkasnya.
+2. Setelah ORD.15: tes owner membatalkan order dan hilang dari Antrean penjaga (sisa ORD.08).
+3. Lalu ORD.09 (catatan berlapis), kemudian ORD.14 untuk sisa tes (SEC-10, SEC-19, dan lainnya).
+
 ---

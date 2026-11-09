@@ -171,6 +171,26 @@
     return REGEX_JAM.test(jam) ? jam.replace(":", ".") : "";
   }
 
+  // Badge tipe order: warna sama di layar customer, owner, dan penjaga (warna di style.css, kelas badge-tipe).
+  // Tulisan tipe tetap ada di dalam badge; tanpa keterangan warna. Tipe tak dikenal: badge netral.
+  var KELAS_TIPE = {
+    Diantar: "badge-tipe--diantar",
+    Diambil: "badge-tipe--diambil",
+    "Makan di warung": "badge-tipe--warung",
+  };
+
+  function badgeTipe(tipe) {
+    var kelas = KELAS_TIPE[tipe] || "";
+    return buat("span", "badge-tipe " + kelas, teksAtauKosong(tipe));
+  }
+
+  // Satu baris berisi badge tipe (menggantikan tulisan tipe kecil).
+  function barisTipe(tipe) {
+    var p = buat("p", "kartu-order__baris");
+    p.appendChild(badgeTipe(tipe));
+    return p;
+  }
+
   // Kalimat jam dan hari, misalnya "Minta diantar jam 11.00, Senin, 9 Nov 2026".
   function kalimatJam(tipe, jam, hari) {
     var j = jamIndo(jam);
@@ -288,7 +308,8 @@
     }
     var jam = kalimatJam(o.tipe, o.jam_permintaan, o.hari_target);
     if (jam) kartu.appendChild(buat("p", "kartu-order__baris", jam));
-    if (o.tipe) kartu.appendChild(buat("p", "isian__bantuan", o.tipe));
+    // Badge tipe: if (o.tipe) kartu.appendChild(buat("p", "isian__bantuan", o.tipe));
+    if (o.tipe) kartu.appendChild(barisTipe(o.tipe));
 
     if (o.total !== null) {
       var bawah = buat("div", "kartu-order__bawah");
@@ -393,7 +414,8 @@
     atas.appendChild(lencanaStatus(o.status));
     kartu.appendChild(atas);
 
-    if (o.tipe) kartu.appendChild(buat("p", "kartu-order__baris", o.tipe));
+    // Badge tipe: if (o.tipe) kartu.appendChild(buat("p", "kartu-order__baris", o.tipe));
+    if (o.tipe) kartu.appendChild(barisTipe(o.tipe));
     var jam = kalimatJam(o.tipe, o.jam_permintaan, o.hari_target);
     if (jam) kartu.appendChild(buat("p", "kartu-order__baris", jam));
     if (o.tipe === "Diantar" && (o.alias_alamat || o.isi_alamat)) {
