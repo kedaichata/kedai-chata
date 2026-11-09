@@ -20,6 +20,9 @@
 // - Catatan berlapis belum ditampilkan di sini (ORD.10).
 // - ORD.16: alasan alih hari (isian `alasan_alih` dari order_detail) tampil sebagai kartu sendiri bila ada.
 //   Server hanya mengirimnya ke customer pemilik, selama order masih berjalan (bukan Selesai, Ditolak, Dibatalkan).
+// - ORD.17: pembeda pembatal (isian `dibatalkan_oleh` dan `dibatalkan_oleh_nama` dari order_detail) tampil sebagai
+//   kartu pada order Dibatalkan, walau alasannya kosong. Server hanya mengirimnya ke customer pemilik order itu.
+//   Ini mengubah catatan di atas "Customer tidak bisa melihat siapa yang membatalkan" (keputusan ketua 9 Nov 2026).
 // - Data diambil saat tab dibuka dan lewat tombol Segarkan. Tanpa polling (O19).
 // - Pesan galat dari server ditampilkan apa adanya lewat textContent. Galat mentah tidak ditampilkan.
 // - Semua teks dipasang lewat textContent, bukan innerHTML.
@@ -279,6 +282,9 @@
       alasan: teksAtauKosong(o.alasan_tolak),
       // ORD.16: alasan alih hari terakhir (kosong bila tidak ada).
       alasanAlih: teksAtauKosong(o.alasan_alih),
+      // ORD.17: pembatal ('customer' atau 'owner') dan nama owner (kosong bila pembatalnya customer).
+      dibatalkanOleh: teksAtauKosong(o.dibatalkan_oleh),
+      dibatalkanOlehNama: teksAtauKosong(o.dibatalkan_oleh_nama),
       item: item,
     };
   }
@@ -431,6 +437,23 @@
       }
     }
     wadah.appendChild(kartu);
+
+    // ORD.17: siapa yang membatalkan (hanya order Dibatalkan; tampil walau alasannya kosong).
+    if (o.status === "Dibatalkan" && o.dibatalkanOleh) {
+      var teksPembatal = "";
+      if (o.dibatalkanOleh === "customer") {
+        teksPembatal = "Dibatalkan oleh customer";
+      } else if (o.dibatalkanOleh === "owner") {
+        teksPembatal =
+          "Dibatalkan oleh pihak ChATA" +
+          (o.dibatalkanOlehNama ? " (" + o.dibatalkanOlehNama + ")" : "");
+      }
+      if (teksPembatal) {
+        var kartuPembatal = buat("div", "kartu");
+        kartuPembatal.appendChild(buat("h2", "kartu__judul", teksPembatal));
+        wadah.appendChild(kartuPembatal);
+      }
+    }
 
     // Alasan tolak atau batal (hanya bila ada).
     if (o.alasan && (o.status === "Ditolak" || o.status === "Dibatalkan")) {
