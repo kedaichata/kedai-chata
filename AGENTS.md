@@ -210,3 +210,12 @@ Kejadian di lapangan, ketemu saat tes ORD.10. Penempatan blok ini di `AGENTS.md`
 - **Perbaikan:** `renderDetail()` kini membungkus `gambarDetail()` (isi lama, hanya ganti nama) dan mengembalikan posisi gulung (`orderowner.js`). Kolom kosong di form catatan owner kini memasang pesan galat di tempat, tanpa gambar ulang (`orderownercatatan.js`). Terbukti lewat layar dengan akun dummy: Setuju, Tolak, Kembali ke daftar, maju dan mundur status, kirim catatan.
 - **Pencegahan:** layar yang menggambar ulang dengan mengosongkan wadah wajib menjaga posisi gulung. Tes aksi di bagian bawah halaman yang panjang, bukan hanya di bagian atas.
 - **Belum dicek:** layar penjaga (`orderpenjaga.js`) untuk pola yang sama. Layar customer tidak mengalami (pengamatan penguji).
+
+### 2026-11-10: Dokumen `gim.md` (prefix GIM) dan pengecualian CSS game
+
+Keputusan ketua (diwakili adik ketua di sesi strategi). Sumber: docs/gim.md.
+
+- **Peta Dokumentasi (bagian 5):** tambah baris `docs/gim.md`, isi: "Menu hamburger dan game Arithmetics (murni di HP, skor di localStorage)", prefix sheet **GIM**.
+- **Bagian 3 dan 6, pengecualian CSS:** gaya hamburger dan game ada di **`public/game.css`** (kelas berawalan `gim-`), dimuat setelah `style.css`. Pengecualian khusus game dari aturan "semua gaya di satu `style.css`"; layar lain tetap di `style.css`. `game.css` dan berkas JS game wajib didaftarkan di cache `sw.js` (aturan bagian 7; butuh "OK").
+- **Game tidak memanggil server** dan tidak memakai kode leaderboard Firebase dari proyek lama. Data tersimpan hanya level tertinggi di `localStorage` (kunci `chata_game_arithmetics_best`).
+- **Pengecualian "angka di database" (bagian 1):** angka timer game tetap di kode game karena game tanpa server.

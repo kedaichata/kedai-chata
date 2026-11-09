@@ -259,3 +259,21 @@ Dikerjakan **setelah `fondasi.md` dan sebelum `akun.md`**, karena layar pertama 
 - **Lencana peran** (`.lencana-peran`: Owner, Penjaga, Customer) berpinggir marun, bukan warna lencana status (DS11).
 - **Isi Home dari atas:** kartu sampul, sapaan "Halo, {nama}, selamat datang di Kedai ChATA" dengan lencana peran, tombol Bantuan, bagian Pelanggan (owner, "Segera"), daftar (Ringkasan order 7 hari untuk owner "Segera", Pengaturan akun, Buku alamat untuk customer), lalu Keluar di paling bawah.
 - **Bagian 8:** pintu Ringkasan order 7 hari adalah tombol di Home, bukan menu Lainnya (isi layar tetap di `bonus.md` B31).
+
+# Blok susulan siap tempel (hasil sesi strategi GIM, 10 Nov 2026)
+
+Tiap blok ditempel di bagian **Catatan Susulan** di akhir berkas tujuannya (append-only). Perubahan `AGENTS.md` dan `desain.md` butuh persetujuan ketua. Yang paling akhir menang.
+
+---
+
+### 2026-11-10: Menu hamburger untuk game, dan CSS game terpisah
+
+**Berkas tujuan:** `docs/desain.md` bagian 9. Menimpa sebagian DS10, DS7, dan baris "Menu tersembunyi (hamburger)..." di bagian 6. Sumber: `docs/gim.md` (GM4 sampai GM7, GM12). Yang paling akhir menang.
+
+- **DS10 sebagian ditimpa:** bilah atas semua tab utama kini punya **tombol hamburger di kiri judul**, hanya berisi game (satu item "Arithmetics"). Navigasi kerja tetap di bilah bawah, tidak ada yang dipindah ke hamburger. Hamburger tidak muncul di sub-layar (Pengaturan akun, Buku alamat, Kelola grup pilihan, Masuk, Daftar).
+- **Bagian 6 (aturan yang sering terlanggar):** larangan "menu hamburger berisi banyak pilihan untuk customer" tetap berlaku untuk navigasi kerja. Hamburger game isinya satu item dan bukan jalan menuju fitur order, jadi tidak melanggar.
+- **DS7 pengecualian:** gaya hamburger dan game ada di **`public/game.css`** (kelas berawalan `gim-`), dimuat setelah `style.css`. Semua gaya lain tetap di `style.css`. Alasan rinci dari ketua belum tercatat (kekhawatiran gaya game menempel ke CSS yang ada).
+
+---
+
+---

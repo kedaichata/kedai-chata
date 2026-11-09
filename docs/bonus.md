@@ -107,4 +107,11 @@ Hasil review md 4 Nov 2026. B27 dan B29 sudah diputuskan (tidak di versi 1); B28
 
 ---
 
-_(belum ada blok)_
+### 2026-11-10: Kandidat game tambahan
+
+**Berkas tujuan:** `docs/bonus.md`. Sumber: `docs/gim.md` (GM2, bagian 8).
+
+- **Catch the Vibes** (game dari PWA lama): kandidat game kedua. Versi 1 hanya Arithmetics.
+- Game ringan lain yang cocok untuk ibu-ibu (misalnya tebak pasangan kartu atau teka-teki kata) boleh ditambah di sini; belum dipilih.
+- Bila game kedua dikerjakan: menu hamburger berubah dari satu item menjadi kelompok Game (lihat GM6), dan gayanya tetap di `game.css`.
+- Skor bersama atau leaderboard: tidak dikerjakan; butuh database dan keputusan terpisah yang berisiko (GM8).
