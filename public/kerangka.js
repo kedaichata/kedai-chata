@@ -33,6 +33,10 @@
 // ORD.08: tab Antrean (penjaga) memakai panel "antrean" (orderpenjaga.js): window.KedaiOrderPenjaga
 // .tampil() saat tab dibuka dan lewat Segarkan, .reset() saat Keluar.
 //
+// ORD.13: tab Buat Order (owner) memakai panel "buatorder" (orderwakil.js: window.KedaiOrderWakil .tampil()/.reset()).
+// Item Pelanggan di Home membuka tab tersembunyi "pelanggan" (panel "pelanggan", pelangganluar.js:
+// window.KedaiPelangganLuar .tampil()/.reset()). Tab ini tidak punya tombol di navigasi bawah.
+//
 // Aturan yang dijaga:
 // - Peran datang dari balasan server (aksi status) lewat akun.js; aplikasi tidak pernah mengirim peran.
 //   Menyembunyikan tab di sini hanya kemudahan; yang menolak akses sebenarnya server.
@@ -62,7 +66,10 @@
       { id: "order-masuk", nama: "Order Masuk", panel: "ordermasuk" },
       // ORD.06: { id: "semua-order", nama: "Semua Order", panel: "segera" },
       { id: "semua-order", nama: "Semua Order", panel: "semuaorder" },
-      { id: "buat-order", nama: "Buat Order", panel: "segera" },
+      // ORD.13: { id: "buat-order", nama: "Buat Order", panel: "segera" },
+      { id: "buat-order", nama: "Buat Order", panel: "buatorder" },
+      // ORD.13: layar Kelola Pelanggan, dibuka dari item Pelanggan di Home (tanpa tombol di navigasi bawah).
+      { id: "pelanggan", nama: "Pelanggan", panel: "pelanggan" },
       { id: "menu", nama: "Menu", panel: "menu" },
       // HOM.01: { id: "lainnya", nama: "Lainnya", panel: "lainnya" },
     ],
@@ -104,6 +111,8 @@
     "ordermasuk",
     "semuaorder", // ORD.06 giliran 2
     "antrean", // ORD.08
+    "buatorder", // ORD.13
+    "pelanggan", // ORD.13
   ];
 
   // HOM.02: tulisan lencana peran di kartu sapaan (HM4). Peran tak dikenal: lencana disembunyikan.
@@ -162,7 +171,8 @@
       el("panel-" + PANEL[i]).hidden = PANEL[i] !== t.panel;
     }
     el("kerangka-judul").textContent = t.nama;
-    tandaiNav(t.id);
+    // ORD.13: tandaiNav(t.id); Kelola Pelanggan dibuka dari Home, jadi tab Home yang ditandai.
+    tandaiNav(t.id === "pelanggan" ? "home" : t.id);
 
     if (t.panel === "segera") {
       el("segera-ket").textContent =
@@ -232,6 +242,24 @@
     ) {
       window.KedaiOrderPenjaga.tampil();
     }
+
+    // ORD.13: wizard Buat Order wakil owner (orderwakil.js); daftar pelanggan dan menu dimuat saat tab dibuka.
+    if (
+      t.panel === "buatorder" &&
+      window.KedaiOrderWakil &&
+      typeof window.KedaiOrderWakil.tampil === "function"
+    ) {
+      window.KedaiOrderWakil.tampil();
+    }
+
+    // ORD.13: layar Kelola Pelanggan owner (pelangganluar.js).
+    if (
+      t.panel === "pelanggan" &&
+      window.KedaiPelangganLuar &&
+      typeof window.KedaiPelangganLuar.tampil === "function"
+    ) {
+      window.KedaiPelangganLuar.tampil();
+    }
   }
 
   // HOM.02: isi sapaan dan lencana peran. Teks dari server hanya lewat textContent.
@@ -282,6 +310,10 @@
     // HOM.05: tiga aksi lama (akun-nama, akun-wa, akun-pw) dihapus karena tidak dipakai lagi di index.html.
     akun: function () {
       bukaAkun(null);
+    },
+    // ORD.13: item Pelanggan (owner) membuka layar Kelola Pelanggan.
+    pelanggan: function () {
+      buka("pelanggan");
     },
     alamat: function () {
       var B = window.KedaiAlamat;
@@ -361,6 +393,19 @@
       typeof window.KedaiOrderPenjaga.reset === "function"
     ) {
       window.KedaiOrderPenjaga.reset();
+    }
+    // ORD.13: isian wizard dan data pelanggan tanpa akun tidak boleh tersisa setelah Keluar.
+    if (
+      window.KedaiOrderWakil &&
+      typeof window.KedaiOrderWakil.reset === "function"
+    ) {
+      window.KedaiOrderWakil.reset();
+    }
+    if (
+      window.KedaiPelangganLuar &&
+      typeof window.KedaiPelangganLuar.reset === "function"
+    ) {
+      window.KedaiPelangganLuar.reset();
     }
   }
 

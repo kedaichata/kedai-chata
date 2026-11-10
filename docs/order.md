@@ -889,4 +889,45 @@ Keputusan ketua (10 Nov 2026, setelah Handoff #25). Alasan ketua: nomor WA dan a
 - **Menimpa Handoff #25 dan #24:** butir "Salin keterangan pelanggan ke order wakil" **tidak dibuat di sheet** dan bukan lagi masalah yang belum beres; keadaan sekarang disengaja.
 - **Dibuka lagi bila** di pemakaian nyata warung nama kembar sering membingungkan (perubahan tabel dan fungsi butuh penjelasan dampak dan "OK" ketua). Saran penulis di Handoff #25 tetap berlaku: wizard langkah 1 menampilkan keterangan di samping nama pelanggan, karena keterangan masih tersimpan di daftar Pelanggan tanpa akun.
 
+### Handoff #26 | 2026-11-10 | [FREN]
+
+**Tugas:** ORD.13 (wizard 5 langkah Buat Order wakil dan layar Kelola Pelanggan) **kode selesai, belum dites**. Status saat handoff: pagar `AGENTS.md` bagian 8 baru dicek sebagian (folder, `git remote -v`, email commit lolos; `git status --short` belum dicek), **belum di-commit dan di-push**, **belum dicentang di sheet**. Tidak ada perubahan SQL, migration, atau `kedai`.
+
+**Berkas** (satu commit):
+
+- `public/orderwakil.js` (baru, `window.KedaiOrderWakil`: `tampil`, `reset`): wizard 5 langkah. Isi panel dibuat dari JS.
+- `public/pelangganluar.js` (baru, `window.KedaiPelangganLuar`: `tampil`, `reset`, `buatForm`, `ambilDaftar`): layar Kelola Pelanggan, dan form pelanggan yang dipakai ulang wizard langkah 1.
+- `public/kerangka.js`: tab Buat Order owner memakai panel `buatorder`; tab tersembunyi `pelanggan` (tanpa tombol di navigasi bawah, menandai Home sebagai aktif); aksi Home `pelanggan`; reset kedua layar saat Keluar. Baris lama dijadikan komentar.
+- `public/index.html`: item Pelanggan di Home diganti tombol aktif (blok "Segera" lama disimpan di komentar), dua panel kosong `panel-buatorder` dan `panel-pelanggan`, dua tag `<script>` sebelum `kerangka.js`.
+- `public/sw.js`: `chata-v17`, dua berkas JS baru masuk daftar cache. Berkas JS baru, `index.html`, dan `sw.js` harus naik **dalam satu commit**.
+- `style.css` tidak diubah (memakai komponen yang ada).
+
+**Perilaku:**
+
+- **Wizard:** (1) Pemesan: cari di layar, atau Pelanggan baru di tempat (setelah simpan langsung terpilih); keterangan tampil di samping nama. (2) Menu: hanya menu aktif dan Tersedia; menu dengan grup pilihan dibuka lewat Pilih (bawaan terpilih), menu tanpa grup langsung Tambah; jumlah bisa dikurangi, ditambah, dihapus. (3) Pengiriman: tipe, Hari ini/Besok, jam, alamat. Alamat tersimpan jadi bawaan, bisa ditimpa untuk order ini saja; pelanggan tanpa alamat wajib mengisi (10 sampai 200 karakter). (4) Pembayaran: Transfer, Tunai, atau QRIS. (5) Ringkasan: tombol Ubah per bagian (Lanjut kembali ke ringkasan), lalu Simpan. Semua langkah dicek ulang saat Simpan.
+- Yang dikirim ke `order_buat_wakil`: `pelanggan_id`, `tipe`, `alamat` (hanya Diantar dan bila diisi), `hari`, `jam`, `item` (`menu_id`, `jumlah`, `opsi_ids`), `metode`. Tanpa harga, total, status, atau catatan awal (Handoff #24).
+- Tombol Simpan dikunci sejak ditekan sampai balasan datang. Jaringan putus setelah kirim: pesan menyuruh cek Semua Order dulu, jangan simpan ulang. Offline sejak awal: "Order belum tersimpan." Galat server tampil apa adanya dan **tidak menghapus isian**; 404 atau 409 memuat ulang daftar menu dan pelanggan.
+- Layar selesai: nomor dan total dari server, lencana Disetujui, tombol Buat order lagi, dan pengingat bahwa belum ada notifikasi otomatis ke penjaga.
+- **Kelola Pelanggan** (Home, item Pelanggan, owner): cari, Tambah, Ubah, Nonaktifkan (dengan konfirmasi), Aktifkan lagi (`pelanggan_luar_simpan` dengan `aktifkan: true`), tombol Tampilkan atau Sembunyikan yang nonaktif. Kontrak aksi di Handoff #22.
+- Redraw menjaga posisi gulung (pelajaran `AGENTS.md` bagian 12). Isian wizard bertahan saat Segarkan; semua dikosongkan saat Keluar.
+
+**Keputusan baru:**
+
+- **Ketua (10 Nov):** OK perubahan `sw.js` (v17 dan daftar cache). OK `orderwakil.js` (sekitar 1500 baris) dan `pelangganluar.js` (sekitar 780 baris) melewati patokan ~500 baris, karena memang panjang; tidak perlu dipecah. Alasan lain belum tercatat.
+- Jam bawaan wizard 11:00 untuk Diantar, ditulis di kode (`JAM_BAWAAN_ANTAR` di `orderwakil.js`), mengikuti keputusan ketua di Handoff #25.
+- Pilihan penulis (alasan belum tercatat): Kelola Pelanggan berupa tab tersembunyi di `kerangka.js`, bukan layar terpisah di `akun.js` (supaya `akun.js` tidak disentuh); pencarian pelanggan di layar; dari ringkasan, Ubah lalu Lanjut kembali ke ringkasan.
+
+**Terbuka dan belum diverifikasi:**
+
+- **Asumsi `grup`:** wizard membaca grup pilihan menu dari `m.grup` di balasan `menu_daftar` untuk owner. Belum dipastikan balasan owner memuat `grup`. Cek: `window.KedaiAkun.panggilKedai("menu_daftar")` di konsol owner dummy. Bila tidak ada, menu bergrup terkirim dengan `opsi_ids` kosong, dan hasilnya bergantung pada server mengisi pilihan bawaan. Bila bermasalah, perbaikannya di wizard (atau di `kedai`, butuh "OK" ketua).
+- **Belum dites sama sekali** (kode hanya lolos cek sintaks): wizard lengkap untuk tiga tipe; dua cabang alamat (Dummy Kembar beralamat, Dummy Satu Ubah tanpa alamat); pelanggan nonaktif tidak muncul; order tampil di Antrean penjaga dan Semua Order; tambah dan kurangi jumlah tanpa layar loncat; Kelola Pelanggan (tambah, ubah, nonaktif, aktifkan lagi, nama kembar 409); tidak ada data pelanggan tersisa setelah Keluar; HP Android dan mode offline; update `sw.js` muncul di HP.
+- **Tes pemakai:** minta owner yang paling tidak terbiasa memakai aplikasi mencoba membuat satu order wakil tanpa dipandu, lalu catat di mana ia bingung (ukuran berhasil, Handoff #25).
+- Penjaga belum dapat push untuk order wakil (NTF; O15). Data dummy tes ORD.13 akan menambah order dan pelanggan; dibersihkan di LNC.01.
+- Butir terbuka Handoff #11 sampai #25 yang tidak disebut di sini tidak berubah.
+
+**Saran giliran berikutnya:**
+
+1. Selesaikan pagar `AGENTS.md` bagian 8 (`git status --short` harus hanya lima berkas di atas), commit dan push satu commit, lalu tes ORD.13 di HP dengan akun dummy, mulai dari cek `menu_daftar` owner. Setelah lulus, ORD.13 bisa dicentang di sheet.
+2. Lalu **ORD.14** (sesi tes order); sisa tes ada di Handoff #11, #13, #14, #15, #21, dan #24.
+
 ---

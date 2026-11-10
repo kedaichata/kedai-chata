@@ -1446,6 +1446,12 @@
                     </div>
                 </div>
 
+                <!-- Panel Buat Order (owner, ORD.13): wizard 5 langkah, isi dibuat orderwakil.js -->
+                <div id="panel-buatorder" hidden></div>
+
+                <!-- Panel Kelola Pelanggan (owner, ORD.13): daftar pelanggan tanpa akun, isi dibuat pelangganluar.js -->
+                <div id="panel-pelanggan" hidden></div>
+
                 <!-- Panel Lainnya (owner): Pelanggan dan Bantuan menyusul, Akun dipasang kerangka.js -->
                 <!-- HOM.01: tab Lainnya sudah tidak ada di navigasi, panel ini tidak terjangkau.
                      Pelanggan dan Bantuan pindah ke Home di HOM.03 dan HOM.04. -->
@@ -1529,7 +1535,8 @@
                         <!-- Owner: Pelanggan tanpa akun, bagian tersendiri sebelum pengaturan akun (HM7) -->
                         <div class="home-grup" data-grup hidden>
                             <div class="daftar">
-                                <div
+                                <!-- ORD.13: item Pelanggan "Segera" diganti tombol aktif (kode lama disimpan di komentar ini):
+<div
                                     class="daftar__item daftar__item--segera"
                                     data-peran="owner"
                                     aria-disabled="true"
@@ -1545,6 +1552,28 @@
                                     </span>
                                     <span class="daftar__nilai">Segera</span>
                                 </div>
+                                -->
+                                <button
+                                    type="button"
+                                    class="daftar__item daftar__item--tombol"
+                                    data-aksi="pelanggan"
+                                    data-peran="owner"
+                                    hidden
+                                >
+                                    <span class="daftar__utama">
+                                        <span class="daftar__nama"
+                                            >Pelanggan</span
+                                        >
+                                        <span class="daftar__ket"
+                                            >Pelanggan tanpa akun</span
+                                        >
+                                    </span>
+                                    <span
+                                        class="daftar__panah"
+                                        aria-hidden="true"
+                                        >&rsaquo;</span
+                                    >
+                                </button>
                             </div>
                         </div>
 
@@ -1946,6 +1975,10 @@
         <script src="orderowner.js"></script>
         <!-- Layar penjaga Antrean (ORD.08): tab Baru/Diproses/Siap/Selesai, detail, tombol status; harus setelah akun.js -->
         <script src="orderpenjaga.js"></script>
+        <!-- Kelola Pelanggan dan form pelanggan (ORD.13); harus setelah akun.js, dan sebelum orderwakil.js yang memakainya -->
+        <script src="pelangganluar.js"></script>
+        <!-- Wizard Buat Order wakil owner (ORD.13); harus setelah akun.js dan pelangganluar.js -->
+        <script src="orderwakil.js"></script>
         <!-- Kerangka layar utama per peran (KRG.01); harus setelah akun.js dan menu.js -->
         <script src="kerangka.js"></script>
         <script>
