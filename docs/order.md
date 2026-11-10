@@ -1048,4 +1048,41 @@ Keputusan ketua (10 Nov 2026, setelah Handoff #25). Alasan ketua: nomor WA dan a
 - Pelanggan tanpa akun `<b>x</b>` (alamat `<b>x</b> Jl Dummy 1`), alamat customer beralias `<b>x</b>`, dan menu `<b>x</b>` (Rp 1.000, **belum dinonaktifkan**).
 
 **Saran giliran berikutnya:** (1) nonaktifkan menu `<b>x</b>`; (2) K8 `alamat_simpan` orang lain (butuh dua customer dummy); (3) cocokkan K7, K3, K4 dengan teks sheet lalu tes sisanya; (4) K9 dan SEC-12 bersama ketua (dashboard); (5) sisa SEC-10 dan non-SEC; (6) Android belakangan. Lampirkan `AGENTS.md` + `order.md` + `security.md` + `pemetaan-test.md` + `order-test.md`.
+
+<!-- Berkas tujuan: docs/order.md, tempel PALING BAWAH bagian 9 (di bawah Handoff #29). Append-only. -->
+
+### Handoff #30 | 2026-11-10 | [AIK]
+
+**Tugas:** ORD.14 (sesi tes order), lanjutan Handoff #28 dan #29. Sesi tes tanpa Android, lewat konsol dan layar, akun dummy, plus satu sesi dashboard ketua (query baca-saja). **Tidak ada kode, SQL, migration, atau `kedai` yang diubah.** Menambah #28 dan #29; selebihnya tetap berlaku.
+
+**Baris SEC yang dicentang di sheet sesi ini:** SEC-05, SEC-09, SEC-10, SEC-11, SEC-12, SEC-14, SEC-15, SEC-16, SEC-17. Sebelumnya sudah Selesai: SEC-06, SEC-07, SEC-08, SEC-13, SEC-18. Baris **ORD.14 tetap Belum**.
+
+**Terbukti** (bukti diperiksa di chat, tidak disimpan):
+
+- **K8 (SEC-05, SEC-09):** `alamat_simpan` dengan id alamat milik customer lain = 404 "Alamat tidak ditemukan."; alamat pemilik tidak berubah (dicek dari sesi pemilik); `status` dari customer kedua hanya memuat alamat miliknya.
+- **SEC-16:** catatan terkunci saat Diproses (409, owner dan customer) dan terbuka lagi setelah **alih hari** (200, owner di #52, customer di #53). Hak tabel: `catatan_order` hanya INSERT dan SELECT; daftar aksi `kedai` (28 aksi) hanya `catatan_tambah` dan `catatan_dibaca`.
+- **SEC-17:** query hak `service_role`: tidak ada DELETE dan tidak ada TRUNCATE di tabel mana pun; aksi `kedai` hanya `*_nonaktif`, tanpa aksi hapus.
+- **SEC-12:** query baca-saja `order` dan `order_item`: harga di order adalah salinan (#3 Rp6.000 dan #5 Rp7.000 vs menu sekarang Rp5.000); `subtotal = harga x jumlah` dan total = jumlah subtotal.
+- **SEC-10:** query baca-saja `order` dan `riwayat_status`: pemutus dan waktu tercatat, tidak ada order dengan dua keputusan bertabrakan dari Menunggu (#23 tanpa pemutus karena dibatalkan customer; order wakil berjalur satu baris).
+
+**Keputusan baru:**
+
+- **Ketua (10 Nov): SEC-10 boleh dicentang walau sisi "customer menang" tidak pernah teramati** (owner menang di semua 5 sampai 6 benturan) dan ketuk dua kali di layar tidak dites manual. Alasan ketua: common sense warung, kebijakan menang ada di owner. Yang diuji adalah atomik (tidak mungkin dua keputusan berhasil), bukan siapa yang menang. Ini perilaku yang diterima, belum aturan tertulis.
+- **TC-K10-03 (penjaga menekan tombol status pada order Dibatalkan lewat layar) dicoret** dari sisa: server sudah menyaring (daftar penjaga tidak memuat order Dibatalkan, `order_detail` 404; H#13, H#19). Alasan: kemungkinan realistis kecil dan bukti server sudah ada.
+- Alasan lain belum tercatat.
+
+**Masalah yang belum beres (sisa ORD.14):**
+
+- **SEC-19:** jam HP digeser, menunggu Android. Gerbang FTO.01.
+- **Non-SEC:** urutan daftar O22, wizard hari Besok, jumlah menu (tambah, kurangi, hapus), Segarkan saat terisi, pilihan menu non-bawaan di HP, `sw.js` v17 di HP.
+- **Query cek 8 dan 9:** paling akhir (dashboard).
+- **Tes pemakai** (owner paling awam, satu order wakil tanpa dipandu): setelah semuanya lulus.
+- **Keputusan ketua:** apakah SEC-19 dan butir non-SEC wajib sebelum ORD.14 dicentang, atau cukup butir di teks baris sheet (yang menurut pencocokan sesi ini sudah terbukti semua).
+- **Butir baru untuk sheet:** "Selidiki kenapa owner selalu menang benturan batal vs setuju" (rasa penasaran, bukan blocker).
+- Dashboard Supabase sudah logout dan browser ditutup. Tanpa push di sesi ini.
+- Butir terbuka Handoff #11 sampai #29 yang tidak disebut di sini tidak berubah.
+
+**Data dummy baru** (dibersihkan di LNC.01): order #52 (wakil, Besok 11 Nov, Disetujui, 1 catatan owner) dan #53 (customer, Besok 11 Nov, Disetujui, 2 catatan); keduanya sudah Besok, jadi alih hari lagi ditolak `sudah_besok`.
+
+**Saran giliran berikutnya:** (1) tes pemakai wizard; (2) wizard hari Besok dan jumlah menu di HP, satu sesi; (3) SEC-19 dan `sw.js` v17 di Android; (4) query cek 8 dan 9 di dashboard, paling akhir. Lampirkan `AGENTS.md` + `order.md` + `security.md` + `pemetaan-test.md` + `order-test.md`.
 ---

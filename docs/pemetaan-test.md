@@ -207,3 +207,32 @@ Semua status ✅ di bagian 4 berasal dari Handoff `order.md`, belum diperiksa ul
 - **Android:** SEC-19, `sw.js` v17.
 
 **Catatan:** baris ORD.14 di sheet sempat ditandai Selesai; ORD.14 belum selesai, kembalikan ke Belum.
+
+### 2026-11-10 | PIC: K10, K6, K5 (tanpa Android)
+
+**Baru terbuka:**
+
+- **K10:** owner batal dari Diproses, Diantar, Siap diambil, Siap disajikan = 200; Selesai ditolak = 409. Sisa: TC-K10-03 lewat layar.
+- **K6:** isian palsu diabaikan di semua aksi yang menerima isian (termasuk `order_status` oleh penjaga dan `catatan_dibaca`).
+- **K5:** tag HTML tampil sebagai teks biasa di semua kolom dan layar yang relevan; nama profil ditolak di input.
+
+**SEC yang lengkap dan diingatkan untuk dicentang di sheet:** SEC-06, SEC-18. (Tanggal centang oleh PIC: ...)
+
+**Belum lengkap:** SEC-10 (customer menang, ketuk dua kali, query `order`), SEC-12 (query), SEC-05 dan SEC-09 (`alamat_simpan`), SEC-17 (K9), SEC-11, SEC-15, SEC-16 (cocokkan sheet; K4 sisa), TC-K10-03, non-SEC 4.2, query cek 8 dan 9, tes pemakai, Android (SEC-19, `sw.js` v17).
+
+### 2026-11-10 | [RAC]: sinkron centang SEC-11, SEC-14, SEC-15
+
+Dicocokkan dengan teks sheet dari Handoff #9, #13, #28. Sudah dicentang di sheet: SEC-11, SEC-14, SEC-15. Tes K3 dan K7 tidak perlu diulang.
+Sisa K1, K2, K10: lihat entri sebelumnya.
+
+<!-- Berkas tujuan: docs/pemetaan-test.md, tempel PALING BAWAH bagian 5 (di bawah entri K1 dan K2). Append-only. -->
+
+### 2026-11-10 | [AIK]: K8, SEC-16, SEC-17, SEC-12, SEC-10, sinkron centang
+
+Baru terbukti: K8 (`alamat_simpan` milik orang lain = 404, alamat pemilik tetap); SEC-16 (catatan terbuka lagi setelah alih hari, owner dan customer; hak `catatan_order` tanpa UPDATE dan DELETE; daftar aksi `kedai`); SEC-17 (hak `service_role` tanpa DELETE dan TRUNCATE); SEC-12 (harga di order adalah salinan); SEC-10 (query order dan riwayat bersih).
+
+SEC yang dicentang di sheet: SEC-05, SEC-09, SEC-10, SEC-11, SEC-12, SEC-14, SEC-15, SEC-16, SEC-17. K3 dan K7 tidak perlu diulang.
+
+Keputusan ketua: SEC-10 dicentang walau "customer menang" tidak teramati (owner yang menang, diterima); TC-K10-03 lewat layar dicoret (server sudah menyaring).
+
+Sisa: SEC-19 (Android), non-SEC (O22, wizard Besok, jumlah menu, Segarkan, pilihan non-bawaan di HP), query cek 8 dan 9 paling akhir, tes pemakai. ORD.14 tetap Belum, menunggu keputusan ketua soal syarat tutup.
