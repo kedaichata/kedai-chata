@@ -290,4 +290,34 @@ Tiap blok ditempel di bagian **Catatan Susulan** di akhir berkas tujuannya (appe
 - **Risiko diterima ketua:** Keluar bersebelahan dengan Segarkan (salah pencet) dan DS9 lama yang menaruh Keluar di Akun. Diredam oleh konfirmasi di atas.
 - **Keluar tetap harus menutup** layar game dan menu hamburger, serta menghapus nama dan sapaan (HP dipakai bergantian; `gim.md` GM14, `home.md` bagian 6).
 
+### Handoff #5 | 2026-11-10 | [Ketua]
+
+**Tugas selesai:** DSN.08 dan DSN.09 (tinggal dicentang di sheet).
+
+**File yang diubah:** `public/index.html`, `public/kerangka.js`, `public/style.css` (hanya menambah di akhir). `akun.js` dan `sw.js` tidak disentuh (tidak ada berkas JS baru, cache tetap `chata-v17`). Hash commit belum dicatat.
+
+**Isi:**
+
+- Ikon Keluar di bilah atas, di kanan Segarkan: lingkaran merah, ikon terang berbentuk pintu dengan panah keluar (mengikuti acuan PWA milik ketua).
+- Diketuk memunculkan konfirmasi "Yakin mau keluar? / Nanti masuk lagi perlu password." Batal = tombol utama (isian marun), Keluar = berpinggir merah (DS12). Ketuk area gelap di luar kotak atau tekan Esc juga membatalkan.
+- Keluar memanggil `KedaiAkun.keluar` yang sudah ada di `akun.js` (sesi, nama, dan sapaan terhapus lewat jalur itu). `kerangka.js` `reset()` juga menutup kotak konfirmasi.
+- Tombol Keluar di Home disembunyikan (`hidden`), kodenya tidak dihapus; id `tombol-keluar` tetap ada untuk `akun.js`.
+- Kode lama tidak ada yang dihapus. Satu baris lama di `index.html` berubah (pembungkus Keluar di Home ditambah `hidden`); selebihnya tambahan.
+
+**Keputusan baru:**
+
+- Warna lingkaran Keluar `#c62828` (variabel `--keluar-bulat`), dipilih penulis kode; alasan belum tercatat dari ketua.
+- Bentuk ikon (pintu dan panah keluar) mengikuti contoh ketua; detail garisnya dipilih penulis kode.
+- Judul bilah atas kini mengisi ruang kosong (`flex: 1`) supaya Segarkan dan Keluar rapat di kanan.
+- Tab Pelanggan (owner, dibuka dari Home) tetap menampilkan ikon Keluar di bilah atas, demi konsistensi dengan tab utama lain. Keputusan ketua (10 Nov 2026); dianggap minor. Alasan lain belum tercatat.
+
+**Hasil tes:** dites di laptop dan HP, semua berfungsi sesuai. Bukti diperiksa di chat dan tidak disimpan.
+
+**Belum beres:**
+
+- Pembersihan kode Keluar di Home (yang kini `hidden`) ditunda; butuh "OK" tersendiri dan satu blok catatan.
+- Hamburger dan layar game belum ada di kode. Kewajiban Keluar menutupnya dan menghapus data (`gim.md` GM14) harus dikerjakan di sesi GIM.
+- Bila ada keluhan salah pencet Keluar di dekat Segarkan, tambah jarak atau pembeda.
+
+**Saran giliran berikutnya:** BTN.01 (migration tabel `bantuan`, High-Risk; butuh penjelasan dampak dan "OK" ketua). Lampirkan `AGENTS.md` + `bantuan.md` + `database.md` + `security.md`. Sebelum push, cek tiga hal anti-nyasar. Logout GitHub dan Supabase di profil browser setelah selesai.
 ---
