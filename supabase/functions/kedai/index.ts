@@ -41,6 +41,10 @@
 //         customer dan penjaga ditolak 403 (SEC-07, SEC-08, SEC-13). Kodenya ada di BERKAS BARU `order_wakil.ts`
 //         (folder yang sama), diimpor di bawah; kode lama tidak dipindah. Fungsi SQL: 20261110_06_order_wakil_fungsi.sql
 //         (sudah dijalankan dan lulus cek SEBELUM berkas ini dideploy). Push ada di NTF, bukan di sini.
+// BTN.02: ditambah `bantuan_daftar` (semua yang login; isi aktif disaring peran dari tabel staf oleh server,
+//         peran dari aplikasi diabaikan, BT5 dan SEC-31). Kodenya ada di BERKAS BARU `bantuan.ts` (folder yang sama),
+//         diimpor di bawah; kode lama tidak dipindah. Hanya membaca tabel `bantuan`: tanpa fungsi SQL baru
+//         dan tanpa migration (tabelnya sudah ada dari BTN.01).
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -58,6 +62,8 @@ import { buatAksiCatatan } from "./catatan.ts";
 import { buatAksiPelangganLuar } from "./pelanggan_luar.ts";
 // ORD.12: aksi order_buat_wakil ada di berkas terpisah.
 import { buatAksiOrderWakil } from "./order_wakil.ts";
+// BTN.02: aksi bantuan_daftar ada di berkas terpisah.
+import { buatAksiBantuan } from "./bantuan.ts";
 
 // ------------------------------------------------------------
 // Pengaturan dasar
@@ -1360,6 +1366,18 @@ const { aksiOrderBuatWakil } = buatAksiOrderWakil({
 });
 
 // ------------------------------------------------------------
+// BTN.02: sambungan ke berkas bantuan.ts. Hanya perlu klien (baca), bacaPeran, balas, dan galat.
+// ------------------------------------------------------------
+
+const { aksiBantuanDaftar } = buatAksiBantuan({
+  // deno-lint-ignore no-explicit-any
+  klien: admin as any,
+  bacaPeran,
+  balas,
+  galat,
+});
+
+// ------------------------------------------------------------
 // Pintu masuk
 // ------------------------------------------------------------
 
@@ -1462,6 +1480,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
         return await aksiPelangganLuarNonaktif(req, pengguna, isi);
       case "order_buat_wakil":
         return await aksiOrderBuatWakil(req, pengguna, isi);
+      case "bantuan_daftar":
+        return await aksiBantuanDaftar(req, pengguna);
       default:
         return galat(req, 400, "Aksi tidak dikenal.");
     }

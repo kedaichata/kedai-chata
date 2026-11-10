@@ -150,3 +150,29 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua. Dikerjakan **setelah `not
 - **BTN.03 kini:** layar Bantuan, **ikon ? di bilah atas** (dibuat di langkah ini, bukan sebagai tombol mati di DSN.08), dan pengaktifan tombol Bantuan di Home. Tidak ada item di menu Akun atau Lainnya (keduanya sudah tidak ada).
 - Ikon ? tidak tampil di sub-layar, Masuk, dan Daftar (`desain.md` blok 10 Nov).
 - Isi awal (BTN.05) tetap ditulis setelah fitur final; sampai itu layar menampilkan "Belum ada bantuan".
+
+### Handoff #1 | 2026-11-10 | [Ketua]
+
+**Tugas:** BTN.01 (tabel `bantuan`) selesai dan terbukti. BTN.02 (aksi `bantuan_daftar`) sudah dideploy, tetapi belum lengkap terbukti.
+
+**Berkas yang berubah:**
+
+- Baru: `supabase/migrations/20261110_07_bantuan.sql` dan `_batal.sql`, `supabase/templates/20261110_07_bantuan_cek.sql`.
+- Baru: `supabase/functions/kedai/bantuan.ts`.
+- Diubah: `supabase/functions/kedai/index.ts` (hanya tambahan: komentar header, satu import, satu sambungan alat bantu, satu `case`; tidak ada kode lama yang dihapus atau dipindah).
+
+**Keputusan baru:**
+
+- BTN.02 **tanpa fungsi SQL dan tanpa migration**: aksi hanya membaca tabel `bantuan` langsung (`service_role` sudah punya SELECT). Alasan: bacaan murni, tidak ada langkah bisnis yang perlu atomik. Pilihan penulis yang disetujui ketua lewat "OK gas"; alasan lain belum tercatat.
+- Bentuk data di tabel (pilihan penulis, menambah BT3 dan BT10): `kunci` 3 sampai 50 karakter, hanya huruf kecil, angka, dan strip; `bagian` tidak kosong, maksimal 60; `urutan` bilangan bulat 0 atau lebih; `judul` dan `isi` hanya dicek panjangnya (tanpa syarat spasi di tepi, supaya SQL dari lembar tidak gagal karena baris baru di ujung sel). Tanpa indeks tambahan.
+- Balasan `bantuan_daftar`: `{ok: true, bantuan: [...]}` dengan kolom `kunci, bagian, urutan, judul, isi`, urut `urutan` lalu `kunci`. Server membaca peran dari tabel `staf` dan mengabaikan seluruh isi permintaan. Pengelompokan per `bagian` dikerjakan layar.
+
+**Bukti (tidak disimpan, aturan 10):** BTN.01: RLS aktif, 0 policy, `service_role` hanya SELECT, `anon` dan `authenticated` kosong, 9 kolom, 8 konstrain sesuai migration, tabel 0 baris. BTN.02: deploy sukses (6 berkas), tanpa token dibalas 401 oleh platform (SEC-01 untuk aksi ini).
+
+**Belum beres:**
+
+- Commit dan push berkas di atas belum dilakukan (menunggu handoff ini). Repo masih tertinggal dari fungsi yang sudah berjalan.
+- **BTN.02 belum boleh dicentang di sheet.** Balasan 200 dengan login (daftar kosong) belum terbukti. Dibuktikan di BTN.03 lewat layar Bantuan yang menampilkan "Belum ada bantuan". Penyaringan peran penuh terbukti di BTN.04 dan BTN.06 (SEC-31).
+- Lapis kedua token (SEC-02, SEC-32) belum dites.
+
+**Saran giliran berikutnya (BTN.03, Low-Risk, sesi kode):** layar Bantuan, ikon ? di bilah atas (tab utama saja), dan pengaktifan tombol Bantuan di Home (id `home-bantuan`). Lampirkan `AGENTS.md`, `bantuan.md`, `desain.md`, `home.md`, serta `index.html`, `style.css`, `sw.js`, dan JS layar yang relevan. Berkas JS baru wajib didaftarkan di cache `sw.js` (butuh "OK" ketua); gaya tetap di `style.css`.
