@@ -732,6 +732,20 @@
                     <div class="bilah-atas__judul" id="kerangka-judul">
                         Beranda
                     </div>
+                    <!-- BTN.03: ikon ? emas (pintu Bantuan, desain.md DS15), di kiri Segarkan. Logika di kerangka.js.
+                         Disembunyikan kerangka.js saat layar Bantuan sendiri terbuka. -->
+                    <button
+                        type="button"
+                        class="bilah-atas__bantuan"
+                        id="tombol-bantuan-atas"
+                        aria-label="Bantuan"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                    </button>
                     <button
                         type="button"
                         class="bilah-atas__segarkan"
@@ -1509,6 +1523,9 @@
                 <!-- Panel Kelola Pelanggan (owner, ORD.13): daftar pelanggan tanpa akun, isi dibuat pelangganluar.js -->
                 <div id="panel-pelanggan" hidden></div>
 
+                <!-- Panel Bantuan (semua peran, BTN.03): isi dan tombol Kembali dibuat bantuan.js -->
+                <div id="panel-bantuan" hidden></div>
+
                 <!-- Panel Lainnya (owner): Pelanggan dan Bantuan menyusul, Akun dipasang kerangka.js -->
                 <!-- HOM.01: tab Lainnya sudah tidak ada di navigasi, panel ini tidak terjangkau.
                      Pelanggan dan Bantuan pindah ke Home di HOM.03 dan HOM.04. -->
@@ -1572,7 +1589,8 @@
                         </div>
                         <!-- HOM.03: tombol Bantuan (HM5), semua peran. Tampil "Segera" dan tidak bisa diketuk
                              (disabled) sampai bantuan.md selesai; saat itu tombol ini diaktifkan di sana. -->
-                        <div class="baris-tombol">
+                        <!-- BTN.03: tombol Bantuan "Segera" diganti tombol aktif (kode lama disimpan di komentar ini):
+<div class="baris-tombol">
                             <button
                                 type="button"
                                 class="tombol tombol--sekunder tombol--segera"
@@ -1582,6 +1600,17 @@
                             >
                                 <span>Bantuan</span>
                                 <span class="tombol__segera">Segera</span>
+                            </button>
+                        </div>
+                        -->
+                        <div class="baris-tombol">
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder"
+                                id="home-bantuan"
+                                data-aksi="bantuan"
+                            >
+                                Bantuan
                             </button>
                         </div>
 
@@ -2037,6 +2066,8 @@
         <script src="pelangganluar.js"></script>
         <!-- Wizard Buat Order wakil owner (ORD.13); harus setelah akun.js dan pelangganluar.js -->
         <script src="orderwakil.js"></script>
+        <!-- Layar Bantuan (BTN.03); harus setelah akun.js (memakai window.KedaiAkun) dan SEBELUM kerangka.js -->
+        <script src="bantuan.js"></script>
         <!-- Kerangka layar utama per peran (KRG.01); harus setelah akun.js dan menu.js -->
         <script src="kerangka.js"></script>
         <script>

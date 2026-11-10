@@ -42,6 +42,12 @@
 // (akun.js) yang sudah menghapus sesi, nama, dan sapaan. Tombol Keluar di Home disembunyikan di index.html.
 // Bilah atas hanya ada di layar utama (layar-sementara), jadi sub-layar, Masuk, dan Daftar tidak punya tombol ini.
 //
+// BTN.03: layar Bantuan (bantuan.js) memakai tab tersembunyi "bantuan" (panel "bantuan", tanpa tombol di navigasi
+// bawah, pola sama dengan tab "pelanggan"). Pintunya ikon ? di bilah atas (#tombol-bantuan-atas) dan tombol
+// Bantuan di Home (data-aksi="bantuan"). Tab asal disimpan supaya Kembali (#bantuan-kembali, dibuat bantuan.js)
+// membuka tab itu lagi, dan navigasi bawah tetap menandai tab asal. Ikon ? disembunyikan saat layar Bantuan terbuka.
+// window.KedaiBantuan .tampil() dipanggil saat tab dibuka dan lewat Segarkan, .reset() saat Keluar.
+//
 // Aturan yang dijaga:
 // - Peran datang dari balasan server (aksi status) lewat akun.js; aplikasi tidak pernah mengirim peran.
 //   Menyembunyikan tab di sini hanya kemudahan; yang menolak akses sebenarnya server.
@@ -76,6 +82,7 @@
       // ORD.13: layar Kelola Pelanggan, dibuka dari item Pelanggan di Home (tanpa tombol di navigasi bawah).
       { id: "pelanggan", nama: "Pelanggan", panel: "pelanggan" },
       { id: "menu", nama: "Menu", panel: "menu" },
+      { id: "bantuan", nama: "Bantuan", panel: "bantuan" }, // BTN.03
       // HOM.01: { id: "lainnya", nama: "Lainnya", panel: "lainnya" },
     ],
     customer: [
@@ -84,17 +91,23 @@
       { id: "pesan", nama: "Pesan", panel: "pesan" },
       // ORD.04: { id: "pesanan-saya", nama: "Pesanan Saya", panel: "segera" },
       { id: "pesanan-saya", nama: "Pesanan Saya", panel: "pesanan" },
+      { id: "bantuan", nama: "Bantuan", panel: "bantuan" }, // BTN.03
       // HOM.01: { id: "akun", nama: "Akun", panel: "akun" },
     ],
     penjaga: [
       { id: "home", nama: "Home", panel: "akun" }, // HOM.01
       // ORD.08: { id: "antrean", nama: "Antrean", panel: "segera" },
       { id: "antrean", nama: "Antrean", panel: "antrean" },
+      { id: "bantuan", nama: "Bantuan", panel: "bantuan" }, // BTN.03
       // HOM.01: { id: "akun", nama: "Akun", panel: "akun" },
     ],
     // Peran tak dikenal: hanya Akun (supaya tetap bisa keluar), tanpa navigasi bawah.
     // HOM.01: lain: [{ id: "akun", nama: "Akun", panel: "akun" }],
-    lain: [{ id: "home", nama: "Home", panel: "akun" }],
+    // BTN.03: lain: [{ id: "home", nama: "Home", panel: "akun" }],
+    lain: [
+      { id: "home", nama: "Home", panel: "akun" },
+      { id: "bantuan", nama: "Bantuan", panel: "bantuan" }, // BTN.03
+    ],
   };
 
   var NAV = {
@@ -118,6 +131,7 @@
     "antrean", // ORD.08
     "buatorder", // ORD.13
     "pelanggan", // ORD.13
+    "bantuan", // BTN.03
   ];
 
   // HOM.02: tulisan lencana peran di kartu sapaan (HM4). Peran tak dikenal: lencana disembunyikan.
@@ -129,6 +143,7 @@
 
   var peran = null; // peran yang sedang dipasang; null = belum
   var tab = null; // id tab yang sedang terbuka; null = belum
+  var tabAsalBantuan = null; // BTN.03: tab yang terbuka sebelum Bantuan, tujuan tombol Kembali
 
   function peranDikenal(p) {
     return Object.prototype.hasOwnProperty.call(TAB, p) ? p : "lain";
@@ -177,7 +192,13 @@
     }
     el("kerangka-judul").textContent = t.nama;
     // ORD.13: tandaiNav(t.id); Kelola Pelanggan dibuka dari Home, jadi tab Home yang ditandai.
-    tandaiNav(t.id === "pelanggan" ? "home" : t.id);
+    // BTN.03: tandaiNav(t.id === "pelanggan" ? "home" : t.id);
+    // BTN.03: layar Bantuan menandai tab asalnya di navigasi bawah, dan ikon ? disembunyikan selama Bantuan terbuka.
+    var idTanda = t.id;
+    if (t.id === "bantuan") idTanda = tabAsalBantuan || "home";
+    if (idTanda === "pelanggan") idTanda = "home";
+    tandaiNav(idTanda);
+    el("tombol-bantuan-atas").hidden = t.id === "bantuan";
 
     if (t.panel === "segera") {
       el("segera-ket").textContent =
@@ -265,6 +286,30 @@
     ) {
       window.KedaiPelangganLuar.tampil();
     }
+
+    // BTN.03: layar Bantuan (bantuan.js); diambil saat tab dibuka dan lewat Segarkan, tanpa polling.
+    if (
+      t.panel === "bantuan" &&
+      window.KedaiBantuan &&
+      typeof window.KedaiBantuan.tampil === "function"
+    ) {
+      window.KedaiBantuan.tampil();
+    }
+  }
+
+  // BTN.03: buka layar Bantuan dari tab mana pun, ingat tab asalnya. Tombol Kembali membukanya lagi.
+  function bukaBantuan() {
+    if (!peran) return;
+    if (tab !== "bantuan") {
+      tabAsalBantuan = tab;
+    }
+    buka("bantuan");
+  }
+
+  function kembaliDariBantuan() {
+    var asal = tabAsalBantuan;
+    tabAsalBantuan = null;
+    buka(asal || TAB[peran][0].id);
   }
 
   // HOM.02: isi sapaan dan lencana peran. Teks dari server hanya lewat textContent.
@@ -320,6 +365,10 @@
     pelanggan: function () {
       buka("pelanggan");
     },
+    // BTN.03: tombol Bantuan di Home membuka layar yang sama dengan ikon ? di bilah atas.
+    bantuan: function () {
+      bukaBantuan();
+    },
     alamat: function () {
       var B = window.KedaiAlamat;
       if (B && typeof B.tampil === "function") {
@@ -336,6 +385,7 @@
     if (baru !== peran) {
       peran = baru;
       tab = null;
+      tabAsalBantuan = null; // BTN.03
     }
 
     // Blok Akun (sapaan, Buku alamat, Pengaturan akun, Keluar): owner di Lainnya, peran lain di tab Akun.
@@ -361,7 +411,9 @@
   function reset() {
     peran = null;
     tab = null;
+    tabAsalBantuan = null; // BTN.03
     sembunyikanSemua();
+    el("tombol-bantuan-atas").hidden = false; // BTN.03
     el("kerangka-judul").textContent = "Beranda";
     // DSN.08: kotak konfirmasi Keluar tidak boleh tersisa terbuka.
     tutupKonfirmasiKeluar();
@@ -414,6 +466,13 @@
     ) {
       window.KedaiPelangganLuar.reset();
     }
+    // BTN.03: isi Bantuan dikosongkan dan balasan yang masih di jalan diabaikan.
+    if (
+      window.KedaiBantuan &&
+      typeof window.KedaiBantuan.reset === "function"
+    ) {
+      window.KedaiBantuan.reset();
+    }
   }
 
   // Ketukan di navigasi bawah (satu pendengar per navigasi).
@@ -431,6 +490,18 @@
       pasangNav(NAV[k]);
     }
   }
+
+  // BTN.03: ikon ? di bilah atas dan tombol Kembali (dibuat bantuan.js di dalam #panel-bantuan).
+  el("tombol-bantuan-atas").addEventListener("click", bukaBantuan);
+  el("panel-bantuan").addEventListener("click", function (e) {
+    var sasaran =
+      e.target && e.target.closest
+        ? e.target.closest("#bantuan-kembali")
+        : null;
+    if (sasaran) {
+      kembaliDariBantuan();
+    }
+  });
 
   // HOM.04: satu pendengar untuk semua item Home yang bisa diketuk.
   el("blok-akun").addEventListener("click", function (e) {
