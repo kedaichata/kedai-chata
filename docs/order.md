@@ -1011,4 +1011,41 @@ Keputusan ketua (10 Nov 2026, setelah Handoff #25). Alasan ketua: nomor WA dan a
 **Data dummy baru** (tidak bisa dihapus, dibersihkan di LNC.01): order #38 sampai #42 (customer, es teh manis, Diambil): #38, #39, #40 (Diproses), #41 (Disetujui) berujung Disetujui atau Diproses; #42 Ditolak. **#43:** order wakil Dummy Tiga (Diantar, Tunai, berWA dan beralamat), Disetujui.
 
 **Saran giliran berikutnya:** lampirkan `AGENTS.md` + `order.md` + `security.md` + `pemetaan-test.md` + `order-test.md`. Mulai dari K10 (cepat, #40 siap), lalu K6, K5, K8, K9 dan SEC-12 (dashboard ketua), lalu sisa K3, K4, K7 dan non-SEC. Android belakangan. Hanya sebut SEC yang lengkap bila semua aksi di barisnya terbukti dan jenis buktinya sesuai kolom Catatan sheet.
+
+### Handoff #29 | 2026-11-10 | [FREN]
+
+**Tugas:** ORD.14 (sesi tes order) **lanjutan, belum selesai**. Sesi tes tanpa Android, lewat konsol dan layar, akun dummy. **Tidak ada kode, SQL, atau `kedai` yang diubah.** Menambah Handoff #28; selebihnya #28 tetap berlaku.
+
+**Baris SEC yang sudah lengkap dan diingatkan untuk dicentang di sheet:** SEC-06 dan SEC-18. Baris ORD.14 di sheet tetap **Belum**.
+
+**Terbukti** (bukti diperiksa di chat, tidak disimpan):
+
+- **K10:** owner `order_batal` dari Diproses, Diantar, Siap diambil, dan Siap disajikan = 200 Dibatalkan, `oleh_peran` owner, `status_asal` benar, alasan tersimpan, riwayat mencatat asal dan tujuan (dari Disetujui sudah terbukti di H#9). `order_batal` pada order Selesai = 409, status tetap, riwayat tidak bertambah.
+- **K6 (SEC-06):** isian palsu (peran, id pengguna, status, total, harga, pemutus, waktu, `oleh_peran`, `status_asal`, `hari`) diabaikan server pada `catatan_tambah`, `order_setuju`, `order_status` (owner dan penjaga), `order_tolak`, `order_metode_koreksi`, `order_alih_hari` (hari tujuan tetap Besok), `order_batal`, dan `catatan_dibaca` (owner dan customer pada order ber-10-catatan: penunjuk = id catatan terbaru, bukan isian palsu). Bersama H#3 dan H#24 (`order_buat`, `order_buat_wakil`), semua aksi yang menerima isian sudah teruji.
+- **K5 (SEC-18):** teks berisi tag HTML tampil sebagai teks biasa untuk: catatan (H#21); alasan tolak dan alasan batal (owner dan customer); alasan alih hari (customer, satu-satunya layar yang menampilkannya); nama pelanggan tanpa akun dan alamatnya (Kelola Pelanggan, wizard, owner, penjaga); alias dan alamat customer (Buku alamat, lalu order di customer, owner, penjaga); nama menu (Kelola Menu, tab Pesan, keranjang, lalu order di customer, owner, penjaga). **Nama profil customer ditolak di input** (3 sampai 20 karakter, hanya huruf, angka, spasi, garis bawah), jadi buktinya berupa penolakan, bukan tampilan teks.
+- Layar customer menampilkan kartu "Dibatalkan oleh pihak ChATA (nama owner)" pada order yang dibatalkan owner (ORD.17 terkonfirmasi lagi).
+
+**Keputusan baru:** tidak ada.
+
+**Masalah yang belum beres (sisa ORD.14):**
+
+- **SEC-10:** sisi customer menang belum teramati; ketuk dua kali di layar belum bisa dites; query baca-saja `order` belum (butuh dashboard ketua).
+- **SEC-12:** query baca-saja `order` dan `order_item` (dashboard ketua, lalu logout). **SEC-17 (K9):** query hak tabel dan daftar aksi `kedai`.
+- **SEC-05 dan SEC-09 (K8):** `alamat_simpan` dengan id alamat milik orang lain.
+- **SEC-11, SEC-15, SEC-16 (K7, K3, K4):** cocokkan dulu dengan teks sheet. K4 sisa: catatan terbuka lagi setelah alih hari, batas 10 dan karakter lewat layar, 409 saat status berubah di layar.
+- **TC-K10-03:** penjaga menekan tombol status pada order Dibatalkan lewat layar.
+- **Non-SEC:** urutan daftar O22, wizard hari Besok, jumlah menu, Segarkan saat terisi, pilihan non-bawaan di HP; query cek 8 dan 9 paling akhir; tes pemakai setelah semua lulus.
+- **Android:** SEC-19, `sw.js` v17 di HP.
+- Bukti `catatan_dibaca` oleh penjaga lemah (order tanpa catatan, hasil null); logika server sama dengan owner dan customer yang sudah kuat.
+- Temuan #28 belum berubah: pada benturan customer vs owner, owner selalu menang; penyebab belum diketahui.
+- Tidak ada kerja dashboard Supabase atau GitHub di sesi ini.
+
+**Data dummy baru** (tidak bisa dihapus, dibersihkan di LNC.01):
+
+- Order #44 sampai #51. #44, #47: Dibatalkan. #45, #46: Ditolak. #48, #49 (order wakil), #50, #51: Disetujui.
+- #34, #36, #40, #41: Dibatalkan. #35: Diproses.
+- #37 dan #39: dialihkan ke Besok (11 Nov); alih hari lagi akan ditolak `sudah_besok`.
+- Pelanggan tanpa akun `<b>x</b>` (alamat `<b>x</b> Jl Dummy 1`), alamat customer beralias `<b>x</b>`, dan menu `<b>x</b>` (Rp 1.000, **belum dinonaktifkan**).
+
+**Saran giliran berikutnya:** (1) nonaktifkan menu `<b>x</b>`; (2) K8 `alamat_simpan` orang lain (butuh dua customer dummy); (3) cocokkan K7, K3, K4 dengan teks sheet lalu tes sisanya; (4) K9 dan SEC-12 bersama ketua (dashboard); (5) sisa SEC-10 dan non-SEC; (6) Android belakangan. Lampirkan `AGENTS.md` + `order.md` + `security.md` + `pemetaan-test.md` + `order-test.md`.
 ---
