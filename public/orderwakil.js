@@ -26,6 +26,8 @@
 // - Semua teks dari server dan isian dipasang lewat textContent, bukan innerHTML.
 // - Layar yang digambar ulang menjaga posisi gulung (pelajaran AGENTS.md bagian 12, 9 Nov 2026).
 // - Data pelanggan dan isian dikosongkan saat Keluar (reset).
+// - Jalan keluar (10 Nov 2026): tombol Kembali ada di semua langkah 2 sampai 5, dan tombol Batalkan order
+//   (dengan kartu konfirmasi) di langkah 2 sampai 5. Ya = semua isian dikosongkan, kembali ke langkah 1.
 
 (function () {
   "use strict";
@@ -102,6 +104,7 @@
   var langkah = 1; // 1 sampai 5, atau "selesai"
   var balikRingkas = false; // true bila owner menekan Ubah dari ringkasan: Lanjut kembali ke ringkasan
   var galat = ""; // pesan galat untuk langkah yang sedang tampil
+  var konfirmasiBatal = false; // true selama kartu "Batalkan pesanan ini?" tampil
 
   var pelanggan = null; // { id, nama, keterangan, nomor_wa, alamat_antar }
   var cari = "";
@@ -225,6 +228,7 @@
   function pindah(n, pesan) {
     langkah = n;
     galat = pesan || "";
+    konfirmasiBatal = false;
     if (n === 5) balikRingkas = false;
     gambar();
     if (!panel.hidden) window.scrollTo(0, 0);
@@ -554,6 +558,61 @@
       ),
     );
     return b;
+  }
+
+  // Jalan keluar wizard: tombol Batalkan order, lalu kartu konfirmasi. Ya = semua isian dikosongkan dan
+  // kembali ke langkah 1. Tidak memanggil server (order belum dibuat).
+  function blokBatal() {
+    var b = buat("div", "baris-tombol");
+    if (!konfirmasiBatal) {
+      b.appendChild(
+        buatTombol(
+          "Batalkan order",
+          "tombol--sekunder tombol--bahaya",
+          function () {
+            konfirmasiBatal = true;
+            render();
+          },
+          sedangKirim,
+        ),
+      );
+      return b;
+    }
+    var kartu = buat("div", "kartu");
+    kartu.setAttribute("role", "alertdialog");
+    kartu.appendChild(buat("h2", "kartu__judul", "Batalkan pesanan ini?"));
+    kartu.appendChild(
+      buat(
+        "p",
+        "isian__bantuan",
+        "Semua isian akan dihapus dan Anda kembali ke langkah 1. Order belum dibuat.",
+      ),
+    );
+    var baris = buat("div", "baris-tombol");
+    baris.appendChild(
+      buatTombol(
+        "Tidak",
+        "tombol--sekunder",
+        function () {
+          konfirmasiBatal = false;
+          render();
+        },
+        sedangKirim,
+      ),
+    );
+    baris.appendChild(
+      buatTombol(
+        "Ya, batalkan",
+        "tombol--sekunder tombol--bahaya",
+        function () {
+          mulaiBaru();
+          pindah(1);
+        },
+        sedangKirim,
+      ),
+    );
+    kartu.appendChild(baris);
+    return kartu;
   }
 
   function isianPilih(id, label, opsi, nilai, saatUbah) {
@@ -986,6 +1045,7 @@
         keranjang.length === 0,
       ),
     );
+    panel.appendChild(blokBatal());
   }
 
   // ------------------------------------------------------------
@@ -1117,6 +1177,7 @@
         false,
       ),
     );
+    panel.appendChild(blokBatal());
   }
 
   // ------------------------------------------------------------
@@ -1171,6 +1232,7 @@
         metode === "",
       ),
     );
+    panel.appendChild(blokBatal());
   }
 
   // ------------------------------------------------------------
@@ -1264,6 +1326,16 @@
     var barisSimpan = buat("div", "baris-tombol");
     barisSimpan.appendChild(
       buatTombol(
+        "Kembali",
+        "tombol--sekunder",
+        function () {
+          kembaliDari(5);
+        },
+        sedangKirim,
+      ),
+    );
+    barisSimpan.appendChild(
+      buatTombol(
         sedangKirim ? "Menyimpan..." : "Simpan order",
         "tombol--utama",
         simpan,
@@ -1271,6 +1343,7 @@
       ),
     );
     panel.appendChild(barisSimpan);
+    panel.appendChild(blokBatal());
   }
 
   // Kirim ke server. Server yang menghitung harga, hari, dan status; aplikasi hanya mengirim pilihan owner.
@@ -1404,6 +1477,7 @@
     alamatTeks = "";
     metode = "";
     balikRingkas = false;
+    konfirmasiBatal = false;
   }
 
   function layarSelesai() {
