@@ -236,3 +236,20 @@ SEC yang dicentang di sheet: SEC-05, SEC-09, SEC-10, SEC-11, SEC-12, SEC-14, SEC
 Keputusan ketua: SEC-10 dicentang walau "customer menang" tidak teramati (owner yang menang, diterima); TC-K10-03 lewat layar dicoret (server sudah menyaring).
 
 Sisa: SEC-19 (Android), non-SEC (O22, wizard Besok, jumlah menu, Segarkan, pilihan non-bawaan di HP), query cek 8 dan 9 paling akhir, tes pemakai. ORD.14 tetap Belum, menunggu keputusan ketua soal syarat tutup.
+
+<!-- Berkas tujuan: docs/pemetaan-test.md, tempel PALING BAWAH bagian 5 (di bawah entri [AIK] K8, SEC-16, SEC-17, SEC-12, SEC-10). Append-only. -->
+
+### 2026-11-10 | KETUA: penutup ORD.14, O22, wizard, SEC-19, cek 8 dan 9
+
+**Baru terbukti** (tanpa bukti dan tanpa data pelanggan): O22 lulus di owner, penjaga, dan customer; wizard hari Besok, jumlah menu, dan Segarkan saat terisi; tes pemakai lolos; query cek 8 dan 9 catatan (cek 1 sampai 9) lulus; SEC-19 lulus (HP digeser ke 12 Nov, "Hari ini" dan waktu catatan tetap dari server, dibuktikan query baca-saja pada order uji).
+
+**SEC yang dicentang di sheet:** SEC-19. **ORD.14 dicentang.** Tes tidak perlu diulang: seluruh K1 sampai K10, O22, wizard, dan cek 8 dan 9.
+
+**Keputusan ketua:**
+
+- ORD.14 ditutup tanpa menunggu butir non-SEC lain.
+- Owner selalu menang benturan batal vs setuju: tidak diselidiki (dropped), perilaku diterima.
+- Potongan harga oleh owner: ditunda, kandidat `docs/bonus.md`.
+- Pemilih jam terpotong di satu HP (layar lengkung): P2, kandidat `docs/bonus.md` "Input jam-menit sendiri", dihitung di `LNC.05`.
+
+**Sisa:** tidak ada tes di peta ini yang tertunda. SEC-20, SEC-21, SEC-29 menunggu FTO; SEC-22 dan SEC-25 menunggu NTF; SEC-30, SEC-31, SEC-04 menunggu BTN; SEC-23 sebelum LNC.01; SEC-27 kapan saja (P1). Gerbang FTO.01 (SEC-19) sudah terbuka.

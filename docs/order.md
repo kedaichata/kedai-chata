@@ -1079,10 +1079,43 @@ Keputusan ketua (10 Nov 2026, setelah Handoff #25). Alasan ketua: nomor WA dan a
 - **Tes pemakai** (owner paling awam, satu order wakil tanpa dipandu): setelah semuanya lulus.
 - **Keputusan ketua:** apakah SEC-19 dan butir non-SEC wajib sebelum ORD.14 dicentang, atau cukup butir di teks baris sheet (yang menurut pencocokan sesi ini sudah terbukti semua).
 - **Butir baru untuk sheet:** "Selidiki kenapa owner selalu menang benturan batal vs setuju" (rasa penasaran, bukan blocker).
-- Dashboard Supabase sudah logout dan browser ditutup. Tanpa push di sesi ini.
 - Butir terbuka Handoff #11 sampai #29 yang tidak disebut di sini tidak berubah.
 
 **Data dummy baru** (dibersihkan di LNC.01): order #52 (wakil, Besok 11 Nov, Disetujui, 1 catatan owner) dan #53 (customer, Besok 11 Nov, Disetujui, 2 catatan); keduanya sudah Besok, jadi alih hari lagi ditolak `sudah_besok`.
 
 **Saran giliran berikutnya:** (1) tes pemakai wizard; (2) wizard hari Besok dan jumlah menu di HP, satu sesi; (3) SEC-19 dan `sw.js` v17 di Android; (4) query cek 8 dan 9 di dashboard, paling akhir. Lampirkan `AGENTS.md` + `order.md` + `security.md` + `pemetaan-test.md` + `order-test.md`.
+
+### Handoff #31 | 2026-11-10 | KETUA
+
+**Tugas:** ORD.14 (sesi tes order) **selesai dan dicentang di sheet**. SEC-19 **selesai dan dicentang**. Tidak ada kode, SQL, migration, `kedai`, atau `sw.js` yang diubah. Handoff ini menggantikan "Masalah yang belum beres" dan "Saran giliran berikutnya" di Handoff #28 sampai #30; selebihnya tetap berlaku.
+
+**Baris SEC yang dicentang di sheet sesi ini:** SEC-19. Total SEC order yang sudah Selesai: SEC-05 sampai SEC-19. SEC-19 adalah gerbang FTO.01, jadi rantai foto bukti boleh dimulai.
+
+**Terbukti** (bukti diperiksa di chat, tidak disimpan):
+
+- **O22, urutan daftar, tiga peran** (lewat `order_daftar` di konsol): owner 31 baris, penjaga 20, customer 42, semuanya status 200. Owner: Hari ini dulu lalu Besok; dalam hari urutannya Disetujui sampai siap, Menunggu, Selesai, Ditolak dan Dibatalkan. Penjaga: tanpa Menunggu, Ditolak, dan Dibatalkan, urutan sama dengan owner. Customer: riwayat lengkap semua hari, nomor turun, tanpa order wakil.
+- **Wizard order wakil** (satu order, #55): hari Besok (`hari_target` = tanggal besok dari server), tambah, kurangi, dan hapus jumlah menu tanpa layar loncat, Segarkan saat terisi tidak menghapus isian.
+- **Tes pemakai:** owner paling awam membuat order wakil tanpa dipandu, order tersimpan.
+- **Query cek 8 dan 9 catatan** (`20261109_04_catatan_fungsi_cek.sql`, cek 1 sampai 9 semuanya lulus): penulis hanya owner atau customer, `waktu_wajar` true di 20 baris, penunjuk baca tidak pernah melewati catatan terbaru di 18 baris.
+- **SEC-19:** HP Android digeser ke 12 Nov, login dan aplikasi normal. Order #59 dibuat "Hari ini" dari HP itu: layar menulis hari antar 10 Nov dan waktu catatan sesuai jam asli. Query baca-saja: `hari_target` 2026-11-10, `dibuat_pada` dan waktu catatan di 10 Nov dekat `now()` server. Bagian alih hari memakai bukti H#13 dan sesi K6 (isian `hari` palsu diabaikan, tujuan hanya Besok); tidak diulang dengan HP digeser karena server tidak membaca jam HP.
+- Dilaporkan ketua tanpa bukti rinci: `sw.js` v17 muncul di HP (H#27) dan pilihan menu non-bawaan di HP lolos.
+
+**Keputusan baru (ketua, 10 Nov):**
+
+- **ORD.14 ditutup** setelah semua yang tertulis di teks barisnya terbukti, tes pemakai lolos, dan SEC-19 selesai. Tidak ada butir baru yang ditambah ke sheet dari sesi ini.
+- **Potongan harga oleh owner (diskon pribadi) ditunda.** Alasan: nyokap (owner pemakai utama) setuju tidak dimasukkan di versi sekarang. O3 (tanpa diskon) dan aturan "server yang hitung" tetap berlaku. Kandidat untuk `docs/bonus.md`: "Potongan harga oleh owner". Bila dikerjakan kelak, bentuk yang diusulkan: owner mengirim potongan, server yang menghitung total, tercatat di riwayat; perubahan tabel dan fungsi butuh penjelasan dampak dan "OK" ketua.
+- **"Owner selalu menang benturan batal vs setuju" tidak diselidiki (drop).** Alasan: jarang terjadi, kebijakan menang ada di owner (common sense), dan bila ada yang bertentangan diselesaikan lewat WA. Atomik sudah terbukti (tepat satu menang). Ini perilaku yang diterima.
+- **Pemilih jam terpotong di HP nyokap tetap P2, tidak ada kode diubah.** Alasan: jam tetap bisa dipilih (tombol Set harus ditebak di area lengkung layar), nyokap nyaman dan tidak mau mengubah setelan HP. Kandidat `docs/bonus.md`: "Input jam-menit sendiri".
+- Rilis ke pelanggan tetap menunggu NTF, FTO, BTN, SEC-23, dan LNC.01 (kesepakatan ketua dengan nyokap: tidak perlu memaksakan).
+
+**Masalah yang belum beres:**
+
+- **Pemilih jam bulat bawaan Chromium** di Oppo Reno 11 milik nyokap (Brave dan Chrome): tombol keempat (Set) terpotong di tepi kanan dialog, terjadi juga di mode ketik. Terjadi di 1 dari 5 HP yang dites; dugaan layar lengkung belum terbukti. Dihitung di review pemakaian (`LNC.05`); bila keluhan serupa datang dari pelanggan nyata, buka opsi input jam-menit sendiri di `orderwakil.js` dan `pesan.js` (server tetap menerima `HH:MM`).
+- Push untuk order wakil, status, koreksi, batal, alih hari, dan catatan belum ada (NTF).
+- Butir terbuka lain dari Handoff #11 sampai #30 yang tidak disebut di sini tidak berubah (antara lain `orderowner.js`, `orderpenjaga.js`, `pesan.js`, dan `orderwakil.js` melewati patokan ~500 baris, sudah di-OK ketua untuk `orderwakil.js` dan `pelangganluar.js`).
+- Logout dashboard Supabase dikonfirmasi ketua.
+
+**Data dummy baru** (tidak bisa dihapus, dibersihkan di LNC.01): order #54 (Menunggu, Makan di warung, Hari ini), #55 (order wakil, Besok 11 Nov, Disetujui, Tunai), #56 (satu catatan owner, dari tes pemakai), #59 (Menunggu, Diambil, Hari ini, catatan "Tes sec19"); nomor lain di antaranya dari tes pemakai nyokap.
+
+**Saran giliran berikutnya:** mulai rantai foto bukti **FTO.01** (gerbang SEC-19 sudah terbuka), lalu FTO, NTF, BTN. Lampirkan `AGENTS.md` + `foto-bukti.md` + `database.md` + `security.md` + berkas `kedai` yang relevan. Sebelum peluncuran: SEC-23 dan LNC.01 (pembersihan data uji dan reset nomor order, butuh "OK" ketua).
 ---
