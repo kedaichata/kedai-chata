@@ -930,4 +930,48 @@ Keputusan ketua (10 Nov 2026, setelah Handoff #25). Alasan ketua: nomor WA dan a
 1. Selesaikan pagar `AGENTS.md` bagian 8 (`git status --short` harus hanya lima berkas di atas), commit dan push satu commit, lalu tes ORD.13 di HP dengan akun dummy, mulai dari cek `menu_daftar` owner. Setelah lulus, ORD.13 bisa dicentang di sheet.
 2. Lalu **ORD.14** (sesi tes order); sisa tes ada di Handoff #11, #13, #14, #15, #21, dan #24.
 
+### Handoff #27 | 2026-11-10 | [RAC]
+
+**Tugas:** ORD.13 (wizard 5 langkah Buat Order wakil dan layar Kelola Pelanggan) **selesai**: tes lulus di desktop dan HP Android (termasuk offline dan update `sw.js` v17), sudah di-push, dicentang di sheet. Menggantikan "Terbuka dan belum diverifikasi" dan "Saran giliran berikutnya" di Handoff #26; selebihnya #26 tetap berlaku. Tidak ada perubahan SQL, migration, `kedai`, atau `sw.js` di sesi ini.
+
+**Commit** (pagar `AGENTS.md` bagian 8 lolos): `b1a7e36` ORD.13 (enam berkas dari Handoff #26); `105c190` tombol Kembali dan Batalkan order di wizard (pesan commit salah tulis "ORD.11"; yang benar lanjutan ORD.13).
+
+**Berkas yang diubah:** hanya `public/orderwakil.js` (sekitar 1603 baris; 74 baris tambah, 0 hapus).
+
+**Keputusan baru:**
+
+- **Wizard punya jalan keluar** (usul penulis, disetujui lewat "gas"; ditemukan saat tes HP: owner buntu di ringkasan, isian nyangkut sampai Keluar). Langkah 5 kini punya tombol **Kembali** (ke langkah 4). Langkah 2 sampai 5 punya tombol **Batalkan order** dengan kartu konfirmasi "Batalkan pesanan ini?" (Tidak / Ya, batalkan). Ya = semua isian dikosongkan, kembali ke langkah 1, tanpa panggilan server (order belum dibuat). Langkah 1 tanpa tombol itu. Tombol mati selama Simpan berjalan.
+- Alasan lain belum tercatat.
+
+**Pertentangan dengan catatan lama:** Handoff #26 ("isian wizard dikosongkan saat Keluar") kini juga berlaku lewat Batalkan order. Butir "layar penjaga belum dicek untuk layar loncat" (Handoff #21) **beres**.
+
+**Terbukti** (akun dummy; bukti di chat, tidak disimpan):
+
+- Balasan `menu_daftar` owner memuat `grup` (asumsi Handoff #26 benar).
+- Wizard untuk tiga tipe dan tiga metode bayar: order sah dengan total dari server, pilihan menu tersalin, nomor order lanjut tanpa loncat, tampil di Semua Order, detail owner, dan Antrean penjaga sampai Selesai.
+- Alamat: pelanggan tanpa alamat tersimpan wajib isi (9 karakter ditolak); pelanggan beralamat memakai alamat tersimpan sebagai bawaan; alamat timpaan berlaku untuk order itu saja dan alamat tersimpan tidak berubah.
+- Jam bawaan 11:00 hanya Diantar; Diambil dan Makan di warung kosong dan wajib; kembali kosong saat tipe berpindah.
+- Pelanggan nonaktif tidak muncul di langkah 1; Pelanggan baru di tempat langsung terpilih; Simpan ditekan dua kali cepat hanya membuat satu order.
+- Kelola Pelanggan: tambah, ubah (nomor WA tersimpan berawalan 62), nonaktifkan dengan konfirmasi, aktifkan lagi, nama kembar ditolak server, validasi nama, nomor WA, dan alamat tampil di dekat kolom; kolom nama menahan ketikan di 30 karakter.
+- Keluar mengosongkan daftar dan wizard.
+- Catatan: kolom kosong ditolak tanpa layar loncat, owner menambah catatan di order wakil, catatan terkunci saat Diproses dan terbuka lagi bila dimundurkan.
+- Layar penjaga: status maju (Diproses, Siap diambil, Selesai) tanpa layar loncat pada detail panjang; catatan baca-saja.
+- Tombol Batalkan order: berfungsi di HP, tampilan OK, offline tetap ada peringatan.
+
+**Masalah yang belum beres:**
+
+- **Tes pemakai belum dilakukan** (ukuran berhasil dari ketua, Handoff #25): minta owner yang paling tidak terbiasa aplikasi membuat satu order wakil tanpa dipandu, lalu catat di mana ia bingung.
+- Belum dites lewat wizard: tambah, kurangi, dan hapus jumlah menu tanpa layar loncat; hari **Besok**; Segarkan saat wizard terisi; order ber-pilihan menu non-bawaan di HP.
+- Tombol Batalkan order memakai kelas `tombol--bahaya` (tebakan nama). Belum dicek tampil merah atau tidak; cuma urusan warna.
+- Butir baru untuk sheet: "Wizard: tombol Kembali di ringkasan dan Batalkan order".
+- Baris SEC (SEC-07, SEC-08, SEC-13 untuk `order_buat_wakil`, SEC-18, SEC-19) belum dicentang; jadwalnya setelah ORD.14.
+- Push untuk order wakil ke penjaga belum ada (NTF; O15). Jam bawaan 11:00 ada di kode (`JAM_BAWAAN_ANTAR`).
+- **Data dummy baru** (dibersihkan di LNC.01): order #33 (Selesai, Diambil, QRIS, 20000, 5 catatan), #34 (Diantar, Transfer, 20000, alamat timpaan), #35 (Diantar, Transfer, 15000, alamat timpaan), #36 (Makan di warung, Tunai, 15000), #37 (Diantar, Transfer, 5000), semuanya hari Selasa 10 Nov; #34 sampai #37 masih Disetujui. Pelanggan dummy baru: Dummy Tiga (aktif, WA dummy, tanpa alamat) dan Dummy Empat (aktif). Dummy Satu Ubah sudah dikembalikan ke nama aslinya.
+- Butir terbuka Handoff #11 sampai #26 yang tidak disebut di sini tidak berubah.
+
+**Saran giliran berikutnya:**
+
+1. **Tes pemakai** wizard (di atas). Bila ia berhenti di langkah tertentu, catat sebagai bahan perbaikan.
+2. **ORD.14** (sesi tes order, `order-test.md` dibuat di sesi tes): sisa tes ada di Handoff #11, #13, #14, #15, #21, dan #24 (SEC-10 dua sesi bersamaan, SEC-19 jam HP digeser, batal vs setuju bersamaan, ketuk dua kali tombol status, urutan daftar O22). Ulangi query cek 8 dan 9 sesudahnya, lalu centang baris SEC.
+
 ---

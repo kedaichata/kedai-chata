@@ -219,3 +219,16 @@ Keputusan ketua (diwakili adik ketua di sesi strategi). Sumber: docs/gim.md.
 - **Bagian 3 dan 6, pengecualian CSS:** gaya hamburger dan game ada di **`public/game.css`** (kelas berawalan `gim-`), dimuat setelah `style.css`. Pengecualian khusus game dari aturan "semua gaya di satu `style.css`"; layar lain tetap di `style.css`. `game.css` dan berkas JS game wajib didaftarkan di cache `sw.js` (aturan bagian 7; butuh "OK").
 - **Game tidak memanggil server** dan tidak memakai kode leaderboard Firebase dari proyek lama. Data tersimpan hanya level tertinggi di `localStorage` (kunci `chata_game_arithmetics_best`).
 - **Pengecualian "angka di database" (bagian 1):** angka timer game tetap di kode game karena game tanpa server.
+
+<!-- Berkas tujuan: AGENTS.md, tempel PALING BAWAH bagian 12 (di bawah blok 2026-11-10 gim). Append-only. -->
+
+### 2026-11-10: Berkas kerja `docs/pemetaan-test.md` (tes tidak diulang, AI yang mengingatkan centang)
+
+Keputusan ketua (10 Nov 2026). Alasan ketua: tes yang sudah lulus jangan diulang di sesi lain, dan manusia tidak akan ingat baris SEC mana yang sudah boleh dicentang, jadi AI yang mengingatkan.
+
+- **`docs/pemetaan-test.md` adalah berkas kerja**, bukan dokumen fitur dan tidak masuk tabel Peta Dokumentasi (bagian 5). Isinya peta tes ORD.14 ke baris SEC beserta status, dan log status append-only.
+- **Sesi tes melampirkan berkas ini** bersama `AGENTS.md`, `order.md`, dan `security.md` (menambah bagian 11, pola sesi kode).
+- **Kewajiban AI di sesi tes:** di awal sesi menyebut apa yang sudah terbukti (jangan diulang) dan sisa tes; tiap selesai satu tes menyebut baris SEC yang kini lengkap ("butir SEC-NN sudah selesai, silakan dicentang di sheet", sesuai aturan 8) atau aksi apa yang masih kurang; di akhir sesi menawarkan Handoff dan satu blok log untuk berkas itu.
+- **Tanda ✅ di berkas itu berarti tes tidak perlu diulang, bukan berarti SEC boleh dicentang.** Centang hanya bila semua aksi di baris SEC terbukti dan jenis buktinya sesuai kolom Catatan sheet (aturan 10: tanpa bukti jangan diberi lulus).
+- **Bukti tetap tidak disimpan** (bagian 10 butir 2). Berkas itu hanya menyimpan status, tanpa bukti dan tanpa data pelanggan.
+- Sheet tetap tidak dibagi ke AI dan tidak menerima catatan dari AI (aturan 3 dan 8): kolom Catatan baris SEC diisi manusia.
