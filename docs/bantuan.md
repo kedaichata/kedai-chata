@@ -175,3 +175,47 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua. Dikerjakan **setelah `not
 - Lapis kedua token (SEC-02, SEC-32) belum dites.
 
 **Saran giliran berikutnya (BTN.03, Low-Risk, sesi kode):** layar Bantuan, ikon ? di bilah atas (tab utama saja), dan pengaktifan tombol Bantuan di Home (id `home-bantuan`). Lampirkan `AGENTS.md`, `bantuan.md`, `desain.md`, `home.md`, serta `index.html`, `style.css`, `sw.js`, dan JS layar yang relevan. Berkas JS baru wajib didaftarkan di cache `sw.js` (butuh "OK" ketua); gaya tetap di `style.css`.
+
+### Handoff #2 | 2026-11-10 | [FREN]
+
+**Tugas:** BTN.03 (layar Bantuan) **baru giliran A dari dua giliran**. Belum boleh dicentang di sheet. Giliran A sudah ditulis dan disimpan di laptop, **belum di-push** (belum ada hash commit). Giliran B belum dikerjakan.
+
+**Berkas yang berubah (giliran A):**
+
+- Baru: `public/bantuan.js` (layar Bantuan: ambil `bantuan_daftar`, kelompok per `bagian`, pertanyaan dilipat dengan `<details>`, keadaan memuat/kosong/galat/offline, slot infografik).
+- Diubah: `public/style.css` (hanya menambah di akhir, blok "BTN.03": ikon ? di bilah atas, gambar infografik, akordeon pertanyaan; bagian lama dicek sama persis).
+- Tidak berubah: `bantuan.ts`, `index.ts`, tabel `bantuan`, `index.html`, `kerangka.js`, `sw.js`. Berkas JS baru belum dimuat siapa pun, jadi aman di-push lebih dulu.
+
+**Keputusan baru (ketua, 10 Nov 2026; yang paling akhir menang):**
+
+- **Tanpa kolom `jenis`, tanpa migration, tanpa deploy ulang.** Query baca-saja 10 Nov membuktikan tabel `bantuan` berisi 9 kolom dan tidak punya `jenis`. Rencana kolom `jenis` dibatalkan. Alasan: menghindari perubahan skema dan deploy ulang; alasan lain belum tercatat.
+- **Infografik = baris dengan `urutan` tepat 1** yang `isi`-nya path gambar relatif di `img/` (contoh `img/infografik.webp`); `judul` menjadi teks alternatif gambar. Tampil di atas daftar, tidak dilipat, tidak masuk daftar pertanyaan. Ini menimpa sebagian BT4 ("tanpa gambar") dan menggeser B33 ("gambar ditunda") untuk satu gambar.
+- **Path dicek di layar saja** (server tidak memeriksa `isi`): diawali `img/`, berakhiran `.webp`, `.png`, atau `.jpg`, tanpa `..`, `:`, `//`. Bila bukan path sah, baris tampil sebagai pertanyaan biasa. Lebih dari satu baris gambar urutan 1: hanya yang pertama dipakai. Gambar belum ada atau gagal dimuat: gambar disembunyikan, layar tetap rapi.
+- **Satu gambar umum untuk semua peran** (baris berperan `semua`). Gambar per peran ditunda ke versi berikutnya.
+- **Infografik belum ada.** Dimasukkan nanti lewat lembar setelah gambarnya dibuat (gambar acuan teman tidak boleh disalin, `desain.md`).
+- **Posisi tombol:** ikon **?** warna emas di sebelah kiri Segarkan di bilah atas (tab utama saja), sesuai blok 10 Nov. Tombol Bantuan di Home ikut diaktifkan ke layar yang sama.
+- **Layar Bantuan = panel di dalam kerangka** (bilah atas dan Segarkan langsung jalan), bukan layar terpisah. Pilihan penulis kode yang disetujui lewat "gas" ketua; alasan lain belum tercatat.
+- **"OK" ketua untuk `sw.js` sudah diberikan di chat:** `bantuan.js` didaftarkan di cache dan nama cache naik dari `chata-v17` ke `chata-v18`. Gambar infografik didaftarkan di cache nanti, setelah berkasnya ada (butuh "OK" lagi karena menyentuh `sw.js`).
+
+**Rencana giliran B (3 berkas, di-push bersamaan; `sw.js` sudah di-OK):**
+
+- `index.html`: tambah `<div id="panel-bantuan" hidden></div>`; ikon ? emas (id mis. `tombol-bantuan-atas`, kelas `bilah-atas__bantuan`) di kiri Segarkan; `<script src="bantuan.js">` **setelah `akun.js` dan sebelum `kerangka.js`**; tombol `home-bantuan` diaktifkan (buang `disabled` dan label "Segera", tambah `data-aksi="bantuan"`; kode lama dijadikan komentar, tidak dihapus).
+- `kerangka.js`: tab tersembunyi `bantuan` (panel `bantuan`) di owner, customer, penjaga (pola sama dengan tab `pelanggan`); tambah `"bantuan"` ke daftar `PANEL`; simpan tab sebelumnya supaya Kembali (tombol `#bantuan-kembali` dibuat `bantuan.js`) membuka tab itu dan navigasi bawah tetap menandai tab asal; aksi Home `bantuan`; pemanggilan `window.KedaiBantuan.tampil()` di `buka()` dan `.reset()` di `reset()`, keduanya dengan pengecekan keberadaan.
+- `sw.js`: tambah `"bantuan.js"` di `DAFTAR_CACHE`, nama cache `chata-v18`; kode lama dijadikan komentar.
+- Segarkan sudah otomatis memuat ulang layar Bantuan (lewat `muatStatus` lalu `buka(tab)`), jadi tidak perlu pendengar baru.
+
+**Belum beres:**
+
+- Giliran A belum di-push. **Push giliran A bersama atau sebelum giliran B; jangan push giliran B tanpa `bantuan.js` di repo** (`sw.js` mendaftarkan berkas yang harus ada, bila tidak pemasangan cache gagal).
+- **BTN.02 belum boleh dicentang.** Bukti balasan 200 dengan login (daftar kosong) baru ada saat layar Bantuan menampilkan "Belum ada bantuan" (giliran B selesai). Penyaringan peran penuh terbukti di BTN.04 dan BTN.06 (SEC-31). Lapis kedua token (SEC-02, SEC-32) belum dites.
+- Tes layar belum dilakukan (giliran A belum terpasang). Tes giliran B: tiga peran, ikon ? di tab utama dan tidak di sub-layar/Masuk/Daftar, tombol Bantuan di Home, Kembali, Segarkan, offline, galat, "Belum ada bantuan", Keluar membersihkan isi.
+
+**Catatan untuk BTN.04 dan BTN.05:**
+
+- **Urutan 1 jangan dipakai untuk pertanyaan biasa** (pertanyaan tetap kelipatan 10).
+- Template lembar `bantuan-isi.xlsx` **tidak perlu diubah**: baris infografik diisi manual seperti baris lain (`urutan` 1, `peran` `semua`, `isi` = path gambar).
+- Berkas gambar harus sudah ada di `public/img/` sebelum baris diimpor, dan didaftarkan di `sw.js` (naikkan nama cache; butuh "OK" ketua).
+
+**Saran giliran berikutnya (giliran B, Low-Risk, kecuali `sw.js` yang sudah di-OK):** lampirkan `AGENTS.md` + `bantuan.md` + `desain.md` + `home.md` + versi terbaru `public/index.html`, `public/kerangka.js`, `public/sw.js` (+ `public/bantuan.js` dan `public/style.css` bila ingin dicek). Sebelum push, cek tiga hal anti-nyasar (folder aktif, `git remote -v`, email commit terakhir; semuanya milik ketua), dan sebelum `git add .` cek `git status`. Logout GitHub dan Supabase di profil browser setelah selesai.
+
+**Butir baru yang perlu ditambah ke sheet:** "Buat gambar infografik alur dan pasang di Bantuan" (judul pendek; menunggu gambar). Butir "kolom jenis" yang sempat disarankan **tidak jadi**, tidak usah ditambah.

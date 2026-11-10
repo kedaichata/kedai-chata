@@ -1626,3 +1626,106 @@ body.sheet-terbuka {
 .dialog-keluar__isi {
     margin: 0;
 }
+
+/* ------------------------------------------------------------------
+   BTN.03: layar Bantuan dan ikon ? di bilah atas (bantuan.md BT12, desain.md DS15)
+   Ikon ? emas di kiri Segarkan. Pertanyaan dilipat (details bawaan peramban).
+   Hanya tambahan; tidak mengubah aturan yang sudah ada.
+   ------------------------------------------------------------------ */
+.bilah-atas__bantuan {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: var(--tinggi-tombol);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--emas-terang);
+    cursor: pointer;
+}
+
+.bilah-atas__bantuan:active {
+    background: rgba(226, 184, 74, 0.18);
+}
+
+.bilah-atas__bantuan:focus-visible {
+    outline: 2px solid var(--emas-terang);
+    outline-offset: -2px;
+}
+
+.bilah-atas__bantuan svg {
+    width: 26px;
+    height: 26px;
+}
+
+/* Infografik di atas daftar: lebar penuh, tinggi menyesuaikan */
+.bantuan-gambar {
+    margin: 0 0 12px;
+}
+
+.bantuan-gambar img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--garis-tipis);
+    border-radius: 12px;
+    background: var(--putih);
+}
+
+/* Satu pertanyaan: baris judul bisa diketuk, jawaban terbuka di bawahnya */
+.bantuan-tanya {
+    border-top: 1px solid var(--garis-tipis);
+}
+
+.bantuan-tanya__judul {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: var(--tinggi-tombol);
+    padding: 10px 0;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+    list-style: none;
+}
+
+.bantuan-tanya__judul::-webkit-details-marker {
+    display: none;
+}
+
+/* Panah kecil di kiri judul; berputar saat terbuka */
+.bantuan-tanya__judul::before {
+    content: "\203A";
+    flex: 0 0 auto;
+    width: 18px;
+    font-size: 1.6rem;
+    line-height: 1;
+    color: var(--marun);
+    transition: transform 0.15s ease;
+}
+
+.bantuan-tanya[open] > .bantuan-tanya__judul::before {
+    transform: rotate(90deg);
+}
+
+.bantuan-tanya__judul:focus-visible {
+    outline: 3px solid var(--emas-terang);
+    outline-offset: 2px;
+}
+
+.bantuan-jawab {
+    padding: 0 0 8px 28px;
+    overflow-wrap: anywhere;
+}
+
+.bantuan-jawab p {
+    margin: 0 0 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bantuan-tanya__judul::before {
+        transition: none;
+    }
+}
