@@ -743,7 +743,64 @@
                             <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
                         </svg>
                     </button>
+                    <!-- DSN.08: tombol Keluar di bilah atas (lingkaran merah, ikon pintu dan panah keluar).
+                         Diketuk: konfirmasi dulu (#konfirmasi-keluar), logika di kerangka.js. -->
+                    <button
+                        type="button"
+                        class="bilah-atas__keluar"
+                        id="tombol-keluar-atas"
+                        aria-label="Keluar"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                            <polyline points="16 17 21 12 16 7" />
+                            <line x1="21" y1="12" x2="9" y2="12" />
+                        </svg>
+                    </button>
                 </header>
+
+                <!-- DSN.08: konfirmasi Keluar. Batal = tombol utama (isian marun), Keluar = berpinggir merah (DS12).
+                     Teks tetap (bukan dari server). Logika di kerangka.js. -->
+                <div
+                    class="dialog-keluar"
+                    id="konfirmasi-keluar"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="konfirmasi-keluar-judul"
+                    hidden
+                >
+                    <div
+                        class="dialog-keluar__latar"
+                        id="konfirmasi-keluar-latar"
+                    ></div>
+                    <div class="dialog-keluar__kotak">
+                        <h2
+                            class="dialog-keluar__judul"
+                            id="konfirmasi-keluar-judul"
+                        >
+                            Yakin mau keluar?
+                        </h2>
+                        <p class="dialog-keluar__isi">
+                            Nanti masuk lagi perlu password.
+                        </p>
+                        <div class="baris-tombol">
+                            <button
+                                type="button"
+                                class="tombol tombol--utama"
+                                id="keluar-batal"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                type="button"
+                                class="tombol tombol--bahaya"
+                                id="keluar-ya"
+                            >
+                                Keluar
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Panel: fitur yang belum dibuat (Order, Pesan, Antrean, dll.) -->
                 <div id="panel-segera" hidden>
@@ -1635,7 +1692,8 @@
                         </div>
 
                         <!-- HOM.04: Keluar tetap paling bawah, berpinggir (DS9, DS12), diberi jarak dari daftar -->
-                        <div class="baris-tombol home-keluar">
+                        <!-- DSN.08: Keluar di Home disembunyikan (hidden), kode tidak dihapus; Keluar kini di bilah atas. Id tombol-keluar tetap ada untuk akun.js. -->
+                        <div class="baris-tombol home-keluar" hidden>
                             <button
                                 type="button"
                                 class="tombol tombol--sekunder"

@@ -1543,3 +1543,86 @@ body.sheet-terbuka {
     padding-top: 16px;
     border-top: 1px solid var(--garis-tipis);
 }
+
+/* ------------------------------------------------------------------
+   DSN.08: tombol Keluar di bilah atas dan kotak konfirmasi (desain.md blok 10 Nov 2026)
+   Ikon terang di dalam lingkaran merah, di kanan Segarkan. Konfirmasi: Batal = utama (marun),
+   Keluar = berpinggir merah (DS12). Hanya tambahan; tidak mengubah aturan yang sudah ada.
+   ------------------------------------------------------------------ */
+:root {
+    --keluar-bulat: #c62828; /* lingkaran Keluar di bilah atas */
+}
+
+/* Judul mengisi ruang kosong supaya Segarkan dan Keluar rapat di kanan */
+.bilah-atas__judul {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.bilah-atas__keluar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+    margin: 0 4px 0 2px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--keluar-bulat);
+    color: var(--teks-terang);
+    cursor: pointer;
+}
+
+.bilah-atas__keluar:active {
+    background: var(--bahaya);
+}
+
+.bilah-atas__keluar:focus-visible {
+    outline: 2px solid var(--emas-terang);
+    outline-offset: 2px;
+}
+
+.bilah-atas__keluar svg {
+    width: 22px;
+    height: 22px;
+    stroke-width: 2.2;
+}
+
+.dialog-keluar {
+    position: fixed;
+    inset: 0;
+    z-index: 40; /* di atas sheet detail menu (30), tombol melayang (12), dan bilah (10) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.dialog-keluar__latar {
+    position: absolute;
+    inset: 0;
+    background: rgba(42, 26, 26, 0.6);
+}
+
+.dialog-keluar__kotak {
+    position: relative;
+    width: 100%;
+    max-width: 360px;
+    padding: 20px 16px 16px;
+    background: var(--krem);
+    border: 2px solid var(--emas-redup);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.dialog-keluar__judul {
+    margin: 0 0 8px;
+    font-size: 1.25rem;
+}
+
+.dialog-keluar__isi {
+    margin: 0;
+}

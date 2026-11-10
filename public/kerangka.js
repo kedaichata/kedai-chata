@@ -37,6 +37,11 @@
 // Item Pelanggan di Home membuka tab tersembunyi "pelanggan" (panel "pelanggan", pelangganluar.js:
 // window.KedaiPelangganLuar .tampil()/.reset()). Tab ini tidak punya tombol di navigasi bawah.
 //
+// DSN.08: tombol Keluar (ikon, lingkaran merah) di bilah atas, di kanan Segarkan. Diketuk: kotak konfirmasi
+// "Yakin mau keluar?" (Batal = utama, Keluar = berpinggir merah). Keluar memanggil window.KedaiAkun.keluar
+// (akun.js) yang sudah menghapus sesi, nama, dan sapaan. Tombol Keluar di Home disembunyikan di index.html.
+// Bilah atas hanya ada di layar utama (layar-sementara), jadi sub-layar, Masuk, dan Daftar tidak punya tombol ini.
+//
 // Aturan yang dijaga:
 // - Peran datang dari balasan server (aksi status) lewat akun.js; aplikasi tidak pernah mengirim peran.
 //   Menyembunyikan tab di sini hanya kemudahan; yang menolak akses sebenarnya server.
@@ -358,6 +363,8 @@
     tab = null;
     sembunyikanSemua();
     el("kerangka-judul").textContent = "Beranda";
+    // DSN.08: kotak konfirmasi Keluar tidak boleh tersisa terbuka.
+    tutupKonfirmasiKeluar();
     // HOM.05: #sapaan dan #catatan-profil lama sudah dihapus dari index.html.
     // HOM.02: sapaan baru dan lencana peran juga dibersihkan (nama tidak boleh tersisa setelah Keluar).
     el("home-nama").textContent = "";
@@ -433,6 +440,36 @@
     var aksi = sasaran.getAttribute("data-aksi");
     if (Object.prototype.hasOwnProperty.call(AKSI_HOME, aksi)) {
       AKSI_HOME[aksi]();
+    }
+  });
+
+  // DSN.08: konfirmasi Keluar. Dibuka dari ikon di bilah atas; Batal menutup, Keluar memanggil KedaiAkun.keluar.
+  function bukaKonfirmasiKeluar() {
+    el("konfirmasi-keluar").hidden = false;
+    el("keluar-batal").focus();
+  }
+
+  function tutupKonfirmasiKeluar() {
+    el("konfirmasi-keluar").hidden = true;
+  }
+
+  el("tombol-keluar-atas").addEventListener("click", bukaKonfirmasiKeluar);
+  el("keluar-batal").addEventListener("click", function () {
+    tutupKonfirmasiKeluar();
+    el("tombol-keluar-atas").focus();
+  });
+  el("konfirmasi-keluar-latar").addEventListener("click", function () {
+    tutupKonfirmasiKeluar();
+  });
+  el("keluar-ya").addEventListener("click", function () {
+    tutupKonfirmasiKeluar();
+    if (A && typeof A.keluar === "function") {
+      A.keluar();
+    }
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !el("konfirmasi-keluar").hidden) {
+      tutupKonfirmasiKeluar();
     }
   });
 
