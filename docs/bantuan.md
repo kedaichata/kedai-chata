@@ -219,3 +219,29 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua. Dikerjakan **setelah `not
 **Saran giliran berikutnya (giliran B, Low-Risk, kecuali `sw.js` yang sudah di-OK):** lampirkan `AGENTS.md` + `bantuan.md` + `desain.md` + `home.md` + versi terbaru `public/index.html`, `public/kerangka.js`, `public/sw.js` (+ `public/bantuan.js` dan `public/style.css` bila ingin dicek). Sebelum push, cek tiga hal anti-nyasar (folder aktif, `git remote -v`, email commit terakhir; semuanya milik ketua), dan sebelum `git add .` cek `git status`. Logout GitHub dan Supabase di profil browser setelah selesai.
 
 **Butir baru yang perlu ditambah ke sheet:** "Buat gambar infografik alur dan pasang di Bantuan" (judul pendek; menunggu gambar). Butir "kolom jenis" yang sempat disarankan **tidak jadi**, tidak usah ditambah.
+
+### Handoff #3 | 2026-11-11 | [RAC]
+
+**Tugas:** BTN.03 (layar Bantuan) selesai. Giliran A dan B sudah terpasang dan dites. BTN.02 dan BTN.03 sudah dicentang di sheet.
+
+**Berkas yang berubah (giliran B):** `public/index.html`, `public/kerangka.js`, `public/sw.js` (cache `chata-v17` jadi `chata-v18`, `bantuan.js` masuk daftar cache; "OK" ketua sudah tercatat di Handoff #2). Hash commit giliran A: `ccc1d5e`. Hash giliran B belum dicatat. Kode lama tidak ada yang dihapus; yang diganti dijadikan komentar bertanda `BTN.03`.
+
+**Isi:** ikon ? emas di bilah atas (kiri Segarkan), panel `#panel-bantuan`, tombol Bantuan di Home aktif (versi "Segera" disimpan sebagai komentar), tab tersembunyi `bantuan` di semua peran, tombol Kembali membuka tab asal dan navigasi bawah tetap menandai tab asal, `KedaiBantuan.tampil()` dan `.reset()` dipanggil dari `kerangka.js`.
+
+**Keputusan baru (pilihan penulis kode, disetujui lewat "gas"; alasan lain belum tercatat):**
+
+- Ikon ? disembunyikan selama layar Bantuan sendiri terbuka.
+- Tab `bantuan` juga ditambahkan ke peran tak dikenal (`lain`) supaya ikon ? tidak jadi tombol kosong.
+
+**Hasil tes:** dites di laptop dan HP, semua berfungsi sesuai. Bukti diperiksa di chat dan tidak disimpan. Layar menampilkan "Belum ada bantuan", jadi balasan 200 dengan login untuk `bantuan_daftar` terbukti.
+
+**Belum beres:**
+
+- Penyaringan peran penuh baru terbukti di BTN.04 dan BTN.06 (SEC-31). Lapis kedua token (SEC-02, SEC-32) belum dites.
+- BTN.04 (lembar dari template dan uji impor 3 baris contoh) menjalankan SQL di production: butuh penjelasan dampak dan "OK" ketua.
+- BTN.05 (isi awal) dikerjakan setelah fitur lain final. BTN.06 (sesi tes, SEC-30 dan SEC-31) setelah BTN.04.
+- Infografik belum ada. Baris `urutan` 1 diisi lewat lembar setelah gambar dibuat dan didaftarkan di `sw.js` (naikkan cache, butuh "OK").
+
+**Saran giliran berikutnya:** BTN.04, sesi kode High-Risk. Lampirkan `AGENTS.md` + `bantuan.md` + `database.md` + `security.md` + `bantuan-isi.xlsx` (template lembar). Tidak ada data pelanggan nyata di lembar.
+
+**Butir baru yang perlu ditambah ke sheet:** "Buat gambar infografik alur dan pasang di Bantuan" (kalau belum ditambah).
