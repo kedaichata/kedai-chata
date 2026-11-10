@@ -171,7 +171,6 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua. Dikerjakan **setelah `not
 
 **Belum beres:**
 
-- Commit dan push berkas di atas belum dilakukan (menunggu handoff ini). Repo masih tertinggal dari fungsi yang sudah berjalan.
 - **BTN.02 belum boleh dicentang di sheet.** Balasan 200 dengan login (daftar kosong) belum terbukti. Dibuktikan di BTN.03 lewat layar Bantuan yang menampilkan "Belum ada bantuan". Penyaringan peran penuh terbukti di BTN.04 dan BTN.06 (SEC-31).
 - Lapis kedua token (SEC-02, SEC-32) belum dites.
 
