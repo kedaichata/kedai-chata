@@ -184,3 +184,26 @@ SEC-20, 21, 29 menunggu rantai FTO. SEC-22, 25 menunggu NTF. SEC-30, 31 menunggu
 ### 2026-11-10 | ketua: isi awal
 
 Semua status ✅ di bagian 4 berasal dari Handoff `order.md`, belum diperiksa ulang. Belum ada baris SEC yang dicentang di sheet.
+
+### 2026-11-10 | PIC: K1 dan K2 (tanpa Android)
+
+**Baru terbukti** (tanpa bukti dan tanpa data pelanggan):
+
+- **K1:** customer dan penjaga memanggil aksi owner-only (termasuk `menu_simpan`, `menu_stok`, `order_alih_hari`) = 403; customer batal setelah Disetujui = 409, status tetap; penjaga `order_batal` = 403; penjaga `order_detail` id langsung pada Menunggu, Ditolak, Dibatalkan = 404; penjaga membuka order wakil melihat salinan nama, WA, alamat tanpa id pelanggan; `pelanggan_luar_daftar` oleh penjaga = 403.
+- **K2:** customer Batal vs owner Setuju (4 kali) dan vs owner Tolak (1 kali): tepat satu menang, riwayat bersih. Dua sesi `order_status` pada order yang sama: satu 200, satu 409, riwayat satu baris.
+
+**SEC yang lengkap dan diingatkan untuk dicentang di sheet:** SEC-07, SEC-08, SEC-13, SEC-14. (Tanggal centang oleh PIC: AIK)
+
+**Belum lengkap:**
+
+- **SEC-10:** sisi customer menang belum teramati (owner menang 5 dari 5, penyebab belum diketahui); ketuk dua kali di layar belum; query baca-saja `order` belum.
+- **SEC-06:** aksi selain `order_buat` belum. **SEC-12:** query baca-saja belum.
+- **SEC-05 dan SEC-09:** `alamat_simpan` milik orang lain belum.
+- **SEC-11, SEC-15, SEC-16:** dicocokkan dulu dengan teks sheet; K4 sisa: catatan terbuka lagi setelah alih hari, batas lewat layar.
+- **SEC-17:** query hak dan daftar aksi belum.
+- **SEC-18:** tag HTML selain catatan belum.
+- **K10:** owner batal dari Diproses dan Diantar/Siap, Selesai ditolak lewat `order_batal`.
+- **Non-SEC (4.2):** semua masih ⬜; query cek 8 dan 9 paling akhir; tes pemakai setelah semuanya lulus.
+- **Android:** SEC-19, `sw.js` v17.
+
+**Catatan:** baris ORD.14 di sheet sempat ditandai Selesai; ORD.14 belum selesai, kembalikan ke Belum.

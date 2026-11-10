@@ -974,4 +974,41 @@ Keputusan ketua (10 Nov 2026, setelah Handoff #25). Alasan ketua: nomor WA dan a
 1. **Tes pemakai** wizard (di atas). Bila ia berhenti di langkah tertentu, catat sebagai bahan perbaikan.
 2. **ORD.14** (sesi tes order, `order-test.md` dibuat di sesi tes): sisa tes ada di Handoff #11, #13, #14, #15, #21, dan #24 (SEC-10 dua sesi bersamaan, SEC-19 jam HP digeser, batal vs setuju bersamaan, ketuk dua kali tombol status, urutan daftar O22). Ulangi query cek 8 dan 9 sesudahnya, lalu centang baris SEC.
 
+### Handoff #28 | 2026-11-10 | [AIK]
+
+**Tugas:** ORD.14 (sesi tes order) **dimulai, belum selesai**. Sesi ini hanya tes tanpa Android (dua jendela, akun dummy, lewat konsol dan layar). **Tidak ada kode, SQL, atau `kedai` yang diubah.** Berkas baru: `docs/order-test.md` (kasus uji, tanpa hasil). Log status ada di `docs/pemetaan-test.md` bagian 5.
+
+**Baris SEC yang sudah lengkap dan diingatkan untuk dicentang di sheet:** SEC-07, SEC-08, SEC-13, SEC-14 (teks barisnya sudah dicocokkan dengan sheet).
+
+**Baris ORD.14 di sheet** sempat tampil **Selesai** (10 Nov). ORD.14 belum selesai: kembalikan ke Belum sampai semua butir di bawah beres.
+
+**Terbukti** (bukti ditempel dan diperiksa di chat, tidak disimpan):
+
+- **K1:** customer dan penjaga memanggil aksi owner-only = 403 (termasuk `menu_*` dan `order_alih_hari`); customer `order_batal` setelah Disetujui = 409 dan status tidak berubah; penjaga `order_batal` = 403; penjaga `order_detail` dengan id langsung pada order Menunggu, Ditolak, Dibatalkan = 404; penjaga membuka order wakil melihat salinan nama, WA, alamat tanpa id pelanggan, dan `pelanggan_luar_daftar` = 403.
+- **K2:** customer Batal vs owner Setuju bersamaan, 4 kali, tepat satu menang, riwayat bersih; customer Batal vs owner Tolak, 1 kali, owner menang, customer mendapat pesan "sudah ditolak sebelumnya"; dua sesi `order_status` maju pada order yang sama: satu 200, satu 409, riwayat hanya satu baris maju.
+
+**Keputusan baru:** tidak ada.
+
+**Temuan:**
+
+- Pada 5 dari 5 benturan customer vs owner, **owner selalu menang**, apa pun jendelanya dan walau dikirim 150 ms lebih lambat. Dugaan "soal jendela" sudah **salah** (jendela ditukar, hasil sama). Penyebabnya belum diketahui. Bukan celah keamanan: tepat satu menang dan yang kalah mendapat pesan benar.
+- WA kosong di order wakil lama (#37 dan sebelumnya) **bukan bug**: WA pelanggan baru diisi sesudah order itu dibuat. Order wakil baru (#43) menyalin nama, WA, alamat.
+
+**Masalah yang belum beres (sisa ORD.14):**
+
+- **SEC-10 belum boleh dicentang:** sisi "customer menang" belum teramati (tidak bisa dipaksa dari konsol); ketuk dua kali tombol di layar belum bisa dites; teks baris SEC-10 juga meminta query baca-saja `order`, yang belum dijalankan.
+- **K10:** owner batal dari Diproses dan Diantar/Siap, dan Selesai ditolak lewat `order_batal` (dari Disetujui sudah terbukti). #40 sudah Diproses dan siap dipakai.
+- **K5 (SEC-18):** tag HTML di alasan tolak, batal, alih hari, nama pemesan, alias, alamat, nama menu, nama pelanggan tanpa akun.
+- **K6 (SEC-06, SEC-12):** isian palsu pada aksi selain `order_buat`; query baca-saja `order` dan `order_item` (login dashboard oleh ketua, lalu logout).
+- **K8:** `alamat_simpan` dengan id alamat orang lain (SEC-09, butuh dua customer).
+- **K9 (SEC-17):** query baca-saja hak tabel dan daftar aksi `kedai`.
+- **K7 (SEC-11), K3 (SEC-15), K4 (SEC-16):** dicocokkan dulu dengan teks baris di sheet; sebagian bukti masih dari handoff lama. K4: catatan terbuka lagi setelah alih hari, batas lewat layar.
+- **Non-SEC:** urutan daftar O22, wizard hari Besok, jumlah menu, Segarkan saat terisi, pilihan non-bawaan di HP; query cek 8 dan 9 (paling akhir); tes pemakai (setelah semua lulus).
+- **Menunggu Android:** SEC-19, `sw.js` v17 di HP.
+- Logout dashboard Supabase dan GitHub: tidak ada kerja dashboard di sesi ini.
+- Butir terbuka Handoff #11 sampai #27 yang tidak disebut di sini tidak berubah.
+
+**Data dummy baru** (tidak bisa dihapus, dibersihkan di LNC.01): order #38 sampai #42 (customer, es teh manis, Diambil): #38, #39, #40 (Diproses), #41 (Disetujui) berujung Disetujui atau Diproses; #42 Ditolak. **#43:** order wakil Dummy Tiga (Diantar, Tunai, berWA dan beralamat), Disetujui.
+
+**Saran giliran berikutnya:** lampirkan `AGENTS.md` + `order.md` + `security.md` + `pemetaan-test.md` + `order-test.md`. Mulai dari K10 (cepat, #40 siap), lalu K6, K5, K8, K9 dan SEC-12 (dashboard ketua), lalu sisa K3, K4, K7 dan non-SEC. Android belakangan. Hanya sebut SEC yang lengkap bila semua aksi di barisnya terbukti dan jenis buktinya sesuai kolom Catatan sheet.
 ---
