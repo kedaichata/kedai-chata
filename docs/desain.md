@@ -274,6 +274,20 @@ Tiap blok ditempel di bagian **Catatan Susulan** di akhir berkas tujuannya (appe
 - **Bagian 6 (aturan yang sering terlanggar):** larangan "menu hamburger berisi banyak pilihan untuk customer" tetap berlaku untuk navigasi kerja. Hamburger game isinya satu item dan bukan jalan menuju fitur order, jadi tidak melanggar.
 - **DS7 pengecualian:** gaya hamburger dan game ada di **`public/game.css`** (kelas berawalan `gim-`), dimuat setelah `style.css`. Semua gaya lain tetap di `style.css`. Alasan rinci dari ketua belum tercatat (kekhawatiran gaya game menempel ke CSS yang ada).
 
----
+### 2026-11-10: Bilah atas berisi ?, Segarkan, Keluar (dengan konfirmasi)
+
+**Berkas tujuan:** `docs/desain.md` bagian 9. Menimpa DS9, DS15, dan bagian "Bantuan tetap di Home" pada blok hamburger 10 Nov. Sumber: keputusan ketua 10 Nov 2026 setelah tes dengan owner. Yang paling akhir menang.
+
+- **Alasan:** saat tes, owner menanyakan di mana tombol Bantuan dan mengeluhkan harus ke Home dulu dari layar order (order, Home, Bantuan). Keluar juga tidak praktis bila harus ke Home.
+- **DS9 diganti:** bilah atas (tab utama saja) dari kiri ke kanan: hamburger (bila ada, `gim.md`), judul, **ikon ?**, **Segarkan**, **Keluar**. Tidak tampil di sub-layar (Pengaturan akun, Buku alamat, Kelola grup pilihan, Lengkapi profil, Buat password baru), Masuk, dan Daftar (sama seperti aturan hamburger GM5).
+- **Keluar:** ikon dalam **lingkaran merah**, ikon terang di dalamnya (acuan: PWA biru milik ketua, dengan warna merah). Bila diketuk muncul konfirmasi:
+  > **Yakin mau keluar?**
+  > Nanti masuk lagi perlu password.
+  > [ Batal ] [ Keluar ]
+  > **Batal = tombol utama (isian marun)**, **Keluar = berpinggir merah** (DS12), supaya salah ketuk lebih mudah berakhir di Batal. Kalimat "kecuali sudah menyimpan password" sengaja tidak dipakai (tergantung browser, tidak bisa dijamin).
+- **DS15 diganti:** pintu Bantuan adalah **ikon ?** di bilah atas, satu ketukan dari tab utama mana pun. Tombol Bantuan di Home tetap ada ("Segera" sampai BTN.03), lalu membuka layar yang sama.
+- **Hamburger** tetap di kiri judul dan isinya tetap hanya game (`gim.md` tidak berubah, tidak ada garis pemisah).
+- **Risiko diterima ketua:** Keluar bersebelahan dengan Segarkan (salah pencet) dan DS9 lama yang menaruh Keluar di Akun. Diredam oleh konfirmasi di atas.
+- **Keluar tetap harus menutup** layar game dan menu hamburger, serta menghapus nama dan sapaan (HP dipakai bergantian; `gim.md` GM14, `home.md` bagian 6).
 
 ---

@@ -133,11 +133,20 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua. Dikerjakan **setelah `not
 
 ---
 
-_(belum ada blok)_
-
 ### 2026-11-07: Pintu Bantuan pindah ke Home
 
 **Berkas tujuan:** `docs/bantuan.md`, Catatan Susulan di akhir berkas. Menimpa BT1, baris "Pintu masuk" di bagian 4, dan BTN.03 (letak item Bantuan). Sumber: `home.md` HM5, HOM.03. Yang paling akhir menang.
 
 - Bantuan dibuka dari **tombol Bantuan di Home** untuk semua peran, bukan dari menu Akun atau Lainnya (keduanya sudah tidak ada di navigasi).
 - Tempat tombolnya **sudah dibuat** di `index.html` (id `home-bantuan`), tampil "Segera" dan `disabled` sampai BTN.03 selesai. BTN.03 tinggal **mengaktifkan tombol itu** dan membuat layarnya; tidak perlu membuat item baru di menu.
+
+### 2026-11-10: Pintu Bantuan adalah ikon ? di bilah atas, dikerjakan lebih dulu
+
+**Berkas tujuan:** `docs/bantuan.md` bagian 9. Menimpa blok 7 Nov (pintu ke Home), BT1, baris "Pintu masuk" di bagian 4, BTN.03, dan urutan "setelah `notifikasi.md` (SEC-25)" di bagian 5. Sumber: `desain.md` blok 10 Nov. Yang paling akhir menang.
+
+- **Alasan:** owner mengeluh Bantuan terlalu jauh (order, Home, Bantuan). Pintu dipindah ke **ikon ? di bilah atas**, satu ketukan dari tab utama mana pun.
+- Tombol Bantuan di Home tetap sebagai pintu kedua ke layar yang sama.
+- **Urutan:** BTN dikerjakan **lebih dulu**, tidak menunggu `notifikasi.md` atau SEC-25. Langkah ⚠️ (BTN.01, BTN.02, BTN.04) tetap butuh penjelasan dampak dan "OK" ketua.
+- **BTN.03 kini:** layar Bantuan, **ikon ? di bilah atas** (dibuat di langkah ini, bukan sebagai tombol mati di DSN.08), dan pengaktifan tombol Bantuan di Home. Tidak ada item di menu Akun atau Lainnya (keduanya sudah tidak ada).
+- Ikon ? tidak tampil di sub-layar, Masuk, dan Daftar (`desain.md` blok 10 Nov).
+- Isi awal (BTN.05) tetap ditulis setelah fitur final; sampai itu layar menampilkan "Belum ada bantuan".

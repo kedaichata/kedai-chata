@@ -238,3 +238,13 @@ _(belum ada blok)_
 - Komentar lama yang sudah basi di bagian atas `akunmenu.js`, `alamat.js`, `kerangka.js`, dan `index.html` (masih menyebut tombol atau id lama).
 
 **Hasil tes:** giliran A dites di HP dan laptop dengan tiga peran; giliran B dites di HP Android dan laptop. Semua aman. Bukti diperiksa di chat dan tidak disimpan.
+
+### 2026-11-10: Keluar pindah ke bilah atas, Bantuan dapat pintu kedua
+
+**Berkas tujuan:** `docs/home.md` bagian 9. Menimpa bagian Keluar pada HM2, HM4 (komponen Home), dan HOM.04. Sumber: `desain.md` blok 10 Nov. Yang paling akhir menang.
+
+- Tombol **Keluar di Home disembunyikan** (`hidden`, kode tidak dihapus; ketua menyetujui penyembunyian 10 Nov 2026). Keluar kini ikon di bilah atas dengan konfirmasi (`desain.md` blok 10 Nov).
+- **Pembersihan** kode Keluar di Home ditunda; bila dikerjakan nanti, butuh "OK" tersendiri dan satu blok catatan.
+- Tombol **Bantuan di Home tetap** ("Segera"), diaktifkan di BTN.03 ke layar yang sama dengan ikon ?.
+- Aturan "Tombol Keluar jangan dekat tombol utama" (DS12) kini berlaku untuk dialog konfirmasi, bukan lagi untuk Home.
+- Isi Home selebihnya tidak berubah.
