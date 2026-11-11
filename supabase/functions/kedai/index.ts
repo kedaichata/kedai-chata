@@ -50,6 +50,13 @@
 //         diimpor di bawah; kode lama tidak dipindah. Berkas ini juga memberi `foto.ts` klien Storage (`admin.storage`).
 //         Fungsi SQL: 20261111_02_foto_fungsi.sql (HARUS sudah dijalankan dan lulus cek SEBELUM berkas ini dideploy).
 //         Push foto ada di NTF, bukan di sini.
+// INB.03: `status` kini membawa satu angka tambahan `inbox_terbaru` (nomor item Kotak masuk terbaru milik akun itu,
+//         atau null bila tidak ada) untuk titik merah (inbox.md IB10). Angka numpang di balasan `status` yang sudah ada,
+//         tanpa panggilan tambahan dari aplikasi. Bila pengambilan angka gagal, `status` tetap dibalas normal dengan
+//         angka null (IB12). Ditambah aksi `inbox_daftar` (semua peran aktif; akun selalu dari token, SEC-34). Kodenya ada
+//         di BERKAS BARU `inbox.ts` (folder yang sama), diimpor di bawah; kode lama tidak dipindah. Fungsi SQL:
+//         20261111_06_inbox_fungsi.sql (sudah dijalankan dan lulus cek SEBELUM berkas ini dideploy).
+//         `inbox_tulis` BELUM dipanggil di mana pun (INB.04).
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -71,6 +78,8 @@ import { buatAksiOrderWakil } from "./order_wakil.ts";
 import { buatAksiBantuan } from "./bantuan.ts";
 // FTO.02: aksi foto_minta_unggah, foto_catat, foto_lihat ada di berkas terpisah.
 import { buatAksiFoto } from "./foto.ts";
+// INB.03: aksi inbox_daftar ada di berkas terpisah.
+import { buatAksiInbox } from "./inbox.ts";
 
 // ------------------------------------------------------------
 // Pengaturan dasar
@@ -187,6 +196,28 @@ async function bacaPeran(id: string): Promise<Peran> {
 // Aksi: status (semua yang login)
 // ------------------------------------------------------------
 
+// INB.03: nomor item Kotak masuk terbaru milik akun ini (titik merah, inbox.md IB10). Numpang di balasan `status`.
+// Inbox bukan inti sistem (IB12): galat apa pun (fungsi SQL maupun jaringan) membuat angkanya null,
+// dan `status` tetap dibalas normal. Yang dicatat di log hanya jenis galat, tanpa data pengguna.
+async function bacaInboxTerbaru(id: string): Promise<number | null> {
+  try {
+    const { data, error } = await admin!.rpc("inbox_terbaru", { p_akun: id });
+    if (error) {
+      console.error(
+        "kedai status: inbox_terbaru gagal |",
+        String(error.message ?? "").slice(0, 100),
+      );
+      return null;
+    }
+    if (data === null || data === undefined) return null;
+    const angka = Number(data);
+    return Number.isSafeInteger(angka) && angka > 0 ? angka : null;
+  } catch (_e) {
+    console.error("kedai status: inbox_terbaru gagal tersambung");
+    return null;
+  }
+}
+
 async function aksiStatus(req: Request, pengguna: Pengguna): Promise<Response> {
   const p = await bacaPeran(pengguna.id);
 
@@ -206,6 +237,9 @@ async function aksiStatus(req: Request, pengguna: Pengguna): Promise<Response> {
     pengaturan[b.kunci] = Number.isFinite(angka) ? angka : b.nilai;
   }
 
+  // INB.03: angka titik merah Kotak masuk (null bila tidak ada atau gagal; tidak pernah menggagalkan `status`)
+  const inboxTerbaru = await bacaInboxTerbaru(pengguna.id);
+
   // Staf: tidak punya profil customer dan alamat (AK4)
   if (p.jenis === "staf") {
     return balas(req, 200, {
@@ -215,6 +249,7 @@ async function aksiStatus(req: Request, pengguna: Pengguna): Promise<Response> {
       profil: null,
       alamat: [],
       pengaturan,
+      inbox_terbaru: inboxTerbaru,
     });
   }
 
@@ -248,6 +283,7 @@ async function aksiStatus(req: Request, pengguna: Pengguna): Promise<Response> {
       : null,
     alamat,
     pengaturan,
+    inbox_terbaru: inboxTerbaru,
   });
 }
 
@@ -1402,6 +1438,18 @@ const { aksiFotoMintaUnggah, aksiFotoCatat, aksiFotoLihat } = buatAksiFoto({
 });
 
 // ------------------------------------------------------------
+// INB.03: sambungan ke berkas inbox.ts. Hanya perlu klien, balas, galat, dan galatDariDb.
+// ------------------------------------------------------------
+
+const { aksiInboxDaftar } = buatAksiInbox({
+  // deno-lint-ignore no-explicit-any
+  klien: admin as any,
+  balas,
+  galat,
+  galatDariDb,
+});
+
+// ------------------------------------------------------------
 // Pintu masuk
 // ------------------------------------------------------------
 
@@ -1512,6 +1560,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
         return await aksiFotoCatat(req, pengguna, isi);
       case "foto_lihat":
         return await aksiFotoLihat(req, pengguna, isi);
+      case "inbox_daftar":
+        return await aksiInboxDaftar(req, pengguna, isi);
       default:
         return galat(req, 400, "Aksi tidak dikenal.");
     }

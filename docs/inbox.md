@@ -176,3 +176,11 @@ Keputusan ketua (sesi kode INB.01, 11 Nov 2026).
 - AI meminta: `kedai/index.ts` (utuh), `order_status.ts`, `foto.ts`, dan berkas JS yang memanggil `kedai` saat aplikasi dibuka (tanyakan namanya).
 - Cek dulu di kode apakah panggilan buka aplikasi (aksi `status`) layak ditumpangi `inbox_terbaru`; bila tidak, tanya ketua.
 - Untuk INB.04: `kedai` jangan memanggil `inbox_tulis` pada mundur satu langkah (tanpa kabar, sesuai notifikasi.md 4.1), dan kegagalannya tidak boleh membatalkan aksi (IB12).
+
+### 2026-11-11: Syarat "Inbox setelah SEC-29 lulus" dicabut; kejadian foto menunggu
+
+Keputusan ketua (sesi kode INB.03, 11 Nov 2026). Yang paling akhir menang.
+
+- **Pencabutan:** INB.03 sampai INB.07 boleh dikerjakan tanpa menunggu FTO.06, FTO.07, dan SEC-29 lulus. Ini menimpa IB14 dan bagian 3 (Inbox setelah Foto Bukti lulus tes), dan menjawab Handoff #1 yang menyebut INB.03 dan seterusnya belum diputuskan.
+- **Pengecualian:** pemasangan `inbox_tulis` untuk kejadian "foto diunggah setelah Selesai" (INB.04, berkas `foto.ts`) menunggu SEC-29 lulus. Alasan: `foto.ts` sedang diuji, jadi bila tes menemukan masalah, penyebabnya tidak tercampur dengan perubahan inbox. Kejadian lain di INB.04 tidak menunggu.
+- **Alasan pencabutan:** syarat urutan itu dibuat agar pekerjaan runut, tanpa alasan teknis. SEC-29 baru bisa dites setelah pembersihan mingguan berjalan (Minggu 02.00 WIB), sehingga syarat itu menahan pekerjaan yang tidak terkait.
