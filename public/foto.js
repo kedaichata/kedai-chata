@@ -280,6 +280,9 @@
     var input = buat("input", "");
     input.type = "file";
     input.accept = "image/*";
+    // FTO.03: langsung buka kamera belakang (foto bukti dipotret saat itu juga, tanpa pilihan galeri).
+    // Di sebagian HP atribut ini diabaikan dan pilihan kamera atau galeri tetap muncul.
+    input.setAttribute("capture", "environment");
     input.hidden = true;
     input.addEventListener("change", function () {
       var file = input.files && input.files[0] ? input.files[0] : null;
