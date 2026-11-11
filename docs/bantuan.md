@@ -245,3 +245,34 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua. Dikerjakan **setelah `not
 **Saran giliran berikutnya:** BTN.04, sesi kode High-Risk. Lampirkan `AGENTS.md` + `bantuan.md` + `database.md` + `security.md` + `bantuan-isi.xlsx` (template lembar). Tidak ada data pelanggan nyata di lembar.
 
 **Butir baru yang perlu ditambah ke sheet:** "Buat gambar infografik alur dan pasang di Bantuan" (kalau belum ditambah).
+
+### Handoff #4 | 2026-11-11 | [Ketua]
+
+**Tugas:** BTN.04 (lembar dari template dan uji impor 3 baris) selesai dan terbukti. BTN.04a (infografik) selesai: gambar, cache, dan baris di database sudah jalan.
+
+**Berkas yang berubah:**
+
+- Baru: `public/img/infografik.webp`.
+- Diubah: `public/sw.js` (cache `chata-v18` jadi `chata-v19`, `img/infografik.webp` masuk `DAFTAR_CACHE`; baris lama dijadikan komentar). "OK" ketua sudah diberikan di chat. Commit `ecbf4c4`, sudah di-push dan terbit.
+- Lembar `bantuan-isi.xlsx` dibuat ulang di sesi ini (Google Sheet, bukan di repo, BT7). Tanpa migration dan tanpa deploy.
+
+**Keputusan baru (pilihan penulis, disetujui ketua; alasan lain belum tercatat):**
+
+- Lembar kini punya kolom **I "Cek"** (otomatis) di samping kolom H. Isinya OK atau pesan kesalahan sesuai batas tabel (`kunci` 3 sampai 50 huruf kecil/angka/strip dan unik, `bagian` maks 60, `urutan` bilangan bulat 0 atau lebih, `peran` valid, `judul` 5 sampai 120, `isi` 1 sampai 2000, `aktif` ya atau tidak). Bila bukan OK, kolom H berisi "PERIKSA KOLOM I", bukan SQL. Ini menambah format lembar di bagian 4 (kolom A sampai G manual, H dan I otomatis).
+- Nama kolom waktu di tabel (`diubah_pada`) ada di sheet `Petunjuk` sel B4, dipakai rumus kolom H.
+- Rumus H mengganti tanda kutip ganda dengan `chr(34)` dan baris baru dengan `chr(10)`, supaya salin dari Sheets tidak terbungkus tanda kutip.
+- Mengubah wording: edit baris yang sama, `kunci` tetap, salin kolom H baris yang berubah saja, Run, Segarkan. Pertanyaan tidak dipakai: `aktif = tidak`, baris tidak dihapus.
+- Baris infografik: `kunci` `infografik-01`, `urutan` 1, `peran` `semua`, `isi` `img/infografik.webp`, `aktif = ya`. Sudah diimpor.
+
+**Hasil tes:** impor 4 baris berhasil tanpa galat. Di layar Bantuan: tanda kutip tunggal dan ganda tampil normal, jawaban 3 baris tampil terpisah, `aktif = tidak` tidak tampil, infografik tampil di atas. Bukti diperiksa di chat dan tidak disimpan.
+
+**Belum beres:**
+
+- Baris uji `uji-kutip` dan `uji-baris` **harus ditandai `aktif = tidak` lalu diimpor ulang** (masih terlihat customer bila belum). Pelaksanaannya belum dikonfirmasi saat handoff ditulis.
+- Penyaringan peran penuh belum terbukti karena semua baris uji berperan `semua`; dibuktikan di BTN.06 (SEC-31). Lapis kedua token (SEC-02, SEC-32) belum dites.
+- BTN.05 (isi awal) menunggu fitur final. Pakai `kunci` baru (misal `memulai-01`), jangan menimpa baris uji. Urutan 1 hanya untuk infografik.
+- Galat Console `favicon.ico` 404 di root situs: tidak berbahaya, tidak mendesak.
+
+**Saran giliran berikutnya:** BTN.05 (tulis isi awal di lembar lalu impor) setelah fitur lain final, atau BTN.06 (sesi tes, SEC-30 dan SEC-31) setelah isi berperan beragam ada. Lampirkan `AGENTS.md` + `bantuan.md` + `security.md` + lembar terbaru. Tanpa data pelanggan di lembar.
+
+**Butir baru yang perlu ditambah ke sheet:** "Tambah favicon di index.html".
