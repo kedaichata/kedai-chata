@@ -19,6 +19,12 @@
 // - Tombol dikunci sebelum permintaan berangkat (dua ketukan cepat tidak jadi dua unggahan).
 // - Semua teks dipasang lewat textContent. Galat mentah tidak ditampilkan; di konsol hanya kode HTTP.
 // - Tanpa panggilan server saat detail dibuka. Menampilkan foto ada di FTO.04.
+//   FTO.04 (keputusan ketua 11 Nov 2026): baris di atas tidak berlaku lagi untuk order Diantar dengan status
+//   Diantar atau Selesai. Detail order kini memanggil foto_lihat SATU kali per order (hasilnya disimpan di memori
+//   layar, bukan di localStorage), lalu menampilkan thumbnail kecil. Diketuk: gambar yang SAMA dibesarkan lewat
+//   CSS (tanpa panggilan server dan tanpa unduhan ulang). Tautan hidup 300 detik; bila gambar gagal tampil,
+//   dicoba sekali lagi dengan tautan baru, tidak berulang. Layar customer dan owner memakai KedaiFoto.lihat,
+//   layar penjaga memakai KedaiFoto.pasang (thumbnail ada di dalam kartu unggah).
 // - Kunci publishable hanya dikirim ke alamat Supabase milik config.js, tidak ke alamat lain.
 
 (function () {
@@ -49,6 +55,16 @@
   var PESAN_BACA = "Foto tidak bisa dibaca. Coba foto lain.";
   var PESAN_BESAR = "Foto masih terlalu besar. Coba foto lain.";
   var PESAN_BUKAN_GAMBAR = "Pilih berkas gambar saja.";
+  // FTO.04: teks dan setelan melihat foto.
+  var PESAN_LIHAT_GALAT =
+    "Foto belum bisa ditampilkan. Tekan Segarkan untuk mencoba lagi.";
+  var TEKS_PERBESAR = "Ketuk foto untuk memperbesar.";
+  var TEKS_PERKECIL = "Ketuk foto untuk memperkecil.";
+  var TEKS_DIHAPUS = "Foto sudah dihapus.";
+  // Tautan dianggap habis sedikit lebih awal dari yang dikatakan server (detik).
+  var BATAS_AMAN_DETIK = 30;
+  // Hasil "belum ada foto" disimpan sebentar saja, supaya foto yang baru diunggah penjaga cepat terlihat.
+  var TTL_TIDAK_ADA_DETIK = 30;
 
   function buat(tag, kelas, teks) {
     var e = document.createElement(tag);
@@ -81,6 +97,13 @@
   var orde = null; // order pada kartu yang sedang tampil: { id, nomor }
   var kartuAktif = null; // elemen kartu yang sedang tampil
   var nomorKirim = 0; // naik tiap reset; balasan lama diabaikan
+  // FTO.04: hasil foto_lihat per id order, hanya di memori. Isi per order:
+  // { status: "ada"|"dibersihkan"|"tidak_ada"|"", url, habis (ms), galat, simpul (elemen gambar), membesar,
+  //   sedangMuat, sudahCoba }
+  var fotoPerOrder = {};
+  var nomorLihat = 0; // naik tiap reset; balasan foto_lihat lama diabaikan
+  var ordeLihat = null; // order pada slot lihat (layar customer dan owner): { id }
+  var slotLihat = null; // wadah kartu lihat yang sedang tampil
 
   function bolehFoto(o) {
     return (
@@ -238,6 +261,202 @@
   }
 
   // ------------------------------------------------------------
+  // FTO.04: melihat foto bukti (aksi foto_lihat)
+  // Date.now() di sini HANYA untuk menebak kapan tautan foto habis (tampilan), bukan untuk logika order.
+  // ------------------------------------------------------------
+
+  // Perlu memanggil server? Tidak bila sudah dimuat dan tautannya masih hidup, atau foto sudah dibersihkan.
+  function perluMuat(id) {
+    var e = fotoPerOrder[id];
+    if (!e) return true;
+    if (e.sedangMuat) return false;
+    if (e.status === "dibersihkan") return false;
+    if (e.galat) return true;
+    return e.habis > 0 && Date.now() > e.habis;
+  }
+
+  function muatFoto(id) {
+    var e = fotoPerOrder[id];
+    if (!e) {
+      e = fotoPerOrder[id] = {
+        status: "",
+        url: "",
+        habis: 0,
+        galat: false,
+        simpul: null,
+        membesar: false,
+        sedangMuat: false,
+        sudahCoba: false,
+      };
+    }
+    if (e.sedangMuat) return;
+    e.sedangMuat = true;
+    var nomor = nomorLihat;
+
+    function galat() {
+      e.status = "";
+      e.url = "";
+      e.simpul = null;
+      e.galat = true;
+      e.habis = 0;
+    }
+
+    A.panggilKedai("foto_lihat", { id: id })
+      .then(function (h) {
+        if (nomor !== nomorLihat) return; // sudah Keluar: balasan lama diabaikan
+        e.sedangMuat = false;
+        var d = h && h.data;
+        if (h.status === 200 && d && d.ok === true) {
+          if (d.status === "ada" && typeof d.url === "string" && d.url) {
+            var detik =
+              typeof d.berlaku_detik === "number" ? d.berlaku_detik : 300;
+            e.status = "ada";
+            e.url = d.url;
+            e.simpul = null;
+            e.galat = false;
+            e.habis =
+              Date.now() + Math.max(10, detik - BATAS_AMAN_DETIK) * 1000;
+          } else if (d.status === "dibersihkan") {
+            e.status = "dibersihkan";
+            e.url = "";
+            e.simpul = null;
+            e.galat = false;
+            e.habis = 0;
+          } else if (d.status === "tidak_ada") {
+            e.status = "tidak_ada";
+            e.url = "";
+            e.simpul = null;
+            e.galat = false;
+            e.habis = Date.now() + TTL_TIDAK_ADA_DETIK * 1000;
+          } else {
+            galat();
+          }
+        } else {
+          galat();
+        }
+        gambarLihat(id);
+      })
+      .catch(function () {
+        if (nomor !== nomorLihat) return;
+        e.sedangMuat = false;
+        galat();
+        gambarLihat(id);
+      });
+  }
+
+  // Gambar gagal tampil (biasanya tautan sudah habis): minta tautan baru SEKALI, lalu menyerah.
+  function gambarGagal(id, e) {
+    if (fotoPerOrder[id] !== e) return;
+    e.simpul = null;
+    e.status = "";
+    e.url = "";
+    if (!e.sudahCoba) {
+      e.sudahCoba = true;
+      gambarLihat(id); // buang gambar yang rusak dari layar
+      muatFoto(id);
+      return;
+    }
+    e.sudahCoba = false;
+    e.galat = true;
+    e.habis = 0;
+    gambarLihat(id);
+  }
+
+  // Satu elemen gambar per order. Elemen yang sama dipindah ke kartu baru tiap detail digambar ulang,
+  // jadi gambar tidak diunduh ulang. Diketuk: kelas CSS berganti (kecil atau besar), tanpa panggilan server.
+  function simpulFoto(id, e) {
+    if (e.simpul) return e.simpul;
+    var bungkus = buat("div", "foto-lihat");
+    var tombol = buat("button", "foto-thumb");
+    tombol.type = "button";
+    var img = document.createElement("img");
+    img.alt = "Foto bukti antar";
+    img.decoding = "async";
+    img.addEventListener("load", function () {
+      e.sudahCoba = false;
+    });
+    img.addEventListener("error", function () {
+      gambarGagal(id, e);
+    });
+    img.src = e.url;
+    tombol.appendChild(img);
+    var ket = buat("p", "isian__bantuan", TEKS_PERBESAR);
+
+    function terapkan() {
+      if (e.membesar) {
+        tombol.classList.add("foto-thumb--besar");
+      } else {
+        tombol.classList.remove("foto-thumb--besar");
+      }
+      tombol.setAttribute("aria-expanded", e.membesar ? "true" : "false");
+      tombol.setAttribute(
+        "aria-label",
+        e.membesar ? "Perkecil foto bukti" : "Perbesar foto bukti",
+      );
+      ket.textContent = e.membesar ? TEKS_PERKECIL : TEKS_PERBESAR;
+    }
+    tombol.addEventListener("click", function () {
+      e.membesar = !e.membesar;
+      terapkan();
+    });
+    terapkan();
+
+    bungkus.appendChild(tombol);
+    bungkus.appendChild(ket);
+    e.simpul = bungkus;
+    return bungkus;
+  }
+
+  // Isi tampilan foto ke wadah. true bila ada yang ditampilkan.
+  function isiLihat(wadah, id) {
+    var e = fotoPerOrder[id];
+    if (!e) return false;
+    if (e.status === "ada" && e.url) {
+      wadah.appendChild(simpulFoto(id, e));
+      return true;
+    }
+    if (e.status === "dibersihkan") {
+      wadah.appendChild(buat("p", "isian__bantuan", TEKS_DIHAPUS));
+      return true;
+    }
+    if (e.galat) {
+      var p = buat("p", "isian__galat", PESAN_LIHAT_GALAT);
+      p.setAttribute("role", "alert");
+      wadah.appendChild(p);
+      return true;
+    }
+    return false; // belum dimuat atau tidak ada foto: tidak ada yang ditampilkan
+  }
+
+  // Slot layar customer dan owner: kartu hanya muncul bila ada yang ditampilkan.
+  function isiSlot() {
+    if (!slotLihat || !ordeLihat) return;
+    kosongkan(slotLihat);
+    var kartu = buat("div", "kartu");
+    kartu.appendChild(buat("h2", "kartu__judul", "Foto bukti antar"));
+    if (isiLihat(kartu, ordeLihat.id)) slotLihat.appendChild(kartu);
+  }
+
+  // Hasil foto_lihat sampai: gambar ulang bagian yang sedang tampil untuk order itu.
+  function gambarLihat(id) {
+    if (!fotoPerOrder[id]) return;
+    if (slotLihat && ordeLihat && ordeLihat.id === id) isiSlot();
+    if (kartuAktif && orde && orde.id === id) gambarKartu();
+  }
+
+  // Dipanggil layar customer dan owner tiap detail order digambar. Hanya baca; tanpa tombol unggah.
+  function lihat(wadah, o) {
+    slotLihat = null;
+    ordeLihat = null;
+    if (!bolehFoto(o)) return;
+    ordeLihat = { id: o.id };
+    slotLihat = buat("div", "");
+    wadah.appendChild(slotLihat);
+    isiSlot();
+    if (perluMuat(o.id)) muatFoto(o.id);
+  }
+
+  // ------------------------------------------------------------
   // Tampilan kartu
   // ------------------------------------------------------------
 
@@ -260,6 +479,9 @@
         "Boleh dikosongkan. Foto posisi barang saat diantar. Foto baru menggantikan foto sebelumnya.",
       ),
     );
+
+    // FTO.04: foto yang sudah terunggah tampil sebagai thumbnail di kartu ini.
+    isiLihat(kartu, orde.id);
 
     var milikIni = state.id === orde.id;
     if (milikIni && state.teks) {
@@ -377,6 +599,7 @@
             }).then(function (c) {
               if (nomor !== nomorKirim) return;
               if (c.status === 200 && c.data && c.data.ok === true) {
+                muatFoto(ord.id); // FTO.04: thumbnail ikut diperbarui
                 selesai(
                   mengganti ? "Foto bukti diganti." : "Foto bukti terkirim.",
                   false,
@@ -416,11 +639,17 @@
     kartuAktif = buat("div", "kartu antrean-kartu");
     gambarKartu();
     wadah.appendChild(kartuAktif);
+    if (perluMuat(o.id)) muatFoto(o.id); // FTO.04
   }
 
   // Keluar: tidak boleh ada keadaan tersisa; balasan yang masih di jalan diabaikan.
   function reset() {
     nomorKirim++;
+    // FTO.04: foto di memori (tautan sementara) dibuang saat Keluar.
+    nomorLihat++;
+    fotoPerOrder = {};
+    slotLihat = null;
+    ordeLihat = null;
     state = { id: "", sibuk: false, teks: "", galat: false };
     orde = null;
     kartuAktif = null;
@@ -428,6 +657,7 @@
 
   window.KedaiFoto = Object.freeze({
     pasang: pasang, // dipanggil orderpenjaga.js tiap detail order digambar
+    lihat: lihat, // FTO.04: dipanggil pesanan.js dan orderowner.js tiap detail order digambar (hanya melihat)
     reset: reset, // dipanggil orderpenjaga.js saat Keluar
   });
 })();

@@ -1729,3 +1729,48 @@ body.sheet-terbuka {
         transition: none;
     }
 }
+
+/* ------------------------------------------------------------------
+   FTO.04: thumbnail foto bukti antar (foto-bukti.md, keputusan ketua 11 Nov 2026)
+   Kotak kecil bertinggi tetap supaya layar tidak loncat saat foto selesai dimuat.
+   Diketuk: kelas foto-thumb--besar dipasang foto.js, gambar yang sama jadi lebar penuh kartu.
+   Hanya tambahan; tidak mengubah aturan yang sudah ada.
+   ------------------------------------------------------------------ */
+.foto-lihat {
+    margin: 0 0 8px;
+}
+
+.foto-thumb {
+    display: block;
+    width: 100%;
+    height: 120px;
+    min-height: 0;
+    padding: 0;
+    border: 1px solid var(--garis-tipis);
+    border-radius: 10px;
+    background: rgba(184, 146, 58, 0.18);
+    overflow: hidden;
+    cursor: zoom-in;
+}
+
+.foto-thumb img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* gambar utuh, tidak terpotong */
+}
+
+.foto-thumb:focus-visible {
+    outline: 3px solid var(--emas-terang);
+    outline-offset: 2px;
+}
+
+.foto-thumb--besar {
+    height: auto;
+    cursor: zoom-out;
+}
+
+.foto-thumb--besar img {
+    height: auto;
+    max-height: 75vh;
+}
