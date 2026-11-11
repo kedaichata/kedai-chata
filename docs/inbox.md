@@ -146,7 +146,7 @@ Keputusan ketua (sesi kode INB.01, 11 Nov 2026).
 - **IB15 ditetapkan:** batas jumlah item per tampilan, nilai awal **30** (`inbox_maks_tampil` di `pengaturan`), belum dibaca didahulukan. Usulan awal penulis 50; ketua memilih 30, alasan belum tercatat.
 - **Nama tabel dan kolom** final dicatat di `database.md` setelah migration dijalankan.
 
-### Handoff #1 | 2026-11-11 | ketua (KETUA)
+### Handoff #1 | 2026-11-11 | ketua
 
 **Tugas:** INB.01 (migration tabel inbox) dan INB.02 (fungsi SQL inbox). Keduanya selesai dan lulus cek; sudah dicentang di sheet.
 
@@ -184,3 +184,38 @@ Keputusan ketua (sesi kode INB.03, 11 Nov 2026). Yang paling akhir menang.
 - **Pencabutan:** INB.03 sampai INB.07 boleh dikerjakan tanpa menunggu FTO.06, FTO.07, dan SEC-29 lulus. Ini menimpa IB14 dan bagian 3 (Inbox setelah Foto Bukti lulus tes), dan menjawab Handoff #1 yang menyebut INB.03 dan seterusnya belum diputuskan.
 - **Pengecualian:** pemasangan `inbox_tulis` untuk kejadian "foto diunggah setelah Selesai" (INB.04, berkas `foto.ts`) menunggu SEC-29 lulus. Alasan: `foto.ts` sedang diuji, jadi bila tes menemukan masalah, penyebabnya tidak tercampur dengan perubahan inbox. Kejadian lain di INB.04 tidak menunggu.
 - **Alasan pencabutan:** syarat urutan itu dibuat agar pekerjaan runut, tanpa alasan teknis. SEC-29 baru bisa dites setelah pembersihan mingguan berjalan (Minggu 02.00 WIB), sehingga syarat itu menahan pekerjaan yang tidak terkait.
+
+### Handoff #2 | 2026-11-11 | ketua
+
+**Tugas:** INB.03 (angka inbox terbaru di balasan `status` dan aksi `inbox_daftar`). Selesai: dideploy, dites, di-push (commit 388d5b4), dan sudah dicentang di sheet.
+
+**File yang diubah:**
+
+- `supabase/functions/kedai/index.ts`: fungsi pembantu `bacaInboxTerbaru`, field `inbox_terbaru` di dua balasan `aksiStatus` (customer dan staf), satu import, satu blok sambungan, satu `case`. Tidak ada baris lama yang dihapus.
+- `supabase/functions/kedai/inbox.ts` (baru): aksi `inbox_daftar`.
+- `docs/inbox.md`: blok pencabutan syarat SEC-29 (11 Nov).
+- `public/akun.js` TIDAK diubah (dibaca saja untuk memastikan titik sambung).
+
+**Keputusan baru:**
+
+- INB.03 sampai INB.07 boleh jalan tanpa menunggu SEC-29 (blok 11 Nov di atas). Pengecualian tetap: kejadian "foto diunggah setelah Selesai" di `foto.ts` menunggu SEC-29 lulus.
+- Field di balasan `status` bernama `inbox_terbaru` (angka, atau null bila tidak ada atau pengambilannya gagal). Kegagalan tidak menggagalkan `status` (IB12). Nama field adalah pilihan penulis, alasan belum tercatat.
+- Titik sambung INB.05: `isiSementara()` di `public/akun.js`, di samping panggilan `KedaiKerangka.atur`. Balasan `status` yang sama juga dipanggil `akunmenu.js`, `alamat.js`, dan `pesan.js` lewat `panggilKedai`; tiap panggilan itu kini menjalankan satu kueri `inbox_terbaru` tambahan di dalam panggilan Edge Function yang sama (bukan panggilan baru).
+- `inbox_daftar` hanya menerima `penanda` berupa bilangan bulat nol atau lebih (kosong dianggap 0); tipe lain dibalas 400. Akun selalu dari token.
+- Usulan (belum diputuskan ketua): tidak ada deploy `kedai` dari Sabtu 14 Nov sampai tes foto Minggu 15 Nov selesai, supaya hasil tes foto tidak tercampur.
+
+**Terbukti (bukti ditempel di chat, tidak disimpan):** `status` 200 dengan `inbox_terbaru: null` untuk akun dummy; `inbox_daftar` dibalas `butir: []`, `terbaru: null`, `maks: 30`; isian `akun` dan `peran` palsu diabaikan; penanda negatif dibalas 400; tanpa token dan token palsu dibalas 401.
+
+**Belum beres / belum terbukti:**
+
+- SEC-34 baru terbukti separuh. Bagian "hanya inbox milik sendiri yang tampil" butuh inbox berisi, jadi tuntas di INB.07.
+- Isi `inbox_tulis` dan urutan `inbox_daftar` dengan data nyata belum teruji (menunggu INB.04).
+- Kedua `_batal.sql` (migration 05 dan 06) belum pernah dicoba.
+- INB.04 dan seterusnya belum dikerjakan; sheet INB.04 sampai INB.07 masih Belum.
+
+**Saran giliran berikutnya (INB.04, ⚠️ menyentuh aksi order yang live, butuh penjelasan dampak dan "OK" ketua):**
+
+- Lampirkan `AGENTS.md`, `inbox.md`, `notifikasi.md`, `database.md`, `security.md`. AI meminta berkas kelompok sesuai giliran: `index.ts` (utuh), `order_status.ts`, `catatan.ts`, `order_wakil.ts`, `inbox.ts`. Berkas `catatan.ts` dan `order_wakil.ts` belum pernah ditempel di sesi ini.
+- Pasang `inbox_tulis` setelah aksi berhasil, dibagi per kelompok kejadian (1 sampai 3 berkas per giliran): `order_baru`; `catatan_customer` dan `catatan_owner`; `batal_customer` dan `batal_owner` (dibedakan dari peran yang dibaca server); `setujui` dan `tolak`; `status` (hanya maju, mundur satu langkah TIDAK memanggil); `order_wakil`; `alih_hari`; `foto_setelah_selesai` terakhir dan menunggu SEC-29.
+- Pelaku selalu id dari token. Pemanggilan dibungkus penangkap galat, kegagalan hanya dicatat jenisnya di log dan tidak membatalkan aksi (IB12). `status_tidak_cocok` dari `inbox_tulis` berarti salah pasang dan harus terlihat di log.
+- Setelah INB.04: INB.05 (layar Kotak masuk, menyentuh `sw.js`, butuh "OK" ketua), INB.06 (SQL template
