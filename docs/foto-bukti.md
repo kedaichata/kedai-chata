@@ -134,3 +134,24 @@ Keputusan ketua (sesi kode FTO.01, 11 Nov 2026). Alasan dari ketua: foto hanya u
 - **Perkiraan kuota membaik:** sekitar 30 order x 50 KB, kira-kira 1,5 MB per hari (perkiraan di bagian 2 memakai 150 KB per foto, jadi sudah lebih longgar dari itu).
 - **FTO.01 selesai 11 Nov 2026:** tabel `foto_bukti`, dua pengaturan, satu bucket privat `foto-bukti`. Terbukti lewat query cek (RLS, tanpa policy, hak tanpa DELETE, bucket tunggal dan privat). Bentuk persisnya ada di blok `docs/database.md` bagian 9 tanggal yang sama.
 - **Untuk FTO.03:** target 50 KB. **Untuk FTO.06:** ukuran akhir diuji terhadap batas 150 KB dan targetnya.
+
+### Handoff #1 | 2026-11-11 | Ketua
+
+- **Tugas:** FTO.01 selesai (migration tabel `foto_bukti`, dua pengaturan foto, satu bucket privat `foto-bukti`, hak minimal, RLS). Dijalankan di project ChATA dan dibuktikan lewat 10 query cek; semua cocok harapan. Sudah di-commit dan di-push (`cf7751e`). Butir FTO.01 sudah dicentang di sheet.
+- **File yang diubah:**
+  - Baru: `supabase/migrations/20261111_foto_bukti.sql`, `supabase/migrations/20261111_foto_bukti_batal.sql`, `supabase/templates/20261111_foto_bukti_cek.sql`.
+  - Blok catatan ditambah di `docs/foto-bukti.md` dan `docs/database.md` (bagian 9). Bagian lain tidak diubah.
+- **Keputusan baru:** batas server `foto_maks_kb` 150 KB, batas bucket 256 KB, target kompres sekitar 50 KB. Alasan dari ketua: foto hanya untuk menunjukkan posisi barang ditaruh. Rinciannya ada di blok `foto-bukti.md` dan `database.md` bertanggal sama; di sana yang paling akhir menang atas FT4 (100 sampai 200 KB) dan nilai 300 di `database.md` bagian 4.
+- **Belum beres:**
+  - Pembatalan bucket belum pernah dicoba. `_batal.sql` hanya membuang tabel dan pengaturan; bucket dihapus lewat dashboard (kosongkan dulu). Supabase mungkin memblokir penghapusan bucket lewat SQL, dan itu belum dipastikan.
+  - Bucket belum pernah menerima berkas; unggah sungguhan baru bisa dites setelah FTO.02 dan FTO.03.
+  - Baris SEC (SEC-03, SEC-04, SEC-17, SEC-20) **jangan dicentang dari pekerjaan ini**. Mereka menunggu sesi tes keamanan; bukti sesi ini tidak disimpan.
+  - Alasan beberapa pilihan penulis belum tercatat: nama bucket, `diunggah_oleh` merujuk `staf`, nama dan jenis indeks.
+  - Format `lokasi_berkas` belum ditetapkan; tabel hanya menolak kosong, kontrol karakter, dan awalan `/`. Ditetapkan di FTO.02.
+- **Saran giliran berikutnya (FTO.02, butuh penjelasan dampak dan "OK" ketua):**
+  - Lampirkan `AGENTS.md`, `foto-bukti.md`, `database.md`, `security.md`, `supabase/functions/kedai/index.ts`, dan berkas kelompok `kedai` yang relevan (misalnya `order_status.ts`).
+  - Aksi baru `foto_minta_unggah`, `foto_catat`, `foto_lihat` ditaruh di berkas baru di `supabase/functions/kedai/` (blok `AGENTS.md` 9 Nov 2026), bukan di `index.ts`.
+  - Pencatatan foto = fungsi SQL atomik: foto lama ditandai `diganti = true` **dulu**, baru baris baru ditambah (ada pagar satu foto aktif per order). Hanya pengunggah asli yang boleh mengganti.
+  - Hanya order tipe Diantar yang boleh diberi foto, dan hanya saat status Diantar atau Selesai; batas ukuran dibaca dari `pengaturan`, bukan ditulis mati.
+  - Rantai sheet: FTO.03 setelah FTO.02, FTO.04 setelah FTO.03, FTO.05 setelah FTO.04, FTO.06 setelah FTO.05.
+- **Rahasia:** sesi ini tidak memakai token CLI; dashboard sudah logout.
