@@ -32,6 +32,10 @@
 // - Pesan galat dari server ditampilkan apa adanya lewat textContent. Galat mentah tidak ditampilkan.
 // - Semua teks dipasang lewat textContent, bukan innerHTML.
 // - Daftar dan detail dikosongkan saat Keluar (reset).
+// - FTO.04: foto bukti antar tampil sebagai kartu kecil (thumbnail, diketuk jadi besar) tepat di bawah kartu utama,
+//   hanya untuk order Diantar berstatus Diantar atau Selesai, dan hanya bila ada foto atau fotonya sudah dihapus.
+//   Semua logikanya ada di foto.js (window.KedaiFoto.lihat); layar ini hanya memanggilnya. Tautan foto di memori
+//   dibuang saat Keluar (KedaiFoto.reset).
 
 (function () {
   "use strict";
@@ -490,6 +494,11 @@
     }
     wadah.appendChild(kartu);
 
+    // FTO.04: kartu foto bukti antar (foto.js). Kosong untuk order yang tidak memenuhi syarat.
+    if (window.KedaiFoto && typeof window.KedaiFoto.lihat === "function") {
+      window.KedaiFoto.lihat(wadah, o);
+    }
+
     // ORD.17: siapa yang membatalkan (hanya order Dibatalkan; tampil walau alasannya kosong).
     if (o.status === "Dibatalkan" && o.dibatalkanOleh) {
       var teksPembatal = "";
@@ -920,6 +929,10 @@
     draftCatatan = "";
     pesanCatatan = { teks: "", galat: false };
     kunciDibaca = "";
+    // FTO.04: tautan foto di memori dibuang saat Keluar.
+    if (window.KedaiFoto && typeof window.KedaiFoto.reset === "function") {
+      window.KedaiFoto.reset();
+    }
     kosongkan(el("pesanan-daftar-isi"));
     kosongkan(el("pesanan-detail-isi"));
     el("pesanan-ringkas").textContent = "";

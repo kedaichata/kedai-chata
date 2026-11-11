@@ -46,6 +46,10 @@
 //   Perbaikan layar loncat (9 Nov 2026): renderDetail() kini membungkus gambarDetail() dan mengembalikan posisi
 //   gulung sesudah detail digambar ulang. Sebelumnya tiap aksi (Setuju, Tolak, status, catatan) menarik layar ke
 //   atas, baru terasa sesudah kartu Catatan membuat halaman detail panjang.
+//   FTO.04: foto bukti antar tampil sebagai kartu kecil (thumbnail, diketuk jadi besar) tepat di bawah kartu utama,
+//   hanya untuk order Diantar berstatus Diantar atau Selesai, dan hanya bila ada foto atau fotonya sudah dihapus.
+//   Semua logikanya ada di foto.js (window.KedaiFoto.lihat); owner hanya MELIHAT di sini (belum ada tombol unggah
+//   untuk owner). Tautan foto di memori dibuang saat Keluar (KedaiFoto.reset).
 
 (function () {
   "use strict";
@@ -852,6 +856,11 @@
       }
       wadah.appendChild(kartu);
 
+      // FTO.04: kartu foto bukti antar (foto.js). Kosong untuk order yang tidak memenuhi syarat.
+      if (window.KedaiFoto && typeof window.KedaiFoto.lihat === "function") {
+        window.KedaiFoto.lihat(wadah, o);
+      }
+
       // Alasan tolak atau batal (hanya bila ada).
       if (o.alasan && (o.status === "Ditolak" || o.status === "Dibatalkan")) {
         var kartuAlasan = buat("div", "kartu");
@@ -1253,6 +1262,10 @@
       // dipanggil kerangka.js saat Keluar
       layarMasuk.reset();
       layarSemua.reset();
+      // FTO.04: tautan foto di memori dibuang saat Keluar.
+      if (window.KedaiFoto && typeof window.KedaiFoto.reset === "function") {
+        window.KedaiFoto.reset();
+      }
     },
   });
 })();
