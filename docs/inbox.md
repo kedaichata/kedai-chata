@@ -137,4 +137,42 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 
 ---
 
-_(belum ada blok)_
+### 2026-11-11: INB.01 dikerjakan sebelum SEC-29 lulus, dan batas tampil 30
+
+Keputusan ketua (sesi kode INB.01, 11 Nov 2026).
+
+- **Urutan:** INB.01 (migration tabel inbox) boleh dikerjakan dan dijalankan sebelum FTO.06, FTO.07, dan SEC-29 lulus. Ini bertentangan dengan IB14 dan bagian 3 (Inbox setelah Foto Bukti lulus tes); yang paling akhir menang. Alasan ketua: sesi tes lanjutan foto baru Minggu 15 Nov 2026, jadi lebih baik mengerjakan yang bisa dikerjakan. INB.01 hanya menambah tabel baru dan tidak menyentuh tabel foto.
+- **Yang belum diputuskan:** apakah INB.02 dan seterusnya juga boleh mendahului SEC-29. Sampai ada keputusan, ikuti IB14.
+- **IB15 ditetapkan:** batas jumlah item per tampilan, nilai awal **30** (`inbox_maks_tampil` di `pengaturan`), belum dibaca didahulukan. Usulan awal penulis 50; ketua memilih 30, alasan belum tercatat.
+- **Nama tabel dan kolom** final dicatat di `database.md` setelah migration dijalankan.
+
+### Handoff #1 | 2026-11-11 | ketua (KETUA)
+
+**Tugas:** INB.01 (migration tabel inbox) dan INB.02 (fungsi SQL inbox). Keduanya selesai dan lulus cek; sudah dicentang di sheet.
+
+**File yang diubah (semua baru, tidak ada yang lama disentuh):**
+
+- `supabase/migrations/20261111_05_inbox.sql` (+ `_batal.sql`), `supabase/templates/20261111_05_inbox_cek.sql`
+- `supabase/migrations/20261111_06_inbox_fungsi.sql` (+ `_batal.sql`), `supabase/templates/20261111_06_inbox_fungsi_cek.sql`
+  Dijalankan dan dicek 11 Nov 2026 di SQL Editor.
+
+**Keputusan baru:**
+
+- INB.02 juga dikerjakan sebelum SEC-29 lulus (melanjutkan blok urutan 11 Nov, yang awalnya hanya mencakup INB.01). Bertentangan dengan IB14 dan bagian 3; yang paling akhir menang. INB.03 dan seterusnya belum diputuskan: sampai ada keputusan, ikuti IB14.
+- Batas tampil 30 (`inbox_maks_tampil`); lama tampil 14 (`inbox_simpan_hari`). Keduanya di `pengaturan`.
+- Fungsi tambahan di luar teks sheet: `inbox_terbaru(p_akun)`, supaya titik merah (INB.03) tidak mengubah fungsi `status` yang sudah live. `inbox_daftar` juga mengembalikan `terbaru`.
+- `inbox_tulis` melempar galat bila status order tidak cocok dengan kejadian (menulis nol baris), supaya salah pasang kelihatan di log saat INB.04. Kode kejadian: order_baru, catatan_customer, catatan_owner, batal_customer, batal_owner, setujui, tolak, status, foto_setelah_selesai, order_wakil, alih_hari.
+- Teks catatan baru dari owner ke penjaga: "Ada catatan baru di order #N." (notifikasi.md hanya menulis "idem"). Alasan ketua belum tercatat.
+
+**Yang belum beres / belum terbukti:**
+
+- Kedua `_batal.sql` belum pernah dicoba.
+- Isi `inbox_tulis` dengan data nyata dan urutan `inbox_daftar` belum teruji; baru bisa lewat `kedai` (INB.04, INB.07).
+- Batas yang diterima fungsi (hari 1 sampai 365, jumlah 1 sampai 200) adalah pilihan penulis, alasan belum tercatat.
+
+**Saran giliran berikutnya (INB.03, ⚠️ menyentuh aksi live, butuh penjelasan dampak dan "OK" ketua):**
+
+- Lampirkan `AGENTS.md`, `inbox.md`, `notifikasi.md`, `database.md`, `security.md`.
+- AI meminta: `kedai/index.ts` (utuh), `order_status.ts`, `foto.ts`, dan berkas JS yang memanggil `kedai` saat aplikasi dibuka (tanyakan namanya).
+- Cek dulu di kode apakah panggilan buka aplikasi (aksi `status`) layak ditumpangi `inbox_terbaru`; bila tidak, tanya ketua.
+- Untuk INB.04: `kedai` jangan memanggil `inbox_tulis` pada mundur satu langkah (tanpa kabar, sesuai notifikasi.md 4.1), dan kegagalannya tidak boleh membatalkan aksi (IB12).

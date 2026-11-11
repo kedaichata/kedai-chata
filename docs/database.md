@@ -334,4 +334,18 @@ Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Nama kolom d
 - **Rotasi rahasia:** `security.md` bagian 5 menyebut "ganti nilainya di dashboard dan di penjadwal". Kini artinya mengganti di dua tempat: variabel fungsi `bersihkan` dan isian Vault. Template untuk mengganti isian Vault belum dibuat (template pemasangan gagal bila nama sudah ada).
 - **Catatan:** hasil panggilan `pg_net` tersimpan di `net._http_response` hanya sementara; baca segera setelah jalan.
 
+### 2026-11-11: Tabel `inbox`, pengaturan inbox, dan tiga fungsi inbox (INB.01, INB.02)
+
+**Berkas tujuan:** `docs/database.md` bagian 9. Rujukan: `docs/inbox.md` bagian 9, Handoff #1. Yang paling akhir menang.
+
+- **Berkas SQL:** `supabase/migrations/20261111_05_inbox.sql` dan `20261111_06_inbox_fungsi.sql` (masing-masing dengan `_batal`), `supabase/templates/20261111_05_inbox_cek.sql` dan `20261111_06_inbox_fungsi_cek.sql`. Dijalankan dan dicek 11 Nov 2026. Tabel lama dan fungsi lama tidak diubah.
+- **Bagian 2 (tabel baru, nama kolom persis):** `inbox`: `id` (nomor berjalan otomatis), `penerima` (merujuk `auth.users`), `teks` (1 sampai 200 karakter), `nomor_order` (boleh kosong; merujuk `order.nomor`, yaitu angka "#N" yang tampil di layar), `waktu` (jam server).
+- **Bagian 3 (hak):** `service_role` hanya `INSERT, SELECT` (tanpa UPDATE dan tanpa DELETE); `anon` dan `authenticated` nol; urutan nomor `id` tanpa hak untuk siapa pun. RLS aktif tanpa policy. Terbukti lewat query cek.
+- **Bagian 4 (pengaturan):** `inbox_simpan_hari` = 14 dan `inbox_maks_tampil` = 30.
+- **Bagian 5 (fungsi SQL, `SECURITY DEFINER`, `search_path` kosong, `EXECUTE` hanya `service_role`, terbukti):** `inbox_tulis(p_pelaku, p_kejadian, p_order_id)` mengembalikan jumlah baris tertulis; `inbox_daftar(p_akun, p_penanda)` mengembalikan `{butir, terbaru, maks}`; `inbox_terbaru(p_akun)` mengembalikan nomor item terbaru atau kosong.
+- **Kode galat baru:** `kejadian_tidak_dikenal`, `status_tidak_cocok` (dari `inbox_tulis`; hanya dicatat di log `kedai`). Kode yang sudah ada dipakai ulang: `id_kosong`, `order_tidak_ditemukan`, `akun_nonaktif`, `pengaturan_rusak`.
+- **Pengecualian tulis (AGENTS.md blok 11 Nov):** `inbox_tulis` dipanggil `kedai` setelah aksi order berhasil; kegagalannya tidak membatalkan aksi.
+- **Pembatalan:** `_batal.sql` migration 05 membuang tabel dan dua pengaturan; migration 06 membuang tiga fungsi (buang fungsi dulu sebelum tabel). Belum pernah dicoba.
+- **Pilihan penulis** (nama tabel, kolom, dan fungsi; batas pengaturan 1 sampai 365 dan 1 sampai 200): alasan belum tercatat.
+
 ---
