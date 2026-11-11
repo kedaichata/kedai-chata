@@ -209,7 +209,7 @@ Kejadian di lapangan, ketemu saat tes ORD.10. Penempatan blok ini di `AGENTS.md`
 - **Penyebab:** `renderDetail()` di `orderowner.js` mengosongkan seluruh isi detail lalu menggambarnya ulang, dan dipanggil tiap aksi (sebelum permintaan berangkat dan sesudah detail dimuat ulang). Gulungan layar tertarik ke atas.
 - **Perbaikan:** `renderDetail()` kini membungkus `gambarDetail()` (isi lama, hanya ganti nama) dan mengembalikan posisi gulung (`orderowner.js`). Kolom kosong di form catatan owner kini memasang pesan galat di tempat, tanpa gambar ulang (`orderownercatatan.js`). Terbukti lewat layar dengan akun dummy: Setuju, Tolak, Kembali ke daftar, maju dan mundur status, kirim catatan.
 - **Pencegahan:** layar yang menggambar ulang dengan mengosongkan wadah wajib menjaga posisi gulung. Tes aksi di bagian bawah halaman yang panjang, bukan hanya di bagian atas.
-- **Belum dicek:** layar penjaga (`orderpenjaga.js`) untuk pola yang sama. Layar customer tidak mengalami (pengamatan penguji).
+- **Layar penjaga (`orderpenjaga.js`) sudah dites di ORD.14 dan lulus**
 
 ### 2026-11-10: Dokumen `gim.md` (prefix GIM) dan pengecualian CSS game
 

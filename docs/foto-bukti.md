@@ -195,3 +195,31 @@ Keputusan ketua (sesi kode FTO.02, 11 Nov 2026). Menjabarkan FT2 dan FT5; tidak 
   - Butir baru yang perlu ditambah ke sheet: **"Uji aksi foto dari layar"** (setelah FTO.03) dan **"Isi keterangan pengaturan foto_tautan_detik"** (rapi-rapi, tidak mendesak).
   - Rantai sheet tetap: FTO.04 setelah FTO.03, FTO.05 setelah FTO.04, FTO.06 setelah FTO.05.
 - **Rahasia:** sesi ini memakai token CLI hanya di satu jendela Terminal, sudah ditutup dan dicek kosong; dashboard Supabase dan GitHub sudah logout.
+
+### Handoff #3 | 2026-11-11 | FREN
+
+- **Tugas:** FTO.03 selesai (kompres foto di HP dan tombol foto di layar penjaga). Sudah di-commit dan di-push (`33f9248` dan `684f6c9`). Butir FTO.03 sudah dicentang di sheet. Foto pertama terkirim dari HP penjaga dengan akun dan order dummy: alur foto_minta_unggah, unggah ke Storage, foto_catat jalan sampai "Foto bukti terkirim".
+- **File yang diubah:**
+  - Baru: `public/foto.js`.
+  - Diubah (hanya penambahan): `public/orderpenjaga.js` (satu panggilan `KedaiFoto.pasang` di detail order dan satu `KedaiFoto.reset` di reset), `public/index.html` (satu `<script src="foto.js">` sebelum `orderpenjaga.js`), `public/sw.js` (naik ke `chata-v21`, `foto.js` masuk daftar cache; OK ketua sudah ada).
+  - `style.css` tidak diubah (kartu foto memakai kelas yang sudah ada).
+- **Keputusan baru (PIC FREN):**
+  - Kompres: mulai sisi terpanjang 640 px, kualitas JPEG 0,5, lalu turun bertahap (kualitas 0,5 / 0,4 / 0,3, ukuran sisi 640 sampai 320) sampai sekitar 50 KB. Alasan: kualitas kasar boleh; bila customer bilang foto tidak jelas, minta foto ulang lewat WA. Angkanya ada di blok `KOMPRES` di atas `foto.js`. Batas keras tetap dari server (`maks_kb`, 150).
+  - Tombol foto hanya di detail order (bukan di kartu daftar), hanya tipe Diantar, status Diantar atau Selesai. Terbukti: tidak muncul di tipe Diambil dan Makan di warung, dan tidak muncul di status sebelum Diantar.
+  - Input foto memakai `capture="environment"`: langsung membuka kamera belakang, tanpa pilihan galeri. Terbukti di satu HP; di HP lain atribut ini bisa diabaikan.
+  - Unggah ke Storage: permintaan PUT langsung ke `url_unggah` dengan FormData (`cacheControl` dan berkas), header `apikey` (kunci publishable), tanpa `Authorization`. Kunci hanya dikirim ke alamat Supabase milik config.js. Terbukti jalan.
+  - Tombol selalu bertulisan "Ambil foto bukti"; layar tidak memanggil server saat detail dibuka (tampilan foto ada di FTO.04).
+- **Terbukti:** foto terkirim (Storage dan `foto_catat`); asumsi kolom `id` di `foto_bukti` punya nilai bawaan gugur (tidak ada galat 500).
+- **Belum beres:**
+  - Ukuran akhir foto terhadap target 50 KB dan batas 150 KB belum dicek (diuji di FTO.06).
+  - Pesan "Foto bukti diganti." belum dicoba, dan penggantian oleh penjaga lain yang bukan pengunggah asli belum dicoba (SEC-29).
+  - Baris SEC (SEC-07, SEC-08, SEC-20, SEC-29) jangan dicentang dari pekerjaan ini; menunggu sesi tes keamanan, bukti sesi ini tidak disimpan.
+  - Foto dummy hasil tes masih ada di bucket `foto-bukti`; ikut dibersihkan `bersihkan` (FTO.05) atau pembersihan data uji sebelum peluncuran.
+  - Teks butir FTO.03 di sheet masih menyebut 100 sampai 200 KB; ikuti 50 KB (blok 11 Nov 2026 di atas).
+  - Layar owner belum punya tombol foto (sheet hanya menyebut layar penjaga). Perlu diputuskan ketua bila diinginkan.
+- **Saran giliran berikutnya (FTO.04):**
+  - Lampirkan `AGENTS.md`, `foto-bukti.md`, `pesanan.js` (customer), `orderowner.js`, `orderpenjaga.js`, `foto.js`, `style.css`, `index.html`, dan `sw.js` bila ada berkas JS baru. AI menyebut berkas lain yang kurang di awal sesi.
+  - Aksi `foto_lihat` (kontrak di Handoff #2): kirim `id`, balasan `status` ada (dengan `url`), dibersihkan ("Foto sudah dihapus"), atau tidak_ada. Tautan hidup 300 detik, jadi minta tautan baru tiap foto dibuka.
+  - Customer pemilik order, owner, dan penjaga boleh melihat; penjaga tidak melihat order Menunggu, Ditolak, atau Dibatalkan. Gambar lewat `img` dengan `src` dari server, teks lewat `textContent`.
+  - Rantai sheet tetap: FTO.05 setelah FTO.04, FTO.06 setelah FTO.05.
+- **Rahasia:** sesi ini tidak memakai token CLI dan tidak ada deploy fungsi. Hanya commit dan push dengan kunci SSH khusus proyek (pengecekan folder, alamat tujuan, dan email commit cocok sebelum tiap push).
