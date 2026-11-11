@@ -247,3 +247,64 @@ Keputusan ketua (sesi kode FTO.02, 11 Nov 2026). Menjabarkan FT2 dan FT5; tidak 
   - Butir baru yang perlu ditambah ke sheet: **"Tombol unggah foto di layar owner (versi 2)"**.
   - Rantai sheet tetap: FTO.05 setelah FTO.04, FTO.06 setelah FTO.05.
 - **Rahasia:** sesi ini tidak memakai token CLI dan tidak ada deploy fungsi. Push memakai kunci SSH khusus proyek; folder, alamat tujuan, dan email commit dicek cocok sebelum push.
+
+### Handoff #5 | 2026-11-11 | Ketua
+
+- **Tugas:** FTO.05 **sebagian**. Selesai dan terbukti: tiga fungsi SQL pembantu, Edge Function `bersihkan` terpasang dan teruji, rahasia penjadwal terpasang di dashboard, ekstensi `pg_cron`, `pg_net`, dan `supabase_vault` sudah terpasang. **Belum:** rahasia di Vault, penjadwal mingguan, dan uji lewat jalur penjadwal. Butir FTO.05 **belum boleh dicentang** di sheet. Status commit dan push berkas baru belum dikonfirmasi di sesi ini (ketua baru menyalin berkas ke folder repo).
+- **File yang diubah (semua baru, tidak ada kode lama yang diubah):**
+  - `supabase/migrations/20261111_03_foto_bersih_fungsi.sql` dan `20261111_03_foto_bersih_fungsi_batal.sql`
+  - `supabase/templates/20261111_03_foto_bersih_fungsi_cek.sql`
+  - `supabase/functions/bersihkan/index.ts`
+  - Tidak disentuh: `kedai/index.ts`, `foto.ts`, `sw.js`, dan `public/`.
+- **Keputusan baru (ketua, 11 Nov 2026):**
+  - `bersihkan` memakai variabel `KUNCI_SECRET_KEDAI` yang sama dengan `kedai`.
+  - **Mode simulasi:** isi permintaan `{"simulasi": true}` hanya melaporkan angka, tanpa menghapus atau menandai. Penjadwal tidak pernah mengirimnya.
+  - Rahasia penjadwal dikirim lewat header `x-rahasia-penjadwal`, variabelnya `RAHASIA_PENJADWAL` (minimal 32 karakter; kurang dari itu atau kosong, semua permintaan ditolak 401). Dibuat dengan `openssl rand -hex 32`, disimpan di pwd manager dan dashboard saja.
+  - `bersihkan` dideploy dengan `--no-verify-jwt`, sesuai `AGENTS.md` bagian 7 dan 8.
+  - Penyapuan berkas tanpa baris dibatasi 90 detik; sisanya disapu putaran mingguan berikutnya.
+  - **Pilihan penulis, alasan belum tercatat:** `foto_simpan_hari` harus 1 sampai 3650; satu panggilan SQL maksimal 1000 elemen; `foto_bersih_tandai` hanya menandai baris yang memang layak (pagar kedua); balasan `bersihkan` hanya angka; ada penyapuan umur berkas dari `created_at` Storage.
+  - **Usulan belum disetujui:** jadwal mingguan **Minggu 02.00 WIB** (Sabtu 19.00 UTC) dan rahasia disimpan di Vault.
+- **Terbukti (bukti diperiksa di chat, tidak disimpan):**
+  - Migration lulus, enam query cek cocok (hak `EXECUTE` hanya `service_role`, tanpa DELETE).
+  - `bersihkan` tanpa rahasia, dengan rahasia salah, dan hanya dengan kunci publishable (`apikey` dan `Authorization`): semuanya 401 dari fungsi sendiri.
+  - Simulasi: `foto_diproses` 1, tidak ada yang berubah. Uji nyata: 1 berkas yang ditandai `diganti` terhapus dari Storage, barisnya terisi `dibersihkan_pada`, foto aktif utuh dan masih tampil di aplikasi. Diulang: semua angka 0 (aman diulang).
+- **Belum beres:**
+  - Penjadwal belum dipasang; langkah berikutnya lihat bawah.
+  - **Penyapuan berkas tanpa baris belum terbukti menemukan berkas yatim.** Hasil 0 belum bisa dibedakan dari "tidak ada yang ditemukan"; diuji di FTO.06 dengan berkas uji yang cukup tua.
+  - Jalur galat Storage dan `sapuan_terpotong` belum pernah dipicu.
+  - **Pembatalan** migration belum pernah dicoba. Bila `bersihkan` dan penjadwal sudah terpasang, matikan penjadwal dulu sebelum membuang fungsi.
+  - Tampilan "Foto sudah dihapus" untuk foto aktif yang sudah dibersihkan belum bisa dites (foto aktif baru 14 hari lagi).
+  - Baris SEC (SEC-20, SEC-21, SEC-29) **jangan dicentang dari pekerjaan ini**. SEC-21 baru bukti kasus ditolak; SEC-29 (penggantian oleh penjaga lain) belum dicoba. Bukti sesi ini tidak disimpan.
+  - Fungsi `foto_bersih_*` belum dicatat di `docs/database.md` bagian 9 (butuh blok susulan bila ketua setuju).
+  - Editor menandai `index.ts` merah; sama seperti `kedai/index.ts` (editor tidak mengenal Deno), tidak mengganggu.
+- **Saran giliran berikutnya (butuh penjelasan dampak dan "OK" ketua):**
+  - Lampirkan `AGENTS.md`, `foto-bukti.md`, `database.md`, `security.md`, dan `supabase/functions/bersihkan/index.ts`.
+  - Tulis: template Vault (tempat kosong, tanpa nilai), migration jadwal mingguan (`pg_cron` memanggil `bersihkan` lewat `pg_net`, rahasia dari Vault, batas tunggu lebih panjang dari bawaan 5 detik, jam dalam UTC), berkas pembatal, dan query cek.
+  - Setelah menempel rahasia di SQL Editor, **hapus snippet-nya** (SQL Editor menyimpan query, nilai rahasia ikut tersimpan).
+  - Uji sekali secara manual dengan perintah yang sama dengan jadwal, lalu baca balasannya di `net._http_response`. Baru sesudah itu butir FTO.05 boleh dicentang.
+  - Lanjut FTO.06 (sesi tes). Rantai sheet tetap: FTO.06 setelah FTO.05.
+- **Rahasia:** token CLI dipakai hanya di satu jendela Terminal, sudah ditutup dan dicek kosong. `RAHASIA_PENJADWAL` tidak pernah masuk chat, repo, atau md, dan sudah di-`unset` dari Terminal. Dashboard Supabase **belum logout**; logout dan tutup sebelum selesai.
+
+### Handoff #6 | 2026-11-11 | Ketua
+
+- **Tugas:** FTO.05 selesai (lanjutan Handoff #5): rahasia penjadwal dan alamat project disimpan di Vault, jadwal mingguan `pg_cron` dipasang, lalu diuji manual dengan perintah yang sama dengan jadwal. Butir FTO.05 siap dicentang di sheet (pengingat dari AI). Commit dan push belum dilakukan saat handoff ini ditulis; semua berkas Handoff #5 dan #6 akan masuk satu commit.
+- **File yang diubah:** semua baru, tidak ada kode lama yang diubah.
+  - Dari Handoff #5 (belum di-commit): `supabase/migrations/20261111_03_foto_bersih_fungsi.sql` dan `_batal.sql`, `supabase/templates/20261111_03_foto_bersih_fungsi_cek.sql`, `supabase/functions/bersihkan/index.ts`.
+  - Sesi ini: `supabase/templates/20261111_04_vault_rahasia.sql`, `supabase/migrations/20261111_04_foto_jadwal.sql` dan `_batal.sql`, `supabase/templates/20261111_04_foto_jadwal_cek.sql` dan `_uji.sql`.
+  - Blok catatan ditambah di `docs/database.md` (bagian 9) dan handoff ini di `docs/foto-bukti.md`. Bagian lain tidak diubah.
+- **Keputusan baru (ketua, 11 Nov 2026):** jadwal tiap Minggu 02.00 WIB (Sabtu 19.00 UTC) dan rahasia penjadwal disimpan di Vault. Alasan ketua belum tercatat. Alamat project ikut di Vault (pilihan penulis, supaya migration tanpa isian). Rincian di blok `docs/database.md` bertanggal sama; di sana yang paling akhir menang atas FT9.
+- **Terbukti (bukti diperiksa di chat, tidak disimpan):**
+  - Empat query cek lulus: ekstensi `pg_cron`, `pg_net`, `supabase_vault` ada; dua isian Vault ada dan memenuhi syarat; jadwal `0 19 * * 6` aktif, memakai Vault, tanpa nilai tertulis di perintahnya.
+  - Uji manual: 200, `"ok":true`, `"simulasi":false`, semua angka 0. Jalur database ke `bersihkan` dengan rahasia dari Vault bekerja.
+- **Belum beres:**
+  - **Jadwal belum pernah jalan sendiri.** Jalan otomatis pertama Sabtu 14 Nov 2026 pukul 19.00 UTC (Minggu 15 Nov 02.00 WIB). Hasilnya dibaca di `cron.job_run_details` dan `net._http_response`.
+  - Penyapuan berkas tanpa baris belum terbukti menemukan berkas yatim (hasil 0 belum bisa dibedakan dari "tidak ada yang ditemukan"); jalur galat Storage dan `sapuan_terpotong` belum pernah dipicu.
+  - Kedua pembatalan (migration 03 dan 04) belum pernah dicoba. Bila perlu membongkar, matikan jadwal dulu sebelum membuang fungsi.
+  - Template untuk mengganti isian Vault (rotasi rahasia) belum ada.
+  - Foto dummy hasil tes masih ada di bucket `foto-bukti`; foto aktifnya belum 14 hari, jadi tampilan "Foto sudah dihapus" dan "pembersihan hanya foto lewat 14 hari" belum bisa dites secara alami. Cara menguji di FTO.06 perlu diputuskan; mengubah `foto_simpan_hari` sementara butuh penjelasan dampak dan "OK" ketua.
+  - Baris SEC (SEC-20, SEC-21, SEC-29) **jangan dicentang dari pekerjaan ini**. SEC-21 baru bukti kasus ditolak, SEC-29 (penggantian oleh penjaga lain) belum dicoba, bukti sesi ini tidak disimpan.
+- **Saran giliran berikutnya (FTO.06, sesi tes):**
+  - Lampirkan `AGENTS.md`, `foto-bukti.md`, `order.md`, `security.md`, dan `docs/pemetaan-test.md`. AI membuat `foto-bukti-test.md` di sesi tes, memakai foto dummy tanpa wajah, rumah, atau seragam nyata, dan di awal sesi menyebut apa yang sudah terbukti dan sisa tes.
+  - Butir baru yang perlu ditambah ke sheet: **"Cek jadwal foto jalan pertama"** (setelah 15 Nov 2026).
+  - Rantai sheet tetap: FTO.06 setelah FTO.05, SEC-20 setelah FTO.06.
+- **Rahasia:** sesi ini tidak memakai token CLI dan tidak ada deploy fungsi. `RAHASIA_PENJADWAL` hanya ditempel di SQL Editor (Vault), snippet-nya sudah dihapus, tidak pernah masuk chat, repo, atau md. Dashboard Supabase sudah logout.
