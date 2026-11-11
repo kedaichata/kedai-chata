@@ -45,6 +45,11 @@
 //         peran dari aplikasi diabaikan, BT5 dan SEC-31). Kodenya ada di BERKAS BARU `bantuan.ts` (folder yang sama),
 //         diimpor di bawah; kode lama tidak dipindah. Hanya membaca tabel `bantuan`: tanpa fungsi SQL baru
 //         dan tanpa migration (tabelnya sudah ada dari BTN.01).
+// FTO.02: ditambah `foto_minta_unggah`, `foto_catat` (penjaga dan owner; customer ditolak 403) dan `foto_lihat`
+//         (semua peran aktif; hak lihat dijaga fungsi SQL). Kodenya ada di BERKAS BARU `foto.ts` (folder yang sama),
+//         diimpor di bawah; kode lama tidak dipindah. Berkas ini juga memberi `foto.ts` klien Storage (`admin.storage`).
+//         Fungsi SQL: 20261111_02_foto_fungsi.sql (HARUS sudah dijalankan dan lulus cek SEBELUM berkas ini dideploy).
+//         Push foto ada di NTF, bukan di sini.
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -64,6 +69,8 @@ import { buatAksiPelangganLuar } from "./pelanggan_luar.ts";
 import { buatAksiOrderWakil } from "./order_wakil.ts";
 // BTN.02: aksi bantuan_daftar ada di berkas terpisah.
 import { buatAksiBantuan } from "./bantuan.ts";
+// FTO.02: aksi foto_minta_unggah, foto_catat, foto_lihat ada di berkas terpisah.
+import { buatAksiFoto } from "./foto.ts";
 
 // ------------------------------------------------------------
 // Pengaturan dasar
@@ -1378,6 +1385,23 @@ const { aksiBantuanDaftar } = buatAksiBantuan({
 });
 
 // ------------------------------------------------------------
+// FTO.02: sambungan ke berkas foto.ts, dengan alat bantu yang sama seperti di atas, ditambah `storage`
+// (bagian Storage dari klien kunci secret, untuk alamat unggah dan tautan lihat). Tanpa `batasTeks`: tidak dipakai.
+// ------------------------------------------------------------
+
+const { aksiFotoMintaUnggah, aksiFotoCatat, aksiFotoLihat } = buatAksiFoto({
+  // deno-lint-ignore no-explicit-any
+  klien: admin as any,
+  // deno-lint-ignore no-explicit-any
+  storage: (admin?.storage ?? null) as any,
+  bacaPeran,
+  balas,
+  galat,
+  galatDariDb,
+  regexUuid: REGEX_UUID,
+});
+
+// ------------------------------------------------------------
 // Pintu masuk
 // ------------------------------------------------------------
 
@@ -1482,6 +1506,12 @@ Deno.serve(async (req: Request): Promise<Response> => {
         return await aksiOrderBuatWakil(req, pengguna, isi);
       case "bantuan_daftar":
         return await aksiBantuanDaftar(req, pengguna);
+      case "foto_minta_unggah":
+        return await aksiFotoMintaUnggah(req, pengguna, isi);
+      case "foto_catat":
+        return await aksiFotoCatat(req, pengguna, isi);
+      case "foto_lihat":
+        return await aksiFotoLihat(req, pengguna, isi);
       default:
         return galat(req, 400, "Aksi tidak dikenal.");
     }
