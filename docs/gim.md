@@ -117,3 +117,46 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua. `index.html` utuh ditempe
 ---
 
 _(belum ada blok)_
+
+# Blok siap tempel (GIM.05, 11 Nov 2026)
+
+Tiap blok ditempel di bagian **Catatan Susulan** di akhir berkas tujuannya (append-only). Tempel hanya isi di bawah garis `---` masing-masing, tanpa judul "Blok" ini.
+
+---
+
+## BLOK 1. Berkas tujuan: `docs/gim.md` bagian 9 (di bawah `_(belum ada blok)_`)
+
+### Handoff #1 | 2026-11-11 | [Ketua]
+
+**Tugas selesai:** GIM.01, GIM.02, GIM.03, dan GIM.04 (tinggal dicentang di sheet). GIM.05 selesai dengan blok ini dan blok `bonus.md`.
+
+**File yang diubah:** commit `59536f8` di `main`.
+
+- Baru: `public/game.css`, `public/gim.js`, `public/gimmenu.js`.
+- Diubah: `public/index.html` (hanya tambahan, +31 baris) dan `public/sw.js` (cache `chata-v19` jadi `chata-v20`, tiga berkas baru masuk daftar cache; "OK" ketua diberikan di chat).
+- `style.css` dan `kerangka.js` tidak disentuh. Kode lama tidak ada yang dihapus; baris lama `NAMA_CACHE` di `sw.js` dijadikan komentar.
+  **Isi:**
+
+- Tombol hamburger di kiri judul bilah atas, dropdown berisi satu item "Arithmetics" (GM4, GM6).
+- Game Arithmetics sesuai GM10: soal dua pilihan bulat, 5 bintang naik level, 3 nyawa, jeda manual dan jeda otomatis saat aplikasi disembunyikan, kartu Mulai, Dijeda, dan Selesai ("Rekor baru!"). Murni di HP, tanpa server dan tanpa Firebase (GM8). Level tertinggi di `localStorage` kunci `chata_game_arithmetics_best` (GM9).
+- Semua gaya di `game.css` berkelas `gim-`, tanpa gaya inline di JS (GM12, GM13). Bar waktu memakai elemen `progress`.
+  **Keputusan baru (pilihan penulis kode; alasan belum tercatat dari ketua):**
+
+- Timer: 15 detik di level 1, turun 0,5 detik tiap level, minimal 8 detik (menetapkan angka "sekitar" di GM11). Angka tetap di `gim.js`.
+- Level 1: tambah angka 1 sampai 20. Level 2: kurang. Level 3: kali 2 sampai 9. Level 4: bagi habis. Level 5 ke atas: campuran dua operasi dengan urutan operasi benar (kali dulu), hasil tidak negatif, angka makin besar. Jawaban salah dibuat dekat dengan yang benar.
+- Level tertinggi = level yang dicapai saat nyawa habis; disimpan bila lebih besar dari rekor lama.
+- Esc: saat main menjeda, saat dijeda melanjutkan, selain itu menutup.
+- Saat Keluar, game dan menu ditutup lewat dua jalur tanpa menyentuh `kerangka.js` (GM14): pendengar di tombol `#keluar-ya`, dan pengamat atribut `hidden` pada `#layar-sementara` sebagai jaring pengaman.
+- Hamburger tampil di semua tab di bilah atas, termasuk tab tersembunyi Pelanggan dan Bantuan, karena bilah atasnya sama. GM5 dibaca sebagai layar terpisah di luar bilah atas (Pengaturan akun, Buku alamat, Kelola grup pilihan, Masuk, Daftar, Lengkapi profil, Buat password baru).
+- Layar game dibuat dari JS saat pertama dibuka dan ditempel ke `body` (z-index 40).
+  **Kejadian di lapangan (bahan belajar):** saat menyimpan ke commit, isi `gim.js` tertempel juga ke `gimmenu.js`. Ketahuan sebelum push dari jumlah baris di `git commit` (1421 baris, seharusnya sekitar 987) dan `git show --stat` (dua berkas sama-sama 521 baris). Diperbaiki dengan `git commit --amend` sebelum dikirim, jadi tidak sampai ke produksi. Pencegahan: sebelum push, cocokkan jumlah baris tiap berkas di `git show --stat HEAD` dengan yang dikirim AI.
+
+**Hasil tes:** dites di HP Android dan laptop untuk tiga peran (customer, owner, penjaga): hamburger di semua tab utama, game berjalan, mode offline tetap jalan (cache v20 benar), dan jeda otomatis saat pindah aplikasi berfungsi. Bukti diperiksa di chat dan tidak disimpan.
+
+**Belum beres:**
+
+- Penutupan game lewat jalur Keluar selain tombol bilah atas (misalnya tombol Keluar di layar Galat) tidak dites terpisah; pengamat `hidden` dimaksudkan menutupinya.
+- Tabel Peta Dokumentasi di `AGENTS.md` bagian 5 tidak diubah (append-only); blok `AGENTS.md` 10 Nov 2026 sudah mendaftarkan `docs/gim.md` (prefix GIM) dan pengecualian CSS game. Blok `desain.md` 10 Nov 2026 sudah mencatat DS10 dan DS7, jadi tidak ada blok baru untuk keduanya.
+  **Saran giliran berikutnya:** game selesai; lanjut ke butir berikutnya di sheet. Bila game diubah lagi, lampirkan `AGENTS.md` + `gim.md` + `desain.md` + versi terbaru `public/gim.js`, `public/gimmenu.js`, `public/game.css` (dan `public/index.html` utuh bila menyentuh hamburger). Sebelum push, cek tiga hal anti-nyasar dan cocokkan jumlah baris di `git show --stat HEAD`. Logout GitHub dan Supabase di profil browser setelah selesai.
+
+---

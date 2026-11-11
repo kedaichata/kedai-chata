@@ -115,3 +115,12 @@ Hasil review md 4 Nov 2026. B27 dan B29 sudah diputuskan (tidak di versi 1); B28
 - Game ringan lain yang cocok untuk ibu-ibu (misalnya tebak pasangan kartu atau teka-teki kata) boleh ditambah di sini; belum dipilih.
 - Bila game kedua dikerjakan: menu hamburger berubah dari satu item menjadi kelompok Game (lihat GM6), dan gayanya tetap di `game.css`.
 - Skor bersama atau leaderboard: tidak dikerjakan; butuh database dan keputusan terpisah yang berisiko (GM8).
+
+### 2026-11-11: Kandidat game lain dan pengembangan game (dari gim.md)
+
+Keputusan ketua (GM2 dan bagian Ditunda di `docs/gim.md`). Game Arithmetics sudah jalan di versi 1; yang di bawah ini kandidat versi 2 atau 3, urutannya ditentukan setelah review pemakaian.
+
+- **Catch the Vibes** dan game lain sebagai kandidat game kedua. Alasan belum tercatat.
+- **Kelompok Game di menu hamburger** (bisa dilipat) baru dibuat bila game kedua datang; sekarang menu berisi satu item langsung (GM6).
+- **Leaderboard atau skor bersama:** butuh database dan keputusan terpisah yang berisiko (game sekarang tanpa server, GM8).
+- **Hamburger berisi item lain** (Bantuan, Keluar, dll.), **suara**, **getar yang bisa diatur**, dan **pilihan tingkat kesulitan**.
