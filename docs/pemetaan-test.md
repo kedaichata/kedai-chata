@@ -237,8 +237,6 @@ Keputusan ketua: SEC-10 dicentang walau "customer menang" tidak teramati (owner 
 
 Sisa: SEC-19 (Android), non-SEC (O22, wizard Besok, jumlah menu, Segarkan, pilihan non-bawaan di HP), query cek 8 dan 9 paling akhir, tes pemakai. ORD.14 tetap Belum, menunggu keputusan ketua soal syarat tutup.
 
-<!-- Berkas tujuan: docs/pemetaan-test.md, tempel PALING BAWAH bagian 5 (di bawah entri [AIK] K8, SEC-16, SEC-17, SEC-12, SEC-10). Append-only. -->
-
 ### 2026-11-10 | KETUA: penutup ORD.14, O22, wizard, SEC-19, cek 8 dan 9
 
 **Baru terbukti** (tanpa bukti dan tanpa data pelanggan): O22 lulus di owner, penjaga, dan customer; wizard hari Besok, jumlah menu, dan Segarkan saat terisi; tes pemakai lolos; query cek 8 dan 9 catatan (cek 1 sampai 9) lulus; SEC-19 lulus (HP digeser ke 12 Nov, "Hari ini" dan waktu catatan tetap dari server, dibuktikan query baca-saja pada order uji).
@@ -253,3 +251,29 @@ Sisa: SEC-19 (Android), non-SEC (O22, wizard Besok, jumlah menu, Segarkan, pilih
 - Pemilih jam terpotong di satu HP (layar lengkung): P2, kandidat `docs/bonus.md` "Input jam-menit sendiri", dihitung di `LNC.05`.
 
 **Sisa:** tidak ada tes di peta ini yang tertunda. SEC-20, SEC-21, SEC-29 menunggu FTO; SEC-22 dan SEC-25 menunggu NTF; SEC-30, SEC-31, SEC-04 menunggu BTN; SEC-23 sebelum LNC.01; SEC-27 kapan saja (P1). Gerbang FTO.01 (SEC-19) sudah terbuka.
+
+<!-- Berkas tujuan: docs/pemetaan-test.md, tempel PALING BAWAH bagian 5 (di bawah entri KETUA 2026-11-10). Append-only. -->
+
+### 2026-11-11 | (isi nama PIC): FTO.06 sebagian (foto bukti)
+
+**Baru terbukti** (tanpa bukti dan tanpa data pelanggan):
+
+- Ukuran akhir foto: tiga foto dummy jauh di bawah target 50 KB dan batas 150 KB.
+- Penggantian foto oleh pengunggah asli: pesan "Foto bukti diganti.", thumbnail baru, dua berkas di Storage.
+- Selain pengunggah asli ditolak (403, lewat owner); `foto_lihat` hanya mengembalikan foto aktif.
+- SEC-20: customer lain 404, alamat langsung ke bucket 404, tautan lewat 300 detik 400.
+- SEC-21: `bersihkan` tanpa rahasia 401 dan isi bucket tidak berubah (rahasia salah dan kunci publishable sudah 401 di Handoff #5).
+- Penjaga tidak melihat order Dibatalkan (404).
+- Server menolak berkas bukan gambar dan terlalu besar (bucket dan `foto_catat`).
+
+**SEC yang lengkap dan diingatkan untuk dicentang di sheet:** SEC-20 dan SEC-21. (Tanggal centang oleh PIC: ...)
+
+**Belum lengkap:**
+
+- **SEC-29:** dua dari tiga bagian terbukti. Sisa: berkas lama hilang saat pembersihan (uji manual `bersihkan`, butuh "OK" ketua). Penjaga kedua belum dicoba (penguat saja).
+- **FTO.06:** pembersihan hanya foto lewat 14 hari, tampilan "Foto sudah dihapus", penyapuan berkas tanpa baris. Belum bisa dites alami (foto dummy baru berumur sehari).
+- Penjaga tidak melihat order Menunggu dan Ditolak: baru Dibatalkan yang dites (satu aturan server, belum satu per satu).
+
+**Tes tidak perlu diulang:** ukuran akhir, penggantian oleh pengunggah asli, SEC-20 (tiga bagian), SEC-21 (tiga kasus dan isi bucket), bukan gambar, terlalu besar.
+
+**Arah ketua (sementara):** tes pembersihan digabung dengan FTO.07 (cek jadwal pertama Minggu 15 Nov 2026 02.00 WIB). Butir baru di sheet: "Tes pembersihan foto bersama FTO.07".

@@ -308,3 +308,37 @@ Keputusan ketua (sesi kode FTO.02, 11 Nov 2026). Menjabarkan FT2 dan FT5; tidak 
   - Butir baru yang perlu ditambah ke sheet: **"Cek jadwal foto jalan pertama"** (setelah 15 Nov 2026).
   - Rantai sheet tetap: FTO.06 setelah FTO.05, SEC-20 setelah FTO.06.
 - **Rahasia:** sesi ini tidak memakai token CLI dan tidak ada deploy fungsi. `RAHASIA_PENJADWAL` hanya ditempel di SQL Editor (Vault), snippet-nya sudah dihapus, tidak pernah masuk chat, repo, atau md. Dashboard Supabase sudah logout.
+
+### Handoff #7 | 2026-11-11 | (AIK)
+
+- **Tugas:** FTO.06 (sesi tes foto) **sebagian**. Tes dijalankan lewat layar, konsol, `curl`, dan dashboard Storage, memakai akun dummy (1 penjaga, 1 owner, 3 customer). Butir FTO.06 **belum boleh dicentang** (tes pembersihan belum bisa jalan). Tidak ada kode, SQL, migration, `kedai`, `bersihkan`, atau `sw.js` yang diubah, jadi tidak ada commit.
+- **Baris SEC yang sudah lengkap, silakan dicentang di sheet:** SEC-20 dan SEC-21. **SEC-29 belum** (bagian 3 menunggu pembersihan).
+- **Terbukti** (bukti diperiksa di chat, tidak disimpan):
+  - **Ukuran akhir:** tiga foto dummy 22,16 KB, 17,07 KB, dan 29,86 KB, semuanya jpeg, di bawah target 50 KB dan batas 150 KB.
+  - **Penggantian oleh pengunggah asli (#61):** pesan "Foto bukti diganti.", thumbnail berubah, folder Storage berisi dua berkas.
+  - **SEC-29 (dua dari tiga bagian):** owner mencoba mengganti foto #61 lewat `foto_minta_unggah` dan dibalas 403 "Foto ini hanya bisa diganti oleh yang mengunggahnya." `foto_lihat` hanya mengembalikan foto aktif (jam foto baru, bukan foto lama).
+  - **SEC-20:** customer bukan pemilik memanggil `foto_lihat` dan dibalas 404 tanpa `url`; alamat `/object/public/` langsung dibalas 404 NoSuchBucket; tautan 300 detik dibuka 200 lalu 8 menit kemudian 400 InvalidJWT (`exp` lewat).
+  - **SEC-21:** `bersihkan` tanpa rahasia (lewat `curl`) = 401; isi bucket tidak berubah (#61 tetap 2, #62 tetap 1). Rahasia salah dan hanya kunci publishable sudah terbukti 401 di Handoff #5.
+  - **Penjaga dan order Dibatalkan:** `foto_lihat` untuk #44 (Dibatalkan, tipe Diambil) = 404 tanpa `url`.
+  - **Server menolak berkas salah:** teks biasa ditolak bucket (415 `invalid_mime_type`); 300 KB ditolak bucket (413 `EntityTooLarge`); 200 KB lolos bucket tetapi `foto_catat` membalas 400 "Foto terlalu besar. Ambil foto lagi." Foto aktif #62 tidak berubah sesudahnya.
+- **Keputusan baru:** tidak ada. Ketua belum memutuskan soal tes pembersihan; arah sementara: **digabung dengan FTO.07** (setelah jadwal jalan sendiri Minggu 15 Nov 2026). Alasan belum tercatat.
+- **Belum beres (kasus yang belum dites):**
+  1. **Pembersihan hanya foto lewat 14 hari** (foto aktif yang lewat batas terhapus, yang belum tetap utuh, order dan catatan tetap). Belum bisa dites alami: foto dummy baru berumur sehari.
+  2. **Tampilan "Foto sudah dihapus"** di layar customer, owner, dan penjaga (balasan `foto_lihat` `status: "dibersihkan"`). Menunggu nomor 1.
+  3. **Penyapuan berkas tanpa baris.** Bahan: satu berkas 200 KB di folder #62 (ditolak `foto_catat`, jadi tanpa baris). Baru bisa disapu bila umurnya sudah lewat `foto_simpan_hari`. Hasil 0 di Handoff #5 belum bisa dibedakan dari "tidak ada yang ditemukan"; jalur galat Storage dan `sapuan_terpotong` belum pernah dipicu.
+  4. **SEC-29 bagian 3:** berkas lama #61 (22,16 KB, sudah ditandai diganti) hilang saat pembersihan. Bisa dites lebih cepat tanpa mengubah `foto_simpan_hari`: uji manual non-simulasi lewat `supabase/templates/20261111_04_foto_jadwal_uji.sql`. Dampak: satu berkas dummy lama terhapus permanen, foto aktif dan order utuh. Butuh penjelasan dampak dan "OK" ketua, dan dashboard ketua dibuka lalu di-logout.
+  5. **SEC-29 dengan penjaga kedua** belum dicoba (hanya owner sebagai "bukan pengunggah asli"). Penjaga kedua butuh baris baru di `staf` (OK ketua). Bukti owner sah untuk aturan server; ini hanya penguat.
+  6. **Jadwal otomatis pertama** (Minggu 15 Nov 2026 02.00 WIB) = FTO.07: baca `cron.job_run_details` dan `net._http_response`.
+  7. **Penjaga tidak melihat order Menunggu atau Ditolak:** hanya Dibatalkan yang dites (#44). Ketiganya satu aturan server (O11), tetapi Menunggu dan Ditolak belum dites satu per satu.
+  8. **Ukuran akhir** baru dari foto sederhana (benda di meja). Foto yang terang dan penuh detail belum dicoba.
+  9. **SEC-20:** yang dites jalur `/object/public/`. Jalur lain tanpa tanda tangan tidak dites; kuat dugaan ditolak karena bucket privat tanpa policy (bukti FTO.01), tetapi itu belum bukti baru.
+  10. **Penolakan peran di `foto_catat`** tidak dites terpisah (tidak ada lokasi sah tanpa lolos `foto_minta_unggah`).
+  11. **Kedua pembatalan migration** (03 dan 04) belum pernah dicoba (tidak berubah dari Handoff #5 dan #6).
+  12. Bila pembersihan dites dengan menurunkan `foto_simpan_hari` sementara: butuh penjelasan dampak dan "OK" ketua, foto lewat batas terhapus permanen, kembalikan ke 14 sesudahnya.
+- **Data dummy** (dibersihkan di LNC.01 atau oleh `bersihkan`): order #61 (Diantar, 2 berkas di Storage: yang lama sudah ditandai diganti, yang aktif 17,07 KB) dan #62 (Diantar, 2 berkas: foto aktif 29,86 KB dan satu berkas yatim 200 KB). Foto dummy lama #61 berisi kacamata dan struk (tanpa data pribadi yang terbaca). Order #44 Dibatalkan (Diambil) dipakai untuk tes penjaga.
+- **Saran giliran berikutnya (setelah 15 Nov, sesi tes FTO.07):**
+  - Lampirkan `AGENTS.md`, `foto-bukti.md`, `order.md`, `security.md`, `docs/pemetaan-test.md`.
+  - Baca hasil jadwal pertama. Lalu pilih: (a) uji manual berkas diganti #61 (kasus 4, OK ketua), (b) tes pembersihan 14 hari, "Foto sudah dihapus", dan penyapuan yatim, bila berkas sudah cukup tua atau dengan `foto_simpan_hari` sementara (kasus 1 sampai 3, 12).
+  - Setelah kasus 1 sampai 4 terbukti, baru FTO.06 dan SEC-29 boleh dicentang.
+  - Butir baru untuk sheet: **"Tes pembersihan foto bersama FTO.07"**.
+- **Rahasia:** sesi ini tidak memakai token CLI dan tidak ada deploy. Dua token unggah bertanda tangan (lokasi dummy di #62) sempat tampil di chat; keduanya untuk satu lokasi dummy, tidak pernah dipakai, dan kedaluwarsa sekitar 2 jam setelah dibuat, jadi tidak perlu tindakan. Lain kali salin hanya baris hasil. Logout dashboard Supabase belum dikonfirmasi; logout dan tutup profil browser ketua.
