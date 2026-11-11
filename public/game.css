@@ -1,0 +1,343 @@
+/* public/game.css
+   GIM.01 dan GIM.02: gaya hamburger dan game Arithmetics (gim.md GM12, GM13).
+   Dimuat SETELAH style.css supaya memakai variabel warna di :root (tema marun dan emas ikut otomatis).
+   Semua nama kelas berawalan gim-. style.css tidak diubah. Tanpa CDN.
+   Mau mencabut game: hapus berkas ini, gim.js, gimmenu.js, tombol hamburger, dan tag di index.html. */
+
+/* ---------- Tombol hamburger di kiri judul bilah atas ---------- */
+.gim-hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 48px;
+    height: 48px;
+    margin: 0 0 0 -8px; /* meniadakan sebagian padding kiri bilah atas */
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--emas-terang);
+    cursor: pointer;
+}
+
+.gim-hamburger:active {
+    background: rgba(226, 184, 74, 0.18);
+}
+
+.gim-hamburger:focus-visible {
+    outline: 2px solid var(--emas-terang);
+    outline-offset: -2px;
+}
+
+.gim-hamburger svg {
+    width: 26px;
+    height: 26px;
+}
+
+/* ---------- Menu dropdown (bilah atas sudah position: sticky, jadi jadi acuan posisi) ---------- */
+.gim-menu {
+    position: absolute;
+    top: 100%;
+    left: 8px;
+    z-index: 1;
+    min-width: 230px;
+    padding: 6px;
+    background: var(--krem);
+    border: 2px solid var(--emas-redup);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.gim-menu__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: var(--tinggi-tombol);
+    padding: 0 12px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--marun);
+    font-weight: 700;
+    text-align: left;
+    cursor: pointer;
+}
+
+.gim-menu__item:active {
+    background: rgba(226, 184, 74, 0.25);
+}
+
+.gim-menu__item:focus-visible {
+    outline: 3px solid var(--emas-terang);
+    outline-offset: -3px;
+}
+
+/* ---------- Layar game: lapisan penuh di atas segalanya (z-index 40, GM13) ---------- */
+body.gim-terbuka {
+    overflow: hidden;
+}
+
+.gim-layar {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: calc(12px + env(safe-area-inset-top, 0px)) 16px
+        calc(16px + env(safe-area-inset-bottom, 0px));
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            rgba(226, 184, 74, 0.14) 0%,
+            rgba(226, 184, 74, 0) 60%
+        ),
+        var(--marun-sangat-gelap);
+    color: var(--teks-terang);
+    overflow-y: auto;
+}
+
+.gim-isi {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    width: 100%;
+    max-width: 480px;
+}
+
+.gim-atas {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.gim-level {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--emas-terang);
+}
+
+.gim-ikon {
+    flex: 0 0 auto;
+    min-width: 84px;
+    padding: 0 14px;
+    border: 2px solid var(--emas-redup);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--emas-terang);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.gim-ikon:active {
+    background: rgba(226, 184, 74, 0.2);
+}
+
+.gim-ikon:focus-visible {
+    outline: 3px solid var(--emas-terang);
+    outline-offset: 2px;
+}
+
+.gim-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 14px 0 10px;
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.gim-nyawa {
+    color: #ff8a80;
+    letter-spacing: 0.1em;
+}
+
+.gim-bintang {
+    color: var(--emas-terang);
+    letter-spacing: 0.1em;
+}
+
+/* Bar waktu memakai elemen progress (nilai lewat atribut, bukan gaya inline) */
+.gim-bar {
+    display: block;
+    width: 100%;
+    height: 16px;
+    border: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    appearance: none;
+    -webkit-appearance: none;
+    background: rgba(255, 244, 220, 0.18);
+    color: var(--emas-terang);
+}
+
+.gim-bar::-webkit-progress-bar {
+    background: rgba(255, 244, 220, 0.18);
+    border-radius: 8px;
+}
+
+.gim-bar::-webkit-progress-value {
+    background: var(--emas-terang);
+    border-radius: 8px;
+}
+
+.gim-bar::-moz-progress-bar {
+    background: var(--emas-terang);
+    border-radius: 8px;
+}
+
+.gim-bar--sedikit {
+    color: #ff8a80;
+}
+
+.gim-bar--sedikit::-webkit-progress-value {
+    background: #ff8a80;
+}
+
+.gim-bar--sedikit::-moz-progress-bar {
+    background: #ff8a80;
+}
+
+.gim-soal-bungkus {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+    padding: 12px 0;
+}
+
+.gim-soal {
+    margin: 0;
+    font-size: clamp(2.2rem, 11vw, 3.4rem);
+    font-weight: 700;
+    text-align: center;
+    color: var(--teks-terang);
+    overflow-wrap: anywhere;
+}
+
+.gim-pesan {
+    min-height: 1.6em;
+    margin: 0 0 12px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--emas-terang);
+}
+
+.gim-pilihan-baris {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin: 0 0 12px;
+}
+
+.gim-pilihan {
+    flex: 0 0 auto;
+    width: min(38vw, 150px);
+    height: min(38vw, 150px);
+    padding: 0;
+    border: 4px solid var(--emas-redup);
+    border-radius: 50%;
+    background: var(--krem);
+    color: var(--marun);
+    font-size: 2rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.gim-pilihan:active {
+    background: var(--emas-terang);
+}
+
+.gim-pilihan:focus-visible {
+    outline: 3px solid var(--emas-terang);
+    outline-offset: 3px;
+}
+
+.gim-pilihan--benar {
+    border-color: #a5d6a7;
+    background: #2e7d32;
+    color: #ffffff;
+}
+
+.gim-pilihan--salah {
+    border-color: #ef9a9a;
+    background: #a31d1d;
+    color: #ffffff;
+}
+
+/* ---------- Kartu Mulai, Dijeda, Selesai ---------- */
+.gim-kartu-latar {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(42, 26, 26, 0.78);
+}
+
+.gim-kartu {
+    width: 100%;
+    max-width: 360px;
+    padding: 22px 18px 18px;
+    background: var(--krem);
+    color: var(--teks-gelap);
+    border: 2px solid var(--emas-redup);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    text-align: center;
+}
+
+.gim-kartu__judul {
+    margin: 0 0 8px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--marun);
+}
+
+.gim-kartu__isi {
+    margin: 0 0 10px;
+}
+
+.gim-kartu__rekor {
+    margin: 0 0 14px;
+    font-weight: 700;
+    color: var(--marun);
+}
+
+.gim-tombol {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: var(--tinggi-tombol);
+    margin: 8px 0 0;
+    padding: 0 20px;
+    border: 2px solid var(--marun);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--marun);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.gim-tombol--utama {
+    background: var(--marun);
+    color: var(--teks-terang);
+}
+
+.gim-tombol--utama:active {
+    background: var(--marun-sangat-gelap);
+    border-color: var(--marun-sangat-gelap);
+}
+
+.gim-tombol:focus-visible {
+    outline: 3px solid var(--emas-terang);
+    outline-offset: 2px;
+}

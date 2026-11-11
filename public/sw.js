@@ -15,7 +15,8 @@
 // ORD.13: var NAMA_CACHE = "chata-v16"; // ORD.10: naik dari chata-v15 karena orderownercatatan.js masuk daftar cache
 // BTN.03: var NAMA_CACHE = "chata-v17"; // ORD.13: naik dari chata-v16 karena pelangganluar.js dan orderwakil.js masuk daftar cache
 // BTN.04a: var NAMA_CACHE = "chata-v18"; // BTN.03: naik dari chata-v17 karena bantuan.js masuk daftar cache
-var NAMA_CACHE = "chata-v19"; // BTN.04a: naik dari chata-v18 karena img/infografik.webp masuk daftar cache
+// GIM.03: var NAMA_CACHE = "chata-v19"; // BTN.04a: naik dari chata-v18 karena img/infografik.webp masuk daftar cache
+var NAMA_CACHE = "chata-v20"; // GIM.03: naik dari chata-v19 karena game.css, gim.js, dan gimmenu.js masuk daftar cache
 
 // Semua path relatif (tanpa awalan /) supaya jalan di GitHub Pages.
 // Tiap berkas aplikasi baru (JS, style.css, pustaka, ikon) wajib ditambah di sini.
@@ -26,6 +27,7 @@ var DAFTAR_CACHE = [
   "lib/supabase.js",
   "manifest.json",
   "style.css",
+  "game.css", // GIM.03
   "akun.js",
   "profil.js",
   "alamat.js",
@@ -43,6 +45,8 @@ var DAFTAR_CACHE = [
   "orderwakil.js", // ORD.13
   "bantuan.js", // BTN.03
   "kerangka.js",
+  "gim.js", // GIM.03
+  "gimmenu.js", // GIM.03
   "img/icon-192.png",
   "img/icon-512.png",
   "img/chata-logo.png",

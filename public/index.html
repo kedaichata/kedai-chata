@@ -11,6 +11,8 @@
         <link rel="icon" type="image/png" href="img/icon-192.png" />
         <!-- Semua gaya aplikasi ada di satu berkas: style.css (tanpa CDN) -->
         <link rel="stylesheet" href="style.css" />
+        <!-- GIM.01: gaya hamburger dan game (kelas gim-), dimuat SETELAH style.css supaya memakai variabel warna :root -->
+        <link rel="stylesheet" href="game.css" />
     </head>
     <body>
         <!-- AKN.05: layar akun. Satu layar tampil dalam satu waktu; akun.js yang mengatur mana yang tampil.
@@ -729,6 +731,32 @@
                  tombol-keluar, tombol-segarkan) tetap ada. -->
             <section id="layar-sementara" class="ruang-navbawah" hidden>
                 <header class="bilah-atas">
+                    <!-- GIM.01: tombol hamburger di kiri judul (gim.md GM4). Isi menu hanya game (GM6). Logika di gimmenu.js. -->
+                    <button
+                        type="button"
+                        class="gim-hamburger"
+                        id="tombol-hamburger"
+                        aria-label="Menu"
+                        aria-expanded="false"
+                        aria-controls="gim-menu"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <line x1="4" y1="6" x2="20" y2="6" />
+                            <line x1="4" y1="12" x2="20" y2="12" />
+                            <line x1="4" y1="18" x2="20" y2="18" />
+                        </svg>
+                    </button>
+                    <div class="gim-menu" id="gim-menu" role="menu" hidden>
+                        <button
+                            type="button"
+                            class="gim-menu__item"
+                            id="gim-menu-arithmetics"
+                            role="menuitem"
+                        >
+                            <span aria-hidden="true">&#127918;</span>
+                            <span>Arithmetics</span>
+                        </button>
+                    </div>
                     <div class="bilah-atas__judul" id="kerangka-judul">
                         Beranda
                     </div>
@@ -2070,6 +2098,9 @@
         <script src="bantuan.js"></script>
         <!-- Kerangka layar utama per peran (KRG.01); harus setelah akun.js dan menu.js -->
         <script src="kerangka.js"></script>
+        <!-- GIM.01 dan GIM.02: game Arithmetics dan menu hamburger. Berdiri sendiri, tanpa server. gim.js sebelum gimmenu.js -->
+        <script src="gim.js"></script>
+        <script src="gimmenu.js"></script>
         <script>
             // Mendaftarkan service worker (sw.js) supaya aplikasi bisa dipasang dan terbuka offline.
             // Path relatif (tanpa awalan /) supaya jalan di GitHub Pages.
