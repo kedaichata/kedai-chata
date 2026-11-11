@@ -288,4 +288,18 @@ Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Nama kolom d
 - **Template SQL hapus:** `supabase/templates/`, dua tahap (SELECT lalu DELETE dengan kondisi sama), batas hari dari `pengaturan`, tanpa data nyata. Dijalankan manual oleh ketua.
 - **Dicek ulang:** SEC-04 (hak tabel) dan SEC-03 (akses langsung dengan kunci publishable) ikut mencakup tabel inbox.
 
+### 2026-11-11: Tabel `foto_bukti`, bucket `foto-bukti`, dan pengaturan foto (FTO.01)
+
+**Berkas tujuan:** `docs/database.md` bagian 9. Rujukan: blok `docs/foto-bukti.md` bagian 9 dengan judul "Batas ukuran foto bukti 150 KB". Yang paling akhir menang.
+
+- **Berkas SQL:** `supabase/migrations/20261111_foto_bukti.sql` (dan `_batal`), `supabase/templates/20261111_foto_bukti_cek.sql`. Dijalankan dan dicek 11 Nov 2026. Tidak menyentuh tabel lama.
+- **Bagian 2 (tabel baru, nama kolom persis):** `foto_bukti`: `id`, `order_id` (merujuk `public."order"`), `lokasi_berkas` (unik; 1 sampai 200 karakter, tanpa karakter kontrol, tidak diawali `/`), `diunggah_pada`, `diunggah_oleh` (merujuk `staf`), `diganti` (bawaan false), `dibersihkan_pada` (kosong bila berkas masih ada; tidak boleh lebih awal dari `diunggah_pada`).
+- **Pagar satu foto aktif per order:** indeks unik sebagian pada `order_id` untuk baris `diganti = false`. **Catatan untuk FTO.02:** `foto_catat` wajib menandai foto lama `diganti = true` **lebih dulu**, baru menambah baris foto baru, dalam satu langkah atomik; kalau tidak, penambahan ditolak database.
+- **Bagian 2 (Storage):** satu bucket `foto-bukti`, privat, batas 262144 byte, hanya `image/jpeg` dan `image/webp`. Terbukti: tidak ada policy di `storage.objects`, dan bucket di project hanya satu (tidak ada bucket foto menu).
+- **Bagian 3 (hak):** `foto_bukti` masuk kelompok "Baca, tambah, dan ubah". Terbukti lewat query cek: `service_role` hanya `INSERT, SELECT, UPDATE` (tanpa DELETE), `anon` dan `authenticated` nol.
+- **Bagian 4 (pengaturan):** `foto_simpan_hari` = 14 dan `foto_maks_kb` = **150** (menimpa 300). `foto_menu_maks_kb` tetap tidak dibuat. Batas bucket 256 KB tertulis di SQL, bukan di `pengaturan`.
+- **Catatan untuk FTO.05 (`bersihkan`):** `dibersihkan_pada` diisi setelah berkas dihapus lewat jalur resmi Storage. Indeks `foto_bukti_belum_bersih_idx` (baris yang belum dibersihkan, urut waktu unggah) disiapkan untuk penyapuan.
+- **Pembatalan:** `_batal.sql` hanya membuang tabel dan dua pengaturan. Bucket tidak ikut dibuang; penghapusannya lewat dashboard (kosongkan dulu). Cara ini belum pernah dicoba.
+- **Pilihan penulis** (nama bucket, `diunggah_oleh` merujuk `staf`, nama dan jenis indeks): alasan belum tercatat.
+
 ---

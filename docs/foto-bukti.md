@@ -123,3 +123,14 @@ Keputusan ketua (tercatat di sheet pada MNU.05: "foto sekarang di /public/img"; 
 - **FTO.01 membuat satu bucket saja** (foto bukti). Jangan membuat bucket foto menu.
 - **MNU.05 dibatalkan** di sheet. Rantai kerja: FTO.05 kini "Setelah FTO.04" (sebelumnya "Setelah MNU.05").
 - Perbaikan urutan di sheet yang perlu dijaga: **FTO.06 tetap "Setelah FTO.05"** (tes pembersihan butuh `bersihkan` sudah jalan).
+
+### 2026-11-11: Batas ukuran foto bukti 150 KB, target kompres sekitar 50 KB (FTO.01)
+
+Keputusan ketua (sesi kode FTO.01, 11 Nov 2026). Alasan dari ketua: foto hanya untuk menunjukkan posisi barang ditaruh. Menimpa angka lama di FT4 dan perkiraan kuota; yang paling akhir menang.
+
+- **FT4 dibaca ulang:** target kompres di HP **sekitar 50 KB** (sebelumnya 100 sampai 200 KB). Cara mencapainya (ukuran sisi dan kualitas) ditetapkan di FTO.03.
+- **Batas server:** `foto_maks_kb` = **150** (sebelumnya 300). Server menolak foto di atas itu.
+- **Batas bucket (pagar kedua):** **256 KB** (262144 byte), hanya `image/jpeg` dan `image/webp`. Angkanya tertulis di SQL, bukan di `pengaturan`; bila `foto_maks_kb` kelak dinaikkan di atas 256, batas bucket ikut diubah (butuh "OK" ketua).
+- **Perkiraan kuota membaik:** sekitar 30 order x 50 KB, kira-kira 1,5 MB per hari (perkiraan di bagian 2 memakai 150 KB per foto, jadi sudah lebih longgar dari itu).
+- **FTO.01 selesai 11 Nov 2026:** tabel `foto_bukti`, dua pengaturan, satu bucket privat `foto-bukti`. Terbukti lewat query cek (RLS, tanpa policy, hak tanpa DELETE, bucket tunggal dan privat). Bentuk persisnya ada di blok `docs/database.md` bagian 9 tanggal yang sama.
+- **Untuk FTO.03:** target 50 KB. **Untuk FTO.06:** ukuran akhir diuji terhadap batas 150 KB dan targetnya.
