@@ -24,6 +24,7 @@
 // - Semua teks dari server dipasang lewat textContent, bukan innerHTML. Galat mentah tidak ditampilkan.
 // - Nomor WA dan alamat pemesan hanya tampil di detail, dan dikosongkan saat Keluar (reset).
 // - Tidak ada panggilan server baru selain aksi yang sudah ada (order_daftar, order_detail, order_status).
+// - FTO.03: aksi foto (foto_minta_unggah, foto_catat) dipanggil foto.js, bukan di berkas ini.
 
 (function () {
   "use strict";
@@ -644,6 +645,11 @@
       wadah.appendChild(kartuCatatan);
     }
 
+    // FTO.03: kartu foto bukti (foto.js). Hanya muncul untuk tipe Diantar dengan status Diantar atau Selesai.
+    if (window.KedaiFoto && typeof window.KedaiFoto.pasang === "function") {
+      window.KedaiFoto.pasang(wadah, o);
+    }
+
     // Aksi: langkah berikutnya (besar) dan mundur satu langkah (kecil, O10).
     var tulisanMaju = labelMaju(o.status, o.tipe);
     if (tulisanMaju) {
@@ -868,6 +874,10 @@
     kosongkan(el("antrean-daftar-isi"));
     kosongkan(el("antrean-detail-isi"));
     el("antrean-daftar-isi").className = "antrean-isi antrean-isi--baru";
+    // FTO.03: keadaan unggah foto ikut dibersihkan.
+    if (window.KedaiFoto && typeof window.KedaiFoto.reset === "function") {
+      window.KedaiFoto.reset();
+    }
     aturTombolTab({ baru: 0, diproses: 0, siap: 0, selesai: 0 });
     el("antrean-memuat").hidden = true;
     el("antrean-detail-memuat").hidden = true;

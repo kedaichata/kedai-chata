@@ -16,7 +16,8 @@
 // BTN.03: var NAMA_CACHE = "chata-v17"; // ORD.13: naik dari chata-v16 karena pelangganluar.js dan orderwakil.js masuk daftar cache
 // BTN.04a: var NAMA_CACHE = "chata-v18"; // BTN.03: naik dari chata-v17 karena bantuan.js masuk daftar cache
 // GIM.03: var NAMA_CACHE = "chata-v19"; // BTN.04a: naik dari chata-v18 karena img/infografik.webp masuk daftar cache
-var NAMA_CACHE = "chata-v20"; // GIM.03: naik dari chata-v19 karena game.css, gim.js, dan gimmenu.js masuk daftar cache
+// FTO.03: var NAMA_CACHE = "chata-v20"; // GIM.03: naik dari chata-v19 karena game.css, gim.js, dan gimmenu.js masuk daftar cache
+var NAMA_CACHE = "chata-v21"; // FTO.03: naik dari chata-v20 karena foto.js masuk daftar cache
 
 // Semua path relatif (tanpa awalan /) supaya jalan di GitHub Pages.
 // Tiap berkas aplikasi baru (JS, style.css, pustaka, ikon) wajib ditambah di sini.
@@ -40,6 +41,7 @@ var DAFTAR_CACHE = [
   "orderownercatatan.js", // ORD.10
   "orderowneraksi.js", // ORD.15
   "orderowner.js", // ORD.06
+  "foto.js", // FTO.03
   "orderpenjaga.js", // ORD.08
   "pelangganluar.js", // ORD.13
   "orderwakil.js", // ORD.13
