@@ -320,4 +320,14 @@ Tiap blok ditempel di bagian **Catatan Susulan** di akhir berkas tujuannya (appe
 - Bila ada keluhan salah pencet Keluar di dekat Segarkan, tambah jarak atau pembeda.
 
 **Saran giliran berikutnya:** BTN.01 (migration tabel `bantuan`, High-Risk; butuh penjelasan dampak dan "OK" ketua). Lampirkan `AGENTS.md` + `bantuan.md` + `database.md` + `security.md`. Sebelum push, cek tiga hal anti-nyasar. Logout GitHub dan Supabase di profil browser setelah selesai.
+
+### 2026-11-11: Titik merah di hamburger dan layar Kotak masuk
+
+Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Yang paling akhir menang.
+
+- Ikon hamburger boleh memuat **titik merah penanda pesan belum dibaca**; `aria-label` hamburger ikut menyebut ada pesan baru. Bentuk dan warna titik ditetapkan di sesi kode mengikuti variabel warna `:root`.
+- **Tidak ada ikon baru di bilah atas dan tidak ada kartu Kotak masuk di Home** (bilah atas sudah penuh; alasan Home: keputusan ketua memilih opsi paling ringan).
+- Layar Kotak masuk: daftar teks + waktu WIB, belum dibaca di atas dan diberi tanda, memakai komponen kartu dan daftar yang sudah ada (DSN.04), keadaan kosong dan offline memakai pola DSN.05. Item tidak bisa diketuk.
+- **Hamburger tetap tidak muncul di sub-layar** (GM5); DS10 tetap tertimpa GM7 seperti catatan 10 Nov.
+
 ---

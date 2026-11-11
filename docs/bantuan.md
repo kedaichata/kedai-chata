@@ -276,3 +276,12 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua. Dikerjakan **setelah `not
 **Saran giliran berikutnya:** BTN.05 (tulis isi awal di lembar lalu impor) setelah fitur lain final, atau BTN.06 (sesi tes, SEC-30 dan SEC-31) setelah isi berperan beragam ada. Lampirkan `AGENTS.md` + `bantuan.md` + `security.md` + lembar terbaru. Tanpa data pelanggan di lembar.
 
 **Butir baru yang perlu ditambah ke sheet:** "Tambah favicon di index.html".
+
+### 2026-11-11: Isi Bantuan perlu menjelaskan Kotak masuk
+
+Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Yang paling akhir menang.
+
+- Saat menulis isi awal (BTN.05), tambahkan penjelasan singkat untuk customer, owner, dan penjaga: apa itu Kotak masuk, arti **titik merah** di hamburger, bahwa pesan hanya tampil **14 hari**, dan bahwa status dibaca **per HP** (HP baru: semua tampil belum dibaca sekali).
+- Tanpa data pribadi, rekening, atau QRIS (aturan BTN.05 tetap).
+
+---

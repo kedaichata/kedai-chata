@@ -159,4 +159,13 @@ Tiap blok ditempel di bagian **Catatan Susulan** di akhir berkas tujuannya (appe
 - Tabel Peta Dokumentasi di `AGENTS.md` bagian 5 tidak diubah (append-only); blok `AGENTS.md` 10 Nov 2026 sudah mendaftarkan `docs/gim.md` (prefix GIM) dan pengecualian CSS game. Blok `desain.md` 10 Nov 2026 sudah mencatat DS10 dan DS7, jadi tidak ada blok baru untuk keduanya.
   **Saran giliran berikutnya:** game selesai; lanjut ke butir berikutnya di sheet. Bila game diubah lagi, lampirkan `AGENTS.md` + `gim.md` + `desain.md` + versi terbaru `public/gim.js`, `public/gimmenu.js`, `public/game.css` (dan `public/index.html` utuh bila menyentuh hamburger). Sebelum push, cek tiga hal anti-nyasar dan cocokkan jumlah baris di `git show --stat HEAD`. Logout GitHub dan Supabase di profil browser setelah selesai.
 
+### 2026-11-11: Isi hamburger bertambah "Kotak masuk" dan titik merah
+
+Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md (IB2). Yang paling akhir menang.
+
+- **Menimpa GM6:** isi menu hamburger kini **dua item**: "Arithmetics" lalu **"Kotak masuk"** (di bawahnya). Hamburger tidak lagi khusus game. Judul dokumen ini tidak diubah.
+- **Titik merah** di ikon hamburger bila ada pesan belum dibaca. Tidak ada ikon baru di bilah atas.
+- **GM4, GM5, GM14 tetap:** hamburger hanya di tab utama; Keluar menutup menu dan layar Kotak masuk; tanpa menyentuh `kerangka.js`.
+- **Belum beres:** titik merah butuh angka dari panggilan buka aplikasi; bila ternyata memaksa mengubah `kerangka.js`, itu bertentangan dengan GM14 dan perlu "OK" ketua. Tempat gaya layar Kotak masuk (di `game.css` atau lain) ditanyakan ke ketua di sesi kode.
+
 ---

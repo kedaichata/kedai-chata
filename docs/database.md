@@ -278,4 +278,14 @@ Sumber: `docs/order.md` Handoff #24 dan #25; SQL di `supabase/migrations/2026111
 - **Kode galat baru** dipetakan di `supabase/functions/kedai/order_wakil.ts`: `pelanggan_tidak_aktif` (409), `alamat_wajib` (400), `alamat_tidak_valid` (400), `metode_tidak_valid` (400). Daftar lengkap kode yang bisa dilempar fungsi ada di kepala berkas migration; pemetaan ke status HTTP ada di `order_wakil.ts`.
 - **Aksi `kedai`:** `order_buat_wakil`, hanya owner (customer dan penjaga dibalas 403). Kontrak isian dan balasan untuk layar ada di `docs/order.md` Handoff #24.
 
+### 2026-11-11: Tabel inbox, pengaturan, dan fungsi (usulan, final di sesi kode)
+
+Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Nama kolom di bawah **usulan penulis**; sesi kode memeriksa penamaan tabel lain dan meminta "OK" ketua sebelum migration.
+
+- **Tabel `inbox`:** satu baris per kejadian per penerima. Kolom yang dibutuhkan: nomor berjalan (naik terus, dipakai penanda lokal), penerima (akun), teks, nomor order (boleh kosong), waktu dari jam server. RLS aktif tanpa policy. Hak `service_role` **minimal: baca dan tambah saja, tanpa UPDATE dan tanpa DELETE** (status dibaca ada di HP, jadi tidak ada yang diubah). Pembersihan manual oleh ketua di dashboard.
+- **Pengaturan baru:** `inbox_simpan_hari` (nilai awal 14) dan batas jumlah item per tampilan (nilai awal ditetapkan di sesi kode).
+- **Fungsi SQL:** `inbox_tulis` (atomik, `SECURITY DEFINER`, `search_path` kosong, `public.` eksplisit, `EXECUTE` hanya `service_role`; penerima dihitung dari order dan tabel `staf`) dan `inbox_daftar` (hanya milik pemanggil, 14 hari dari jam server). Nomor inbox terbaru untuk titik merah hanya dihitung dari item dalam 14 hari.
+- **Template SQL hapus:** `supabase/templates/`, dua tahap (SELECT lalu DELETE dengan kondisi sama), batas hari dari `pengaturan`, tanpa data nyata. Dijalankan manual oleh ketua.
+- **Dicek ulang:** SEC-04 (hak tabel) dan SEC-03 (akses langsung dengan kunci publishable) ikut mencakup tabel inbox.
+
 ---

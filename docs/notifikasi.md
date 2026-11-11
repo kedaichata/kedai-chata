@@ -198,3 +198,16 @@ _(belum ada blok)_
 - Penjaga: memakai tanda atau tidak **belum diputuskan** (O14 mengabari penjaga untuk order Disetujui ke atas). Putuskan di NTF.07.
 
 **Pertentangan dengan catatan lama:** langkah 10 di `docs/order.md` bagian 5 (ORD.10 "dan tanda 'Catatan baru' di kartu order") tidak berlaku lagi untuk bagian tanda; tanda ada di NTF.07.
+
+### 2026-11-11: Kotak masuk (INB) mendahului push; tanda "Catatan baru" dibatalkan
+
+Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Yang paling akhir menang.
+
+- **Urutan:** Inbox (INB) dikerjakan **sebelum** push. NTF.01 baru setelah INB selesai dan lulus tes.
+- **Tanda "Catatan baru" di kartu order dibatalkan** (menimpa blok 9 Nov di bagian ini, kalimat tentang tanda di bagian 4.2, dan NTF.07 bagian tanda). Diganti item Kotak masuk "Ada catatan baru di order #N.". `order_daftar` tidak perlu diubah. Pertanyaan "penjaga memakai tanda atau tidak" ikut selesai. NTF.07 tinggal: penyegaran saat kembali ke layar (batas NT10), saat push masuk, dan tombol Segarkan.
+- **Tabel 4.1 tetap satu-satunya daftar siapa dapat kabar kapan.** Inbox memakainya apa adanya (termasuk tambahan 8 Nov), tanpa tabel kedua. Teks inbox sama dengan teks push (NT2 berlaku).
+- **NTF.06 menumpang:** pengirim push dipasang di titik pemanggilan yang sama dengan `inbox_tulis` dan memakai penerima yang sudah dihitung, supaya tidak ada hitungan dobel.
+- **Pengecualian NT8 untuk penjaga** (push batal membuka Antrean) hanya untuk push. Item inbox tidak bisa diketuk (IB5).
+- **NT12 diperkuat:** Kotak masuk menjadi jalur kabar cadangan bagi yang notifnya diblokir. Mundur satu langkah tetap tanpa kabar (push maupun inbox).
+
+---

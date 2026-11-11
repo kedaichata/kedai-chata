@@ -124,3 +124,15 @@ Keputusan ketua (GM2 dan bagian Ditunda di `docs/gim.md`). Game Arithmetics suda
 - **Kelompok Game di menu hamburger** (bisa dilipat) baru dibuat bila game kedua datang; sekarang menu berisi satu item langsung (GM6).
 - **Leaderboard atau skor bersama:** butuh database dan keputusan terpisah yang berisiko (game sekarang tanpa server, GM8).
 - **Hamburger berisi item lain** (Bantuan, Keluar, dll.), **suara**, **getar yang bisa diatur**, dan **pilihan tingkat kesulitan**.
+
+### 2026-11-11: Kandidat versi 2 dari Kotak masuk
+
+Sumber: docs/inbox.md bagian 8. Nomor B dan kolom alasan diisi saat ditempel dan saat review pemakaian (`LNC.05`); alasan pemakaian belum tercatat.
+
+- **Item Kotak masuk bisa diketuk dan membuka order** (penjaga: membuka Antrean untuk order yang dibatalkan). Ketua memutuskan untuk versi 1 item hanya teks; bila ibu-ibu bingung dan banyak bertanya lewat WA, ditingkatkan di versi 2.
+- **Pembersihan otomatis inbox** lewat fungsi SQL yang dijalankan `pg_cron` (tanpa Edge Function), bila hapus manual merepotkan.
+- **Kartu Kotak masuk di Home.**
+- **Status dibaca per akun di server** (lintas HP), dengan biaya panggilan tambahan.
+- **Titik merah ikut diperbarui saat kembali ke layar** (butuh panggilan tambahan).
+
+---

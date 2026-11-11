@@ -165,3 +165,13 @@ Tes dilakukan di production dengan **akun, nomor WA, dan alamat dummy** (`AGENTS
 **Dampak pada sheet:** SEC-07, SEC-08, SEC-10, SEC-15, SEC-18 sudah diubah; SEC-16, SEC-19, SEC-22 diubah dengan TSV baru; kolom Catatan kelima baris pertama dirujuk ulang ke blok ini.
 
 **Belum beres:** alasan keputusan di luar yang disebut di atas: alasan belum tercatat.
+
+### 2026-11-11: Keamanan Kotak masuk (SEC-34, SEC-35)
+
+Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Yang paling akhir menang.
+
+- **Aturan 16 (isi push tanpa data pribadi) berlaku juga untuk isi inbox.** Teks inbox sama dengan teks push.
+- **SEC-34 (baru, P0):** customer memanggil `inbox_daftar` dengan akun atau peran lain di isi permintaan, dan tanpa token. Hasil benar: hanya inbox miliknya, isian diabaikan, tanpa token dibalas 401. Bukti: balasan server.
+- **SEC-35 (baru, P0):** periksa isi inbox untuk semua kejadian tabel 4.1 (termasuk batal dan alih hari), dan isi nama dan catatan dengan tag HTML. Hasil benar: teks umum tanpa data pribadi dan tanpa alasan; tag HTML tampil sebagai teks biasa; hak tabel inbox tanpa DELETE. Bukti: screenshot (data dummy) dan query baca-saja hak tabel.
+- **SEC-04 dan SEC-17:** tabel inbox ikut dicek (tanpa hak DELETE; pembersihan hanya manual oleh ketua lewat dashboard).
+- **Pengecualian tulis dari Edge Function** hanya untuk `inbox_tulis` (lihat `AGENTS.md` 11 Nov 2026); tes memastikan kegagalannya tidak membatalkan aksi order.

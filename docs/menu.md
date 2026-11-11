@@ -340,3 +340,11 @@ Aplikasi mengirim **id menu, jumlah, dan id opsi terpilih** (satu per grup). Ser
 - iPhone belum dicek (tidak ada perangkat uji, `AGENTS.md` bagian 10 butir 7); keluhan dihitung di review pemakaian.
 - `menu.js` sekitar 900 baris (pedoman sekitar 500); komponen baru sebaiknya berkas terpisah dan wajib didaftarkan di `sw.js` (butuh "OK").
 - Berkas uji `20261107_04_menu_grup_pilihan_uji.sql` tidak boleh dijalankan lagi (sudah ada grup pilihan).
+
+### 2026-11-11: MN6 dan MNU.05 tidak berlaku, foto menu tetap di `public/img`
+
+Keputusan ketua (tercatat di sheet pada MNU.05; alasan lain belum tercatat). Sumber: docs/foto-bukti.md blok 11 Nov 2026. Yang paling akhir menang.
+
+- **MN6 (foto menu lewat unggah, kompres, bucket terpisah, tanpa pembersihan) tidak berlaku.** Foto menu adalah berkas biasa di `public/img` yang diterbitkan bersama aplikasi.
+- **MNU.05 dibatalkan.** Tidak ada aksi unggah, tidak ada bucket, tidak ada kompres otomatis untuk foto menu.
+- **Belum diputuskan:** ukuran target foto menu (MNU.08 mencatat "target ukuran belum diputuskan"). Karena fotonya berkas aplikasi, ukuran dijaga saat berkas ditaruh di repo.

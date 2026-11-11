@@ -232,3 +232,17 @@ Keputusan ketua (10 Nov 2026). Alasan ketua: tes yang sudah lulus jangan diulang
 - **Tanda ✅ di berkas itu berarti tes tidak perlu diulang, bukan berarti SEC boleh dicentang.** Centang hanya bila semua aksi di baris SEC terbukti dan jenis buktinya sesuai kolom Catatan sheet (aturan 10: tanpa bukti jangan diberi lulus).
 - **Bukti tetap tidak disimpan** (bagian 10 butir 2). Berkas itu hanya menyimpan status, tanpa bukti dan tanpa data pelanggan.
 - Sheet tetap tidak dibagi ke AI dan tidak menerima catatan dari AI (aturan 3 dan 8): kolom Catatan baris SEC diisi manusia.
+
+### 2026-11-11: Dokumen `inbox.md` (prefix INB), satu pengecualian tulis-database, urutan versi 1
+
+Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md.
+
+- **Peta Dokumentasi (bagian 5):** tambah baris `docs/inbox.md`, isi: "Kotak masuk: jalur kabar cadangan tanpa push, titik merah di hamburger", prefix sheet **INB**.
+- **Pengecualian aturan "tidak ada tulis-database yang dipecah di Edge Function" (bagian 7):** **hanya untuk fungsi SQL `inbox_tulis`**, yang dipanggil `kedai` setelah aksi order berhasil. Kegagalannya **tidak membatalkan aksi**. Alasan ketua: inbox bukan inti sistem, boleh gagal asal tidak mengganggu order. **Tidak berlaku untuk aksi lain**; order, setujui, status, catatan, dan lainnya tetap atomik di fungsi SQL.
+- **"Tanpa DELETE" tetap utuh.** Pengecualian DELETE tetap satu (foto bukti, bagian 7). Tabel inbox **dibersihkan manual oleh ketua** lewat dashboard dengan SQL template di `supabase/templates/`; tidak ada pengecualian baru. Lama tampil 14 hari ada di `pengaturan` (`inbox_simpan_hari`).
+- **Data di HP:** hanya satu angka penanda dibaca per akun di `localStorage` (tanpa data pribadi). Isi inbox tidak disimpan di HP.
+- **Urutan versi 1:** Foto Bukti, lalu Inbox, lalu Notifikasi (push). Berkas JS dan CSS baru wajib didaftarkan di cache `sw.js` (bagian 7, butuh "OK").
+- **Bagian 4 (pengingat rutin):** pengingat kalender yang sudah ada (buka dashboard agar project tidak dijeda, ekspor data) ditambah satu urusan: hapus inbox lama.
+- **Kode baru `kedai`:** aksi inbox di berkas baru `inbox.ts` (mengikuti blok 9 Nov 2026).
+
+---

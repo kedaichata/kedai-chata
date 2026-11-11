@@ -113,3 +113,13 @@ Langkah ⚠️ butuh penjelasan dampak dan "OK" ketua.
 ---
 
 _(belum ada blok)_
+
+### 2026-11-11: Foto menu tetap berkas di `public/img`, tanpa bucket
+
+Keputusan ketua (tercatat di sheet pada MNU.05: "foto sekarang di /public/img"; alasan lain belum tercatat). Yang paling akhir menang.
+
+- **FT12 tidak berlaku.** Foto menu **tidak** memakai teknik kompres dan unggah foto bukti, dan **tidak ada bucket foto menu**.
+- **Bagian 4 (baris "Bucket Storage privat")** dan **FT8 (kalimat soal foto menu)** dibaca ulang: hanya ada **satu bucket, yaitu foto bukti**. Pembersihan `bersihkan` hanya menyentuh bucket itu.
+- **FTO.01 membuat satu bucket saja** (foto bukti). Jangan membuat bucket foto menu.
+- **MNU.05 dibatalkan** di sheet. Rantai kerja: FTO.05 kini "Setelah FTO.04" (sebelumnya "Setelah MNU.05").
+- Perbaikan urutan di sheet yang perlu dijaga: **FTO.06 tetap "Setelah FTO.05"** (tes pembersihan butuh `bersihkan` sudah jalan).

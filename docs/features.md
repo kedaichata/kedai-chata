@@ -116,3 +116,11 @@ _(belum ada blok)_
 
 - Nomor order berjalan terus (O18) dan mulai dari 1, sehingga order uji ikut memakai nomor. Pada pembersihan data uji **LNC.01**, nomor order direset supaya order sungguhan mulai dari awal.
 - Reset dilakukan **satu kali oleh ketua di SQL Editor**, setelah tabel order bersih, dengan penjelasan dampak dan "OK" (peran aplikasi tidak punya hak atas urutan nomor).
+
+### 2026-11-11: Layar Kotak masuk dan urutan versi 1
+
+Sumber: docs/inbox.md. Yang paling akhir menang.
+
+- **Layar per peran:** semua peran punya **Kotak masuk** di menu hamburger (di bawah Arithmetics), dengan titik merah di ikon hamburger bila ada yang belum dibaca. Ini jalur kabar cadangan bagi yang notifnya diblokir.
+- **Urutan versi 1:** Foto Bukti, lalu Inbox (INB), lalu Notifikasi (NTF), lalu isi Bantuan, tes akhir, dan Peluncuran.
+- **Peluncuran (bagian 10):** pembersihan data uji (LNC.01) ikut mencakup isi inbox uji; pengingat rutin ketua ditambah hapus inbox lama.
