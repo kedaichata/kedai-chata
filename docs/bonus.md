@@ -135,4 +135,13 @@ Sumber: docs/inbox.md bagian 8. Nomor B dan kolom alasan diisi saat ditempel dan
 - **Status dibaca per akun di server** (lintas HP), dengan biaya panggilan tambahan.
 - **Titik merah ikut diperbarui saat kembali ke layar** (butuh panggilan tambahan).
 
+### 2026-11-11: Kandidat versi 2: tombol unggah foto bukti di layar owner
+
+Keputusan ketua (lewat WA, 11 Nov 2026), dicatat saat FTO.04. Alasan lain belum tercatat.
+
+- **Kandidat:** owner bisa memotret dan mengunggah foto bukti antar dari layar detail order, sama seperti penjaga (kartu "Foto bukti antar" dengan tombol "Ambil foto bukti").
+- **Latar:** `foto-bukti.md` FT2 sudah membolehkan owner mengunggah, dan aksi server (`foto_minta_unggah`, `foto_catat`) sudah menerima owner. Di versi 1 layar owner hanya **melihat** foto (FTO.04); tombol unggahnya sengaja ditunda ke versi 2.
+- **Perkiraan pekerjaan:** hanya sisi layar, tanpa perubahan server atau SQL. Layar owner (`orderowner.js`) memakai `KedaiFoto.pasang` (kartu unggah plus thumbnail) sebagai pengganti `KedaiFoto.lihat`, hanya untuk order Diantar berstatus Diantar atau Selesai.
+- **Urutan:** ditentukan setelah review pemakaian versi 1 (`LNC.05`).
+
 ---

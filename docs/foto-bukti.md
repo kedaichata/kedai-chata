@@ -223,3 +223,27 @@ Keputusan ketua (sesi kode FTO.02, 11 Nov 2026). Menjabarkan FT2 dan FT5; tidak 
   - Customer pemilik order, owner, dan penjaga boleh melihat; penjaga tidak melihat order Menunggu, Ditolak, atau Dibatalkan. Gambar lewat `img` dengan `src` dari server, teks lewat `textContent`.
   - Rantai sheet tetap: FTO.05 setelah FTO.04, FTO.06 setelah FTO.05.
 - **Rahasia:** sesi ini tidak memakai token CLI dan tidak ada deploy fungsi. Hanya commit dan push dengan kunci SSH khusus proyek (pengecekan folder, alamat tujuan, dan email commit cocok sebelum tiap push).
+
+### Handoff #4 | 2026-11-11 | (RAC)
+
+- **Tugas:** FTO.04 selesai (tampilan foto bukti di detail order untuk penjaga, customer, dan owner). Tes lulus di HP dan laptop untuk ketiga layar; sudah di-commit dan di-push (`3ea25fa` untuk `pesanan.js` dan `orderowner.js`; `foto.js` dan `style.css` di commit sebelumnya). Butir FTO.04 sudah dicentang di sheet.
+- **File yang diubah (hanya penambahan):** `public/foto.js`, `public/style.css`, `public/pesanan.js`, `public/orderowner.js`. `index.html`, `sw.js`, dan server tidak diubah.
+- **Keputusan baru (ketua, lewat WA):**
+  - Foto tampil sebagai thumbnail kecil (tinggi tetap 120 px) saat detail dibuka; diketuk, gambar yang sama membesar lewat CSS (tanpa panggilan server). Alasan: sederhana dan hemat request free tier.
+  - Tombol unggah foto di layar owner **dipindah ke versi 2** (`bonus.md`). Ini menggeser FT2 untuk layar saja: server (`foto_minta_unggah`, `foto_catat`) tetap mengizinkan owner dan tidak diubah. Alasan lain belum tercatat.
+- **Cara kerja (untuk sesi berikutnya):**
+  - `foto_lihat` dipanggil sekali per order, hasilnya disimpan di memori layar, tidak di `localStorage`. Detail digambar ulang tidak memanggil server lagi.
+  - Bila gambar gagal tampil (tautan 300 detik habis), dicoba sekali dengan tautan baru lalu berhenti. Hasil "belum ada foto" hanya diingat 30 detik. Hasil "dibersihkan" tidak dimuat ulang.
+  - Customer dan owner memakai `KedaiFoto.lihat(wadah, order)` (hanya melihat); penjaga memakai `KedaiFoto.pasang` (thumbnail di dalam kartu unggah). `KedaiFoto.reset()` dipanggil saat Keluar di ketiga layar.
+- **Belum beres:**
+  - "Foto sudah dihapus" dan perilaku tautan habis belum bisa dites; menunggu `bersihkan` (FTO.05, FTO.06).
+  - Ukuran akhir foto terhadap target 50 KB dan batas 150 KB masih diuji di FTO.06.
+  - Penggantian foto oleh penjaga lain (SEC-29) belum dicoba.
+  - Baris SEC (SEC-07, SEC-08, SEC-20, SEC-29) **jangan dicentang dari pekerjaan ini**; menunggu sesi tes keamanan, bukti tidak disimpan.
+  - Foto dummy hasil tes masih ada di bucket `foto-bukti`; dibersihkan `bersihkan` atau pembersihan data uji sebelum peluncuran.
+- **Saran giliran berikutnya (FTO.05, butuh penjelasan dampak dan "OK" ketua):**
+  - Lampirkan `AGENTS.md`, `foto-bukti.md`, `database.md`, `security.md`, `supabase/functions/kedai/index.ts`, dan berkas migration foto terbaru.
+  - Edge Function `bersihkan` dan penjadwal mingguan adalah pengecualian DELETE (FT8). Deploy dengan `--no-verify-jwt` hanya untuk `bersihkan`, urutan aman di `AGENTS.md` bagian 8.
+  - Butir baru yang perlu ditambah ke sheet: **"Tombol unggah foto di layar owner (versi 2)"**.
+  - Rantai sheet tetap: FTO.05 setelah FTO.04, FTO.06 setelah FTO.05.
+- **Rahasia:** sesi ini tidak memakai token CLI dan tidak ada deploy fungsi. Push memakai kunci SSH khusus proyek; folder, alamat tujuan, dan email commit dicek cocok sebelum push.
