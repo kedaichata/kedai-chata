@@ -302,4 +302,21 @@ Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Nama kolom d
 - **Pembatalan:** `_batal.sql` hanya membuang tabel dan dua pengaturan. Bucket tidak ikut dibuang; penghapusannya lewat dashboard (kosongkan dulu). Cara ini belum pernah dicoba.
 - **Pilihan penulis** (nama bucket, `diunggah_oleh` merujuk `staf`, nama dan jenis indeks): alasan belum tercatat.
 
+### 2026-11-11: Fungsi foto bukti dan pengaturan `foto_tautan_detik` (FTO.02)
+
+**Berkas tujuan:** `docs/database.md` bagian 9. Rujukan: blok `docs/foto-bukti.md` bagian 9 bertanggal sama dan Handoff #2. Yang paling akhir menang.
+
+- **Berkas SQL:** `supabase/migrations/20261111_02_foto_fungsi.sql` (dan `_batal`), `supabase/templates/20261111_02_foto_fungsi_cek.sql`. Dijalankan dan dicek 11 Nov 2026. Tabel, hak tabel, bucket, dan data lama **tidak diubah**.
+- **Bagian 4 (pengaturan):** kunci baru `foto_tautan_detik` = 300 (lama hidup tautan lihat, detik). Harus bilangan bulat 1 sampai 3600; di luar itu fungsi melempar `pengaturan_rusak` (galat umum 500). Batas 3600 adalah pilihan penulis. Kolom `keterangan` baris ini masih kosong.
+- **Bagian 5 (fungsi SQL, `SECURITY DEFINER`, `search_path` kosong, `public.` eksplisit, `EXECUTE` hanya `service_role`, terbukti lewat query cek):**
+  - `foto_cek_unggah(p_akun, p_order_id)`: pemeriksa hak unggah **tanpa mengunci** order. Penjaga atau owner aktif; order tipe Diantar; status Diantar atau Selesai; bila sudah ada foto aktif, hanya pengunggah asli. Mengembalikan `{order_id, nomor, mengganti, maks_kb}`.
+  - `foto_catat(p_akun, p_order_id, p_lokasi, p_ukuran_byte)`: mengunci baris order, memakai `foto_cek_unggah` untuk semua aturan, menolak lokasi yang bentuknya bukan `<id order>/<uuid>.jpg|webp`, menolak ukuran di atas `foto_maks_kb` x 1024, menandai foto lama `diganti = true` **lebih dulu**, lalu menambah baris baru. Mengembalikan `{id (order), nomor, mengganti}`.
+  - `foto_lihat_cek(p_akun, p_order_id)`: customer hanya order miliknya, owner semua, penjaga tidak untuk Menunggu, Ditolak, Dibatalkan. Mengembalikan `{order_id, status}` dengan status `ada` (disertai `lokasi`, `detik`, `diunggah_pada`), `dibersihkan`, atau `tidak_ada`. Foto yang sudah ditandai diganti tidak pernah dikembalikan.
+  - Yang tidak berhak dibalas `order_tidak_ditemukan`, bukan "dilarang" (SEC-05, SEC-20).
+- **Kode galat baru** (pemetaan ke status HTTP ada di `supabase/functions/kedai/foto.ts`): `bukan_antar`, `status_tidak_boleh`, `bukan_pengunggah`, `lokasi_tidak_valid`, `ukuran_tidak_valid`, `ukuran_terlalu_besar`, `foto_sudah_dicatat`. Kode yang sudah ada dipakai ulang: `akun_nonaktif`, `peran_tidak_boleh`, `order_tidak_ditemukan`. `id_kosong` dan `pengaturan_rusak` sengaja tidak dipetakan.
+- **Bagian 5 (aksi `kedai`):** `foto_minta_unggah` dan `foto_catat` (penjaga dan owner), `foto_lihat` (semua peran yang berhak). Alamat unggah dan tautan lihat dibuat `kedai` lewat jalur resmi Storage; ukuran berkas dibaca `kedai` dari Storage dan diteruskan ke `foto_catat`. Kontrak isian dan balasan ada di `docs/foto-bukti.md` Handoff #2.
+- **Pembatalan:** `_batal.sql` membuang tiga fungsi dan baris `foto_tautan_detik`. Baris di `foto_bukti` yang sudah tercatat tidak ikut terhapus. Belum pernah dicoba.
+- **Asumsi yang belum terbukti:** kolom `id` di `foto_bukti` punya nilai bawaan (fungsi tidak mengisinya). Terbukti atau gugur saat foto pertama dicatat (FTO.03). Insert pengaturan hanya mengisi `kunci` dan `nilai`; terbukti jalan.
+- **Pilihan penulis** (nama fungsi dan pembagian tugas tiga fungsi): alasan belum tercatat.
+
 ---

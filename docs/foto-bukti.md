@@ -155,3 +155,43 @@ Keputusan ketua (sesi kode FTO.01, 11 Nov 2026). Alasan dari ketua: foto hanya u
   - Hanya order tipe Diantar yang boleh diberi foto, dan hanya saat status Diantar atau Selesai; batas ukuran dibaca dari `pengaturan`, bukan ditulis mati.
   - Rantai sheet: FTO.03 setelah FTO.02, FTO.04 setelah FTO.03, FTO.05 setelah FTO.04, FTO.06 setelah FTO.05.
 - **Rahasia:** sesi ini tidak memakai token CLI; dashboard sudah logout.
+
+### 2026-11-11: Aksi foto (FTO.02): nama berkas, tautan lihat 300 detik, ukuran dibaca server
+
+Keputusan ketua (sesi kode FTO.02, 11 Nov 2026). Menjabarkan FT2 dan FT5; tidak bertentangan dengan blok lama. Alasan dari ketua di luar yang disebut: alasan belum tercatat.
+
+- **Nama berkas dibuat server:** `<id order>/<uuid acak>.jpg` atau `.webp` (huruf kecil). Aplikasi hanya menyebut jenis (`jpg` atau `webp`), tidak pernah menentukan nama berkas.
+- **Tautan lihat hidup 300 detik**, disimpan di `pengaturan` sebagai `foto_tautan_detik` (bukan ditulis mati di kode, AGENTS.md bagian 1). Tiap foto dibuka, aplikasi minta tautan baru. Lama berlaku alamat unggah mengikuti bawaan Supabase dan tidak diatur kita (angka persisnya belum diverifikasi).
+- **Ukuran dibaca server dari Storage**, bukan dari kiriman aplikasi, lalu dibandingkan dengan `foto_maks_kb` (150) di fungsi SQL.
+- **Hanya pengunggah asli yang boleh mengganti** (FT2). Akibat yang diterima ketua: bila pengunggah asli dinonaktifkan, tidak ada yang bisa mengganti fotonya.
+- **Hak lihat:** customer pemilik order, owner, penjaga. Penjaga tidak melihat foto order Menunggu, Ditolak, atau Dibatalkan (O11, SEC-08).
+- **Berkas yang terunggah tetapi ditolak** (misalnya terlalu besar) **tidak dihapus** oleh `kedai` (tanpa DELETE). Ia menjadi berkas tanpa baris dan disapu `bersihkan` di FTO.05 (FT7).
+- **FTO.02 selesai 11 Nov 2026:** tiga fungsi SQL dan tiga aksi `kedai` sudah di production. Bentuk persis fungsi ada di blok `docs/database.md` bagian 9 bertanggal sama.
+
+### Handoff #2 | 2026-11-11 | Ketua
+
+- **Tugas:** FTO.02 selesai: migration tiga fungsi SQL foto + pengaturan `foto_tautan_detik`, aksi `kedai` `foto_minta_unggah`, `foto_catat`, `foto_lihat`. Migration dijalankan dan lulus 5 query cek (fungsi aman, `EXECUTE` hanya `service_role`, pengaturan masuk, hak tabel `foto_bukti` tanpa DELETE, 0 baris foto). `kedai` dideploy (urutan aman, token sudah dibersihkan, dashboard sudah logout). Uji ringan masuk di tiga peran: tampilan normal. Sudah di-commit dan di-push (`75ddeac`). Butir FTO.02 sudah dicentang di sheet.
+- **File yang diubah:**
+  - Baru: `supabase/functions/kedai/foto.ts`, `supabase/migrations/20261111_02_foto_fungsi.sql`, `supabase/migrations/20261111_02_foto_fungsi_batal.sql`, `supabase/templates/20261111_02_foto_fungsi_cek.sql`.
+  - Diubah (hanya penambahan): `supabase/functions/kedai/index.ts` (satu import, satu blok sambungan, tiga `case`).
+  - Blok catatan ditambah di `docs/foto-bukti.md` dan `docs/database.md` (bagian 9).
+- **Keputusan baru:** lihat blok catatan 2026-11-11 di atas (nama berkas buatan server, tautan 300 detik, ukuran dari Storage).
+- **Kontrak aksi untuk layar (FTO.03 dan FTO.04).** Semua lewat `kedai`, id akun dari token; aplikasi hanya mengirim yang tertulis:
+  - `foto_minta_unggah`: kirim `id` (order) dan `jenis` (`jpg` atau `webp`). Penjaga dan owner saja. Balasan: `{ ok, lokasi, token, url_unggah, mengganti, maks_kb }`.
+  - `foto_catat`: kirim `id` dan `lokasi` (persis yang diberikan `foto_minta_unggah`). Penjaga dan owner saja. Balasan: `{ ok, order: { id, nomor, mengganti } }`. Galat 409 "Foto belum terunggah" bila berkasnya belum sampai ke Storage.
+  - `foto_lihat`: kirim `id`. Semua peran yang berhak. Balasan `{ ok, status: "ada", url, berlaku_detik, diunggah_pada }`, atau `{ ok, status: "dibersihkan" }` (tampilkan "Foto sudah dihapus"), atau `{ ok, status: "tidak_ada" }`.
+  - Alur unggah: `foto_minta_unggah`, unggah berkas ke `url_unggah` memakai `token`, lalu `foto_catat`. Tampilan foto minta tautan baru tiap dibuka (hidup 300 detik).
+  - Tombol foto hanya untuk order **Diantar**, status **Diantar atau Selesai**. Server menolak selain itu.
+- **Belum beres:**
+  - **Aksi foto belum pernah dipanggil sungguhan.** Pembuatan alamat unggah ke bucket `foto-bukti` dan pencatatan foto pertama baru terbukti di FTO.03. Cara persis mengunggah dari HP (memakai pustaka Supabase salinan di `public/lib/` atau permintaan langsung ke `url_unggah`) belum dicoba; pilih dan uji di FTO.03. Kode `foto.ts` belum pernah dikompilasi sebelum deploy (deploy sukses, tetapi jalannya baru terbukti saat dipanggil).
+  - Asumsi: kolom `id` di `foto_bukti` punya nilai bawaan. Bila ternyata tidak, `foto_catat` gagal dengan galat umum 500 saat pemanggilan pertama.
+  - Kolom `keterangan` untuk pengaturan `foto_tautan_detik` masih kosong (tidak mengganggu; `UPDATE` pengaturan butuh "OK").
+  - Baris SEC (SEC-07, SEC-08, SEC-20, SEC-29) **jangan dicentang dari pekerjaan ini**; menunggu sesi tes keamanan, bukti sesi ini tidak disimpan.
+  - Layar penjaga (`orderpenjaga.js`) belum dicek untuk pola "layar loncat ke atas" (catatan `AGENTS.md` 9 Nov 2026). FTO.03 menyentuh layar itu: jaga posisi gulung bila detail digambar ulang.
+- **Saran giliran berikutnya (FTO.03):**
+  - Lampirkan `AGENTS.md`, `foto-bukti.md`, `database.md`, `security.md` bila perlu, serta berkas layar penjaga (`orderpenjaga.js`), `style.css`, dan `sw.js`; minta AI menyebut berkas lain yang dibutuhkan di awal sesi.
+  - Target kompres sekitar 50 KB, batas server 150 KB, batas bucket 256 KB (blok 11 Nov 2026 di atas).
+  - Berkas JS baru wajib didaftarkan di cache `sw.js`; mengubah `sw.js` butuh "OK" ketua. Bila giliran dipegang bukan ketua, AI memberi ringkasan yang bisa diteruskan lewat WA (AGENTS.md aturan 12).
+  - Butir baru yang perlu ditambah ke sheet: **"Uji aksi foto dari layar"** (setelah FTO.03) dan **"Isi keterangan pengaturan foto_tautan_detik"** (rapi-rapi, tidak mendesak).
+  - Rantai sheet tetap: FTO.04 setelah FTO.03, FTO.05 setelah FTO.04, FTO.06 setelah FTO.05.
+- **Rahasia:** sesi ini memakai token CLI hanya di satu jendela Terminal, sudah ditutup dan dicek kosong; dashboard Supabase dan GitHub sudah logout.
