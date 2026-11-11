@@ -277,3 +277,27 @@ Sisa: SEC-19 (Android), non-SEC (O22, wizard Besok, jumlah menu, Segarkan, pilih
 **Tes tidak perlu diulang:** ukuran akhir, penggantian oleh pengunggah asli, SEC-20 (tiga bagian), SEC-21 (tiga kasus dan isi bucket), bukan gambar, terlalu besar.
 
 **Arah ketua (sementara):** tes pembersihan digabung dengan FTO.07 (cek jadwal pertama Minggu 15 Nov 2026 02.00 WIB). Butir baru di sheet: "Tes pembersihan foto bersama FTO.07".
+
+### 2026-11-11 | Ketua: FTO.06 selesai (foto bukti)
+
+**Baru terbukti** (tanpa bukti dan tanpa data pelanggan):
+
+- Pembersihan lewat uji manual `bersihkan` (perintah sama dengan jadwal): berkas yang ditandai diganti terhapus, foto aktif utuh (FT-17).
+- Foto aktif lewat 14 hari terhapus, foto aktif yang baru tetap utuh, order dan catatan tidak berubah (FT-18).
+- Berkas tanpa baris yang lebih tua dari batas terhapus (FT-20).
+- "Foto sudah dihapus" tampil di layar lihat-saja (satu capture mewakili customer dan owner) dan layar penjaga, balasan server `dibersihkan` (FT-19).
+- Penjaga dibalas 404 tanpa `url` untuk order Menunggu, Ditolak, dan Dibatalkan; order yang boleh dilihat dibalas 200 (FT-11).
+- Ukuran akhir foto ramai di bawah target 50 KB dan batas 150 KB (FT-02).
+
+**SEC yang dicentang di sheet:** SEC-29 (SEC-20 dan SEC-21 sudah dicentang lebih awal). **FTO.06 dicentang.**
+
+**Tes tidak perlu diulang:** seluruh FT-01 sampai FT-20 di `foto-bukti-test.md`, kecuali yang kodenya berubah sejak itu.
+
+**Keputusan ketua:** jadwal cron tidak memblokir FTO.06 dan SEC-29; yang dites isi pembersihan, bukan jadwalnya. FTO.07 dipisah.
+
+**Sisa:**
+
+- **FTO.07 (FT-21):** cek jadwal jalan sendiri setelah Minggu 15 Nov 2026 02.00 WIB.
+- **FT-22:** penjaga kedua sebagai bukan pengunggah asli, opsional.
+- Berkas tanpa baris yang lebih muda dari batas tidak tersentuh: baru bukti tidak langsung.
+- SEC lain di peta ini tidak berubah: SEC-22 dan SEC-25

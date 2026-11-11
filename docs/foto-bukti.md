@@ -342,3 +342,33 @@ Keputusan ketua (sesi kode FTO.02, 11 Nov 2026). Menjabarkan FT2 dan FT5; tidak 
   - Setelah kasus 1 sampai 4 terbukti, baru FTO.06 dan SEC-29 boleh dicentang.
   - Butir baru untuk sheet: **"Tes pembersihan foto bersama FTO.07"**.
 - **Rahasia:** sesi ini tidak memakai token CLI dan tidak ada deploy. Dua token unggah bertanda tangan (lokasi dummy di #62) sempat tampil di chat; keduanya untuk satu lokasi dummy, tidak pernah dipakai, dan kedaluwarsa sekitar 2 jam setelah dibuat, jadi tidak perlu tindakan. Lain kali salin hanya baris hasil. Logout dashboard Supabase belum dikonfirmasi; logout dan tutup profil browser ketua.
+
+### Handoff #8 | 2026-11-11 | Ketua
+
+- **Tugas:** FTO.06 (sesi tes foto) selesai, lanjutan Handoff #7. Butir FTO.06 sudah dicentang di sheet. SEC-29 juga sudah dicentang (SEC-20 dan SEC-21 dicentang lebih awal). **FTO.07 tetap Belum.** Tidak ada kode, SQL, migration, `kedai`, `bersihkan`, atau `sw.js` yang diubah, jadi tidak ada commit.
+- **File yang diubah:** tidak ada.
+- **Keputusan baru (ketua, 11 Nov 2026):** jadwal cron **tidak memblokir** FTO.06 dan SEC-29. Yang dites adalah isi pembersihan, bukan jadwalnya, jadi tes dijalankan lewat uji manual `supabase/templates/20261111_04_foto_jadwal_uji.sql` (perintah yang sama dengan jadwal). FTO.07 dipisah dan dicek setelah jadwal jalan sendiri. Alasan ketua: aplikasi sudah ditunggu owner untuk dipakai. Ini menggantikan arah sementara di Handoff #7 ("tes pembersihan digabung dengan FTO.07").
+- **Terbukti (bukti diperiksa di chat, tidak disimpan):**
+  - FT-17 (SEC-29): berkas lama yang ditandai diganti hilang dari Storage saat pembersihan, barisnya terisi `dibersihkan_pada`, foto aktif utuh.
+  - FT-18: foto aktif yang lewat 14 hari terhapus; foto aktif yang baru tetap utuh; order dan catatan tidak berubah.
+  - FT-20: berkas tanpa baris yang lebih tua dari batas terhapus.
+  - FT-19: "Foto sudah dihapus" tampil di layar lihat-saja (satu capture mewakili customer dan owner, memakai fungsi yang sama) dan di layar penjaga; balasan server `status: "dibersihkan"`.
+  - FT-11: penjaga dibalas 404 tanpa `url` untuk order Menunggu dan Ditolak; order yang boleh dilihat dibalas 200 dengan token yang sama.
+  - FT-02: foto ramai di order Diantar berukuran 26,39 KB, jpeg, di bawah target 50 KB dan batas 150 KB.
+- **Data uji yang diubah manual lewat SQL Editor (hanya data dummy):** `diunggah_pada` satu foto aktif dan `created_at` satu berkas di `storage.objects` dimundurkan 20 hari untuk memicu pembersihan. Order dummy baru: satu Menunggu, satu Ditolak, satu Diantar dengan foto aktif. Folder foto order yang dibersihkan kini kosong.
+- **Belum beres:**
+  - **FTO.07:** jadwal belum pernah jalan sendiri; jalan pertama Minggu 15 Nov 2026 02.00 WIB. Baca `cron.job_run_details` dan `net._http_response` segera (hasil `pg_net` tersimpan sementara).
+  - Berkas tanpa baris yang **lebih muda** dari batas tidak tersentuh: baru terbukti tidak langsung, belum dengan berkas yatim baru.
+  - FT-22 (penjaga kedua bukan pengunggah asli): opsional, belum dicoba.
+  - Tombol "Ambil foto bukti" di layar penjaga tetap muncul setelah foto dibersihkan; perilaku menekannya (apakah boleh mengunggah ulang) belum dicoba.
+  - Jalur galat Storage dan `sapuan_terpotong` belum pernah dipicu. Kedua pembatalan migration (03 dan 04) belum pernah dicoba.
+  - Template untuk mengganti isian Vault (rotasi rahasia) belum ada.
+  - Kolom `keterangan` pengaturan `foto_tautan_detik` masih kosong (tidak mendesak).
+  - Foto dan order dummy menunggu pembersihan data uji di LNC.01.
+- **Catatan cara tes dari konsol (bahan belajar):** "Copy as fetch" dari tab Network gagal CORS bila dijalankan apa adanya. Perbaikannya: `credentials` jadi `omit`, buang header `cache-control`, `pragma`, dan `priority`, ganti `body` dengan aksi dan id yang diuji. `foto_lihat` butuh id order (UUID), bukan nomor; ambil id lewat query baca-saja.
+- **Saran giliran berikutnya:**
+  - Setelah 15 Nov 2026: cek FTO.07 (butir sudah ada di sheet, tidak perlu butir baru).
+  - Urutan versi 1 sesuai `AGENTS.md`: Foto Bukti sudah beres, lanjut Inbox, lalu Notifikasi.
+  - Butir baru yang perlu ditambah ke sheet: **"Template rotasi isian Vault"** dan **"Uji penjaga kedua foto (opsional)"**. Butir "Tes pembersihan foto bersama FTO.07" dari Handoff #7 tidak jadi diperlukan.
+  - Baris SEC selain yang sudah dicentang jangan dicentang dari pekerjaan ini.
+- **Rahasia:** sesi ini tidak memakai token CLI dan tidak ada deploy. Rahasia penjadwal hanya dibaca dari Vault oleh database, tidak pernah tampil di chat, repo, atau md. Logout dashboard Supabase belum dikonfirmasi; logout dan tutup profil browser ketua.
