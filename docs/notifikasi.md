@@ -409,4 +409,41 @@ Tidak ada migration, tidak ada deploy `kedai`, tidak ada perubahan di `public/` 
 - **Pertama, selesaikan NTF.04a:** pasang dua berkas giliran 2, commit tanpa `[skip ci]`, push dengan cek anti-nyasar, tes Android, lalu centang NTF.04a di sheet bila semua lulus. Tidak butuh "OK" ketua karena tidak menyentuh `akun.js`, `sw.js`, atau `config.js`.
 - **Berikutnya NTF.05** (tombol "Aktifkan notifikasi" di menu Akun, ajakan setelah order pertama, `push_nonaktifkan` saat Keluar; ⚠️ High-Risk, kemungkinan menyentuh `config.js` dan `akun.js`, butuh penjelasan dampak dan "OK" ketua). Lampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #3 sampai #5), `security.md`, `public/akun.js`, `public/akunmenu.js`, `public/config.js`, `public/sw.js`, `public/kerangka.js`, `public/pesan.js`, `public/index.html`. Kontrak aksi `push_daftar` dan `push_nonaktifkan` ada di Handoff #3.
 
+### Handoff #6 | 2026-11-12 | RAC
+
+**Tugas:** melanjutkan NTF.04a (aplikasi membuka layar dari notifikasi) dari Handoff #5. Kode giliran 2 sudah dipasang dan online. **Tes belum dijalankan, jadi NTF.04a belum dicentang di sheet.**
+
+**File yang diubah** (sudah di-push ke `main` 12 Nov 2026):
+
+- Commit `f064002` (kode, tanpa `[skip ci]`): `public/kerangka.js` (utuh, versi baru) dan `public/orderpenjaga.js` (ditambah `siapkanDaftar()`). Bersama commit `697eec7` (giliran 1) ikut terkirim. Penerbitan Pages run #105 hijau.
+- Commit `959715f` (docs murni, `[skip ci]`): `AGENTS.md` (blok aturan `[skip ci]`) dan `docs/notifikasi.md` (Handoff #5).
+
+Tidak ada perubahan di `sw.js`, `akun.js`, `config.js`, `index.html`, migration, atau `kedai`. Tidak ada deploy `kedai`. Cek anti-nyasar (folder, `git remote -v`, email commit) sudah dilakukan sebelum tiap push dan semuanya milik ketua.
+
+**Keputusan baru:**
+
+- Keputusan ketua (12 Nov 2026, lewat RAC, via telepon): bukti tes dari Brave atau Chrome desktop boleh dianggap mewakili Android untuk semua tes (bukan hanya NTF.04a). Alasan ketua: ingin rilis cepat karena sudah ditunggu owner; bila perilaku di Android ternyata berbeda, diperbaiki di versi 2. NTF.04a tetap harus dites dan tidak dicentang sebelum lulus.
+- **Pertentangan dengan catatan lama:** `AGENTS.md` bagian 10 butir 7 ("Push dites di Android") dan NTF.08 ("di Android") tidak berlaku lagi untuk hal ini; yang paling akhir menang. Bukti tetap diperiksa bersama di chat dan tidak disimpan (bagian 10 butir 2). Ketua belum memutuskan apakah `AGENTS.md` perlu blok pengganti.
+- Keputusan ini hanya soal **perangkat uji**: tes penjaga, layar kunci (SEC-22), dan push sungguhan dari server tetap wajib ada bukti, tetapi buktinya boleh dari Brave/Chrome desktop.
+- Pilihan RAC, belum dibahas dengan ketua, alasan belum tercatat: tes NTF.04a memakai simulasi tombol Push di DevTools sambil menunggu NTF.06.
+
+**Terbukti (diperiksa di chat, tidak disimpan):** push berhasil, commit tampil di `origin/main`, Actions run #105 hijau. Perilaku aplikasi di layar **belum teruji**; hanya uji tiruan 21 skenario dari Handoff #5.
+
+**Belum beres:**
+
+- **Tes NTF.04a (Brave/Chrome desktop, akun dummy):**
+  1. Aplikasi ditutup, tekan push order: detail order terbuka, alamat tidak lagi memuat `?buka=`.
+  2. Aplikasi terbuka, tekan push: pindah ke detail order.
+  3. Penjaga menekan push batal: masuk daftar Antrean, bukan detail; coba juga saat sedang membuka detail order lain.
+  4. Id order milik orang lain: pesan umum, tidak ada data tampil.
+  5. Tab Network: 1 panggilan data per ketukan, bukan 2.
+     Isi push tiruan: `{"judul":"x","isi":"y","tujuan":"order","id":"<id order dummy>","nomor":1}`. Centang NTF.04a hanya bila kelimanya lulus.
+- `inbox.js`: perilaku bila overlay Kotak masuk terbuka saat push ditekan belum teruji.
+- Dari Handoff #1 sampai #5, tidak berubah: kunci privat VAPID belum di dashboard (NTF.06, butuh "OK"); kunci publik belum di `public/config.js` (butuh "OK"); cek jadwal pembersihan foto jalan sendiri setelah Minggu 15 Nov 2026 02.00 WIB (FTO.07); teks layar Order wakil diperbarui saat push sudah jalan; logika `push_daftar` dan `push_nonaktifkan` baru terbukti di NTF.08.
+
+**Saran giliran berikutnya:**
+
+- **Pertama:** jalankan tes NTF.04a di atas, periksa buktinya bareng di chat, lalu centang NTF.04a bila lulus.
+- **Berikutnya NTF.05** (⚠️ High-Risk, kemungkinan menyentuh `config.js` dan `akun.js`, butuh penjelasan dampak dan "OK" ketua; bila yang bertugas bukan ketua, AI membuat ringkasan untuk diteruskan lewat WA). Lampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #3 sampai #6), `security.md`, `public/akun.js`, `public/akunmenu.js`, `public/config.js`, `public/sw.js`, `public/kerangka.js`, `public/pesan.js`, `public/index.html`. Kontrak aksi `push_daftar` dan `push_nonaktifkan` ada di Handoff #3.
+
 ---
