@@ -427,3 +427,58 @@ Keputusan ketua (sesi kode INB.03, 11 Nov 2026). Yang paling akhir menang.
 - Perlu keputusan ketua di awal sesi (IB, "Belum diputuskan"): nama kunci `localStorage` per akun, dan tempat gaya layar Kotak masuk (di `game.css` bersama hamburger atau cara lain; aturan "semua gaya di `style.css`" punya pengecualian game saja).
 - Cakupan INB.05: item "Kotak masuk" di hamburger (di bawah Arithmetics), titik merah, penanda lokal per akun, urutan belum dibaca di atas, waktu WIB, pesan kosong dan offline, tutup saat Keluar, `textContent` untuk semua teks. Daftarkan berkas baru di cache `sw.js` dan naikkan versi cache.
 - Jangan mengubah `kerangka.js` tanpa "OK" (GM14); bila titik merah memaksa, laporkan ke ketua.
+
+### 2026-11-12: INB.05, keputusan yang menjawab "Belum diputuskan"
+
+Keputusan ketua (disampaikan lewat PIC RAC, sesi kode INB.05, 12 Nov 2026). Yang paling akhir menang.
+
+- **Nama kunci `localStorage`:** `chata_inbox_terakhir_<id akun>`. Id akun berupa UUID dari sesi login, bukan nama atau email.
+- **Tempat gaya layar Kotak masuk:** di `public/game.css`, kelas berawalan `gim-` (pengecualian CSS game dari aturan "semua gaya di `style.css`"). Alasan belum tercatat.
+- **Berkas JS pemegang panggilan buka aplikasi:** `public/akun.js` (`isiSementara()`, di samping `KedaiKerangka.atur`). Logika layar di berkas baru `public/inbox.js`.
+- **OK ketua** diberikan untuk menyentuh `sw.js`, `akun.js`, dan `inbox.js`. `kerangka.js` tidak disentuh (GM14).
+- **Pilihan penulis kode (alasan belum tercatat):** layar dibuat dari JS dan ditempel ke `body` (z-index 40, seperti layar game); id akun dibaca dari `getSession` (penyimpanan lokal, bukan server); nomor order tidak diulang bila teks sudah memuat "#N"; bila jumlah item mencapai `maks`, tampil keterangan "Menampilkan N kabar terbaru."; Esc menutup layar.
+
+### Handoff #7 | 2026-11-12 | RAC
+
+**Tugas:** INB.05 (layar Kotak masuk, titik merah, penanda lokal per akun). Selesai, di-push (commit `bae282a`), dan dites. Tinggal dicentang di sheet.
+
+**File yang diubah:**
+
+- `public/inbox.js` (baru, 392 baris di repo; dari AI 381 baris, selisih karena editor merapikan baris panjang, awal dan akhir berkas diperiksa, isi tidak dobel).
+- `public/index.html` (+14): titik merah `#gim-titik` di tombol hamburger, item "Kotak masuk" di bawah Arithmetics, tag `<script src="inbox.js">` setelah `gimmenu.js`.
+- `public/game.css` (+86, hanya di akhir berkas): titik merah dan gaya layar Kotak masuk.
+- `public/akun.js` (+22): `isiSementara()` memanggil `KedaiInbox.atur(id akun, inbox_terbaru)`; `keluar()` memanggil `KedaiInbox.reset()`.
+- `public/sw.js`: `inbox.js` masuk daftar cache, `NAMA_CACHE` `chata-v21` jadi `chata-v22` (baris lama dijadikan komentar).
+- Kode lama tidak ada yang dihapus. `kerangka.js`, `gimmenu.js`, dan `kedai` tidak disentuh; tidak ada deploy `kedai`.
+
+**Keputusan baru:** lihat blok 2026-11-12 di atas.
+
+**Hasil tes (akun dummy, HP Android dan laptop Chrome; bukti diperiksa di chat dan tidak disimpan):**
+
+- Urutan hamburger: Arithmetics lalu Kotak masuk; titik merah muncul untuk akun yang punya pesan belum dibaca.
+- Pesan belum dibaca di atas dengan tulisan "Baru"; pembukaan berikutnya semua sudah dibaca dan titik merah hilang.
+- Customer membuat order #75: owner mendapat "Ada order baru." dengan "Order #75 · 12 Nov, 08.55 WIB" setelah Segarkan.
+- Penanda per akun: owner dan customer terpisah, tetap tersimpan setelah Keluar lalu masuk lagi.
+- Offline (laptop dan HP): "Perlu internet untuk membuka Kotak masuk." dengan tombol Coba lagi; pulih saat internet kembali. Aplikasi terbuka dari cache `chata-v22` saat mode pesawat.
+
+**Belum beres / belum terbukti:**
+
+- Penjaga belum dites di layar ini (hanya customer dan owner).
+- Penutupan layar lewat jalur Keluar (`reset()` dan pengamat `hidden`) tidak dites terpisah karena layar Kotak masuk menutupi tombol Keluar; sulit dipicu manual.
+- Daftar sampai batas `maks` (30) belum dites (data uji sedikit).
+- Tombol "Coba lagi" (marun di atas latar marun gelap) kurang kontras pinggirnya (P2, tampilan).
+- Titik merah hanya diperbarui saat status dimuat (buka aplikasi atau Segarkan), sesuai IB10; pembaruan saat kembali ke layar tetap ditunda (bagian 8).
+- Kedua `_batal.sql` (migration 05 dan 06) belum pernah dicoba. Kasus banyak owner belum teruji.
+- SEC-34 baru separuh dan SEC-35 belum; keduanya tuntas di INB.07.
+- Data uji di production: order dummy #66 sampai #75 dan baris inbox (sampai sedikitnya id 39). Dibersihkan sebelum peluncuran (`LNC.01`).
+- INB.06, INB.07, SEC-34, dan SEC-35 masih Belum di sheet.
+
+**Butir baru yang perlu ditambah ke sheet:** "Perbarui teks layar order wakil (kabar ke penjaga)" (dari Handoff #5; kini bisa dikerjakan karena Kotak masuk sudah jadi).
+
+**Saran giliran berikutnya (INB.06, ⚠️ butuh penjelasan dampak dan "OK" ketua):**
+
+- Lampirkan `AGENTS.md`, `inbox.md` (dengan Handoff #7), `database.md`, `security.md`, dan migration `supabase/migrations/20261111_05_inbox.sql` (untuk nama tabel dan kolom, jangan menebak).
+- SQL template hapus inbox lama di `supabase/templates/`: tahap 1 `SELECT` (jumlah dan contoh baris yang akan terhapus), tahap 2 `DELETE` dengan kondisi persis sama. Batas hari dibaca dari `pengaturan` (`inbox_simpan_hari`), hitungan dari jam server, hanya menyentuh tabel inbox. Ketua menjalankan manual dan membaca hasil tahap 1 dulu.
+- Pasang pengingat kalender "hapus inbox lama" (ditambahkan ke pengingat rutin yang sudah ada, `AGENTS.md` blok 11 Nov 2026).
+- Setelah itu INB.07 (sesi tes, `inbox-test.md`): sertakan tes penjaga, kasus banyak owner, dan batas `maks`.
+- Sebelum push: cek tiga hal anti-nyasar, cocokkan jumlah baris di `git show --stat HEAD`, lalu logout GitHub dan Supabase di profil browser.
