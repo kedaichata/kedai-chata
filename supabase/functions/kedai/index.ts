@@ -72,6 +72,10 @@
 // INB.04 (giliran 5): pembungkus `tulisInbox` yang sama dioper ke `buatAksiFoto` (foto.ts) untuk kejadian
 //         `foto_setelah_selesai`: hanya foto BARU (bukan penggantian) di order yang berstatus Selesai; status dibaca
 //         `foto.ts` lewat `order_detail`. Kegagalan tidak membatalkan foto (IB12).
+// NTF.03: ditambah `push_daftar` dan `push_nonaktifkan` (notifikasi.md NT5; semua yang login; akun selalu dari token,
+//         SEC-09, SEC-25). Kodenya ada di BERKAS BARU `push.ts` (folder yang sama), diimpor di bawah; kode lama tidak
+//         dipindah. Fungsi SQL: 20261112_02_langganan_push_fungsi.sql (sudah dijalankan dan lulus cek SEBELUM berkas ini
+//         dideploy). Pengirim push TIDAK ada di sini (NTF.06); belum ada yang memanggil dua aksi ini sampai NTF.05.
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -95,6 +99,8 @@ import { buatAksiBantuan } from "./bantuan.ts";
 import { buatAksiFoto } from "./foto.ts";
 // INB.03: aksi inbox_daftar ada di berkas terpisah.
 import { buatAksiInbox } from "./inbox.ts";
+// NTF.03: aksi push_daftar dan push_nonaktifkan ada di berkas terpisah.
+import { buatAksiPush } from "./push.ts";
 
 // ------------------------------------------------------------
 // Pengaturan dasar
@@ -1506,6 +1512,18 @@ const { aksiInboxDaftar, tulisInbox } = buatAksiInbox({
 });
 
 // ------------------------------------------------------------
+// NTF.03: sambungan ke berkas push.ts. Hanya perlu klien, balas, galat, dan galatDariDb (pola sama dengan inbox.ts).
+// ------------------------------------------------------------
+
+const { aksiPushDaftar, aksiPushNonaktifkan } = buatAksiPush({
+  // deno-lint-ignore no-explicit-any
+  klien: admin as any,
+  balas,
+  galat,
+  galatDariDb,
+});
+
+// ------------------------------------------------------------
 // Pintu masuk
 // ------------------------------------------------------------
 
@@ -1618,6 +1636,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
         return await aksiFotoLihat(req, pengguna, isi);
       case "inbox_daftar":
         return await aksiInboxDaftar(req, pengguna, isi);
+      case "push_daftar":
+        return await aksiPushDaftar(req, pengguna, isi);
+      case "push_nonaktifkan":
+        return await aksiPushNonaktifkan(req, pengguna, isi);
       default:
         return galat(req, 400, "Aksi tidak dikenal.");
     }
