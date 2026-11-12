@@ -871,6 +871,24 @@
     return true;
   }
 
+  // NTF.04a: siapkan layar daftar (bukan detail) dari notifikasi Antrean. Tanpa panggilan server; pemuatan lewat tampil().
+  // Tanpa ini, penjaga yang sedang membuka detail satu order akan tetap di detail itu saat menekan push Antrean.
+  // Mengembalikan true bila layar siap, false bila perubahan status masih berjalan.
+  function siapkanDaftar() {
+    if (sedangKirim) return false;
+    if (langkah === "daftar") return true;
+    nomorMuatDetail++;
+    langkah = "daftar";
+    idDetail = "";
+    detailTerbuka = null;
+    pesanDetail("");
+    infoDetail("");
+    el("antrean-detail-memuat").hidden = true;
+    renderDetail();
+    tampilkanLangkah();
+    return true;
+  }
+
   // Tab Antrean dibuka atau Segarkan ditekan: muat ulang layar yang sedang tampil.
   function tampil() {
     if (langkah === "detail" && idDetail) {
@@ -927,5 +945,6 @@
     tampil: tampil, // dipanggil kerangka.js saat tab Antrean dibuka dan lewat Segarkan
     reset: reset, // dipanggil kerangka.js saat Keluar
     siapkanDetail: siapkanDetail, // NTF.04a: dipanggil kerangka.js saat notifikasi ditekan
+    siapkanDaftar: siapkanDaftar, // NTF.04a: idem, untuk tujuan Antrean
   });
 })();

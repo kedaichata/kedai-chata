@@ -48,6 +48,17 @@
 // membuka tab itu lagi, dan navigasi bawah tetap menandai tab asal. Ikon ? disembunyikan saat layar Bantuan terbuka.
 // window.KedaiBantuan .tampil() dipanggil saat tab dibuka dan lewat Segarkan, .reset() saat Keluar.
 //
+// NTF.04a: membuka layar dari notifikasi dan menyegarkan data saat push masuk (notifikasi.md NT8, NT10; Handoff #4).
+// - sw.js membawa tujuan lewat alamat (?buka=order&id=... atau ?buka=antrean) bila aplikasi tertutup, atau lewat pesan
+//   {jenis:"buka", tujuan, id} bila aplikasi sudah terbuka. Alamat dibaca saat berkas dimuat dan DIPAKAI setelah login
+//   dan peran dikenal (atur dipanggil akun.js). Sesudah dipakai, ?buka= dan id dibuang dari alamat peramban.
+// - Layar tujuan: customer ke Pesanan Saya, owner ke Order Masuk, penjaga ke Antrean. Layar order menyiapkan detailnya
+//   lewat siapkanDetail/siapkanDaftar (tanpa panggilan server), lalu buka() memanggil tampil() yang sudah ada:
+//   total hanya satu panggilan data. Id dari alamat atau pesan tidak dipercaya; server yang memutuskan boleh atau tidak.
+// - Pesan {jenis:"segarkan"}: hanya layar order yang sedang terbuka dimuat ulang (satu panggilan, tanpa layar memuat penuh),
+//   dibatasi sekitar 30 detik (NT10). Bila masih di dalam batas, dijadwalkan SATU penyegaran susulan di akhir batas
+//   (bukan timer berulang). Aplikasi di latar belakang: ditandai, dan disegarkan sekali saat kembali ke layar.
+//
 // Aturan yang dijaga:
 // - Peran datang dari balasan server (aksi status) lewat akun.js; aplikasi tidak pernah mengirim peran.
 //   Menyembunyikan tab di sini hanya kemudahan; yang menolak akses sebenarnya server.
@@ -377,6 +388,229 @@
     },
   };
 
+  // ------------------------------------------------------------------
+  // NTF.04a: tujuan dari notifikasi dan penyegaran saat push masuk (lihat catatan di atas berkas).
+  // ------------------------------------------------------------------
+  var REGEX_ID_LUAR = /^[A-Za-z0-9_-]{1,64}$/;
+  var BATAS_SEGAR_MS = 30000; // NT10: sekitar 30 detik
+  var PANEL_SEGAR = {
+    pesanan: true,
+    ordermasuk: true,
+    semuaorder: true,
+    antrean: true,
+  };
+  var tujuanTertunda = null; // { tujuan, id } yang menunggu login dan peran
+  var terakhirSegar = null; // performance.now() penyegaran terakhir (hanya untuk batas NT10, bukan waktu order)
+  var timerSegar = null; // satu penyegaran susulan
+  var perluSegar = false; // push masuk saat aplikasi di latar belakang
+
+  function bacaTujuanDariAlamat() {
+    try {
+      var p = new URLSearchParams(window.location.search);
+      var b = p.get("buka");
+      if (b === "order" || b === "antrean") {
+        var i = p.get("id") || "";
+        return { tujuan: b, id: REGEX_ID_LUAR.test(i) ? i : "" };
+      }
+    } catch (err) {
+      // Alamat tidak terbaca: diabaikan.
+    }
+    return null;
+  }
+
+  // Buang ?buka= dan id dari alamat peramban (bagian lain alamat dibiarkan).
+  function bersihkanAlamatTujuan() {
+    try {
+      var p = new URLSearchParams(window.location.search);
+      if (!p.has("buka")) return;
+      p.delete("buka");
+      p.delete("id");
+      var sisa = p.toString();
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname +
+          (sisa ? "?" + sisa : "") +
+          window.location.hash,
+      );
+    } catch (err) {
+      // Gagal membersihkan alamat tidak boleh mengganggu alur.
+    }
+  }
+
+  // Buka layar tujuan menurut peran. Mengembalikan true bila ada layar yang dibuka.
+  function bukaTujuan(tujuan, id) {
+    if (!peran) return false;
+    var idAman = typeof id === "string" && REGEX_ID_LUAR.test(id) ? id : "";
+    var tabTujuan = "";
+    var layarOrder;
+    if (peran === "customer" && tujuan === "order") {
+      tabTujuan = "pesanan-saya";
+      layarOrder = window.KedaiPesanan;
+      if (
+        idAman &&
+        layarOrder &&
+        typeof layarOrder.siapkanDetail === "function"
+      ) {
+        layarOrder.siapkanDetail(idAman);
+      }
+    } else if (peran === "owner" && tujuan === "order") {
+      tabTujuan = "order-masuk";
+      layarOrder = window.KedaiOrderOwner;
+      if (
+        idAman &&
+        layarOrder &&
+        typeof layarOrder.siapkanMasuk === "function"
+      ) {
+        layarOrder.siapkanMasuk(idAman);
+      }
+    } else if (
+      peran === "penjaga" &&
+      (tujuan === "antrean" || tujuan === "order")
+    ) {
+      tabTujuan = "antrean";
+      layarOrder = window.KedaiOrderPenjaga;
+      if (layarOrder) {
+        if (
+          tujuan === "order" &&
+          idAman &&
+          typeof layarOrder.siapkanDetail === "function"
+        ) {
+          layarOrder.siapkanDetail(idAman);
+        } else if (typeof layarOrder.siapkanDaftar === "function") {
+          layarOrder.siapkanDaftar();
+        }
+      }
+    }
+    if (!tabTujuan || !cariTab(tabTujuan)) return false;
+    // Sedang di layar lain (misalnya Buku alamat): kembali ke layar utama supaya tujuan terlihat.
+    if (el("layar-sementara").hidden && typeof A.tampilkan === "function") {
+      A.tampilkan("sementara");
+    }
+    terakhirSegar = performance.now(); // buka() memuat data: dihitung sebagai penyegaran
+    buka(tabTujuan);
+    return true;
+  }
+
+  // Tujuan dari alamat dipakai SEKALI, setelah login dan peran dikenal.
+  function bukaTertunda() {
+    if (!tujuanTertunda || !peran) return;
+    var t = tujuanTertunda;
+    tujuanTertunda = null;
+    bersihkanAlamatTujuan();
+    bukaTujuan(t.tujuan, t.id);
+  }
+
+  // Muat ulang isi layar order yang sedang terbuka (satu panggilan lewat tampil() milik layar itu).
+  function muatIsiAktif() {
+    var t = peran ? cariTab(tab) : null;
+    if (!t || el("layar-sementara").hidden) return;
+    if (t.panel === "pesanan") {
+      if (
+        window.KedaiPesanan &&
+        typeof window.KedaiPesanan.tampil === "function"
+      ) {
+        window.KedaiPesanan.tampil();
+      }
+    } else if (t.panel === "ordermasuk") {
+      if (
+        window.KedaiOrderOwner &&
+        typeof window.KedaiOrderOwner.tampilMasuk === "function"
+      ) {
+        window.KedaiOrderOwner.tampilMasuk();
+      }
+    } else if (t.panel === "semuaorder") {
+      if (
+        window.KedaiOrderOwner &&
+        typeof window.KedaiOrderOwner.tampilSemua === "function"
+      ) {
+        window.KedaiOrderOwner.tampilSemua();
+      }
+    } else if (t.panel === "antrean") {
+      if (
+        window.KedaiOrderPenjaga &&
+        typeof window.KedaiOrderPenjaga.tampil === "function"
+      ) {
+        window.KedaiOrderPenjaga.tampil();
+      }
+    }
+  }
+
+  function segarkanSekarang() {
+    terakhirSegar = performance.now();
+    muatIsiAktif();
+  }
+
+  // Penyegaran karena push, dengan batas NT10. Di dalam batas: satu penyegaran susulan di akhir batas.
+  function jalankanSegar() {
+    var t = peran ? cariTab(tab) : null;
+    if (
+      !t ||
+      !Object.prototype.hasOwnProperty.call(PANEL_SEGAR, t.panel) ||
+      el("layar-sementara").hidden
+    ) {
+      return;
+    }
+    if (timerSegar) return; // sudah ada satu yang dijadwalkan
+    var sisa =
+      terakhirSegar === null
+        ? 0
+        : BATAS_SEGAR_MS - (performance.now() - terakhirSegar);
+    if (sisa > 0) {
+      timerSegar = setTimeout(function () {
+        timerSegar = null;
+        if (document.hidden) {
+          perluSegar = true;
+          return;
+        }
+        segarkanSekarang();
+      }, sisa);
+      return;
+    }
+    segarkanSekarang();
+  }
+
+  function pesanSegarkan() {
+    if (document.hidden) {
+      perluSegar = true; // disegarkan sekali saat kembali ke layar
+      return;
+    }
+    jalankanSegar();
+  }
+
+  // Pesan dari sw.js. Isi pesan tidak dipercaya: tujuan hanya dua nilai, id dicek bentuknya.
+  function terimaPesanSw(event) {
+    var d = event && event.data;
+    if (!d || typeof d !== "object") return;
+    if (d.jenis === "segarkan") {
+      pesanSegarkan();
+    } else if (d.jenis === "buka") {
+      var tujuan =
+        d.tujuan === "order" || d.tujuan === "antrean" ? d.tujuan : "";
+      if (!tujuan) return;
+      var id = typeof d.id === "string" && REGEX_ID_LUAR.test(d.id) ? d.id : "";
+      if (!peran) {
+        // Belum masuk: simpan, dipakai setelah login dan peran dikenal.
+        tujuanTertunda = { tujuan: tujuan, id: id };
+        return;
+      }
+      bukaTujuan(tujuan, id);
+    }
+  }
+
+  tujuanTertunda = bacaTujuanDariAlamat();
+  if (!tujuanTertunda) bersihkanAlamatTujuan(); // ?buka= yang tidak dikenal dibuang
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.addEventListener("message", terimaPesanSw);
+  }
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden && perluSegar) {
+      perluSegar = false;
+      jalankanSegar();
+    }
+  });
+
   // Dipanggil akun.js setiap kali status dimuat. Peran sama: tab yang terbuka dipertahankan.
   // HOM.02: argumen kedua (nama) boleh kosong.
   // function atur(peranDariServer) {
@@ -405,6 +639,7 @@
     isiSapaan(peran, namaDariServer); // HOM.02
     aturItemHome(peran); // HOM.03, HOM.04
     buka(tab);
+    bukaTertunda(); // NTF.04a: tujuan dari notifikasi, dipakai sekali setelah peran dikenal
   }
 
   // Dipanggil akun.js saat Keluar: tidak boleh ada nama atau data tersisa di layar.
@@ -473,6 +708,15 @@
     ) {
       window.KedaiBantuan.reset();
     }
+    // NTF.04a: tujuan notifikasi dan penyegaran tertunda tidak boleh terbawa ke akun berikutnya.
+    tujuanTertunda = null;
+    if (timerSegar) {
+      clearTimeout(timerSegar);
+      timerSegar = null;
+    }
+    perluSegar = false;
+    terakhirSegar = null;
+    bersihkanAlamatTujuan();
   }
 
   // Ketukan di navigasi bawah (satu pendengar per navigasi).
