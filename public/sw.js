@@ -4,6 +4,7 @@
 // Hanya menangani berkas aplikasi dari domain sendiri (GET).
 // Panggilan ke Supabase TIDAK disentuh dan TIDAK disimpan.
 // Penanganan push ditambah nanti (notifikasi.md).
+// NTF.04: penanganan push masuk dan notifikasi ditekan sudah ditambah di bagian bawah berkas ini.
 
 // Naikkan angka versi ini bila daftar cache berubah, supaya salinan lama dibuang.
 // ORD.03: var NAMA_CACHE = "chata-v10"; // MNU.10: naik dari chata-v9 karena grup.js masuk daftar cache
@@ -18,7 +19,8 @@
 // GIM.03: var NAMA_CACHE = "chata-v19"; // BTN.04a: naik dari chata-v18 karena img/infografik.webp masuk daftar cache
 // FTO.03: var NAMA_CACHE = "chata-v20"; // GIM.03: naik dari chata-v19 karena game.css, gim.js, dan gimmenu.js masuk daftar cache
 // INB.05: var NAMA_CACHE = "chata-v21"; // FTO.03: naik dari chata-v20 karena foto.js masuk daftar cache
-var NAMA_CACHE = "chata-v22"; // INB.05: naik dari chata-v21 karena inbox.js masuk daftar cache
+// NTF.04: var NAMA_CACHE = "chata-v22"; // INB.05: naik dari chata-v21 karena inbox.js masuk daftar cache
+var NAMA_CACHE = "chata-v23"; // NTF.04: naik dari chata-v22 karena sw.js berubah (penanganan push); daftar cache tidak berubah
 
 // Semua path relatif (tanpa awalan /) supaya jalan di GitHub Pages.
 // Tiap berkas aplikasi baru (JS, style.css, pustaka, ikon) wajib ditambah di sini.
@@ -136,6 +138,135 @@ self.addEventListener("fetch", function (event) {
             }
             return Response.error();
           });
+      }),
+  );
+});
+
+// ---------------------------------------------------------------------------
+// NTF.04: PUSH (notifikasi.md NT2, NT8, NT9; security.md aturan 11 dan 16)
+//
+// Bentuk isi push dari server (usulan, jadi kontrak untuk NTF.06). JSON kecil:
+//   { "judul": "...", "isi": "...", "nomor": 1042, "tujuan": "order" | "antrean", "id": "<id order>" }
+// - "nomor" dan "id" opsional. "nomor" dipakai untuk tag per order (NT9).
+// - "tujuan" menentukan ke mana notifikasi membuka aplikasi. Server yang tahu peran penerima,
+//   jadi sw.js tidak menebak peran. Nilai selain "order" dan "antrean" dianggap tidak ada.
+// Aturan yang dijaga:
+// - Isi kosong, bukan JSON, atau rusak: tampil teks umum. sw.js tidak mengarang isi sendiri.
+// - Hanya teks dari isi push yang ditampilkan, dipotong panjangnya. Tidak ada data pribadi di sini.
+// - Tidak ada panggilan jaringan di bagian push (tanpa polling, tanpa Realtime).
+// ---------------------------------------------------------------------------
+
+var JUDUL_UMUM = "Kedai ChATA";
+var ISI_UMUM = "Ada kabar baru di Kedai ChATA.";
+var BATAS_JUDUL = 60;
+var BATAS_ISI = 160;
+
+// Ambil teks dari isi push dengan aman: hanya string, dipotong, atau cadangan umum.
+function teksAman(nilai, cadangan, batas) {
+  if (typeof nilai !== "string") return cadangan;
+  var bersih = nilai.trim();
+  if (!bersih) return cadangan;
+  return bersih.length > batas ? bersih.slice(0, batas) : bersih;
+}
+
+// Baca isi push. Gagal baca (kosong atau bukan JSON): kembalikan objek kosong.
+function bacaIsiPush(event) {
+  if (!event.data) return {};
+  try {
+    var hasil = event.data.json();
+    return hasil && typeof hasil === "object" ? hasil : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+// Alamat tujuan saat notifikasi ditekan. Penanda dibaca aplikasi nanti (langkah terpisah).
+// Hanya dua tujuan yang dikenal; id hanya huruf, angka, strip, dan garis bawah.
+function alamatTujuan(tujuan, id) {
+  var dasar = self.registration.scope;
+  if (tujuan === "antrean") {
+    return dasar + "?buka=antrean";
+  }
+  if (tujuan === "order") {
+    var idAman =
+      typeof id === "string" && /^[A-Za-z0-9_-]{1,64}$/.test(id) ? id : "";
+    return idAman
+      ? dasar + "?buka=order&id=" + encodeURIComponent(idAman)
+      : dasar + "?buka=order";
+  }
+  return dasar;
+}
+
+// Push masuk: tampilkan notifikasi, dan bila ada halaman aplikasi yang terbuka, minta ia menyegarkan data.
+self.addEventListener("push", function (event) {
+  var isi = bacaIsiPush(event);
+
+  var judul = teksAman(isi.judul, JUDUL_UMUM, BATAS_JUDUL);
+  var teks = teksAman(isi.isi, ISI_UMUM, BATAS_ISI);
+
+  var tujuan =
+    isi.tujuan === "order" || isi.tujuan === "antrean" ? isi.tujuan : "";
+  var id = typeof isi.id === "string" ? isi.id : "";
+  var nomor =
+    typeof isi.nomor === "number" || typeof isi.nomor === "string"
+      ? String(isi.nomor)
+      : "";
+
+  var opsi = {
+    body: teks,
+    icon: "img/icon-192.png",
+    badge: "img/icon-192.png",
+    data: { tujuan: tujuan, id: id },
+  };
+
+  // NT9: satu notifikasi per order, yang baru menggantikan yang lama tetapi tetap berbunyi.
+  if (/^[A-Za-z0-9_-]{1,20}$/.test(nomor)) {
+    opsi.tag = "order-" + nomor;
+    opsi.renotify = true;
+  }
+
+  event.waitUntil(
+    self.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then(function (daftarHalaman) {
+        // NT8: bila aplikasi sedang terbuka, beri tahu halaman supaya menyegarkan data.
+        for (var i = 0; i < daftarHalaman.length; i++) {
+          daftarHalaman[i].postMessage({ jenis: "segarkan" });
+        }
+        return self.registration.showNotification(judul, opsi);
+      }),
+  );
+});
+
+// Notifikasi ditekan: tutup notifikasi, fokuskan aplikasi yang sudah terbuka atau buka yang baru.
+// Halaman diberi pesan { jenis: "buka", tujuan, id } supaya aplikasi bisa membuka layar yang tepat.
+self.addEventListener("notificationclick", function (event) {
+  event.notification.close();
+
+  var data = event.notification.data || {};
+  var tujuan =
+    data.tujuan === "order" || data.tujuan === "antrean" ? data.tujuan : "";
+  var id = typeof data.id === "string" ? data.id : "";
+  var alamat = alamatTujuan(tujuan, id);
+
+  event.waitUntil(
+    self.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then(function (daftarHalaman) {
+        for (var i = 0; i < daftarHalaman.length; i++) {
+          var halaman = daftarHalaman[i];
+          if (
+            halaman.url.indexOf(self.registration.scope) === 0 &&
+            "focus" in halaman
+          ) {
+            halaman.postMessage({ jenis: "buka", tujuan: tujuan, id: id });
+            return halaman.focus();
+          }
+        }
+        // Tidak ada aplikasi yang terbuka: buka baru, tujuan dibawa lewat alamat.
+        if (self.clients.openWindow) {
+          return self.clients.openWindow(alamat);
+        }
       }),
   );
 });
