@@ -210,4 +210,32 @@ Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Yang paling 
 - **Pengecualian NT8 untuk penjaga** (push batal membuka Antrean) hanya untuk push. Item inbox tidak bisa diketuk (IB5).
 - **NT12 diperkuat:** Kotak masuk menjadi jalur kabar cadangan bagi yang notifnya diblokir. Mundur satu langkah tetap tanpa kabar (push maupun inbox).
 
+### Handoff #1 | 2026-11-12 | ketua
+
+**Tugas:** NTF.01 (pasangan kunci VAPID). Selesai dan sudah dicentang di sheet.
+
+**File yang diubah:** tidak ada. Tidak ada deploy, commit, atau push.
+
+**Keputusan baru:**
+
+- Pasangan kunci dibuat 12 Nov 2026 di Mac, lewat alat bawaan Node (`crypto`, kurva prime256v1) tanpa internet, bukan `npx web-push`. Alasan: pustaka pihak ketiga harus berversi dipatok (AGENTS.md bagian 3). Alasan ketua selain itu belum tercatat.
+- Kunci disimpan di pwd manager ketua (satu tempat dengan token deploy), sebagai dua entri: "ChATA - VAPID kunci PRIVAT (push)" dan "ChATA - VAPID kunci PUBLIK (push)". Adik ketua boleh mengambilnya bila dibutuhkan (alasan ketua selain itu belum tercatat).
+- Kunci privat tidak pernah ditempel ke chat. Layar Terminal sudah dibersihkan dan ditutup.
+- Akun dummy owner kedua sengaja dibiarkan aktif untuk tes push dengan banyak owner (NTF.08). Alasan: ketua (12 Nov 2026).
+
+**Terbukti (diperiksa di chat, tidak disimpan):** kunci publik yang ditempel ketua dari pwd manager bentuknya benar (87 karakter, diawali "B", hanya karakter base64url, tanpa "="). Kecocokan dengan kunci privatnya belum teruji; baru terbukti saat push pertama terkirim (NTF.06) dan diterima (NTF.04).
+
+**Belum beres:**
+
+- Kunci privat belum dipasang di dashboard Supabase (rahasia fungsi `kedai`); dilakukan di NTF.06, butuh "OK".
+- Kunci publik belum masuk `public/config.js`; ikut langkah yang menyentuh `config.js`, butuh "OK".
+- Pengingat dari sesi foto: cek jadwal pembersihan jalan sendiri setelah Minggu 15 Nov 2026 02.00 WIB (FTO.07).
+- Teks layar Order wakil ("Belum ada notifikasi otomatis ke layar HP") perlu diperbarui saat push sudah jalan.
+
+**Saran giliran berikutnya (NTF.02, ⚠️ butuh penjelasan dampak dan "OK" ketua):**
+
+- Lampirkan AGENTS.md, notifikasi.md (dengan Handoff #1), database.md, security.md, serta `supabase/migrations/20261111_05_inbox.sql` dan `20261111_06_inbox_fungsi.sql` (pola hak, nama, dan pembatal; jangan menebak).
+- Isi: migration tabel `langganan_push` dan baris `pengaturan` `push_maks_perangkat` (nilai awal 5), RLS tanpa policy, `service_role` baca/tambah/ubah tanpa DELETE, SQL pembatal tertulis di repo sebelum dijalankan, lalu query cek hak. Nama kolom persis ditetapkan di sesi kode dan dicatat di database.md.
+- NTF.06 nanti menumpang titik pemanggilan `tulisInbox` yang sama (IB14), supaya penerima tidak dihitung dua kali.
+
 ---
