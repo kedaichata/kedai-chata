@@ -363,4 +363,50 @@ Tidak ada migration, tidak ada deploy `kedai`, tidak ada perubahan di `public/` 
 - Isi: setelah login dan peran dikenal, baca `?buka=` lalu buka layar yang sesuai; dengarkan pesan `buka` (aplikasi sudah terbuka) dan `segarkan` (batas NT10); bersihkan `?buka=` dari alamat setelah dipakai. Peran dan akses tetap diputuskan server: `id` dari alamat atau pesan tidak dipercaya, bila bukan hak pemanggil server membalas 404 atau 403 dan aplikasi menampilkan pesan umum (aturan 2, 5, 9). `tujuan: "antrean"` hanya berarti untuk penjaga.
 - Berkas JS baru, bila ada, wajib didaftarkan di cache `sw.js` (butuh "OK").
 
+### Handoff #5 | 2026-11-12 | FREN
+
+**Tugas:** NTF.04a (aplikasi membuka layar dari notifikasi). **Kode selesai ditulis dan lulus uji tiruan, tetapi BELUM dipasang ke repo, BELUM di-push, dan BELUM dites di HP.** Jangan dicentang di sheet sebelum tes Android lulus. PIC berhenti sebelum push karena ada keperluan mendadak; push dilakukan adik ketua atau ketua.
+
+**File yang diubah:**
+
+- **Giliran 1, sudah di-commit lokal (belum push):** commit `697eec7` di `main` (`origin/main` tertinggal 1 commit). Isi: `public/pesanan.js`, `public/orderowner.js`, `public/orderpenjaga.js`, masing-masing ditambah fungsi `siapkanDetail(id)` (owner: `siapkanMasuk` dan `siapkanSemua`). Fungsi ini hanya menyiapkan keadaan layar, tanpa panggilan server.
+- **Giliran 2, BELUM masuk repo:** `public/kerangka.js` (utuh, versi baru) dan `public/orderpenjaga.js` (revisi atas commit `697eec7`: ditambah `siapkanDaftar()`). Kedua berkas ada di sesi chat PIC (panel samping). Cara melanjutkan, pilih satu:
+  1. Ambil kedua berkas dari sesi chat itu lewat PIC, copas ke `public/`, lalu commit.
+  2. Sesi baru: lampirkan `AGENTS.md`, `notifikasi.md` (dengan handoff ini), `public/kerangka.js` dan `public/orderpenjaga.js` terbaru, lalu minta giliran 2 dibuat ulang dari ringkasan di bawah.
+- Tidak ada perubahan di `sw.js`, `akun.js`, `config.js`, `index.html`, migration, atau `kedai`. Tidak ada berkas JS baru, jadi daftar cache `sw.js` dan versinya tidak perlu diubah. Tidak ada deploy `kedai`.
+- Saat commit giliran 2: **jangan pakai `[skip ci]`** (commit berisi kode; aturan ketua 12 Nov, blok di `AGENTS.md`).
+
+**Keputusan baru:**
+
+- **Alasan belum tercatat, disetujui PIC:** saat pesan `segarkan` masuk, aplikasi memuat ulang **data layar yang sedang terbuka saja** (1 panggilan, tanpa layar "memuat" penuh), bukan meniru tombol Segarkan penuh. Arahan ketua tentang hemat panggilan free tier.
+- Giliran 1 dan 2 di-commit lokal per giliran, **push sekali setelah giliran 2**, dengan cek anti-nyasar (folder, `git remote -v`, email commit terakhir; semuanya milik ketua).
+- **Pilihan penulis, belum dibahas dengan ketua, alasan belum tercatat:**
+  - Notifikasi order untuk **owner membuka Order Masuk** (bukan Semua Order), karena push owner kebanyakan order baru. Detail order berstatus apa pun tetap bisa dibuka di sana; tombol Kembali kembali ke daftar Menunggu.
+  - `segarkan` di dalam batas 30 detik (NT10) **tidak dibuang**: dijadwalkan **satu** penyegaran susulan di akhir batas (bukan timer berulang), supaya push yang datang di dalam batas tidak membuat layar usang.
+  - Push yang masuk saat aplikasi di latar belakang hanya menandai; disegarkan **sekali** saat aplikasi kembali ke layar.
+  - Hanya layar order yang disegarkan (Pesanan Saya, Order Masuk, Semua Order, Antrean). Home dan tab lain tidak, karena tab lain memuat sendiri saat dibuka.
+- Ringkasan kontrak giliran 2 (bila dibuat ulang): `kerangka.js` membaca `?buka=` saat dimuat dan memakainya **sekali** setelah login dan peran dikenal (`atur`), lalu membuang `?buka=` dan `id` dari alamat; mendengarkan pesan `buka` dan `segarkan` dari `sw.js`; tujuan customer = Pesanan Saya, owner = Order Masuk, penjaga = Antrean (`tujuan: "antrean"` memakai `siapkanDaftar`, `tujuan: "order"` dengan id memakai `siapkanDetail`); tujuan yang tidak cocok peran diabaikan; `id` hanya dicek bentuknya (huruf, angka, strip, garis bawah, maks 64), server yang memutuskan akses (404 atau 403, pesan umum); Keluar membuang tujuan tertunda dan timer.
+- `siapkanDaftar()` ditambah karena tanpa itu penjaga yang sedang membuka detail satu order akan tetap di detail itu saat menekan push Antrean (pengecualian NT8).
+
+**Terbukti (diperiksa di chat, tidak disimpan):** sintaks kelima berkas lolos; tidak ada baris lama yang hilang (satu baris `return` di `orderowner.js` diganti, versi lama disimpan sebagai komentar); 21 skenario dengan DOM tiruan lulus (tiga peran, alamat dan pesan, id jahat, sebelum login, batas 30 detik dan burst, latar belakang, Keluar). **Ini bukan pengganti tes di production.**
+
+**Belum beres:**
+
+- Giliran 2 belum dipasang dan belum di-push (lihat atas). Tes manual setelah push, Android, akun dummy:
+  1. Aplikasi ditutup, tekan push order (customer atau owner): detail order terbuka, alamat tidak lagi memuat `?buka=`.
+  2. Aplikasi terbuka, tekan push: pindah ke detail order.
+  3. Penjaga menekan push batal: masuk ke daftar Antrean, bukan detail; coba juga saat penjaga sedang membuka detail order lain.
+  4. Id order milik orang lain: pesan umum, tidak ada data tampil.
+  5. Tab Network: 1 panggilan data per ketukan, bukan 2.
+- Push sungguhan dari server belum ada (NTF.06). Tes sekarang memakai simulasi tombol Push di DevTools dengan isi `{"judul":"x","isi":"y","tujuan":"order","id":"<id order dummy>","nomor":1}`.
+- `inbox.js` belum dilihat di sesi ini. Perilaku bila overlay Kotak masuk sedang terbuka saat push ditekan belum teruji; layak dites sekali.
+- Penyegaran saat kembali ke layar secara umum dan tombol Segarkan tetap NTF.07, tidak disentuh.
+- Dari Handoff #1 sampai #4, tidak berubah: kunci privat VAPID belum di dashboard (NTF.06, butuh "OK"); kunci publik belum di `public/config.js` (ikut langkah yang menyentuh `config.js`, butuh "OK"); cek jadwal pembersihan foto jalan sendiri setelah Minggu 15 Nov 2026 02.00 WIB (FTO.07); teks layar Order wakil ("Belum ada notifikasi otomatis ke layar HP") diperbarui saat push sudah jalan; logika `push_daftar` dan `push_nonaktifkan` baru terbukti di NTF.08.
+- Pengingat pencatatan: blok aturan `[skip ci]` untuk `AGENTS.md` sudah didraft (disetujui ketua), tinggal ditempel.
+
+**Saran giliran berikutnya:**
+
+- **Pertama, selesaikan NTF.04a:** pasang dua berkas giliran 2, commit tanpa `[skip ci]`, push dengan cek anti-nyasar, tes Android, lalu centang NTF.04a di sheet bila semua lulus. Tidak butuh "OK" ketua karena tidak menyentuh `akun.js`, `sw.js`, atau `config.js`.
+- **Berikutnya NTF.05** (tombol "Aktifkan notifikasi" di menu Akun, ajakan setelah order pertama, `push_nonaktifkan` saat Keluar; ⚠️ High-Risk, kemungkinan menyentuh `config.js` dan `akun.js`, butuh penjelasan dampak dan "OK" ketua). Lampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #3 sampai #5), `security.md`, `public/akun.js`, `public/akunmenu.js`, `public/config.js`, `public/sw.js`, `public/kerangka.js`, `public/pesan.js`, `public/index.html`. Kontrak aksi `push_daftar` dan `push_nonaktifkan` ada di Handoff #3.
+
 ---

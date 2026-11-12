@@ -245,4 +245,14 @@ Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md.
 - **Bagian 4 (pengingat rutin):** pengingat kalender yang sudah ada (buka dashboard agar project tidak dijeda, ekspor data) ditambah satu urusan: hapus inbox lama.
 - **Kode baru `kedai`:** aksi inbox di berkas baru `inbox.ts` (mengikuti blok 9 Nov 2026).
 
+### 2026-11-12: Aturan `[skip ci]` pada pesan commit
+
+Keputusan ketua (disampaikan lewat PIC, sesi NTF.04a). Alasan ketua selain yang tertulis di bawah belum tercatat.
+
+- **`[skip ci]` hanya untuk commit yang cuma mengubah docs/md** (misalnya update catatan atau handoff setelah sesi selesai), supaya tidak memicu penerbitan GitHub Pages yang tidak perlu.
+- **Commit yang menyentuh kode atau berkas aplikasi tidak memakai `[skip ci]`**: semua berkas di `public/` (termasuk `sw.js`), `supabase/`, dan `.github/`. Commit seperti itu harus memicu penerbitan normal.
+- Bila satu commit memuat docs **dan** kode, **jangan** pakai `[skip ci]`.
+- **AI tidak menambahkan `[skip ci]` sendiri** pada pesan commit yang disarankan. AI hanya menyarankannya bila seluruh isi commit adalah docs/md, dan menyebut alasannya.
+- Kejadian pemicu: pada sesi NTF.04a, pesan commit berisi kode sempat disarankan dengan `[skip ci]` karena meniru commit docs sebelumnya. Belum sempat di-push, jadi pesannya diganti dengan `git commit --amend` tanpa dampak.
+
 ---
