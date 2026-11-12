@@ -348,4 +348,16 @@ Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Nama kolom d
 - **Pembatalan:** `_batal.sql` migration 05 membuang tabel dan dua pengaturan; migration 06 membuang tiga fungsi (buang fungsi dulu sebelum tabel). Belum pernah dicoba.
 - **Pilihan penulis** (nama tabel, kolom, dan fungsi; batas pengaturan 1 sampai 365 dan 1 sampai 200): alasan belum tercatat.
 
+### 2026-11-12: Tabel `langganan_push` dan pengaturan `push_maks_perangkat` (NTF.02)
+
+**Berkas tujuan:** `docs/database.md` bagian 9 (tempel paling bawah). Rujukan: `docs/notifikasi.md` bagian 9, Handoff #2. Yang paling akhir menang.
+
+- **Berkas SQL:** `supabase/migrations/20261112_langganan_push.sql` (dan `_batal`), `supabase/templates/20261112_langganan_push_cek.sql`. Dijalankan dan dicek 12 Nov 2026. Tabel lama dan data lama tidak diubah.
+- **Bagian 2 (tabel baru, nama kolom persis):** `langganan_push`: `id` (uuid, nilai bawaan), `akun` (merujuk `auth.users`), `endpoint` (unik se-tabel; harus diawali `https://`, 20 sampai 2000 karakter, tanpa spasi atau karakter kontrol), `kunci_p256dh` dan `kunci_auth` (masing-masing 1 sampai 200 karakter, hanya huruf, angka, `-`, `_`, `=`), `aktif` (bawaan true), `dibuat_pada` (jam server), `terakhir_berhasil_pada` (boleh kosong). Indeks sebagian `langganan_push_akun_aktif_idx` pada `akun` untuk baris `aktif`.
+- **Bagian 3 (hak):** `service_role` hanya `INSERT, SELECT, UPDATE` (tanpa DELETE); `anon` dan `authenticated` nol; RLS aktif tanpa policy. Terbukti lewat query cek 12 Nov 2026. Tidak ada urutan nomor otomatis (`id` memakai uuid).
+- **Bagian 4 (pengaturan):** `push_maks_perangkat` = 5. Dasarnya **NT5** (bukan NT7 seperti tertulis di tabel bagian 4; NT7 membahas kunci VAPID). Pagar angka bulat 1 sampai 20 **tidak ada di tabel**; dijaga `push_daftar` (NTF.03) dengan galat `pengaturan_rusak`.
+- **Catatan untuk NTF.03:** `endpoint` unik se-tabel, jadi bila HP yang sama dipakai akun lain, barisnya **dipindah** ke akun yang sedang login, bukan dibuat dobel. Batas perangkat dihitung dari baris `aktif` per akun oleh `push_daftar`, bukan oleh tabel.
+- **Pembatalan:** `_batal.sql` membuang tabel dan baris pengaturan (semua langganan ikut hilang, pengguna harus mengaktifkan notifikasi lagi). Jalankan hanya bila NTF.03 belum dideploy. Belum pernah dicoba.
+- **Pilihan penulis** (nama tabel dan kolom, `endpoint` unik se-tabel, `id` uuid, pola isi kunci): disetujui ketua 12 Nov 2026 ("ikut rekomendasi"); alasan ketua selain itu belum tercatat.
+
 ---

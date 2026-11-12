@@ -175,3 +175,19 @@ Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Yang paling 
 - **SEC-35 (baru, P0):** periksa isi inbox untuk semua kejadian tabel 4.1 (termasuk batal dan alih hari), dan isi nama dan catatan dengan tag HTML. Hasil benar: teks umum tanpa data pribadi dan tanpa alasan; tag HTML tampil sebagai teks biasa; hak tabel inbox tanpa DELETE. Bukti: screenshot (data dummy) dan query baca-saja hak tabel.
 - **SEC-04 dan SEC-17:** tabel inbox ikut dicek (tanpa hak DELETE; pembersihan hanya manual oleh ketua lewat dashboard).
 - **Pengecualian tulis dari Edge Function** hanya untuk `inbox_tulis` (lihat `AGENTS.md` 11 Nov 2026); tes memastikan kegagalannya tidak membatalkan aksi order.
+
+### 2026-11-12: SEC-25, pendaftaran melebihi batas perangkat tidak lagi ditolak
+
+**Berkas tujuan:** `docs/security.md` bagian 7 (tempel paling bawah). Sumber: keputusan ketua, 12 Nov 2026; lihat blok "Perangkat melebihi batas: yang terlama dinonaktifkan" di `docs/notifikasi.md` bagian 9. Yang paling akhir menang.
+
+**Pertentangan dengan blok lama:** SEC-25 menulis hasil benar "Ditolak; batas perangkat berlaku" untuk pendaftaran lebih dari `push_maks_perangkat`. Itu tidak berlaku lagi untuk bagian tersebut.
+
+**Hasil benar yang baru, bagian "daftar lebih dari `push_maks_perangkat`":**
+
+- Pendaftaran perangkat baru **berhasil**; perangkat aktif terlama menjadi nonaktif (tidak dihapus).
+- Jumlah perangkat aktif satu akun **tidak pernah melebihi** batas.
+- Langganan akun lain tidak ikut berubah.
+
+**Bagian lain SEC-25 tidak berubah:** akun A tidak bisa menonaktifkan atau memakai langganan akun B; itu tetap **ditolak**. Bukti tetap balasan server dan query baca-saja (bukti tidak disimpan, bagian 4 butir 6).
+
+**Dampak pada sheet:** baris SEC-25 perlu disesuaikan oleh manusia (sheet tidak dibagikan ke AI).

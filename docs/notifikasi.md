@@ -238,4 +238,55 @@ Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Yang paling 
 - Isi: migration tabel `langganan_push` dan baris `pengaturan` `push_maks_perangkat` (nilai awal 5), RLS tanpa policy, `service_role` baca/tambah/ubah tanpa DELETE, SQL pembatal tertulis di repo sebelum dijalankan, lalu query cek hak. Nama kolom persis ditetapkan di sesi kode dan dicatat di database.md.
 - NTF.06 nanti menumpang titik pemanggilan `tulisInbox` yang sama (IB14), supaya penerima tidak dihitung dua kali.
 
+### Handoff #2 | 2026-11-12 | ketua
+
+**Tugas:** NTF.02 (migration tabel `langganan_push` dan pengaturan `push_maks_perangkat`). Selesai dan siap dicentang di sheet.
+
+**File yang diubah:** tiga berkas baru, tanpa mengubah berkas lama. Sudah di-commit dan di-push ke `main` (12 Nov 2026, commit `f43f84f`):
+
+- `supabase/migrations/20261112_langganan_push.sql`
+- `supabase/migrations/20261112_langganan_push_batal.sql`
+- `supabase/templates/20261112_langganan_push_cek.sql`
+
+Tidak ada perubahan di `public/`, jadi aplikasi yang tampil tidak berubah. Tidak ada deploy `kedai`.
+
+**Keputusan baru:**
+
+- `endpoint` unik se-tabel (satu HP, satu baris). Bila HP dipakai bergantian dua akun, NTF.03 memindahkan baris ke akun yang sedang login. Alasan ketua selain "ikut rekomendasi penulis" belum tercatat.
+- Batas 5 perangkat aktif per akun **dijaga `push_daftar` (NTF.03)**, bukan tabel. Pagar angka 1 sampai 20 untuk `push_maks_perangkat` juga di `push_daftar`.
+- Nama kolom persis dicatat di `docs/database.md` bagian 9 (blok 12 Nov 2026). Di sana juga ada koreksi kecil: `push_maks_perangkat` berdasar NT5, bukan NT7.
+
+**Terbukti (diperiksa di chat, tidak disimpan):** migration berhasil tanpa galat; query cek A sampai H cocok semua: RLS aktif, tanpa policy, `service_role` hanya `INSERT, SELECT, UPDATE`, `anon` dan `authenticated` tanpa hak, `push_maks_perangkat` = 5, delapan kolom, enam constraint, tiga indeks.
+
+**Belum beres:**
+
+- `_batal.sql` belum pernah dicoba.
+- Kunci privat VAPID belum di dashboard Supabase (dipasang di NTF.06, butuh "OK"); kunci publik belum di `public/config.js` (ikut langkah yang menyentuh `config.js`, butuh "OK"). Tidak berubah dari Handoff #1.
+- Pengingat dari Handoff #1 masih berlaku: cek jadwal pembersihan foto jalan sendiri setelah Minggu 15 Nov 2026 02.00 WIB (FTO.07); teks layar Order wakil ("Belum ada notifikasi otomatis ke layar HP") diperbarui saat push sudah jalan.
+- **Pertanyaan terbuka untuk NTF.03:** bila akun sudah punya 5 perangkat aktif dan mendaftar perangkat ke-6, apakah **ditolak** dengan pesan jelas, atau perangkat **terlama otomatis dinonaktifkan**? NT5 hanya menulis "maksimal", belum memutuskan. Perlu keputusan ketua sebelum NTF.03 dikode.
+
+**Saran giliran berikutnya (NTF.03, ⚠️ butuh penjelasan dampak dan "OK" ketua):**
+
+- Lampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #2), `database.md`, `security.md`, `supabase/functions/kedai/index.ts`, satu berkas kelompok aksi sebagai pola (misalnya `inbox.ts`), dan `supabase/migrations/20261112_langganan_push.sql`.
+- Isi: fungsi SQL atomik untuk `push_daftar` (cek batas perangkat, pindah endpoint antar akun, isi atau aktifkan ulang baris) dan `push_nonaktifkan` (hanya langganan milik pemanggil, SEC-25), lalu aksi `kedai` di berkas baru `push.ts` dan sambungan di `index.ts`. Fungsi SQL baru berarti migration baru dan "OK" ketua. Pengirim push tidak termasuk di sini (NTF.06), jadi belum perlu pustaka push.
+- Aksi `push_daftar` dan `push_nonaktifkan` untuk semua yang login; token dibaca di server, isian dari aplikasi hanya `endpoint` dan dua kunci.
+
+### 2026-11-12: Perangkat melebihi batas: yang terlama dinonaktifkan
+
+**Berkas tujuan:** `docs/notifikasi.md` bagian 9 (tempel paling bawah, di bawah Handoff #2). Sumber: keputusan ketua, 12 Nov 2026, sesi NTF.02. Yang paling akhir menang.
+
+**Keputusan (ketua):**
+
+- Bila akun sudah punya `push_maks_perangkat` perangkat aktif dan mendaftarkan perangkat baru, `push_daftar` **menonaktifkan perangkat aktif terlama** (`aktif` jadi false, baris tidak dihapus, NT5). Pendaftaran perangkat baru **berhasil**, tidak ditolak.
+- Dilakukan dalam satu langkah atomik di fungsi SQL (NTF.03), bersama pendaftaran perangkat baru.
+- Ini mempertegas NT5, yang hanya menulis "maksimal" dan tidak menyebut apa yang terjadi di batas itu. Menjawab pertanyaan terbuka di Handoff #2.
+- Alasan ketua belum tercatat.
+
+**Yang perlu diingat saat NTF.03 dan NTF.08:**
+
+- Perangkat yang dinonaktifkan tidak diberi tahu dan berhenti menerima push. Kabarnya tetap sampai lewat buka aplikasi dan Segarkan (NT12) serta Kotak masuk.
+- **Pilihan penulis, belum dibahas dengan ketua:** "terlama" diukur dari `dibuat_pada`. Baris yang didaftarkan ulang atau dipindah dari akun lain perlu `dibuat_pada` yang diperbarui supaya dihitung terbaru; tanpa itu, HP lama yang baru mendaftar ulang bisa langsung jadi korban berikutnya. Putuskan rincian ini di NTF.03.
+- NTF.08 menambah tes: perangkat ke-6 berhasil didaftarkan, yang terlama menjadi nonaktif, jumlah aktif tetap sama dengan batas.
+
+**Pertentangan dengan catatan lama:** hasil benar "ditolak" untuk pendaftaran melebihi batas (SEC-25, `security.md`) tidak berlaku lagi untuk bagian itu; lihat blok bertanggal sama di `docs/security.md` bagian 7.
 ---
