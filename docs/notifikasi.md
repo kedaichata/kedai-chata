@@ -327,4 +327,40 @@ Migration dijalankan di SQL Editor dan `kedai` di-deploy (sembilan berkas) pada 
 - Push sungguhan baru bisa diuji penuh setelah NTF.05 (berlangganan) dan NTF.06 (pengirim) ada.
 - NTF.06 nanti memakai `push.ts` sebagai pola berkas baru dan menumpang titik pemanggilan `tulisInbox` yang sama (IB14), supaya penerima tidak dihitung dua kali.
 
+### Handoff #4 | 2026-11-12 | RAC
+
+**Berkas tujuan:** `docs/notifikasi.md` bagian 9 (tempel paling bawah, di bawah Handoff #3). Append-only.
+
+**Tugas:** NTF.04 (`sw.js`: penanganan push masuk dan notifikasi ditekan). Bagian `sw.js` selesai dan sudah dicentang di sheet. Butir baru **NTF.04a "Aplikasi membuka layar dari notifikasi"** sudah ditambah di sheet (status Belum).
+
+**File yang diubah** (satu commit `9203343`, sudah di-push ke `main` 12 Nov 2026, "OK" ketua sudah ada):
+
+- `public/sw.js` (kode lama tidak dihapus; cache naik dari `chata-v22` ke `chata-v23`; daftar cache tidak berubah)
+
+Tidak ada migration, tidak ada deploy `kedai`, tidak ada perubahan di `public/` selain `sw.js`.
+
+**Keputusan baru:**
+
+- **Bentuk isi push dari server** (kontrak untuk NTF.06), JSON kecil: `judul`, `isi`, `nomor` (opsional, untuk tag per order), `tujuan` (`"order"` atau `"antrean"`, selain itu dianggap tidak ada), `id` (opsional, id order). Server yang tahu peran penerima, jadi `sw.js` tidak menebak peran. **Pilihan penulis, belum dibahas dengan ketua, alasan belum tercatat.**
+- Isi kosong, bukan JSON, atau rusak: tampil teks umum ("Kedai ChATA" / "Ada kabar baru di Kedai ChATA."). Teks dipotong (judul 60, isi 160 karakter).
+- Tag per order hanya dipasang bila `nomor` ada (NT9); notifikasi baru menggantikan yang lama dan tetap berbunyi.
+- Push masuk saat aplikasi terbuka: halaman diberi pesan `{jenis: "segarkan"}`, lalu notifikasi tetap tampil (NT8). Pesan dikirim ke semua halaman aplikasi yang terbuka, bukan hanya yang terlihat (pilihan penulis).
+- Notifikasi ditekan, aplikasi terbuka: halaman difokuskan dan diberi pesan `{jenis: "buka", tujuan, id}`. Aplikasi tertutup: dibuka lewat alamat `?buka=order&id=...` atau `?buka=antrean`. `id` hanya huruf, angka, strip, garis bawah (maks 64).
+- Pengecualian NT8 untuk penjaga (push batal membuka Antrean) dijalankan lewat `tujuan: "antrean"` yang **dikirim server**; `sw.js` hanya meneruskan.
+
+**Terbukti (diperiksa di chat, tidak disimpan; Brave desktop, simulasi tombol Push di DevTools, data dummy):** push masuk menampilkan notifikasi, termasuk saat tab ditutup; isi rusak (`halo`) jadi teks umum; `nomor` sama menyisakan satu notifikasi (`getNotifications`); pesan `segarkan` dan `buka` (tujuan dan id utuh) sampai ke halaman; saat aplikasi tertutup, jendela aplikasi terbuka dengan `location.search` = `?buka=antrean`. Aplikasi terpasang (PWA) membuka jendela aplikasi, bukan tab biasa.
+
+**Belum beres:**
+
+- **Aplikasi belum membaca `?buka=` dan pesan `buka`**, dan belum mendengarkan pesan `segarkan`. Itu isi NTF.04a. Jadi hasil benar "ditekan membuka detail order" dan "penjaga membuka Antrean" belum tercapai sampai layar.
+- Belum diuji: push sungguhan dari server (enkripsi dan kecocokan kunci VAPID; baru terbukti di NTF.06), layar kunci Android (SEC-22), dan tujuan `antrean` dengan akun penjaga sungguhan (NTF.08).
+- Dari Handoff #1 sampai #3, tidak berubah: kunci privat VAPID belum di dashboard (NTF.06, butuh "OK"); kunci publik belum di `public/config.js` (ikut langkah yang menyentuh `config.js`, butuh "OK"); cek jadwal pembersihan foto jalan sendiri setelah Minggu 15 Nov 2026 02.00 WIB (FTO.07); teks layar Order wakil ("Belum ada notifikasi otomatis ke layar HP") diperbarui saat push sudah jalan; logika `push_daftar` dan `push_nonaktifkan` baru terbukti di NTF.08.
+- Catatan lingkungan tes: izin notifikasi Brave di Mac adik ketua dinyalakan untuk tes ini; boleh dimatikan lagi. Brave bisa memblokir layanan push bawaan Google (belum dicek); tes push sungguhan tetap di Android Chrome.
+
+**Saran giliran berikutnya (NTF.04a, kemungkinan menyentuh `akun.js` sehingga butuh penjelasan dampak dan "OK" ketua):**
+
+- Lampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #4), `security.md`, `public/sw.js`, `public/kerangka.js`, `public/index.html`, `public/akun.js`, `public/pesanan.js`, `public/orderowner.js`, `public/orderpenjaga.js`.
+- Isi: setelah login dan peran dikenal, baca `?buka=` lalu buka layar yang sesuai; dengarkan pesan `buka` (aplikasi sudah terbuka) dan `segarkan` (batas NT10); bersihkan `?buka=` dari alamat setelah dipakai. Peran dan akses tetap diputuskan server: `id` dari alamat atau pesan tidak dipercaya, bila bukan hak pemanggil server membalas 404 atau 403 dan aplikasi menampilkan pesan umum (aturan 2, 5, 9). `tujuan: "antrean"` hanya berarti untuk penjaga.
+- Berkas JS baru, bila ada, wajib didaftarkan di cache `sw.js` (butuh "OK").
+
 ---
