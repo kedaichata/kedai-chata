@@ -50,6 +50,14 @@
 //   hanya untuk order Diantar berstatus Diantar atau Selesai, dan hanya bila ada foto atau fotonya sudah dihapus.
 //   Semua logikanya ada di foto.js (window.KedaiFoto.lihat); owner hanya MELIHAT di sini (belum ada tombol unggah
 //   untuk owner). Tautan foto di memori dibuang saat Keluar (KedaiFoto.reset).
+//
+// NTF.04a (giliran 1): fungsi siapkanDetail(id) ditambah supaya kerangka.js bisa membuka detail order dari notifikasi
+//   (?buka= dan pesan "buka" dari sw.js). Fungsi ini HANYA menyiapkan keadaan layar (langkah detail + id) dan TIDAK
+//   memanggil server. Pemuatan datanya lewat tampil() yang sudah ada (dipanggil kerangka.js saat tab dibuka), jadi
+//   hanya satu panggilan order_detail. Id dari alamat atau pesan tidak dipercaya: aplikasi hanya mengecek bentuknya,
+//   yang memutuskan boleh atau tidak tetap server (404 atau 403, lalu layar menampilkan pesan umum yang sudah ada).
+//   Sedang mengirim aksi: fungsi mengembalikan false dan tidak mengubah apa pun.
+//   Owner punya dua layar (Order Masuk dan Semua Order), jadi ada dua pintu: siapkanMasuk dan siapkanSemua.
 
 (function () {
   "use strict";
@@ -1163,6 +1171,26 @@
 
     // ---------------- Dipanggil kerangka.js ----------------
 
+    // NTF.04a: siapkan layar detail untuk satu order dari notifikasi. Tanpa panggilan server (lihat catatan di atas berkas).
+    // Mengembalikan true bila layar siap, false bila id salah bentuk atau aksi (setuju, tolak, status, catatan) masih berjalan.
+    // Order yang sama dengan yang sedang terbuka: isian yang sudah diketik dipertahankan.
+    function siapkanDetail(id) {
+      if (typeof id !== "string" || !/^[A-Za-z0-9_-]{1,64}$/.test(id)) {
+        return false;
+      }
+      if (sedangKirim) return false;
+      if (langkah === "detail" && idDetail === id) return true;
+      langkah = "detail";
+      idDetail = id;
+      detailTerbuka = null;
+      setelKeputusanBatal();
+      if (catatanOwner) catatanOwner.kosongkanIsian(); // isian catatan order lain tidak terbawa
+      infoDetail("");
+      renderDetail();
+      tampilkanLangkah();
+      return true;
+    }
+
     // Tab dibuka atau Segarkan ditekan: muat ulang layar yang sedang tampil.
     function tampil() {
       isiFilterAwal(); // ORD.06 giliran 2: bawaan filter Semua Order (hanya sekali sejak masuk)
@@ -1212,7 +1240,8 @@
       });
     }
 
-    return { tampil: tampil, reset: reset };
+    // NTF.04a: return { tampil: tampil, reset: reset };
+    return { tampil: tampil, reset: reset, siapkanDetail: siapkanDetail };
   }
 
   // ------------------------------------------------------------
@@ -1258,6 +1287,8 @@
   window.KedaiOrderOwner = Object.freeze({
     tampilMasuk: layarMasuk.tampil, // dipanggil kerangka.js saat tab Order Masuk dibuka
     tampilSemua: layarSemua.tampil, // dipanggil kerangka.js saat tab Semua Order dibuka
+    siapkanMasuk: layarMasuk.siapkanDetail, // NTF.04a: detail order di layar Order Masuk (dari notifikasi)
+    siapkanSemua: layarSemua.siapkanDetail, // NTF.04a: detail order di layar Semua Order (dari notifikasi)
     reset: function () {
       // dipanggil kerangka.js saat Keluar
       layarMasuk.reset();

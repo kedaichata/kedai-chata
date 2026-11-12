@@ -36,6 +36,13 @@
 //   hanya untuk order Diantar berstatus Diantar atau Selesai, dan hanya bila ada foto atau fotonya sudah dihapus.
 //   Semua logikanya ada di foto.js (window.KedaiFoto.lihat); layar ini hanya memanggilnya. Tautan foto di memori
 //   dibuang saat Keluar (KedaiFoto.reset).
+//
+// NTF.04a (giliran 1): fungsi siapkanDetail(id) ditambah supaya kerangka.js bisa membuka detail order dari notifikasi
+//   (?buka= dan pesan "buka" dari sw.js). Fungsi ini HANYA menyiapkan keadaan layar (langkah detail + id) dan TIDAK
+//   memanggil server. Pemuatan datanya lewat tampil() yang sudah ada (dipanggil kerangka.js saat tab dibuka), jadi
+//   hanya satu panggilan order_detail. Id dari alamat atau pesan tidak dipercaya: aplikasi hanya mengecek bentuknya,
+//   yang memutuskan boleh atau tidak tetap server (404 atau 403, lalu layar menampilkan pesan umum yang sudah ada).
+//   Sedang mengirim aksi: fungsi mengembalikan false dan tidak mengubah apa pun.
 
 (function () {
   "use strict";
@@ -901,6 +908,27 @@
   // Dipanggil kerangka.js
   // ------------------------------------------------------------
 
+  // NTF.04a: siapkan layar detail untuk satu order dari notifikasi. Tanpa panggilan server (lihat catatan di atas berkas).
+  // Mengembalikan true bila layar siap, false bila id salah bentuk atau aksi (batal, kirim catatan) masih berjalan.
+  // Order yang sama dengan yang sedang terbuka: isian catatan yang sudah diketik dipertahankan.
+  function siapkanDetail(id) {
+    if (typeof id !== "string" || !/^[A-Za-z0-9_-]{1,64}$/.test(id)) {
+      return false;
+    }
+    if (sedangBatal || sedangKirimCatatan) return false;
+    if (langkah === "detail" && idDetail === id) return true;
+    langkah = "detail";
+    idDetail = id;
+    detailTerbuka = null;
+    bersihkanKonfirmasi();
+    // Isian catatan dari order lain tidak boleh terbawa (sama dengan bukaDetail).
+    draftCatatan = "";
+    pesanCatatan = { teks: "", galat: false };
+    renderDetail();
+    tampilkanLangkah();
+    return true;
+  }
+
   // Tab Pesanan Saya dibuka atau Segarkan ditekan: muat ulang layar yang sedang tampil.
   function tampil() {
     if (langkah === "detail" && idDetail) {
@@ -952,5 +980,6 @@
   window.KedaiPesanan = Object.freeze({
     tampil: tampil, // dipanggil kerangka.js saat tab Pesanan Saya dibuka
     reset: reset, // dipanggil kerangka.js saat Keluar
+    siapkanDetail: siapkanDetail, // NTF.04a: dipanggil kerangka.js saat notifikasi ditekan
   });
 })();

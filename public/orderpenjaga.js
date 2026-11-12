@@ -25,6 +25,13 @@
 // - Nomor WA dan alamat pemesan hanya tampil di detail, dan dikosongkan saat Keluar (reset).
 // - Tidak ada panggilan server baru selain aksi yang sudah ada (order_daftar, order_detail, order_status).
 // - FTO.03: aksi foto (foto_minta_unggah, foto_catat) dipanggil foto.js, bukan di berkas ini.
+//
+// NTF.04a (giliran 1): fungsi siapkanDetail(id) ditambah supaya kerangka.js bisa membuka detail order dari notifikasi
+//   (?buka= dan pesan "buka" dari sw.js). Fungsi ini HANYA menyiapkan keadaan layar (langkah detail + id) dan TIDAK
+//   memanggil server. Pemuatan datanya lewat tampil() yang sudah ada (dipanggil kerangka.js saat tab dibuka), jadi
+//   hanya satu panggilan order_detail. Id dari alamat atau pesan tidak dipercaya: aplikasi hanya mengecek bentuknya,
+//   yang memutuskan boleh atau tidak tetap server (404 atau 403, lalu layar menampilkan pesan umum yang sudah ada).
+//   Sedang mengirim aksi: fungsi mengembalikan false dan tidak mengubah apa pun.
 
 (function () {
   "use strict";
@@ -847,6 +854,23 @@
   // Dipanggil kerangka.js
   // ------------------------------------------------------------
 
+  // NTF.04a: siapkan layar detail untuk satu order dari notifikasi. Tanpa panggilan server (lihat catatan di atas berkas).
+  // Mengembalikan true bila layar siap, false bila id salah bentuk atau perubahan status masih berjalan.
+  function siapkanDetail(id) {
+    if (typeof id !== "string" || !/^[A-Za-z0-9_-]{1,64}$/.test(id)) {
+      return false;
+    }
+    if (sedangKirim) return false;
+    if (langkah === "detail" && idDetail === id) return true;
+    langkah = "detail";
+    idDetail = id;
+    detailTerbuka = null;
+    infoDetail("");
+    renderDetail();
+    tampilkanLangkah();
+    return true;
+  }
+
   // Tab Antrean dibuka atau Segarkan ditekan: muat ulang layar yang sedang tampil.
   function tampil() {
     if (langkah === "detail" && idDetail) {
@@ -902,5 +926,6 @@
   window.KedaiOrderPenjaga = Object.freeze({
     tampil: tampil, // dipanggil kerangka.js saat tab Antrean dibuka dan lewat Segarkan
     reset: reset, // dipanggil kerangka.js saat Keluar
+    siapkanDetail: siapkanDetail, // NTF.04a: dipanggil kerangka.js saat notifikasi ditekan
   });
 })();
