@@ -17,6 +17,12 @@
 // Push belum ada di sini (NTF).
 //
 // Kode galat: `id_kosong` sengaja tidak dipetakan (jadi galat umum 500), sama seperti aksi order lain.
+//
+// INB.04 (giliran 2): `tulisInbox` (dari `inbox.ts`) dioper lewat alat bantu dan dipanggil SETELAH aksi berhasil:
+//   - `order_status` dengan arah "maju" -> kejadian `status`. Arah "mundur" TIDAK memanggil (tanpa kabar, notifikasi.md 4.1).
+//   - `order_alih_hari` -> kejadian `alih_hari`.
+//   Pelaku = id dari token. Kegagalan menulis inbox tidak membatalkan aksi dan tidak mengubah balasan (inbox.md IB12);
+//   `tulisInbox` sendiri tidak pernah melempar galat. `order_metode_koreksi` tidak memanggil (bukan kejadian di tabel 4.1).
 
 // Bentuk yang sama dengan `Pengguna` dan `Peran` di index.ts.
 type Pengguna = { id: string };
@@ -49,6 +55,12 @@ export type AlatKedai = {
   ) => Response;
   regexUuid: RegExp;
   batasTeks: number;
+  // INB.04 giliran 2: penulis Kotak masuk (tidak pernah melempar galat).
+  tulisInbox: (
+    pelaku: string,
+    kejadian: string,
+    orderId: string,
+  ) => Promise<void>;
 };
 
 const PESAN_TIDAK_AKTIF = "Akun ini tidak aktif. Hubungi pengelola.";
@@ -125,8 +137,16 @@ const PETA_GALAT_ORDER_ALIH: PetaGalat = {
 };
 
 export function buatAksiOrderStatus(alat: AlatKedai) {
-  const { klien, bacaPeran, balas, galat, galatDariDb, regexUuid, batasTeks } =
-    alat;
+  const {
+    klien,
+    bacaPeran,
+    balas,
+    galat,
+    galatDariDb,
+    regexUuid,
+    batasTeks,
+    tulisInbox,
+  } = alat;
 
   // ------------------------------------------------------------
   // Aksi: order_status (order.md O5, O10, O11; security.md SEC-08, SEC-15)
@@ -175,6 +195,12 @@ export function buatAksiOrderStatus(alat: AlatKedai) {
     });
     if (error) {
       return galatDariDb(req, error, PETA_GALAT_ORDER_STATUS, "order_status");
+    }
+
+    // INB.04: kabar ke Kotak masuk HANYA untuk arah maju. Mundur satu langkah tanpa kabar (notifikasi.md 4.1).
+    // Kegagalan tidak membatalkan aksi (IB12).
+    if (isi.arah === "maju") {
+      await tulisInbox(pengguna.id, "status", isi.id);
     }
 
     return balas(req, 200, { ok: true, order: data });
@@ -276,6 +302,9 @@ export function buatAksiOrderStatus(alat: AlatKedai) {
     if (error) {
       return galatDariDb(req, error, PETA_GALAT_ORDER_ALIH, "order_alih_hari");
     }
+
+    // INB.04: kabar ke Kotak masuk (customer dan penjaga; pelaku tidak). Kegagalan tidak membatalkan aksi (IB12).
+    await tulisInbox(pengguna.id, "alih_hari", isi.id);
 
     return balas(req, 200, { ok: true, order: data });
   }

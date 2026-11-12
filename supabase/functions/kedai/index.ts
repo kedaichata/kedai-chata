@@ -57,6 +57,14 @@
 //         di BERKAS BARU `inbox.ts` (folder yang sama), diimpor di bawah; kode lama tidak dipindah. Fungsi SQL:
 //         20261111_06_inbox_fungsi.sql (sudah dijalankan dan lulus cek SEBELUM berkas ini dideploy).
 //         `inbox_tulis` BELUM dipanggil di mana pun (INB.04).
+// INB.04 (giliran 1): `inbox_tulis` dipanggil lewat pembantu `tulisInbox` (dari `inbox.ts`) SETELAH aksi berhasil, untuk
+//         kejadian `order_baru` (order_buat), `setujui` (order_setuju), `tolak` (order_tolak), `batal_customer` dan
+//         `batal_owner` (order_batal, dibedakan dari peran yang dibaca server). Pelaku = id dari token. Kegagalan menulis
+//         inbox TIDAK membatalkan aksi dan tidak mengubah balasan (inbox.md IB12). Logika aksi lama tidak diubah.
+//         Kejadian lain (status, alih_hari, catatan, order_wakil, foto) dipasang di giliran berikutnya.
+// INB.04 (giliran 2): `tulisInbox` dioper ke `buatAksiOrderStatus` (order_status.ts) untuk kejadian `status` (hanya arah
+//         maju; mundur tidak memanggil) dan `alih_hari`. Dioper lewat pembungkus kecil karena `tulisInbox` baru didapat
+//         dari `buatAksiInbox` di bagian bawah berkas ini; pembungkus baru dipanggil saat aksi berjalan, jadi aman.
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -1095,6 +1103,19 @@ async function aksiOrderBuat(
     return galatDariDb(req, error, PETA_GALAT_ORDER, "order_buat");
   }
 
+  // INB.04: kabar ke Kotak masuk (owner). Id order dari balasan fungsi SQL; bila tidak ada, dilewati dan dicatat di log.
+  // Kegagalan tidak membatalkan order dan tidak mengubah balasan (IB12).
+  if (
+    data !== null &&
+    typeof data === "object" &&
+    typeof data.id === "string" &&
+    REGEX_UUID.test(data.id)
+  ) {
+    await tulisInbox(pengguna.id, "order_baru", data.id);
+  } else {
+    console.error("kedai inbox: id order tidak ada di balasan order_buat");
+  }
+
   return balas(req, 200, { ok: true, order: data });
 }
 
@@ -1236,6 +1257,14 @@ async function aksiOrderBatal(
     return galatDariDb(req, error, PETA_GALAT_ORDER_BATAL, "order_batal");
   }
 
+  // INB.04: kabar ke Kotak masuk. Jenis kejadian dari peran yang dibaca server (staf owner = batal_owner,
+  // selain itu customer = batal_customer), bukan dari aplikasi. Kegagalan tidak membatalkan aksi (IB12).
+  await tulisInbox(
+    pengguna.id,
+    p.jenis === "staf" ? "batal_owner" : "batal_customer",
+    isi.id,
+  );
+
   return balas(req, 200, { ok: true, order: data });
 }
 
@@ -1293,6 +1322,9 @@ async function aksiOrderSetuju(
     return galatDariDb(req, error, PETA_GALAT_ORDER_KEPUTUSAN, "order_setuju");
   }
 
+  // INB.04: kabar ke Kotak masuk (customer pemilik dan penjaga). Kegagalan tidak membatalkan aksi (IB12).
+  await tulisInbox(pengguna.id, "setujui", isi.id);
+
   return balas(req, 200, { ok: true, order: data });
 }
 
@@ -1335,6 +1367,9 @@ async function aksiOrderTolak(
     return galatDariDb(req, error, PETA_GALAT_ORDER_KEPUTUSAN, "order_tolak");
   }
 
+  // INB.04: kabar ke Kotak masuk (customer pemilik). Alasan tolak TIDAK ikut (IB4). Kegagalan tidak membatalkan aksi (IB12).
+  await tulisInbox(pengguna.id, "tolak", isi.id);
+
   return balas(req, 200, { ok: true, order: data });
 }
 
@@ -1354,6 +1389,9 @@ const { aksiOrderStatus, aksiOrderMetodeKoreksi, aksiOrderAlihHari } =
     galatDariDb,
     regexUuid: REGEX_UUID,
     batasTeks: BATAS_TEKS,
+    // INB.04 giliran 2: pembungkus; `tulisInbox` dideklarasikan lebih bawah (dari buatAksiInbox) dan baru dipakai saat aksi berjalan.
+    tulisInbox: (pelaku: string, kejadian: string, orderId: string) =>
+      tulisInbox(pelaku, kejadian, orderId),
   });
 
 // ------------------------------------------------------------
@@ -1441,7 +1479,9 @@ const { aksiFotoMintaUnggah, aksiFotoCatat, aksiFotoLihat } = buatAksiFoto({
 // INB.03: sambungan ke berkas inbox.ts. Hanya perlu klien, balas, galat, dan galatDariDb.
 // ------------------------------------------------------------
 
-const { aksiInboxDaftar } = buatAksiInbox({
+// INB.04: `tulisInbox` juga diambil di sini; dipakai aksi order di atas (dipanggil saat permintaan masuk, setelah
+// modul selesai dimuat, jadi urutan penulisan di berkas ini aman).
+const { aksiInboxDaftar, tulisInbox } = buatAksiInbox({
   // deno-lint-ignore no-explicit-any
   klien: admin as any,
   balas,

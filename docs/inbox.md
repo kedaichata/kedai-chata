@@ -219,3 +219,107 @@ Keputusan ketua (sesi kode INB.03, 11 Nov 2026). Yang paling akhir menang.
 - Pasang `inbox_tulis` setelah aksi berhasil, dibagi per kelompok kejadian (1 sampai 3 berkas per giliran): `order_baru`; `catatan_customer` dan `catatan_owner`; `batal_customer` dan `batal_owner` (dibedakan dari peran yang dibaca server); `setujui` dan `tolak`; `status` (hanya maju, mundur satu langkah TIDAK memanggil); `order_wakil`; `alih_hari`; `foto_setelah_selesai` terakhir dan menunggu SEC-29.
 - Pelaku selalu id dari token. Pemanggilan dibungkus penangkap galat, kegagalan hanya dicatat jenisnya di log dan tidak membatalkan aksi (IB12). `status_tidak_cocok` dari `inbox_tulis` berarti salah pasang dan harus terlihat di log.
 - Setelah INB.04: INB.05 (layar Kotak masuk, menyentuh `sw.js`, butuh "OK" ketua), INB.06 (SQL template
+
+### Handoff #3 | 2026-11-11 | ketua
+
+**Tugas:** INB.04 giliran 1 dari 5 (pasang `inbox_tulis` di aksi order). Giliran 1 selesai, dideploy, dan dites di production. INB.04 BELUM selesai, jadi BELUM dicentang di sheet.
+
+**Status per giliran:**
+
+- Giliran 1 SELESAI: `order_baru`, `setujui`, `tolak`, `batal_customer`, `batal_owner`.
+- Giliran 2 BELUM: `status` (hanya maju) dan `alih_hari`, di `order_status.ts`.
+- Giliran 3 BELUM: `catatan_customer` dan `catatan_owner`, di `catatan.ts`.
+- Giliran 4 BELUM: `order_wakil`, di `order_wakil.ts`.
+- Giliran 5 BELUM: `foto_setelah_selesai`, di `foto.ts`.
+
+**Status teknis:**
+
+- `kedai` SUDAH dideploy 11 Nov 2026 (project ChATA ketua, tanpa `--no-verify-jwt`). Token Terminal dibersihkan (terbukti `[]`), Supabase sudah logout.
+- BELUM di-push ke GitHub. Salinan di repo/GitHub masih versi sebelum giliran 1. Berkas yang beda dari GitHub: `supabase/functions/kedai/inbox.ts` dan `index.ts`. Push dengan pengecekan tiga hal (folder, `git remote -v`, email commit), setelah `git status`.
+
+**File yang diubah:**
+
+- `supabase/functions/kedai/inbox.ts`: ditambah pembantu `tulisInbox(pelaku, kejadian, orderId)`. Tidak pernah melempar galat, hanya mencatat nama kejadian dan jenis galat di log; galat `status_tidak_cocok` dan `kejadian_tidak_dikenal` ditandai "SALAH PASANG". Dikembalikan bersama `aksiInboxDaftar`.
+- `supabase/functions/kedai/index.ts`: lima pemanggilan `tulisInbox` setelah aksi sukses (`order_buat`, `order_setuju`, `order_tolak`, `order_batal` x2 menurut peran), satu baris sambungan diubah menjadi `const { aksiInboxDaftar, tulisInbox } = buatAksiInbox(...)`, plus komentar kepala. Tidak ada kode lama yang dihapus.
+
+**Keputusan baru:**
+
+- Larangan deploy `kedai` Sabtu 14 sampai Minggu 15 Nov (usulan Handoff #2) tidak berlaku. Alasan ketua: `bersihkan` terpisah dari `kedai`, jadi tidak bersinggungan dengan FTO.07.
+- Syarat penundaan `foto_setelah_selesai` (menunggu SEC-29) terpenuhi: SEC-29 sudah lulus dan dicentang. Kejadian foto dikerjakan di giliran 5.
+
+**Terbukti (bukti ditempel di chat, tidak disimpan):**
+
+- `order_baru`: order dummy #66 menulis satu baris ke owner ("Ada order baru."), jumlah sama dengan owner aktif.
+- `setujui`: satu baris ke customer pemilik dan satu ke penjaga; tidak ada baris untuk owner pelaku.
+- `tolak`: satu baris ke customer dengan teks umum; alasan tolak tidak ikut; tidak ada baris untuk owner pelaku maupun penjaga.
+- `batal_customer`: satu baris ke owner; tidak ada baris untuk customer pelaku maupun penjaga.
+- `batal_owner`: satu baris ke customer dan satu ke penjaga; tidak ada baris baru untuk owner pelaku; alasan batal tidak ikut.
+- `order_buat` ternyata mengembalikan `id` order, jadi pemanggilannya jalan.
+- Log `kedai` (filter "kedai inbox", rentang 17.21 sampai 20.16) kosong untuk semua tes di atas.
+
+**Belum beres / belum terbukti:**
+
+- Kasus banyak owner belum teruji (owner aktif cuma 1, penjaga aktif cuma 1); logika penerima ada di fungsi SQL.
+- Kedua `_batal.sql` (migration 05 dan 06) belum pernah dicoba.
+- SEC-34 baru separuh dan SEC-35 belum; keduanya tuntas di INB.07.
+- Data uji di production: order dummy #66 sampai #69 dan baris inbox id 1 sampai 12. Dibersihkan sebelum peluncuran (`LNC.01`).
+- INB.04 sampai INB.07, SEC-34, dan SEC-35 masih Belum di sheet.
+
+**Saran giliran berikutnya (giliran 2, ⚠️ menyentuh aksi live, butuh penjelasan dampak dan "OK" ketua):**
+
+- Lampirkan `AGENTS.md`, `inbox.md` (dengan Handoff #3), `notifikasi.md`, `database.md`, `security.md`.
+- Berkas kode dari **folder Mac (hasil giliran 1), bukan dari GitHub**: `index.ts` (utuh), `inbox.ts`, `order_status.ts`.
+- `tulisInbox` dioper ke `buatAksiOrderStatus(alat)` lewat parameter alat, seperti alat bantu lain. `status` hanya memanggil saat arah "maju"; mundur satu langkah TIDAK memanggil. `alih_hari` tetap memanggil (bukan mundur satu langkah). Id order dari isian `id` yang sudah divalidasi.
+- Tes giliran 2: maju status (customer dapat kabar), mundur (tidak ada baris baru), alih hari (customer dan penjaga dapat kabar, pelaku tidak).
+- Setelah giliran 5 selesai, ingatkan: "INB.04 sudah selesai, silakan dicentang di sheet". Lalu INB.05 (menyentuh `sw.js`, butuh "OK" ketua).
+
+### Handoff #4 | 2026-11-12 | ketua
+
+**Tugas:** INB.04 giliran 2 dari 5 (pasang `inbox_tulis` di `status` dan `alih_hari`). Giliran 2 selesai, dideploy, dan dites di production. INB.04 BELUM selesai, jadi BELUM dicentang di sheet.
+
+**Status per giliran:**
+
+- Giliran 1 SELESAI: `order_baru`, `setujui`, `tolak`, `batal_customer`, `batal_owner` (Handoff #3).
+- Giliran 2 SELESAI: `status` (hanya maju) dan `alih_hari`, di `order_status.ts`.
+- Giliran 3 BELUM: `catatan_customer` dan `catatan_owner`, di `catatan.ts`.
+- Giliran 4 BELUM: `order_wakil`, di `order_wakil.ts`.
+- Giliran 5 BELUM: `foto_setelah_selesai`, di `foto.ts`.
+
+**Status teknis:**
+
+- `kedai` SUDAH dideploy 12 Nov 2026 (project ChATA ketua, tanpa `--no-verify-jwt`). Token Terminal dibersihkan (terbukti `[]`).
+- BELUM di-push ke GitHub (giliran 1 dan 2 sama-sama belum). Berkas yang beda dari GitHub: `supabase/functions/kedai/inbox.ts`, `index.ts`, dan `order_status.ts`. Push dengan pengecekan tiga hal (folder, `git remote -v`, email commit), setelah `git status`.
+- Dashboard Supabase ketua perlu logout dan ditutup setelah sesi.
+
+**File yang diubah:**
+
+- `supabase/functions/kedai/order_status.ts`: `tulisInbox` ditambah ke tipe `AlatKedai` dan ke destructure alat. `aksiOrderStatus` memanggil `tulisInbox(pengguna.id, "status", isi.id)` hanya bila `isi.arah === "maju"`. `aksiOrderAlihHari` memanggil `tulisInbox(pengguna.id, "alih_hari", isi.id)` setelah sukses. `aksiOrderMetodeKoreksi` tidak diubah.
+- `supabase/functions/kedai/index.ts`: komentar kepala, dan satu pembungkus `tulisInbox` dioper ke `buatAksiOrderStatus`. Pembungkus dipakai karena `tulisInbox` baru didapat dari `buatAksiInbox` di bagian bawah berkas; baru dipanggil saat aksi berjalan, jadi aman. Diff terhadap versi sebelumnya: 0 baris lama terhapus di `index.ts`; di `order_status.ts` hanya destructure alat yang berubah bentuk (isi sama).
+
+**Keputusan baru:** tidak ada.
+
+**Terbukti (bukti ditempel di chat, tidak disimpan):**
+
+- Maju status: order dummy #70 (Disetujui ke Diproses oleh penjaga) menulis satu baris ke customer ("Pesananmu sedang diproses."); tidak ada baris untuk penjaga pelaku.
+- Mundur satu langkah (Diproses ke Disetujui oleh penjaga): nol baris baru.
+- Alih hari (oleh owner, ke Besok): satu baris ke penjaga dan satu ke customer, waktu sama; tidak ada baris untuk owner pelaku; alasan alih hari tidak ikut di teks.
+- Teks semua umum, tanpa nama, alamat, nama menu, atau alasan.
+- `order_baru` untuk #70 masih menulis satu baris ke owner setelah deploy baru.
+- Log `kedai` (filter "kedai inbox", 3 jam terakhir yang mencakup semua tes) kosong: tidak ada "SALAH PASANG" dan tidak ada "gagal menulis".
+
+**Belum beres / belum terbukti:**
+
+- Kasus banyak owner belum teruji (owner aktif cuma 1, penjaga aktif cuma 1); logika penerima ada di fungsi SQL.
+- Kedua `_batal.sql` (migration 05 dan 06) belum pernah dicoba.
+- SEC-34 baru separuh dan SEC-35 belum; keduanya tuntas di INB.07.
+- Data uji di production: order dummy #66 sampai #70 (#70 kini Disetujui, hari target Besok) dan baris inbox id 1 sampai 18. Dibersihkan sebelum peluncuran (`LNC.01`).
+- INB.04 sampai INB.07, SEC-34, dan SEC-35 masih Belum di sheet.
+
+**Saran giliran berikutnya (giliran 3, ⚠️ menyentuh aksi live, butuh penjelasan dampak dan "OK" ketua):**
+
+- Lampirkan `AGENTS.md`, `inbox.md` (dengan Handoff #4), `notifikasi.md`, `database.md`, `security.md`.
+- Berkas kode dari **folder Mac (hasil giliran 2), bukan dari GitHub**: `index.ts` (utuh), `inbox.ts`, `order_status.ts`, dan `catatan.ts` (belum pernah ditempel di sesi sebelumnya).
+- `tulisInbox` dioper ke `buatAksiCatatan(alat)` lewat parameter alat, dengan pola pembungkus yang sama seperti `buatAksiOrderStatus` di `index.ts`.
+- `catatan_customer` dan `catatan_owner` dibedakan dari peran yang dibaca server, bukan dari isian aplikasi. Kejadian hanya dipanggil setelah `catatan_tambah` sukses. `catatan_dibaca` tidak memanggil (bukan kejadian).
+- Tes giliran 3: catatan dari customer (penerima sesuai `notifikasi.md` 4.1), catatan dari owner (penerima sesuai tabel; teks "Ada catatan baru di order #N."), pelaku tidak dikabari, isi catatan tidak ikut ke teks inbox.
+- Setelah giliran 5 selesai, ingatkan: "INB.04 sudah selesai, silakan dicentang di sheet". Lalu INB.05 (menyentuh `sw.js`, butuh "OK" ketua).
