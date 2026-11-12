@@ -16,6 +16,13 @@
 // Push catatan (O14) belum ada di sini (NTF). Tampilan catatan dan tanda "Catatan baru" adalah ORD.10.
 //
 // Kode galat: `id_kosong` dan `pengaturan_rusak` sengaja tidak dipetakan (jadi galat umum 500), sama seperti aksi order lain.
+//
+// INB.04 (giliran 3): `tulisInbox` (dari `inbox.ts`) dioper lewat alat bantu dan dipanggil SETELAH `catatan_tambah` berhasil:
+//   - pelaku owner -> kejadian `catatan_owner`; pelaku customer -> kejadian `catatan_customer`. Jenis kejadian dari peran
+//     yang dibaca server (`bacaPeran`), bukan dari aplikasi. Penerima dihitung fungsi SQL (notifikasi.md 4.1).
+//   - Isi catatan TIDAK ikut ke teks inbox (IB4). Kegagalan menulis inbox tidak membatalkan aksi dan tidak mengubah
+//     balasan (IB12); `tulisInbox` sendiri tidak pernah melempar galat.
+//   - `catatan_dibaca` tidak memanggil (bukan kejadian di tabel 4.1).
 
 // Bentuk yang sama dengan `Pengguna` dan `Peran` di index.ts.
 type Pengguna = { id: string };
@@ -48,6 +55,12 @@ export type AlatKedai = {
   ) => Response;
   regexUuid: RegExp;
   batasTeks: number;
+  // INB.04 giliran 3: penulis Kotak masuk (tidak pernah melempar galat).
+  tulisInbox: (
+    pelaku: string,
+    kejadian: string,
+    orderId: string,
+  ) => Promise<void>;
 };
 
 const PESAN_TIDAK_AKTIF = "Akun ini tidak aktif. Hubungi pengelola.";
@@ -93,8 +106,16 @@ const PETA_GALAT_CATATAN_DIBACA: PetaGalat = {
 };
 
 export function buatAksiCatatan(alat: AlatKedai) {
-  const { klien, bacaPeran, balas, galat, galatDariDb, regexUuid, batasTeks } =
-    alat;
+  const {
+    klien,
+    bacaPeran,
+    balas,
+    galat,
+    galatDariDb,
+    regexUuid,
+    batasTeks,
+    tulisInbox,
+  } = alat;
 
   // ------------------------------------------------------------
   // Aksi: catatan_tambah (order.md O12; security.md SEC-05, SEC-09, SEC-16, SEC-18, SEC-19)
@@ -146,6 +167,14 @@ export function buatAksiCatatan(alat: AlatKedai) {
         "catatan_tambah",
       );
     }
+
+    // INB.04: kabar ke Kotak masuk. Jenis kejadian dari peran yang dibaca server (staf owner = catatan_owner,
+    // selain itu customer = catatan_customer); penjaga sudah ditolak di atas. Kegagalan tidak membatalkan aksi (IB12).
+    await tulisInbox(
+      pengguna.id,
+      p.jenis === "staf" ? "catatan_owner" : "catatan_customer",
+      isi.id,
+    );
 
     return balas(req, 200, {
       ok: true,

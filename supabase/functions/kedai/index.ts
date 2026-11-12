@@ -65,6 +65,10 @@
 // INB.04 (giliran 2): `tulisInbox` dioper ke `buatAksiOrderStatus` (order_status.ts) untuk kejadian `status` (hanya arah
 //         maju; mundur tidak memanggil) dan `alih_hari`. Dioper lewat pembungkus kecil karena `tulisInbox` baru didapat
 //         dari `buatAksiInbox` di bagian bawah berkas ini; pembungkus baru dipanggil saat aksi berjalan, jadi aman.
+// INB.04 (giliran 3): pembungkus `tulisInbox` yang sama dioper ke `buatAksiCatatan` (catatan.ts) untuk kejadian
+//         `catatan_customer` dan `catatan_owner` (dibedakan dari peran yang dibaca server). `catatan_dibaca` tidak memanggil.
+// INB.04 (giliran 4): pembungkus `tulisInbox` yang sama dioper ke `buatAksiOrderWakil` (order_wakil.ts) untuk kejadian
+//         `order_wakil` (kabar ke penjaga; pemesan tanpa akun dan owner pelaku tidak dikabari).
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -1407,6 +1411,9 @@ const { aksiCatatanTambah, aksiCatatanDibaca } = buatAksiCatatan({
   galatDariDb,
   regexUuid: REGEX_UUID,
   batasTeks: BATAS_TEKS,
+  // INB.04 giliran 3: pembungkus, pola sama dengan buatAksiOrderStatus di atas.
+  tulisInbox: (pelaku: string, kejadian: string, orderId: string) =>
+    tulisInbox(pelaku, kejadian, orderId),
 });
 
 // ------------------------------------------------------------
@@ -1444,6 +1451,9 @@ const { aksiOrderBuatWakil } = buatAksiOrderWakil({
   batasTeks: BATAS_TEKS,
   bacaItemKiriman,
   petaGalatOrder: PETA_GALAT_ORDER,
+  // INB.04 giliran 4: pembungkus, pola sama dengan buatAksiOrderStatus dan buatAksiCatatan di atas.
+  tulisInbox: (pelaku: string, kejadian: string, orderId: string) =>
+    tulisInbox(pelaku, kejadian, orderId),
 });
 
 // ------------------------------------------------------------

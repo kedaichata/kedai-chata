@@ -323,3 +323,59 @@ Keputusan ketua (sesi kode INB.03, 11 Nov 2026). Yang paling akhir menang.
 - `catatan_customer` dan `catatan_owner` dibedakan dari peran yang dibaca server, bukan dari isian aplikasi. Kejadian hanya dipanggil setelah `catatan_tambah` sukses. `catatan_dibaca` tidak memanggil (bukan kejadian).
 - Tes giliran 3: catatan dari customer (penerima sesuai `notifikasi.md` 4.1), catatan dari owner (penerima sesuai tabel; teks "Ada catatan baru di order #N."), pelaku tidak dikabari, isi catatan tidak ikut ke teks inbox.
 - Setelah giliran 5 selesai, ingatkan: "INB.04 sudah selesai, silakan dicentang di sheet". Lalu INB.05 (menyentuh `sw.js`, butuh "OK" ketua).
+
+### Handoff #5 | 2026-11-12 | ketua
+
+**Tugas:** INB.04 giliran 3 dan 4 (pasang `inbox_tulis` di catatan dan order wakil). Keduanya selesai, dideploy, dan dites di production. INB.04 BELUM selesai (tinggal giliran 5), jadi BELUM dicentang di sheet.
+
+**Koreksi:** Handoff #3 dan #4 menulis "BELUM di-push"; itu usang. Giliran 1 dan 2 sudah di-push pada 12 Nov 2026 (commit `4932fee`). Yang paling akhir menang.
+
+**Status per giliran:**
+
+- Giliran 1 SELESAI: `order_baru`, `setujui`, `tolak`, `batal_customer`, `batal_owner` (Handoff #3).
+- Giliran 2 SELESAI: `status` (hanya maju) dan `alih_hari` (Handoff #4).
+- Giliran 3 SELESAI: `catatan_customer` dan `catatan_owner`, di `catatan.ts`.
+- Giliran 4 SELESAI: `order_wakil`, di `order_wakil.ts`.
+- Giliran 5 BELUM: `foto_setelah_selesai`, di `foto.ts`.
+
+**Status teknis:**
+
+- `kedai` SUDAH dideploy dua kali pada 12 Nov 2026 (giliran 3 lalu giliran 4), project ChATA ketua, tanpa `--no-verify-jwt`. Token Terminal dibersihkan (terbukti `[]`) setelah tiap deploy.
+- Giliran 3 dan 4 di-push bersama blok ini (hash belum dicatat).
+
+**File yang diubah:**
+
+- `supabase/functions/kedai/catatan.ts`: `tulisInbox` ditambah ke tipe `AlatKedai` dan destructure alat; dipanggil setelah `catatan_tambah` sukses. Owner = `catatan_owner`, customer = `catatan_customer`, dari peran yang dibaca server. `catatan_dibaca` tidak memanggil.
+- `supabase/functions/kedai/order_wakil.ts`: `tulisInbox` ditambah ke alat; dipanggil setelah `order_buat_wakil` sukses dengan kejadian `order_wakil`. Id order dari balasan fungsi SQL; bila tidak ada, dilewati dan dicatat di log.
+- `supabase/functions/kedai/index.ts`: komentar kepala dan dua pembungkus `tulisInbox` (ke `buatAksiCatatan` dan `buatAksiOrderWakil`). 0 baris lama terhapus.
+- `docs/inbox.md`: blok ini.
+
+**Keputusan baru:** tidak ada.
+
+**Terbukti (bukti ditempel di chat, tidak disimpan):**
+
+- Catatan customer, order Menunggu (#71): satu baris ke owner; tidak ada baris untuk customer pelaku maupun penjaga.
+- Catatan owner, order Menunggu (#71): satu baris ke customer pemilik ("Ada catatan baru di pesananmu."); tidak ada baris untuk owner pelaku maupun penjaga.
+- Catatan customer, order Disetujui (#70): satu baris ke owner dan satu ke penjaga; tidak ada baris untuk customer pelaku.
+- Catatan owner, order Disetujui (#70): satu baris ke customer pemilik dan satu ke penjaga; tidak ada baris untuk owner pelaku.
+- Order wakil (#72, Disetujui): satu baris ke penjaga ("Ada order disetujui."); tidak ada baris untuk owner pembuat maupun customer.
+- Semua teks umum, tanpa isi catatan, nama, alamat, atau menu.
+- Log `kedai` (filter "kedai inbox", 60 menit yang mencakup semua tes) kosong setelah giliran 3 dan setelah giliran 4: tidak ada "SALAH PASANG" dan tidak ada "gagal menulis".
+
+**Belum beres / belum terbukti:**
+
+- Kasus banyak owner belum teruji (owner aktif cuma 1, penjaga aktif cuma 1); logika penerima ada di fungsi SQL.
+- Kedua `_batal.sql` (migration 05 dan 06) belum pernah dicoba.
+- SEC-34 baru separuh dan SEC-35 belum; keduanya tuntas di INB.07.
+- Data uji di production: order dummy #66 sampai #72 dan baris inbox id 1 sampai 26. Dibersihkan sebelum peluncuran (`LNC.01`).
+- INB.04 sampai INB.07, SEC-34, dan SEC-35 masih Belum di sheet.
+
+**Saran giliran berikutnya (giliran 5, ⚠️ menyentuh aksi foto yang live, butuh penjelasan dampak dan "OK" ketua):**
+
+- Lampirkan `AGENTS.md`, `inbox.md` (dengan Handoff #5), `notifikasi.md`, `database.md`, `security.md`.
+- Berkas kode dari **folder Mac (hasil giliran 4)**: `index.ts` (utuh), `inbox.ts`, dan `foto.ts` (belum pernah ditempel di sesi INB.04).
+- `tulisInbox` dioper ke `buatAksiFoto(alat)` dengan pola pembungkus yang sama. Kejadian `foto_setelah_selesai` hanya dipanggil bila foto diunggah **setelah status Selesai** dan **bukan penggantian foto** (penggantian tanpa kabar, notifikasi.md 4.1). `foto_catat` sudah mengembalikan penanda `mengganti`. `inbox_tulis` melempar galat bila status order tidak cocok, jadi cek kondisi sebelum memanggil.
+- Tes giliran 5: unggah foto di order Selesai tipe Diantar (customer pemilik dapat kabar, pelaku tidak), ganti foto (nol baris baru), unggah foto sebelum Selesai (nol baris baru).
+- Setelah giliran 5 selesai, ingatkan: "INB.04 sudah selesai, silakan dicentang di sheet". Lalu INB.05 (layar Kotak masuk, menyentuh `sw.js`, butuh "OK" ketua).
+
+**Butir baru yang perlu ditambah ke sheet:** "Perbarui teks layar order wakil (kabar ke penjaga)". Teks di layar order wakil masih menyebut belum ada notifikasi otomatis ke penjaga; perbarui setelah Kotak masuk (INB.05) jadi.

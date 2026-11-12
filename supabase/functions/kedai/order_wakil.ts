@@ -25,6 +25,12 @@
 // Data pribadi (nama, nomor WA, alamat): tidak ditulis ke log dan tidak dimuat di pesan galat.
 // Kode galat `id_kosong`, `pengaturan_rusak`, dan `total_terlalu_besar` sengaja tidak dipetakan (jadi galat umum 500),
 // sama seperti aksi order lain.
+//
+// INB.04 (giliran 4): `tulisInbox` (dari `inbox.ts`) dioper lewat alat bantu dan dipanggil SETELAH `order_buat_wakil` berhasil,
+// untuk kejadian `order_wakil`. Penerima dihitung fungsi SQL (notifikasi.md 4.1): penjaga saja. Pemesan tanpa akun tidak
+// punya inbox, dan owner pembuat (pelaku, id dari token) tidak dikabari atas aksinya sendiri. Id order diambil dari balasan
+// fungsi SQL; bila tidak ada, pemanggilan dilewati dan dicatat di log. Kegagalan menulis inbox tidak membatalkan aksi dan
+// tidak mengubah balasan (inbox.md IB12); `tulisInbox` sendiri tidak pernah melempar galat.
 
 // Bentuk yang sama dengan `Pengguna` dan `Peran` di index.ts.
 type Pengguna = { id: string };
@@ -62,6 +68,12 @@ export type AlatKedai = {
   batasTeks: number;
   bacaItemKiriman: (v: unknown) => ItemKiriman[] | null;
   petaGalatOrder: PetaGalat;
+  // INB.04 giliran 4: penulis Kotak masuk (tidak pernah melempar galat).
+  tulisInbox: (
+    pelaku: string,
+    kejadian: string,
+    orderId: string,
+  ) => Promise<void>;
 };
 
 const PESAN_TIDAK_AKTIF = "Akun ini tidak aktif. Hubungi pengelola.";
@@ -79,6 +91,7 @@ export function buatAksiOrderWakil(alat: AlatKedai) {
     batasTeks,
     bacaItemKiriman,
     petaGalatOrder,
+    tulisInbox,
   } = alat;
 
   // order_buat_wakil -> status dan pesan aman (AK14). Dasarnya peta galat order (menu, pilihan, item, jumlah, hari,
@@ -183,6 +196,21 @@ export function buatAksiOrderWakil(alat: AlatKedai) {
         error,
         PETA_GALAT_ORDER_WAKIL,
         "order_buat_wakil",
+      );
+    }
+
+    // INB.04: kabar ke Kotak masuk (penjaga). Id order dari balasan fungsi SQL; bila tidak ada, dilewati dan dicatat di log.
+    // Kegagalan tidak membatalkan order wakil dan tidak mengubah balasan (IB12).
+    if (
+      data !== null &&
+      typeof data === "object" &&
+      typeof data.id === "string" &&
+      regexUuid.test(data.id)
+    ) {
+      await tulisInbox(pengguna.id, "order_wakil", data.id);
+    } else {
+      console.error(
+        "kedai inbox: id order tidak ada di balasan order_buat_wakil",
       );
     }
 
