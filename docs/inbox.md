@@ -520,3 +520,16 @@ Keputusan ketua (disampaikan lewat PIC RAC, sesi kode INB.05, 12 Nov 2026). Yang
 - Lampirkan `AGENTS.md`, `inbox.md` (dengan Handoff #8), `notifikasi.md`, `security.md`, `database.md`, dan `pemetaan-test.md` bila perlu.
 - Cakupan tes: tiap peran hanya melihat miliknya (termasuk penjaga di layar Kotak masuk); penerima sesuai tabel 4.1; pelaku tidak dikabari; penjaga tidak dapat order Menunggu; order wakil tidak ke pemesan; titik merah muncul dan hilang; penanda per akun; offline; Keluar menutup layar; batas `maks` 30; kasus banyak owner bila bisa disiapkan; aksi order tetap berhasil bila penulisan inbox gagal. Lalu SEC-34 dan SEC-35 (bukti wajib).
 - Sebelum push: cek tiga hal anti-nyasar, cocokkan `git show --stat HEAD`, lalu logout GitHub dan Supabase di profil browser.
+
+### 2026-11-12: Teks layar Order wakil diperbarui (kabar ke penjaga lewat Kotak masuk)
+
+Keputusan ketua (sesi kode 12 Nov 2026). Menjawab butir sheet "Perbarui teks layar order wakil (kabar ke penjaga)" dari Handoff #5 dan #7. Yang paling akhir menang.
+
+- **Perubahan:** pesan kecil di layar selesai Order wakil (`public/orderwakil.js`, satu baris, sekitar baris 1533) kini berbunyi: "Penjaga akan melihat order ini di Antrean dan dapat kabar di Kotak masuk. Belum ada notifikasi otomatis ke layar HP, jadi kabari lewat WA bila mendesak. Order bisa dilihat di Semua Order." Kalimat lama ("Belum ada notifikasi otomatis ke penjaga, jadi kabari lewat WA bila perlu") dijadikan komentar di atasnya, tidak dihapus.
+- **Alasan:** sejak INB.04 dan INB.05, penjaga memang mendapat kabar "Ada order disetujui." di Kotak masuk saat owner membuat order wakil (terbukti pada order dummy #72). Kalimat lama jadi menyesatkan. Anjuran WA sengaja tetap ada untuk order mendesak, karena kabar di Kotak masuk baru terlihat bila penjaga membukanya sendiri.
+- **Pertentangan dengan blok lama:** `docs/order.md` (Handoff #24, bagian layar selesai) masih menyebut "belum ada notifikasi otomatis ke penjaga". Dokumen itu tidak dirapikan di sesi kode; **blok ini yang menang** untuk teks layar tersebut.
+- **Cakupan:** hanya teks. Tidak ada perubahan `kedai`, SQL, `sw.js`, atau berkas lain; tidak ada deploy. Low-Risk.
+- **Terbukti (bukti dilihat di chat, tidak disimpan):** layar selesai Order wakil di akun owner dummy menampilkan teks baru (order dummy #76, Diantar, Disetujui, Transfer).
+- **Di-push:** bersama blok ini (hash belum dicatat).
+- **Perlu diperbarui lagi** saat Notifikasi (push, NTF) sudah jalan: kalimat "Belum ada notifikasi otomatis ke layar HP" tidak akan benar lagi.
+- **Data uji di production:** order dummy #66 sampai #76; baris inbox bertambah dari tes ini. Dibersihkan sebelum peluncuran (`LNC.01`).
