@@ -446,4 +446,41 @@ Tidak ada perubahan di `sw.js`, `akun.js`, `config.js`, `index.html`, migration,
 - **Pertama:** jalankan tes NTF.04a di atas, periksa buktinya bareng di chat, lalu centang NTF.04a bila lulus.
 - **Berikutnya NTF.05** (⚠️ High-Risk, kemungkinan menyentuh `config.js` dan `akun.js`, butuh penjelasan dampak dan "OK" ketua; bila yang bertugas bukan ketua, AI membuat ringkasan untuk diteruskan lewat WA). Lampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #3 sampai #6), `security.md`, `public/akun.js`, `public/akunmenu.js`, `public/config.js`, `public/sw.js`, `public/kerangka.js`, `public/pesan.js`, `public/index.html`. Kontrak aksi `push_daftar` dan `push_nonaktifkan` ada di Handoff #3.
 
+### Handoff #7 | 2026-11-13 | FREN
+
+**Tugas:** tes NTF.04a (aplikasi membuka layar dari notifikasi), melanjutkan Handoff #5 dan #6. Kelima tes lulus dan NTF.04a sudah dicentang di sheet.
+
+**File yang diubah:** tidak ada. Tidak ada commit, push, migration, atau deploy `kedai`.
+
+**Keputusan baru:** tidak ada. Perangkat uji Brave desktop, sesuai keputusan ketua di Handoff #6.
+
+**Terbukti (diperiksa di chat, tidak disimpan; Brave desktop, akun dummy):**
+
+1. Aplikasi ditutup, notifikasi order ditekan: aplikasi terbuka langsung di detail order, alamat bersih tanpa `?buka=`.
+2. Aplikasi terbuka, notifikasi ditekan: pindah ke detail order di tab yang sama, tanpa tab baru.
+3. Penjaga menekan notifikasi `tujuan: "antrean"`: masuk daftar Antrean, baik dari beranda maupun saat sedang membuka detail order lain.
+4. Penjaga menekan notifikasi ke order Menunggu (bukan haknya): server membalas 404, layar hanya "Pesanan tidak ditemukan.", tidak ada data order tampil.
+5. Satu ketukan menghasilkan satu panggilan data `kedai` (1 fetch). Baris kedua di Network adalah preflight CORS (204), bukan panggilan Edge Function.
+
+**Catatan cara tes (untuk sesi tes berikutnya):**
+
+- Tes 1 sampai 4 memakai `self.registration.showNotification(...)` dari Console jendela Inspect service worker. Itu menguji handler **klik** dan pembukaan layarnya. Handler **push** (isi JSON jadi notifikasi) terbukti di Handoff #4.
+- Jendela Inspect dibuka lewat DevTools, Application, Service workers, "See all registrations", entri `kedaichata.github.io`, Inspect.
+- Memicu push dari Console lewat `new PushEvent(...)` tidak bisa: browser menolak `waitUntil` pada event buatan tangan. Itu batasan browser, bukan galat `sw.js`.
+- Notifikasi dari tombol Push DevTools ternyata dibuat dan muncul di layar Mac (2 tercatat lewat `getNotifications`), hanya tidak terlihat saat ditekan.
+
+**Belum beres:**
+
+- Perilaku overlay Kotak masuk (`inbox.js`) saat notifikasi ditekan belum teruji.
+- Push sungguhan dari server belum ada (NTF.06): enkripsi dan kecocokan pasangan kunci VAPID baru terbukti di sana.
+- Tes id order milik customer lain (bukan penjaga) belum terpisah; masuk NTF.08. Layar kunci (SEC-22) juga NTF.08.
+- Dari Handoff #1 sampai #6, tidak berubah: kunci privat VAPID belum di dashboard (NTF.06, butuh "OK"); kunci publik belum di `public/config.js` (butuh "OK"); cek jadwal pembersihan foto jalan sendiri setelah Minggu 15 Nov 2026 02.00 WIB (FTO.07); teks layar Order wakil ("Belum ada notifikasi otomatis ke layar HP") diperbarui saat push sudah jalan; logika `push_daftar` dan `push_nonaktifkan` baru terbukti di NTF.08.
+
+**Saran giliran berikutnya:**
+
+- **NTF.05** (⚠️ High-Risk, kemungkinan menyentuh `config.js` dan `akun.js`, butuh penjelasan dampak dan "OK" ketua; bila yang bertugas bukan ketua, AI membuat ringkasan untuk diteruskan lewat WA).
+- Lampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #3 sampai #7), `security.md`, `public/akun.js`, `public/akunmenu.js`, `public/config.js`, `public/sw.js`, `public/kerangka.js`, `public/pesan.js`, `public/index.html`.
+- Kontrak aksi `push_daftar` dan `push_nonaktifkan` ada di Handoff #3.
+- Commit yang hanya berisi docs/md boleh memakai `[skip ci]`; commit yang menyentuh kode tidak.
+
 ---
