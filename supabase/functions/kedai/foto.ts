@@ -25,6 +25,15 @@
 // Isi push dan data pribadi: tidak ada di sini. Nama berkas tidak memuat data pribadi. Tidak ada yang ditulis ke log selain
 // jenis galat.
 // Kode galat `id_kosong` dan `pengaturan_rusak` sengaja tidak dipetakan (jadi galat umum 500), sama seperti aksi lain.
+//
+// INB.04 (giliran 5): `tulisInbox` (dari `inbox.ts`) dioper lewat alat bantu dan dipanggil SETELAH `foto_catat` berhasil,
+// untuk kejadian `foto_setelah_selesai` (kabar ke customer pemilik: foto bukti sudah tersedia; notifikasi.md 4.1).
+//   - Hanya bila BUKAN penggantian foto (`mengganti` false; penggantian tanpa kabar) DAN status order saat ini Selesai.
+//     Foto sebelum Selesai tidak butuh kabar sendiri (tercakup kabar status). `inbox_tulis` melempar galat bila status
+//     tidak cocok, jadi status dibaca dulu lewat fungsi SQL `order_detail` yang sudah ada (tanpa perubahan SQL).
+//   - Pelaku (id dari token) tidak dikabari atas aksinya sendiri; penerima dihitung fungsi SQL, bukan dari sini.
+//   - Bila status gagal dibaca, kabar dilewati dan hanya jenis galat dicatat di log. Kegagalan APA PUN tidak membatalkan
+//     foto dan tidak mengubah balasan (inbox.md IB12). Isi kabar umum, tanpa data pribadi (IB4).
 
 // Bentuk yang sama dengan `Pengguna` dan `Peran` di index.ts.
 type Pengguna = { id: string };
@@ -67,6 +76,12 @@ export type AlatKedai = {
     nama: string,
   ) => Response;
   regexUuid: RegExp;
+  // INB.04 giliran 5: penulis Kotak masuk (tidak pernah melempar galat).
+  tulisInbox: (
+    pelaku: string,
+    kejadian: string,
+    orderId: string,
+  ) => Promise<void>;
 };
 
 // Nama bucket foto bukti (dibuat di FTO.01). Hanya satu bucket; tidak ada bucket foto menu.
@@ -106,8 +121,16 @@ const PETA_GALAT_FOTO: PetaGalat = {
 const JENIS_BOLEH = ["jpg", "webp"];
 
 export function buatAksiFoto(alat: AlatKedai) {
-  const { klien, storage, bacaPeran, balas, galat, galatDariDb, regexUuid } =
-    alat;
+  const {
+    klien,
+    storage,
+    bacaPeran,
+    balas,
+    galat,
+    galatDariDb,
+    regexUuid,
+    tulisInbox,
+  } = alat;
 
   // Lapis kedua peran untuk aksi tulis: hanya penjaga atau owner aktif (SEC-07, SEC-08).
   // Mengembalikan balasan galat bila ditolak, atau null bila boleh lanjut.
@@ -240,6 +263,30 @@ export function buatAksiFoto(alat: AlatKedai) {
     });
     if (error) {
       return galatDariDb(req, error, PETA_GALAT_FOTO, "foto_catat");
+    }
+
+    // INB.04: kabar ke Kotak masuk (customer pemilik) hanya untuk foto BARU di order yang sudah Selesai. Penggantian foto
+    // tanpa kabar. Status dibaca lewat `order_detail` (penjaga dan owner boleh melihat order Selesai). Semua dibungkus
+    // penangkap galat: kegagalan tidak membatalkan foto dan tidak mengubah balasan (IB12).
+    if (data?.mengganti !== true) {
+      try {
+        const { data: detail, error: eDetail } = await klien.rpc(
+          "order_detail",
+          { p_akun: pengguna.id, p_order_id: isi.id },
+        );
+        if (eDetail) {
+          console.error(
+            "kedai inbox: status order tak terbaca | foto_setelah_selesai | galat:" +
+              (eDetail.code ?? ""),
+          );
+        } else if (detail?.status === "Selesai") {
+          await tulisInbox(pengguna.id, "foto_setelah_selesai", isi.id);
+        }
+      } catch (_e) {
+        console.error(
+          "kedai inbox: status order tak terbaca | foto_setelah_selesai | gagal tersambung",
+        );
+      }
     }
 
     return balas(req, 200, { ok: true, order: data });

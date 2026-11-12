@@ -69,6 +69,9 @@
 //         `catatan_customer` dan `catatan_owner` (dibedakan dari peran yang dibaca server). `catatan_dibaca` tidak memanggil.
 // INB.04 (giliran 4): pembungkus `tulisInbox` yang sama dioper ke `buatAksiOrderWakil` (order_wakil.ts) untuk kejadian
 //         `order_wakil` (kabar ke penjaga; pemesan tanpa akun dan owner pelaku tidak dikabari).
+// INB.04 (giliran 5): pembungkus `tulisInbox` yang sama dioper ke `buatAksiFoto` (foto.ts) untuk kejadian
+//         `foto_setelah_selesai`: hanya foto BARU (bukan penggantian) di order yang berstatus Selesai; status dibaca
+//         `foto.ts` lewat `order_detail`. Kegagalan tidak membatalkan foto (IB12).
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -1483,6 +1486,9 @@ const { aksiFotoMintaUnggah, aksiFotoCatat, aksiFotoLihat } = buatAksiFoto({
   galat,
   galatDariDb,
   regexUuid: REGEX_UUID,
+  // INB.04 giliran 5: pembungkus, pola sama dengan buatAksiOrderStatus, buatAksiCatatan, dan buatAksiOrderWakil di atas.
+  tulisInbox: (pelaku: string, kejadian: string, orderId: string) =>
+    tulisInbox(pelaku, kejadian, orderId),
 });
 
 // ------------------------------------------------------------

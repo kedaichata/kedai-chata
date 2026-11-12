@@ -379,3 +379,51 @@ Keputusan ketua (sesi kode INB.03, 11 Nov 2026). Yang paling akhir menang.
 - Setelah giliran 5 selesai, ingatkan: "INB.04 sudah selesai, silakan dicentang di sheet". Lalu INB.05 (layar Kotak masuk, menyentuh `sw.js`, butuh "OK" ketua).
 
 **Butir baru yang perlu ditambah ke sheet:** "Perbarui teks layar order wakil (kabar ke penjaga)". Teks di layar order wakil masih menyebut belum ada notifikasi otomatis ke penjaga; perbarui setelah Kotak masuk (INB.05) jadi.
+
+### Handoff #6 | 2026-11-12 | ketua
+
+**Tugas:** INB.04 giliran 5 dari 5 (pasang `inbox_tulis` untuk kejadian `foto_setelah_selesai` di `foto.ts`). Selesai, dideploy, dan dites di production. **Dengan ini INB.04 selesai seluruhnya** (giliran 1 sampai 5) dan sudah dicentang di sheet.
+
+**Koreksi:** Handoff #5 menulis hash push "belum dicatat". Giliran 3 dan 4 sudah di-push pada 12 Nov 2026, commit `d2f76be`. Yang paling akhir menang.
+
+**Status per giliran:**
+
+- Giliran 1 SELESAI: `order_baru`, `setujui`, `tolak`, `batal_customer`, `batal_owner` (Handoff #3).
+- Giliran 2 SELESAI: `status` (hanya maju) dan `alih_hari` (Handoff #4).
+- Giliran 3 SELESAI: `catatan_customer` dan `catatan_owner`; giliran 4 SELESAI: `order_wakil` (Handoff #5).
+- Giliran 5 SELESAI: `foto_setelah_selesai`, di `foto.ts`.
+  **Status teknis:**
+
+- `kedai` SUDAH dideploy 12 Nov 2026 (project ChATA ketua, tanpa `--no-verify-jwt`). Token Terminal dibersihkan (terbukti `[]`). Dashboard Supabase ketua perlu logout dan ditutup setelah sesi.
+- Kode giliran 5 di-push bersama blok ini (hash belum dicatat).
+  **File yang diubah:**
+
+- `supabase/functions/kedai/foto.ts`: `tulisInbox` ditambah ke tipe `AlatKedai` dan destructure alat. Setelah `foto_catat` sukses dan `mengganti` bukan true, status order dibaca lewat fungsi SQL `order_detail`; hanya bila statusnya `Selesai`, memanggil `tulisInbox(pengguna.id, "foto_setelah_selesai", id)`. Pembacaan status dibungkus penangkap galat: bila gagal, kabar dilewati dan hanya jenis galat dicatat di log. Baris destructure alat dipecah jadi beberapa baris (isi sama).
+- `supabase/functions/kedai/index.ts`: komentar kepala dan satu pembungkus `tulisInbox` ke `buatAksiFoto`. 0 baris lama terhapus.
+- `docs/inbox.md`: blok ini.
+  **Keputusan baru:**
+
+- Status order dibaca `foto.ts` lewat `order_detail` yang sudah ada (opsi A): tanpa perubahan SQL dan tanpa panggilan Edge Function tambahan. Alasan ketua selain itu belum tercatat. Opsi B (ubah `foto_catat` agar mengembalikan status) tidak dipilih.
+- Info dari ketua: pada versi saat ini foto bukti hanya diunggah oleh penjaga.
+  **Terbukti (bukti ditempel di chat, tidak disimpan):**
+
+- Foto baru di order yang masih Diantar (#73): nol baris inbox baru.
+- Ganti foto di order Selesai (#73): nol baris inbox baru; foto lama `diganti` = true, foto baru `diganti` = false.
+- Foto baru di order Selesai (#74): satu baris "Foto bukti antar sudah tersedia." ke customer pemilik; tidak ada baris untuk penjaga pelaku.
+- Log `kedai` (filter "kedai inbox", 60 menit yang mencakup semua tes) kosong: tidak ada "SALAH PASANG" dan tidak ada "gagal menulis".
+  **Belum beres / belum terbukti:**
+
+- Unggah foto oleh owner belum dites (hanya penjaga).
+- Kasus banyak owner belum teruji (owner aktif cuma 1, penjaga aktif cuma 1); logika penerima ada di fungsi SQL.
+- Kedua `_batal.sql` (migration 05 dan 06) belum pernah dicoba.
+- SEC-34 baru separuh dan SEC-35 belum; keduanya tuntas di INB.07.
+- Data uji di production: order dummy #66 sampai #74 dan baris inbox id 1 sampai 39. Dibersihkan sebelum peluncuran (`LNC.01`).
+- Butir sheet dari Handoff #5 masih berlaku: "Perbarui teks layar order wakil (kabar ke penjaga)", dikerjakan setelah INB.05 jadi.
+- INB.05 sampai INB.07, SEC-34, dan SEC-35 masih Belum di sheet.
+  **Saran giliran berikutnya (INB.05, layar Kotak masuk, ⚠️ menyentuh `sw.js`, butuh penjelasan dampak dan "OK" ketua):**
+
+- Lampirkan `AGENTS.md`, `inbox.md` (dengan Handoff #6), `notifikasi.md`, `gim.md`, `desain.md`, `security.md`.
+- AI meminta berkas dari **folder Mac**: `public/index.html` (utuh, satu giliran khusus), `public/gimmenu.js`, `public/game.css`, `public/sw.js`, `public/akun.js` (titik sambung `isiSementara()` di samping `KedaiKerangka.atur`, membaca field `inbox_terbaru` dari balasan `status`), dan berkas lain yang AI tanyakan namanya. Jangan menebak.
+- Perlu keputusan ketua di awal sesi (IB, "Belum diputuskan"): nama kunci `localStorage` per akun, dan tempat gaya layar Kotak masuk (di `game.css` bersama hamburger atau cara lain; aturan "semua gaya di `style.css`" punya pengecualian game saja).
+- Cakupan INB.05: item "Kotak masuk" di hamburger (di bawah Arithmetics), titik merah, penanda lokal per akun, urutan belum dibaca di atas, waktu WIB, pesan kosong dan offline, tutup saat Keluar, `textContent` untuk semua teks. Daftarkan berkas baru di cache `sw.js` dan naikkan versi cache.
+- Jangan mengubah `kerangka.js` tanpa "OK" (GM14); bila titik merah memaksa, laporkan ke ketua.
