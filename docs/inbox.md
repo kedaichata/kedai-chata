@@ -482,3 +482,41 @@ Keputusan ketua (disampaikan lewat PIC RAC, sesi kode INB.05, 12 Nov 2026). Yang
 - Pasang pengingat kalender "hapus inbox lama" (ditambahkan ke pengingat rutin yang sudah ada, `AGENTS.md` blok 11 Nov 2026).
 - Setelah itu INB.07 (sesi tes, `inbox-test.md`): sertakan tes penjaga, kasus banyak owner, dan batas `maks`.
 - Sebelum push: cek tiga hal anti-nyasar, cocokkan jumlah baris di `git show --stat HEAD`, lalu logout GitHub dan Supabase di profil browser.
+
+### Handoff #8 | 2026-11-12 | ketua
+
+**Tugas:** INB.06 (SQL template hapus inbox lama). Selesai, di-push (commit `1bb98c6`), tahap 1 sudah dijalankan, pengingat kalender sudah dipasang. Tinggal dicentang di sheet.
+
+**File yang diubah (semua baru, tidak ada yang lama disentuh):**
+
+- `supabase/templates/20261112_inbox_hapus_1_lihat.sql`: dua `SELECT` (ringkasan jumlah yang akan terhapus dan yang tersisa; contoh sampai 10 baris tertua tanpa akun penerima).
+- `supabase/templates/20261112_inbox_hapus_2_hapus.sql`: satu `DELETE` dengan kondisi persis sama, atomik, mengembalikan jumlah terhapus.
+- `kedai`, aplikasi (`public/`), `sw.js`, dan tabel atau fungsi SQL tidak disentuh; tidak ada deploy.
+
+**Keputusan baru:**
+
+- Pengingat kalender hapus inbox lama dipasang ketua di Google Calendar, **sebulan sekali** (usulan AI, diterima ketua; alasan ketua selain itu belum tercatat). Ini memenuhi tambahan pengingat rutin di `AGENTS.md` blok 11 Nov 2026.
+- Ketua akan menghubungi AI sebelum menjalankan tahap 2 untuk pertama kali.
+- Dua template dipisah jadi dua berkas agar tahap hapus tidak ikut jalan saat hanya ingin melihat (pilihan penulis, alasan belum tercatat). Batas aman 1 sampai 365 hari di template mengikuti batas fungsi inbox (pilihan penulis, alasan belum tercatat).
+
+**Terbukti (bukti ditempel di chat, tidak disimpan):**
+
+- Tahap 1 jalan tanpa galat di production: `batas_hari` 14, `akan_terhapus` 0, `tersisa` 40, enam kolom lainnya kosong; contoh baris kosong. Sesuai harapan karena semua baris inbox masih berumur kurang dari 14 hari.
+- Anti-nyasar sebelum push cocok: folder repo ChATA, remote `kedaichata/kedai-chata`, email commit noreply `kedaichata`, commit berisi tepat 2 berkas. Push berhasil dengan kunci SSH khusus proyek.
+
+**Belum beres / belum terbukti:**
+
+- **Tahap 2 (DELETE) belum pernah dijalankan.** Baru bisa diuji dengan baris nyata setelah ada kabar berumur lebih dari 14 hari (baris tertua dibuat 11 Nov, jadi paling cepat sekitar 25 Nov). Pada pemakaian pertama: jalankan tahap 1, baca hasilnya, baru tahap 2, lalu cocokkan `jumlah_terhapus` dengan `akan_terhapus`.
+- Penjaga belum dites di layar Kotak masuk; penutupan lewat Keluar tidak dites terpisah; daftar sampai batas `maks` (30) belum dites; tombol "Coba lagi" kurang kontras (P2).
+- Kasus banyak owner belum teruji (owner aktif 1, penjaga aktif 1). Kedua `_batal.sql` (migration 05 dan 06) belum pernah dicoba.
+- SEC-34 baru separuh dan SEC-35 belum; keduanya tuntas di INB.07.
+- Data uji di production: order dummy #66 sampai #75 dan 40 baris inbox. Dibersihkan sebelum peluncuran (`LNC.01`).
+- INB.07, SEC-34, dan SEC-35 masih Belum di sheet.
+
+**Butir baru yang perlu ditambah ke sheet:** "Perbarui teks layar order wakil (kabar ke penjaga)" (dari Handoff #5 dan #7; kini bisa dikerjakan).
+
+**Saran giliran berikutnya (INB.07, sesi tes `inbox-test.md`):**
+
+- Lampirkan `AGENTS.md`, `inbox.md` (dengan Handoff #8), `notifikasi.md`, `security.md`, `database.md`, dan `pemetaan-test.md` bila perlu.
+- Cakupan tes: tiap peran hanya melihat miliknya (termasuk penjaga di layar Kotak masuk); penerima sesuai tabel 4.1; pelaku tidak dikabari; penjaga tidak dapat order Menunggu; order wakil tidak ke pemesan; titik merah muncul dan hilang; penanda per akun; offline; Keluar menutup layar; batas `maks` 30; kasus banyak owner bila bisa disiapkan; aksi order tetap berhasil bila penulisan inbox gagal. Lalu SEC-34 dan SEC-35 (bukti wajib).
+- Sebelum push: cek tiga hal anti-nyasar, cocokkan `git show --stat HEAD`, lalu logout GitHub dan Supabase di profil browser.

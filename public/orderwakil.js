@@ -1530,7 +1530,9 @@
       buat(
         "p",
         "isian__bantuan",
-        "Penjaga akan melihat order ini di Antrean. Belum ada notifikasi otomatis ke penjaga, jadi kabari lewat WA bila perlu. Order bisa dilihat di Semua Order.",
+        // Teks lama (sebelum Kotak masuk jadi, 12 Nov 2026):
+        // "Penjaga akan melihat order ini di Antrean. Belum ada notifikasi otomatis ke penjaga, jadi kabari lewat WA bila perlu. Order bisa dilihat di Semua Order.",
+        "Penjaga akan melihat order ini di Antrean dan dapat kabar di Kotak masuk. Belum ada notifikasi otomatis ke layar HP, jadi kabari lewat WA bila mendesak. Order bisa dilihat di Semua Order.",
       ),
     );
     var baris = buat("div", "baris-tombol");
