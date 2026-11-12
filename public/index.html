@@ -1654,6 +1654,34 @@
                             </button>
                         </div>
 
+                        <!-- NTF.05: tombol Aktifkan notifikasi (notifikasi.md NT6), di bawah Bantuan, semua peran.
+                             Tampil/sembunyi diatur notif.js (hilang bila sudah aktif, diblokir, atau peramban tidak mendukung). -->
+                        <div
+                            class="baris-tombol"
+                            id="home-notif-bungkus"
+                            hidden
+                        >
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder"
+                                id="home-notif"
+                            >
+                                Aktifkan notifikasi
+                            </button>
+                        </div>
+                        <p
+                            class="isian__bantuan"
+                            id="home-notif-info"
+                            role="status"
+                            hidden
+                        ></p>
+                        <p
+                            class="isian__galat"
+                            id="home-notif-galat"
+                            role="alert"
+                            hidden
+                        ></p>
+
                         <!-- HOM.04: item Home menurut peran (HM6, HM7, HM12). Atribut data-peran berisi peran yang
                              boleh melihat item (dipisah spasi); kerangka.js yang menampilkan atau menyembunyikan.
                              Itu hanya kemudahan tampilan: pengaman sebenarnya server (HM10).
@@ -2117,6 +2145,8 @@
         <script src="gimmenu.js"></script>
         <!-- INB.05: layar Kotak masuk dan titik merah (inbox.md). Setelah akun.js (memakai window.KedaiAkun) dan gimmenu.js. Tidak menyentuh kerangka.js. -->
         <script src="inbox.js"></script>
+        <!-- NTF.05: tombol Aktifkan notifikasi (notifikasi.md NT6). Setelah akun.js (memakai window.KedaiAkun) dan inbox.js. -->
+        <script src="notif.js"></script>
         <script>
             // Mendaftarkan service worker (sw.js) supaya aplikasi bisa dipasang dan terbuka offline.
             // Path relatif (tanpa awalan /) supaya jalan di GitHub Pages.

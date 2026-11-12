@@ -6,6 +6,8 @@
 //
 // AKN.08a: layar Akun (ganti nama dan nomor WA) ada di akunmenu.js (dimuat setelah berkas ini).
 //
+// NTF.05: saat Keluar, push_nonaktifkan dipanggil lewat window.KedaiNotif.nonaktifkan() (notif.js) sebelum sesi ditutup.
+//
 // MNU.10: layar Kelola Grup pilihan (owner) ada di grup.js (dimuat setelah berkas ini). Di berkas ini hanya
 // nama layarnya ("grup") di daftar LAYAR dan pembersihan data saat Keluar.
 //
@@ -445,10 +447,26 @@
       if (window.KedaiInbox && typeof window.KedaiInbox.reset === "function") {
         window.KedaiInbox.reset();
       }
+      // NTF.05: tombol Aktifkan notifikasi dan penanda "sudah aktif" ikut dibersihkan (notif.js).
+      if (window.KedaiNotif && typeof window.KedaiNotif.reset === "function") {
+        window.KedaiNotif.reset();
+      }
       tampilkan("masuk");
     }
     // Hanya mengakhiri sesi di perangkat ini (HP bisa dipakai bergantian).
-    klien.auth.signOut({ scope: "local" }).then(selesai, selesai);
+    // NTF.05: // klien.auth.signOut({ scope: "local" }).then(selesai, selesai);
+    // NTF.05: langganan push HP ini dimatikan di server SEBELUM sesi ditutup (butuh token login).
+    // nonaktifkan() selalu selesai (paling lama sekitar 3 detik) dan kegagalannya tidak menahan Keluar.
+    var tungguPush =
+      window.KedaiNotif && typeof window.KedaiNotif.nonaktifkan === "function"
+        ? window.KedaiNotif.nonaktifkan()
+        : Promise.resolve();
+    Promise.resolve(tungguPush)
+      .catch(function () {})
+      .then(function () {
+        return klien.auth.signOut({ scope: "local" });
+      })
+      .then(selesai, selesai);
   }
 
   function ulangi() {
