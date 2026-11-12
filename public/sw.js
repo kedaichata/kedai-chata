@@ -17,7 +17,8 @@
 // BTN.04a: var NAMA_CACHE = "chata-v18"; // BTN.03: naik dari chata-v17 karena bantuan.js masuk daftar cache
 // GIM.03: var NAMA_CACHE = "chata-v19"; // BTN.04a: naik dari chata-v18 karena img/infografik.webp masuk daftar cache
 // FTO.03: var NAMA_CACHE = "chata-v20"; // GIM.03: naik dari chata-v19 karena game.css, gim.js, dan gimmenu.js masuk daftar cache
-var NAMA_CACHE = "chata-v21"; // FTO.03: naik dari chata-v20 karena foto.js masuk daftar cache
+// INB.05: var NAMA_CACHE = "chata-v21"; // FTO.03: naik dari chata-v20 karena foto.js masuk daftar cache
+var NAMA_CACHE = "chata-v22"; // INB.05: naik dari chata-v21 karena inbox.js masuk daftar cache
 
 // Semua path relatif (tanpa awalan /) supaya jalan di GitHub Pages.
 // Tiap berkas aplikasi baru (JS, style.css, pustaka, ikon) wajib ditambah di sini.
@@ -49,6 +50,7 @@ var DAFTAR_CACHE = [
   "kerangka.js",
   "gim.js", // GIM.03
   "gimmenu.js", // GIM.03
+  "inbox.js", // INB.05
   "img/icon-192.png",
   "img/icon-512.png",
   "img/chata-logo.png",

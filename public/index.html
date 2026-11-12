@@ -745,6 +745,8 @@
                             <line x1="4" y1="12" x2="20" y2="12" />
                             <line x1="4" y1="18" x2="20" y2="18" />
                         </svg>
+                        <!-- INB.05: titik merah penanda ada pesan belum dibaca (inbox.md IB2). Diatur inbox.js; teks aria-label tombol ikut diubah di sana. -->
+                        <span class="gim-titik" id="gim-titik" hidden></span>
                     </button>
                     <div class="gim-menu" id="gim-menu" role="menu" hidden>
                         <button
@@ -755,6 +757,16 @@
                         >
                             <span aria-hidden="true">&#127918;</span>
                             <span>Arithmetics</span>
+                        </button>
+                        <!-- INB.05: item Kotak masuk, tepat di bawah Arithmetics (inbox.md IB2). Logika di inbox.js. -->
+                        <button
+                            type="button"
+                            class="gim-menu__item"
+                            id="gim-menu-inbox"
+                            role="menuitem"
+                        >
+                            <span aria-hidden="true">&#128236;</span>
+                            <span>Kotak masuk</span>
                         </button>
                     </div>
                     <div class="bilah-atas__judul" id="kerangka-judul">
@@ -2103,6 +2115,8 @@
         <!-- GIM.01 dan GIM.02: game Arithmetics dan menu hamburger. Berdiri sendiri, tanpa server. gim.js sebelum gimmenu.js -->
         <script src="gim.js"></script>
         <script src="gimmenu.js"></script>
+        <!-- INB.05: layar Kotak masuk dan titik merah (inbox.md). Setelah akun.js (memakai window.KedaiAkun) dan gimmenu.js. Tidak menyentuh kerangka.js. -->
+        <script src="inbox.js"></script>
         <script>
             // Mendaftarkan service worker (sw.js) supaya aplikasi bisa dipasang dan terbuka offline.
             // Path relatif (tanpa awalan /) supaya jalan di GitHub Pages.

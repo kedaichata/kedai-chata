@@ -249,6 +249,24 @@
       // window.KedaiKerangka.atur(d.peran);
       window.KedaiKerangka.atur(d.peran, nama);
     }
+
+    // INB.05: titik merah Kotak masuk (inbox.md IB10). Angka `inbox_terbaru` ikut balasan `status` yang sama
+    // (tanpa panggilan server baru). Id akun dibaca dari sesi login di peramban (getSession membaca penyimpanan
+    // lokal, bukan server) untuk kunci penanda per akun. Kegagalan di sini tidak boleh mengganggu layar utama.
+    if (window.KedaiInbox && typeof window.KedaiInbox.atur === "function") {
+      var terbaruInbox =
+        typeof d.inbox_terbaru === "number" ? d.inbox_terbaru : null;
+      klien.auth
+        .getSession()
+        .then(function (h) {
+          var sesi = h && h.data ? h.data.session : null;
+          var idAkunInbox = sesi && sesi.user ? sesi.user.id : null;
+          window.KedaiInbox.atur(idAkunInbox, terbaruInbox);
+        })
+        .catch(function () {
+          window.KedaiInbox.atur(null, null);
+        });
+    }
   }
 
   function muatStatus() {
@@ -422,6 +440,10 @@
         typeof window.KedaiKerangka.reset === "function"
       ) {
         window.KedaiKerangka.reset();
+      }
+      // INB.05: layar Kotak masuk ditutup dan keadaannya dihapus (inbox.md IB11); hanya angka penanda yang tersisa di HP.
+      if (window.KedaiInbox && typeof window.KedaiInbox.reset === "function") {
+        window.KedaiInbox.reset();
       }
       tampilkan("masuk");
     }

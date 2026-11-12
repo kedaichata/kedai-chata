@@ -341,3 +341,89 @@ body.gim-terbuka {
     outline: 3px solid var(--emas-terang);
     outline-offset: 2px;
 }
+
+/* ------------------------------------------------------------------
+   INB.05: titik merah di hamburger dan layar Kotak masuk (inbox.md IB2, IB5, IB9; desain.md blok 11 Nov 2026)
+   Hanya tambahan di akhir berkas; aturan di atas tidak diubah. Kelas berawalan gim- (GM12).
+   Warna titik: merah terang dengan pinggir warna bilah atas, supaya terlihat di atas marun gelap.
+   ------------------------------------------------------------------ */
+
+/* Hamburger jadi acuan posisi untuk titik merah */
+.gim-hamburger {
+    position: relative;
+}
+
+.gim-titik {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    width: 13px;
+    height: 13px;
+    border: 2px solid var(--marun-sangat-gelap);
+    border-radius: 50%;
+    background: #ff5252;
+    pointer-events: none;
+}
+
+/* Halaman di belakang layar Kotak masuk tidak ikut menggulir (sama seperti layar game) */
+body.gim-inbox-terbuka {
+    overflow: hidden;
+}
+
+.gim-inbox__judul {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--emas-terang);
+}
+
+.gim-inbox__ket {
+    margin: 16px 0 8px;
+    font-weight: 700;
+    text-align: center;
+    color: var(--teks-terang);
+}
+
+.gim-inbox__daftar {
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.gim-inbox__butir {
+    position: relative;
+    margin: 0 0 10px;
+    padding: 12px 14px;
+    background: rgba(255, 244, 220, 0.08);
+    border: 1px solid rgba(226, 184, 74, 0.35);
+    border-radius: 12px;
+    color: var(--teks-terang);
+}
+
+/* Belum dibaca: garis emas tebal di kiri dan latar sedikit lebih terang, plus tulisan "Baru" (DS11) */
+.gim-inbox__butir--baru {
+    border-left: 5px solid var(--emas-terang);
+    background: rgba(226, 184, 74, 0.18);
+}
+
+.gim-inbox__tanda {
+    display: inline-block;
+    margin: 0 0 6px;
+    padding: 1px 10px;
+    border-radius: 999px;
+    background: var(--emas-terang);
+    color: var(--marun-sangat-gelap);
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.gim-inbox__teks {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.gim-inbox__waktu {
+    margin: 6px 0 0;
+    font-size: 0.9rem;
+    color: rgba(255, 244, 220, 0.75);
+}
