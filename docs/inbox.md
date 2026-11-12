@@ -533,3 +533,46 @@ Keputusan ketua (sesi kode 12 Nov 2026). Menjawab butir sheet "Perbarui teks lay
 - **Di-push:** bersama blok ini (hash belum dicatat).
 - **Perlu diperbarui lagi** saat Notifikasi (push, NTF) sudah jalan: kalimat "Belum ada notifikasi otomatis ke layar HP" tidak akan benar lagi.
 - **Data uji di production:** order dummy #66 sampai #76; baris inbox bertambah dari tes ini. Dibersihkan sebelum peluncuran (`LNC.01`).
+
+### Handoff #9 | 2026-11-12 | (AIK)
+
+**Tugas:** INB.07 (sesi tes Kotak masuk), termasuk SEC-34 dan SEC-35. Selesai. SEC-34 sudah dicentang di sheet. SEC-35 dan INB.07 siap dicentang (tanggal centang oleh PIC: ...).
+
+**File yang diubah (semua baru, tidak ada yang lama disentuh; tidak ada deploy dan tidak ada perubahan kode, tabel, atau fungsi):**
+
+- `supabase/templates/20261112_inbox_sec34_cek.sql`, `20261112_inbox_hak_cek.sql`, `20261112_inbox_teks_cek.sql` (cek baca-saja).
+- `supabase/templates/20261112_inbox_maks_10.sql` dan `20261112_inbox_maks_30_kembali.sql` (ubah sementara lalu kembalikan `inbox_maks_tampil`).
+- Berkas `20261106_staf_tambah.sql` dipakai ketua untuk menambah satu baris owner dummy kedua di tabel `staf`. Versi yang sudah terisi tidak disimpan di repo.
+
+**Keputusan baru (ketua, 12 Nov 2026):**
+
+- **IB12 diterima terbukti dari baca kode**, bukan dari gagal paksa di production. Dasarnya: `tulisInbox` di `inbox.ts` membungkus seluruh isinya dengan `try/catch` tanpa `throw`, dan dipanggil setelah fungsi SQL order sukses. Alasan ketua selain itu belum tercatat.
+- **"Keluar menutup layar" dicatat belum teruji.** Layar Kotak masuk menutupi tombol Keluar, jadi sulit dipicu manual (Handoff #7).
+- **Owner dummy kedua dibiarkan aktif**, untuk tes lain yang butuh lebih dari satu owner. Akibatnya owner aktif sekarang 2, jadi tiap order baru menulis dua baris inbox.
+
+**Terbukti (bukti diperiksa di chat, tidak disimpan):**
+
+- **SEC-34:** isian `akun` dan `peran` palsu diabaikan saat inbox berisi. Hasil `inbox_daftar` customer dummy sama persis dengan baris miliknya di tabel, 18 dari 41 baris, dan tidak ada baris owner atau penjaga yang ikut.
+- **SEC-35:** 17 kalimat inbox berbeda, semuanya cocok dengan tabel 4.1 `notifikasi.md` termasuk siap diambil dan siap disajikan. Tanpa angka lain, tanpa tanda `<` `>`, tanpa data pribadi atau alasan. Tag HTML di catatan tidak bocor ke Kotak masuk. Hak tabel inbox: `service_role` hanya `INSERT, SELECT`, RLS aktif tanpa policy, urutan nomor tanpa hak, fungsi inbox hanya `EXECUTE` untuk `service_role`.
+- **Penjaga:** hanya melihat kabar miliknya; tanda "Baru" dan titik merah hilang setelah dibuka.
+- **Batas tampil:** dengan `inbox_maks_tampil` sementara 10, owner melihat 10 butir dan keterangan "Menampilkan 10 kabar terbaru."; nilai sudah dikembalikan ke 30 dan terbukti.
+- **Dua owner:** order baru menghasilkan satu baris per owner. Catatan dari owner hanya ke customer pemilik; owner lain dan pelaku tidak dikabari.
+
+**Belum beres / belum terbukti:**
+
+- "Keluar menutup layar" belum teruji (keputusan ketua di atas).
+- Angka batas 30 belum pernah diuji sampai penuh; hanya logikanya, dengan angka 10.
+- `tulisInbox` dipanggil dengan `await` tanpa batas waktu. Bila database sangat lambat, balasan ke aplikasi ikut lambat, tetapi order sudah tersimpan. Hanya dicatat.
+- Tahap 2 (DELETE) template hapus inbox belum pernah dijalankan; baru bisa dengan baris berumur lebih dari 14 hari (paling cepat sekitar 25 Nov, Handoff #8).
+- Kedua `_batal.sql` (migration 05 dan 06) belum pernah dicoba.
+- Tombol "Coba lagi" kurang kontras (P2, Handoff #7).
+- Data uji di production: order dummy #66 sampai #80, sekitar 56 baris inbox, dan satu akun owner dummy kedua yang aktif. Dibersihkan sebelum peluncuran (`LNC.01`).
+
+**Butir baru yang perlu ditambah ke sheet:** "Nonaktifkan atau bersihkan akun dummy owner 2 sebelum peluncuran".
+
+**Saran giliran berikutnya:**
+
+- Urutan versi 1 berlanjut ke Notifikasi (NTF). Lampirkan `AGENTS.md`, `notifikasi.md`, `inbox.md` (dengan Handoff #9), `database.md`, `security.md`.
+- NTF.06 menumpang titik pemanggilan dan penerima yang sama dengan `inbox_tulis` (IB14), jadi penerima tidak dihitung dua kali.
+- Teks layar Order wakil ("Belum ada notifikasi otomatis ke layar HP") perlu diperbarui saat push sudah jalan (blok 12 Nov di bagian ini).
+- Pengingat dari sesi foto: cek jadwal pembersihan jalan sendiri setelah Minggu 15 Nov 2026 02.00 WIB (FTO.07).

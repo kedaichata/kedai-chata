@@ -301,3 +301,19 @@ Sisa: SEC-19 (Android), non-SEC (O22, wizard Besok, jumlah menu, Segarkan, pilih
 - **FT-22:** penjaga kedua sebagai bukan pengunggah asli, opsional.
 - Berkas tanpa baris yang lebih muda dari batas tidak tersentuh: baru bukti tidak langsung.
 - SEC lain di peta ini tidak berubah: SEC-22 dan SEC-25
+
+### 2026-11-12 | (AIK): INB.07 (Kotak masuk), SEC-34, SEC-35
+
+**Baru terbukti** (tanpa bukti dan tanpa data pelanggan):
+
+- **SEC-34:** isian akun dan peran palsu diabaikan saat inbox berisi; hasil `inbox_daftar` customer sama dengan baris miliknya di tabel, tanpa baris owner atau penjaga.
+- **SEC-35:** 17 kalimat inbox sesuai tabel 4.1 `notifikasi.md`, tanpa data pribadi, alasan, angka lain, atau tanda `<` `>`; tag HTML tidak bocor; hak tabel inbox hanya `INSERT, SELECT`, RLS aktif tanpa policy, fungsi inbox hanya `EXECUTE` untuk `service_role`.
+- **INB.07:** tiap peran hanya melihat miliknya (customer, owner, penjaga); penanda dan titik merah per akun; batas tampil lewat `inbox_maks_tampil` sementara 10 (sudah dikembalikan ke 30); dua owner (order baru ke keduanya, catatan owner hanya ke customer pemilik); IB12 dari baca kode (`tulisInbox` tidak melempar galat).
+
+**SEC yang dicentang di sheet:** SEC-34 (12 Nov). SEC-35 dan INB.07 siap dicentang (tanggal centang oleh PIC: ...).
+
+**Keputusan ketua:** IB12 cukup dibuktikan dari baca kode; "Keluar menutup layar" dicatat belum teruji; owner dummy kedua dibiarkan aktif untuk tes yang butuh lebih dari satu owner.
+
+**Tes tidak perlu diulang:** seluruh tes inbox di atas, kecuali yang kodenya berubah sejak itu. Catatan: owner aktif kini 2, jadi tes yang mengasumsikan satu owner perlu disesuaikan.
+
+**Sisa:** "Keluar menutup layar" (belum teruji); SEC-22 dan SEC-25 menunggu NTF; SEC-30, SEC-31, SEC-04, dan SEC-03 menunggu BTN; SEC-23 sebelum `LNC.01`; SEC-27 kapan saja (P1).
