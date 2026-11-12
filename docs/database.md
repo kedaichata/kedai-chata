@@ -360,4 +360,25 @@ Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Nama kolom d
 - **Pembatalan:** `_batal.sql` membuang tabel dan baris pengaturan (semua langganan ikut hilang, pengguna harus mengaktifkan notifikasi lagi). Jalankan hanya bila NTF.03 belum dideploy. Belum pernah dicoba.
 - **Pilihan penulis** (nama tabel dan kolom, `endpoint` unik se-tabel, `id` uuid, pola isi kunci): disetujui ketua 12 Nov 2026 ("ikut rekomendasi"); alasan ketua selain itu belum tercatat.
 
+### 2026-11-12: Fungsi `push_daftar` dan `push_nonaktifkan` (NTF.03)
+
+**Berkas tujuan:** `docs/database.md` bagian 9 (tempel paling bawah). Rujukan: `docs/notifikasi.md` bagian 9, Handoff #3. Yang paling akhir menang.
+
+- **Berkas SQL:** `supabase/migrations/20261112_02_langganan_push_fungsi.sql` (dan `_batal`), `supabase/templates/20261112_02_langganan_push_fungsi_cek.sql`. Dijalankan dan dicek 12 Nov 2026. Tabel, hak tabel, pengaturan, dan data lama **tidak diubah**.
+- **Bagian 5 (fungsi SQL, `SECURITY DEFINER`, `search_path` kosong, `EXECUTE` hanya `service_role`, terbukti lewat query cek A sampai C):**
+  - `push_daftar(p_akun, p_endpoint, p_p256dh, p_auth)` mengembalikan bilangan bulat: jumlah perangkat lama yang dinonaktifkan karena batas (0 bila tidak ada).
+  - `push_nonaktifkan(p_akun, p_endpoint)` mengembalikan 0 atau 1 (jumlah baris yang dimatikan).
+- **Perilaku `push_daftar` (atomik):**
+  - Endpoint yang sudah ada (akun sama atau akun lain) **dipindah** ke akun pemanggil, diaktifkan kembali, kuncinya diganti, `dibuat_pada` diisi `now()`, dan `terakhir_berhasil_pada` dikosongkan.
+  - Bila perangkat aktif melebihi `push_maks_perangkat`, perangkat aktif **terlama** (urut `dibuat_pada`, lalu `id`) dinonaktifkan; perangkat yang baru didaftarkan tidak pernah jadi korban. Baris tidak dihapus.
+  - Dua pendaftaran bersamaan untuk satu akun diurutkan dengan kunci penasihat per akun.
+  - `push_maks_perangkat` harus bilangan bulat 1 sampai 20; di luar itu `pengaturan_rusak`.
+- **Pergeseran makna kolom:** `dibuat_pada` di `langganan_push` kini berarti **waktu pendaftaran terakhir perangkat itu**, bukan pembuatan baris pertama (disetujui ketua, 12 Nov 2026, supaya "terlama" adil). Menambah blok `langganan_push` bertanggal sama.
+- **`push_nonaktifkan`:** hanya langganan milik pemanggil. Endpoint tidak ada, sudah mati, atau milik akun lain: tidak ada yang berubah, hasil 0, tanpa galat dan tanpa membedakan ketiganya (SEC-25). Tidak mengecek akun nonaktif, supaya staf yang baru dinonaktifkan tetap bisa mematikan langganannya.
+- **Kode galat baru:** `langganan_tidak_valid` (400; format isian salah, dicek di fungsi sama seperti constraint tabel). Kode yang sudah ada dipakai ulang: `id_kosong`, `akun_nonaktif`. `pengaturan_rusak` tidak dipetakan (galat umum 500).
+- **Bagian 5 (aksi `kedai`):** `push_daftar` dan `push_nonaktifkan`, untuk semua yang login, di `supabase/functions/kedai/push.ts`. Kontrak isian dan balasan ada di `docs/notifikasi.md` Handoff #3.
+- **Pembatalan:** `_batal.sql` hanya membuang dua fungsi (tabel dan data tidak ikut). Bila tabel akan dibuang lewat pembatal NTF.02, buang dua fungsi ini dulu. Belum pernah dicoba.
+- **Belum terbukti:** logika (pemindahan akun, perangkat ke-6, `push_nonaktifkan` akun lain tidak berefek); baru bisa dites di NTF.08.
+- **Pilihan penulis** (nama fungsi, nilai kembalian, kunci penasihat, `terakhir_berhasil_pada` dikosongkan saat daftar ulang, staf nonaktif boleh mematikan): alasan belum tercatat.
+
 ---

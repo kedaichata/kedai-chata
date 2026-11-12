@@ -289,4 +289,42 @@ Tidak ada perubahan di `public/`, jadi aplikasi yang tampil tidak berubah. Tidak
 - NTF.08 menambah tes: perangkat ke-6 berhasil didaftarkan, yang terlama menjadi nonaktif, jumlah aktif tetap sama dengan batas.
 
 **Pertentangan dengan catatan lama:** hasil benar "ditolak" untuk pendaftaran melebihi batas (SEC-25, `security.md`) tidak berlaku lagi untuk bagian itu; lihat blok bertanggal sama di `docs/security.md` bagian 7.
+
+### Handoff #3 | 2026-11-12 | ketua
+
+**Tugas:** NTF.03 (aksi `kedai` `push_daftar` dan `push_nonaktifkan`, beserta fungsi SQL-nya). Selesai dan sudah dicentang di sheet.
+
+**File yang diubah** (satu commit `3fe3189`, sudah di-push ke `main` 12 Nov 2026):
+
+- `supabase/functions/kedai/index.ts` (hanya tambahan: catatan kepala, 1 import, 1 blok sambungan, 2 `case`; kode lama tidak berubah)
+- `supabase/functions/kedai/push.ts` (baru)
+- `supabase/migrations/20261112_02_langganan_push_fungsi.sql` (baru)
+- `supabase/migrations/20261112_02_langganan_push_fungsi_batal.sql` (baru)
+- `supabase/templates/20261112_02_langganan_push_fungsi_cek.sql` (baru)
+
+Migration dijalankan di SQL Editor dan `kedai` di-deploy (sembilan berkas) pada 12 Nov 2026. Tidak ada perubahan di `public/`, jadi tampilan aplikasi tidak berubah. Token deploy sudah dibersihkan dan dashboard sudah logout.
+
+**Keputusan baru:**
+
+- "Terlama" diukur dari `dibuat_pada`, dan `dibuat_pada` diperbarui tiap daftar ulang atau pindah akun (disetujui ketua). Alasan ketua selain itu belum tercatat. Rincian di `docs/database.md` bagian 9 (blok 12 Nov 2026, `push_daftar`).
+- **Kontrak aksi untuk NTF.05** (semua yang login; akun selalu dari token, isian lain diabaikan):
+  - `push_daftar`: isian `endpoint`, `p256dh`, `auth` (teks dari langganan peramban; `endpoint` maks 2000 dan kunci maks 200 karakter). Balasan `{ ok: true, perangkat_dinonaktifkan: <jumlah> }`. Galat: 400 (isian salah), 403 (akun nonaktif).
+  - `push_nonaktifkan`: isian `endpoint`. Balasan selalu `{ ok: true }` bila bentuk isian benar, termasuk bila langganan tidak ada atau milik akun lain. Juga dipanggil saat Keluar.
+- **Pilihan penulis, tidak ditolak ketua, alasan belum tercatat:** balasan `push_daftar` memuat jumlah perangkat yang dimatikan; daftar ulang mengosongkan `terakhir_berhasil_pada`; staf nonaktif tetap boleh memanggil `push_nonaktifkan`.
+
+**Terbukti (diperiksa di chat, tidak disimpan):** query cek A sampai E cocok semua (kedua fungsi `SECURITY DEFINER` dengan `search_path` kosong, `EXECUTE` hanya `service_role`, hak tabel `langganan_push` tidak berubah, `push_maks_perangkat` = 5). Deploy `kedai` berhasil di project yang benar. Dengan akun dummy owner, aksi lama (layar order, menu, kotak masuk) tetap jalan.
+
+**Belum beres:**
+
+- **Logika dua aksi baru belum terbukti**, karena belum ada yang memanggilnya (tombol baru ada di NTF.05). Dibuktikan di NTF.08: perangkat ke-6 berhasil dan yang terlama nonaktif; HP yang sama dipakai akun lain dipindah; akun A tidak bisa mematikan langganan akun B (baris akun B tidak berubah); isian salah dibalas 400.
+- `_batal.sql` migration ini belum pernah dicoba.
+- Dari Handoff #1 dan #2, tidak berubah: kunci privat VAPID belum di dashboard (NTF.06, butuh "OK"); kunci publik belum di `public/config.js` (ikut langkah yang menyentuh `config.js`, butuh "OK"); cek jadwal pembersihan foto jalan sendiri setelah Minggu 15 Nov 2026 02.00 WIB (FTO.07); teks layar Order wakil ("Belum ada notifikasi otomatis ke layar HP") diperbarui saat push sudah jalan.
+
+**Saran giliran berikutnya (NTF.04, ⚠️ menyentuh `sw.js`, butuh penjelasan dampak dan "OK" ketua):**
+
+- Lampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #3), `security.md`, `public/sw.js`, dan `public/config.js`.
+- Isi: penanganan push masuk dan notifikasi ditekan; pengecualian NT8 untuk penjaga (notifikasi batal yang ditekan penjaga membuka Antrean); tag per order (NT9); bila aplikasi terbuka, push masuk memicu penyegaran. Berkas JS baru wajib didaftarkan di cache `sw.js`.
+- Push sungguhan baru bisa diuji penuh setelah NTF.05 (berlangganan) dan NTF.06 (pengirim) ada.
+- NTF.06 nanti memakai `push.ts` sebagai pola berkas baru dan menumpang titik pemanggilan `tulisInbox` yang sama (IB14), supaya penerima tidak dihitung dua kali.
+
 ---
