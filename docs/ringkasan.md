@@ -115,3 +115,31 @@ Keputusan ketua (sesi strategi 13 Nov 2026). Menambah RK11.
 - Ini pengaman kenyamanan, bukan keamanan. Pembatasan khusus tetap ditunda (`security.md` bagian 6, B21).
 - Angka 5 detik di kode layar (bawaan), bukan di `pengaturan`, karena layar ini tidak punya tabel pengaturannya sendiri; ketua boleh meminta lain.
 - Masuk pekerjaan RKS.03; tes: ketuk berulang tidak menambah panggilan di Network browser.
+
+### Handoff #1 | 2026-11-13 | ketua
+
+**Tugas:** RKS.01, fungsi SQL baca-saja `ringkasan_7hari`.
+
+**File yang diubah (baru semua, tabel dan data lama tidak disentuh):**
+
+- `supabase/migrations/20261113_02_ringkasan_7hari.sql`
+- `supabase/migrations/20261113_02_ringkasan_7hari_batal.sql`
+- `supabase/templates/20261113_02_ringkasan_7hari_cek.sql`
+
+**Status:** migration dijalankan di SQL Editor 13 Nov 2026. Cek A sampai G lulus (fungsi dan pola keamanan benar, EXECUTE hanya `service_role`, hak tabel `order` tidak berubah, owner dapat hasil 7 hari yang cocok dengan hitungan langsung, penjaga ditolak `bukan_owner`). Bukti tidak disimpan.
+
+**Keputusan baru:** tidak ada.
+
+**Kontrak untuk RKS.02:**
+
+- Fungsi: `public.ringkasan_7hari(p_akun uuid)` mengembalikan jsonb: `hari_ini`, `total_order`, `total_nilai`, `rata_rata_order`, `per_hari` (7 elemen: `tanggal`, `hari` 1 sampai 7 dengan 1 = Senin, `jumlah`, `nilai`), `belum_ada_perbedaan`, `terlaris`, `tersepi` (`tanggal`, `hari`, `jumlah`, atau null).
+- Kode galat: `id_kosong`, `akun_nonaktif`, `bukan_owner`. Pemetaan `bukan_owner` ke 403 dikerjakan di RKS.02 (SEC-36).
+- Pilihan penulis di header migration (kode `hari` dari server, tafsir "sama persis" RK9, kode galat `bukan_owner`): alasan belum tercatat dari ketua.
+
+**Belum beres:**
+
+- `git push` commit `3939295` belum terkonfirmasi, dan tab Actions GitHub belum dicek.
+- `_batal.sql` belum pernah dicoba.
+- CEK F baru dites dengan akun penjaga; akun customer belum (opsional, dites di SEC-36).
+
+**Saran giliran berikutnya:** RKS.02. Lampirkan `AGENTS.md`, `ringkasan.md`, `database.md`, `security.md`, `index.ts`, dan `order_status.ts` (contoh pola `buatAksi...(alat)`). Aksi baru ditaruh di `supabase/functions/kedai/ringkasan.ts`. Deploy `kedai` butuh OK ketua dan urutan aman AGENTS.md bagian 8.
