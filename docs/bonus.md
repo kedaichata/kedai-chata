@@ -144,4 +144,32 @@ Keputusan ketua (lewat WA, 11 Nov 2026), dicatat saat FTO.04. Alasan lain belum 
 - **Perkiraan pekerjaan:** hanya sisi layar, tanpa perubahan server atau SQL. Layar owner (`orderowner.js`) memakai `KedaiFoto.pasang` (kartu unggah plus thumbnail) sebagai pengganti `KedaiFoto.lihat`, hanya untuk order Diantar berstatus Diantar atau Selesai.
 - **Urutan:** ditentukan setelah review pemakaian versi 1 (`LNC.05`).
 
+<!-- Berkas tujuan: docs/bonus.md, tempel PALING BAWAH bagian 4 (di bawah blok 2026-11-11 foto bukti). Append-only. -->
+
+### 2026-11-13: Bahan versi 2 dari sesi tes notifikasi (NTF.08)
+
+Keputusan ketua (13 Nov 2026): kode versi 1 sudah jalan, temuan perilaku dikumpulkan di sini dan dipilah **need-to-have** atau **nice-to-have**. Pemilahan di bawah usulan penulis sesi tes, belum diputuskan ketua. Alasan pemakaian belum tercatat; nomor B dan kolom Alasan diisi saat review pemakaian (`LNC.05`). Urutan ditentukan di sana.
+
+**Usulan need-to-have (naik hanya bila ada bukti pemakaian):**
+
+- **Urgensi push `order_baru` dinaikkan** (sekarang "normal", H#10). Latar: notif `batal_customer` baru muncul sekitar 14 menit setelah server mengirim saat penghemat baterai Android menyala. Penyebab itu baru dugaan, dan manfaat urgensi tinggi belum diuji. Pemicu: owner atau penjaga mengeluh order baru telat padahal penghemat baterai sudah mati.
+- **Tes perilaku di Android sungguhan** untuk hal yang selama ini diwakili Brave desktop (H#6). Satu ragu spesifik dari H#15: `performance.now()` saat HP lama ditidurkan, refresh saat kembali ke layar bisa terlewat. Pemicu: keluhan layar usang di HP.
+
+**Usulan nice-to-have:**
+
+- Daftar Kotak masuk ikut disegarkan saat push masuk dan overlay sedang terbuka (H#15).
+- Penanda "sudah aktif" tertinggal bila sesi habis tanpa Keluar lalu akun lain masuk di HP yang sama (H#8, dicatat bila ternyata sering).
+- Perangkat yang dinonaktifkan karena melebihi batas 5 tidak diberi tahu (keputusan 12 Nov; kabarnya tetap sampai lewat Kotak masuk).
+- Pesan "izin diblokir" di ajakan setelah order pertama belum dites (tes 5 NTF.05a, H#13).
+- Perilaku overlay Kotak masuk saat notifikasi ditekan belum teruji (H#7 sampai H#15).
+
+**Bukan kandidat fitur, cukup dipantau:**
+
+- Push `alih_hari`, `foto_setelah_selesai`, `order_wakil` dirilis tanpa tes sendiri (diwakili, Handoff #16 `notifikasi.md`). Dites bila ada keluhan.
+- Kuota panggilan `kedai`: cek grafik Invocations rentang 7 hari setelah warung dipakai beberapa hari.
+- Penghemat baterai Android bisa menunda push puluhan menit; pesan ke owner: matikan atau kecualikan Brave. Status tetap benar di aplikasi dan Kotak masuk (NT12).
+
+**Tetap di tempatnya, tidak diulang di sini:** pengingat otomatis order menggantung, jam tenang, pengaturan per jenis notifikasi, notifikasi lewat WA atau email, dan dukungan iPhone lebih dalam (B30; `notifikasi.md` bagian 8).
+
+**Pertentangan dengan blok lama:** butir "Titik merah ikut diperbarui saat kembali ke layar" di blok 2026-11-11 (Kandidat versi 2 dari Kotak masuk) sudah dikerjakan di NTF.07 (Handoff #15 `notifikasi.md`, titik merah disegarkan lewat aksi `status`). Butir itu tidak lagi kandidat; yang paling akhir menang.
 ---

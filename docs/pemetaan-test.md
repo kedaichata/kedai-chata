@@ -317,3 +317,21 @@ Sisa: SEC-19 (Android), non-SEC (O22, wizard Besok, jumlah menu, Segarkan, pilih
 **Tes tidak perlu diulang:** seluruh tes inbox di atas, kecuali yang kodenya berubah sejak itu. Catatan: owner aktif kini 2, jadi tes yang mengasumsikan satu owner perlu disesuaikan.
 
 **Sisa:** "Keluar menutup layar" (belum teruji); SEC-22 dan SEC-25 menunggu NTF; SEC-30, SEC-31, SEC-04, dan SEC-03 menunggu BTN; SEC-23 sebelum `LNC.01`; SEC-27 kapan saja (P1).
+
+<!-- Berkas tujuan: docs/pemetaan-test.md, tempel PALING BAWAH bagian 5 (di bawah entri 2026-11-12 AIK). Append-only. -->
+
+### 2026-11-13 | ketua: NTF.08 (SEC-25, SEC-22, kuota)
+
+**Baru terbukti** (tanpa bukti dan tanpa data pelanggan):
+
+- **SEC-25:** akun lain tidak bisa mematikan langganan akun B; perangkat ke-6 berhasil dan yang terlama nonaktif, aktif tepat 5, akun lain utuh; isian salah dibalas 400.
+- **SEC-22:** layar kunci Android untuk `order_baru` dan `batal_customer`, teks umum tanpa data pribadi. Kejadian lain diwakili SEC-35 dan teks yang teramati di Handoff `notifikasi.md` #10 sampai #14 (keputusan ketua).
+- **Kuota:** perkiraan sekitar 14% batas free tier pada sekitar 50 order per hari (perkiraan, bukan data).
+
+**SEC yang dicentang di sheet:** SEC-25 (13 Nov). SEC-22 siap dicentang (tanggal centang oleh PIC: ...). NTF.08 siap dicentang.
+
+**Tes tidak perlu diulang:** seluruh SEC-25; layar kunci `order_baru` dan `batal_customer`.
+
+**Tidak diamati sendiri (diwakili, keputusan ketua):** push `alih_hari`, `foto_setelah_selesai`, `order_wakil`.
+
+**Sisa:** SEC-23 sebelum `LNC.01`; SEC-27 kapan saja (P1); SEC-30, SEC-31, SEC-04, dan SEC-03 menunggu BTN.

@@ -857,4 +857,39 @@ Tidak ada perubahan di `sw.js`, `akun.js`, migration, atau `kedai`; tidak ada de
 
 - blok database.md untuk migration 13 Nov sudah ditulis.
 
+### Handoff #16 | 2026-11-13 | ketua
+
+**Tugas:** NTF.08 (sesi tes notifikasi). Selesai dan siap dicentang di sheet. SEC-25 sudah dicentang; SEC-22 siap dicentang (keputusan ketua di bawah).
+
+**File yang diubah:** tidak ada. Tidak ada commit, push, migration, atau deploy `kedai`. Data uji (baris `langganan_push` palsu, order dummy) hanya lewat aksi `kedai` dan akun dummy.
+
+**Keputusan baru (ketua, 13 Nov 2026; yang paling akhir menang):**
+
+- **Push tidak dites satu per satu untuk tiap kejadian dan tiap status.** Yang diamati sendiri: `order_baru`, `batal_customer`, dan yang sudah terbukti di Handoff #10 sampai #14. `alih_hari`, `foto_setelah_selesai`, dan `order_wakil` diwakili: jalur kirim sama, teksnya lulus SEC-35 (teks inbox sama dengan teks push), penerima dihitung fungsi yang sama dengan inbox (INB.07). Alasan ketua: pengujian per notif per status tidak perlu dibangkitkan dan diamati semua, dan ketua hanya punya satu HP Android. Alasan lain belum tercatat.
+- **SEC-22 dicentang dengan bukti sebagian:** layar kunci Android untuk `order_baru` (dua kali) dan `batal_customer`; kejadian lain diwakili seperti di atas. Ini pengecualian keputusan ketua atas `AGENTS.md` bagian 10 butir 2 (preseden: SEC-10 di `pemetaan-test.md`); aturan itu tidak berubah untuk tes lain.
+- **Perkiraan kuota (bukan data pemakaian):** sekitar 2.400 panggilan `kedai` per hari untuk 5 owner, 1 penjaga, sekitar 50 order per hari, atau sekitar 14% dari batas free tier. Skenario boros (4 kali) sekitar 58%. Push tidak menambah panggilan. Data hari tes: 570 panggilan dalam 24 jam, 5XX 0%. Cek ulang grafik Invocations rentang 7 hari setelah warung dipakai beberapa hari (`LNC.05`).
+- **Cara tes dua akun:** satu jendela biasa dan satu jendela incognito, supaya tidak perlu Keluar (Keluar menjalankan `push_nonaktifkan`).
+
+**Terbukti (diperiksa di chat, tidak disimpan; akun dummy):**
+
+- **SEC-25:** customer tidak bisa mematikan langganan owner (baris tetap aktif; balasan memang selalu `ok: true`, jadi bukti ada di query baca-saja). Perangkat ke-6 berhasil, yang terlama nonaktif, aktif tepat 5, langganan akun lain tidak berubah. Isian salah (endpoint kosong, endpoint terlalu panjang, kunci terlalu panjang) dibalas 400 dengan pesan umum. Baris palsu dinonaktifkan di akhir; baris asli utuh.
+- **SEC-22:** layar kunci Android menampilkan "Ada order baru." (dua kali) dan "Order #N dibatalkan pemesan." tanpa nama, alamat, nomor WA, menu, atau alasan.
+- Log server `batal_customer`: terkirim 1, mati 0, gagal 0.
+
+**Pengamatan (untuk `LNC.05`, bukan galat kode):** notif `batal_customer` baru muncul sekitar 14 menit setelah server mengirim, bersamaan dengan notif lain, **setelah penghemat baterai dimatikan dan HP dicas**. Penghemat baterai sebelumnya menyala. Ini dugaan kuat, belum terbukti. Pesan ke owner: matikan penghemat baterai atau kecualikan Brave dari penghematnya; status yang pasti tetap ada di aplikasi dan Kotak masuk (NT12). Pengamatan pertama sempat hilang karena notif dihapus manual.
+
+**Belum beres:**
+
+- Tidak diamati sendiri: push `alih_hari`, `foto_setelah_selesai`, `order_wakil`; klik push ke id order milik customer lain (diwakili H#7 tes 4 dan K8); push `status` ke penjaga.
+- Layar kunci hanya `order_baru` dan `batal_customer`.
+- Order dummy #92 masih Menunggu (dibersihkan di `LNC.01`).
+- Dari Handoff #8 sampai #15, tidak berubah: tes 5 NTF.05a (izin diblokir); perilaku overlay Kotak masuk saat push ditekan; teks layar Order wakil ("Belum ada notifikasi otomatis ke layar HP") perlu diperbarui; `_batal.sql` migration 13 Nov belum pernah dicoba; cek jadwal pembersihan foto jalan sendiri setelah Minggu 15 Nov 2026 02.00 WIB (FTO.07).
+- Sheet (diisi manusia): kolom Catatan SEC-25 disesuaikan; NTF.08 dan SEC-22 dicentang.
+
+**Saran giliran berikutnya:**
+
+1. Butir baru yang perlu ditambah ke sheet: "Perbarui teks layar Order wakil".
+2. `LNC.05`: cek kuota 7 hari, keluhan iPhone, dan push telat (penghemat baterai).
+3. FTO.07 setelah Minggu 15 Nov 2026 02.00 WIB; `LNC.01` untuk data uji.
+
 ---
