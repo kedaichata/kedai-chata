@@ -680,4 +680,51 @@ Tidak ada migration baru. Token deploy sudah dibersihkan dua kali (`[]`).
 4. Lanjut NTF.05a, lalu NTF.07 dan NTF.08.
 5. Commit yang hanya berisi docs/md boleh memakai `[skip ci]`; commit yang menyentuh kode tidak.
 
+### Handoff #12 | 2026-11-13 | FREN
+
+**Tugas:** NTF.05a (ajakan lembut "Aktifkan notifikasi" sekali setelah order pertama terkirim). **Kode sudah ditulis dan lolos cek sintaks, tetapi BELUM dites di layar, BELUM di-commit, dan BELUM di-push.** Jangan dicentang di sheet sebelum tes lulus.
+
+**File yang diubah** (hanya di Mac lokal; `git status` 13 Nov 2026: `public/notif.js` dan `public/pesan.js` modified, belum di-stage, `main` sama dengan `origin/main`):
+
+- `public/pesan.js`: kartu "Mau dikabari?" (tombol Aktifkan dan Nanti saja) dibuat lewat JS dan dipasang di layar "Pesanan terkirim", tepat di atas "Pesan lagi". Dipanggil sesudah order berhasil, dibungkus `try/catch`. Disembunyikan saat "Pesan lagi", tab Pesan dibuka ulang, dan Keluar.
+- `public/notif.js`: dua fungsi baru `bisaDiajak()` dan `aktifkanUntukAjakan()`, dibuka lewat `window.KedaiNotif`. Alur izin, berlangganan, dan `push_daftar` memakai kode yang sama dengan tombol Home.
+- Kode lama tidak dihapus (dibandingkan dengan versi sebelumnya: hanya tambahan).
+- Tidak ada perubahan di `index.html`, `sw.js`, `config.js`, migration, atau `kedai`. Tidak ada berkas JS baru, jadi daftar cache `sw.js` tidak berubah.
+
+**Keputusan baru:**
+
+- "OK" ketua untuk menyentuh `pesan.js` sudah ada (via PIC, 13 Nov 2026). Alasan ketua selain itu belum tercatat.
+- **Ajakan sekali per HP, apa pun jawabannya** (Aktifkan, Nanti saja, izin ditolak): penanda `localStorage` `chata_notif_diajak` ("1", tanpa data pribadi) diisi begitu kartu tampil. Dipilih PIC dengan dasar prinsip ketua "versi 1 simpel, perbaikan di versi berikutnya". Menjawab butir NTF.05a di sheet. Tombol Home tetap jalan bagi yang berubah pikiran.
+- **Pilihan penulis, belum dibahas dengan ketua, alasan belum tercatat:**
+  - Penanda `chata_notif_diajak` **tidak dihapus saat Keluar** (per HP, bukan per akun).
+  - "Order pertama" dihitung per HP, server tidak dicek.
+  - Bila `localStorage` tidak bisa dibaca, ajakan dianggap sudah tampil dan tidak muncul.
+  - Kartu dibuat lewat JS sehingga `index.html` tidak berubah. Rencana awal yang diajukan ke ketua mencantumkan tiga berkas; hasilnya dua berkas, lebih kecil.
+- Pengecualian NT6 tetap: pop-up izin peramban baru muncul setelah tombol Aktifkan ditekan.
+
+**Terbukti:** hanya sintaks kedua berkas lolos (`node --check`) dan tidak ada baris lama yang hilang. Perilaku di layar **belum teruji**.
+
+**Belum beres:**
+
+- **Tes NTF.05a** (Brave/Chrome desktop, akun customer dummy; sesuai keputusan ketua di Handoff #6):
+  1. Hapus penanda `chata_notif_aktif` dan `chata_notif_diajak`, kirim satu order dummy: kartu muncul di layar terkirim.
+  2. Tekan Aktifkan: pop-up izin, lalu kartu "Notifikasi sudah aktif di HP ini", tombol Home hilang, satu baris `langganan_push` aktif (query baca-saja).
+  3. Kirim order kedua: kartu tidak muncul lagi.
+  4. Ulangi dari awal dengan Nanti saja: order berikutnya tanpa kartu, tombol Home masih ada.
+  5. Opsional: tolak izin di pop-up: pesan diblokir tampil dan tombol Home hilang.
+     Centang NTF.05a hanya bila semuanya lulus.
+- **Commit dan push belum dibuat.** Commit kode **tanpa `[skip ci]`**. Sebelum push, tempel hasil `pwd`, `git remote -v`, dan email commit terakhir ke chat (semuanya harus milik ketua).
+- Dari Handoff #11, tidak berubah: `batal_owner` belum aktif (butir NTF.06b, menunggu tes penjaga); kejadian yang dirilis tanpa tes sendiri (`batal_customer`, `alih_hari`, `foto_setelah_selesai`, `order_wakil`); semua push ke penjaga belum teruji; SEC-22 di layar kunci Android belum (baris jangan dicentang); NTF.06 belum dicentang di sheet.
+- Blok `docs/database.md` bagian 9 untuk migration 13 Nov belum ditulis.
+- Cek jadwal pembersihan foto jalan sendiri setelah Minggu 15 Nov 2026 02.00 WIB (FTO.07).
+- Teks layar Order wakil ("Belum ada notifikasi otomatis ke layar HP") perlu diperbarui.
+- Push ke Brave kadang telat sementara server cepat (untuk review pemakaian, `LNC.05`).
+- Logika `push_daftar` dan `push_nonaktifkan` baru terbukti penuh di NTF.08.
+
+**Saran giliran berikutnya:**
+
+1. Jalankan tes NTF.05a di atas, periksa buktinya di chat, lalu commit dan push (tanpa `[skip ci]`, dengan cek anti-nyasar). Centang NTF.05a bila lulus.
+2. Lampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #8 sampai #12), `public/pesan.js`, dan `public/notif.js` terbaru dari repo lokal.
+3. Setelahnya: NTF.07 (penyegaran saat kembali ke layar, batas NT10, saat push masuk, tombol Segarkan), lalu NTF.06b dan tes penjaga, lalu NTF.08.
+
 ---

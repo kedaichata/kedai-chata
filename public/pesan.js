@@ -1,4 +1,7 @@
 // public/pesan.js
+// NTF.05a: ajakan lembut "Aktifkan notifikasi" di layar "Pesanan terkirim", sekali per HP (penanda localStorage
+//          `chata_notif_diajak`, apa pun jawabannya). Kartu dibuat lewat JS (tanpa ubah index.html) dan memakai
+//          window.KedaiNotif (notif.js). Kegagalan ajakan tidak pernah memengaruhi order. Kode lama tidak diubah.
 // ORD.03: layar customer Pesan (order.md O1 sampai O4, O12, O21 dan bagian 4 "Layar customer").
 // Tampil di dalam panel "pesan" (tab Pesan) dengan tiga langkah:
 //   1. menu    : daftar menu (menu.js, MNU.04) ditambah kartu ringkasan keranjang dan tombol "Lihat pesanan".
@@ -730,6 +733,7 @@
           renderSemua();
           renderSelesai();
           tampilkanLangkah();
+          tampilAjakan(); // NTF.05a: tidak pernah melempar galat, tidak memengaruhi order
           return;
         }
         renderItem();
@@ -748,6 +752,7 @@
   }
 
   function pesanLagi() {
+    sembunyikanAjakan(); // NTF.05a
     langkah = "menu";
     hasil = null;
     tampilkanLangkah();
@@ -761,12 +766,190 @@
   }
 
   // ------------------------------------------------------------
+  // NTF.05a: ajakan "Aktifkan notifikasi" setelah order pertama terkirim
+  // Tampil hanya bila tombol di Home juga akan tampil (notif.js: bisaDiajak) dan HP ini belum pernah diajak.
+  // Penanda diisi begitu kartu tampil; "Nanti saja", izin ditolak, atau berhasil: tidak muncul lagi di HP ini.
+  // Tidak dihapus saat Keluar (sekali per HP, bukan per akun). Tanpa data pribadi, tanpa panggilan server baru.
+  // ------------------------------------------------------------
+
+  var KUNCI_DIAJAK = "chata_notif_diajak";
+  var TEKS_AJAK_AKTIF = "Aktifkan";
+  var TEKS_AJAK_NANTI = "Nanti saja";
+  var PESAN_AJAK_AKTIF = "Notifikasi sudah aktif di HP ini.";
+  var PESAN_AJAK_BLOKIR =
+    "Notifikasi diblokir di HP ini. Bila ingin mengaktifkan, izinkan lewat pengaturan peramban.";
+  var PESAN_AJAK_BELUM =
+    "Izin belum diberikan. Bila berubah pikiran, tekan Aktifkan notifikasi di Home.";
+  var PESAN_AJAK_GAGAL =
+    "Notifikasi belum bisa diaktifkan. Coba lagi sebentar lagi.";
+
+  var kartuAjakan = null;
+  var ajakanEl = null; // { info, galat, baris, aktif, nanti }
+  var sedangAjakan = false;
+  var nomorAjakan = 0; // naik tiap proses, sembunyi, dan reset; hasil lama diabaikan
+
+  // Penyimpanan tidak bisa dibaca: dianggap sudah diajak, supaya kartu tidak muncul di tiap order.
+  function sudahDiajak() {
+    try {
+      return window.localStorage.getItem(KUNCI_DIAJAK) === "1";
+    } catch (err) {
+      return true;
+    }
+  }
+
+  function tandaiDiajak() {
+    try {
+      window.localStorage.setItem(KUNCI_DIAJAK, "1");
+    } catch (err) {
+      // Diabaikan: tanpa penanda, kartu paling banyak muncul lagi; order tidak terpengaruh.
+    }
+  }
+
+  function bacaNotif() {
+    var N = window.KedaiNotif;
+    return N &&
+      typeof N.bisaDiajak === "function" &&
+      typeof N.aktifkanUntukAjakan === "function"
+      ? N
+      : null;
+  }
+
+  // Kartu dibuat sekali, dipasang tepat di atas tombol "Pesan lagi" di layar selesai.
+  function siapkanKartuAjakan() {
+    if (kartuAjakan) return true;
+    var tombolUlang = el("pesan-ulang");
+    var barisUlang = tombolUlang ? tombolUlang.parentNode : null;
+    var induk = barisUlang ? barisUlang.parentNode : null;
+    if (!induk) return false;
+
+    var kartu = buat("div", "kartu");
+    kartu.hidden = true;
+    kartu.appendChild(buat("h2", "kartu__judul", "Mau dikabari?"));
+    kartu.appendChild(
+      buat(
+        "p",
+        "kartu__isi",
+        "Aktifkan notifikasi supaya kamu tahu saat pesananmu disetujui atau diantar.",
+      ),
+    );
+    var info = buat("p", "isian__bantuan");
+    info.setAttribute("role", "status");
+    info.hidden = true;
+    kartu.appendChild(info);
+    var galatEl = buat("p", "isian__galat");
+    galatEl.setAttribute("role", "alert");
+    galatEl.hidden = true;
+    kartu.appendChild(galatEl);
+
+    var baris = buat("div", "baris-tombol");
+    var aktif = buatTombol(TEKS_AJAK_AKTIF, "tombol--utama", aktifkanAjakan);
+    var nanti = buatTombol(
+      TEKS_AJAK_NANTI,
+      "tombol--sekunder",
+      sembunyikanAjakan,
+    );
+    baris.appendChild(aktif);
+    baris.appendChild(nanti);
+    kartu.appendChild(baris);
+
+    induk.insertBefore(kartu, barisUlang);
+    kartuAjakan = kartu;
+    ajakanEl = {
+      info: info,
+      galat: galatEl,
+      baris: baris,
+      aktif: aktif,
+      nanti: nanti,
+    };
+    return true;
+  }
+
+  function sembunyikanAjakan() {
+    nomorAjakan++;
+    sedangAjakan = false;
+    if (!kartuAjakan) return;
+    A.sibuk(ajakanEl.aktif, false, TEKS_AJAK_AKTIF);
+    ajakanEl.nanti.disabled = false;
+    kartuAjakan.hidden = true;
+  }
+
+  // Dipanggil setelah order berhasil dan layar selesai tampil. Tidak pernah melempar galat.
+  function tampilAjakan() {
+    try {
+      var N = bacaNotif();
+      if (!N || sudahDiajak() || !N.bisaDiajak()) return;
+      if (!siapkanKartuAjakan()) return;
+
+      tandaiDiajak();
+      nomorAjakan++;
+      sedangAjakan = false;
+      A.sibuk(ajakanEl.aktif, false, TEKS_AJAK_AKTIF);
+      ajakanEl.nanti.disabled = false;
+      ajakanEl.info.textContent = "";
+      ajakanEl.info.hidden = true;
+      ajakanEl.galat.textContent = "";
+      ajakanEl.galat.hidden = true;
+      ajakanEl.baris.hidden = false;
+      kartuAjakan.hidden = false;
+    } catch (err) {
+      // Ajakan gagal tampil: order tetap berhasil dan layar selesai tetap normal.
+    }
+  }
+
+  function selesaiAjakan(r) {
+    var jenis = r && r.jenis;
+    if (jenis === "sibuk" || jenis === "batal") return;
+    if (jenis === "ok") {
+      ajakanEl.info.textContent = PESAN_AJAK_AKTIF;
+    } else if (jenis === "blokir") {
+      ajakanEl.info.textContent = PESAN_AJAK_BLOKIR;
+    } else if (jenis === "belum") {
+      ajakanEl.info.textContent = PESAN_AJAK_BELUM;
+    } else {
+      // Gagal: tombol tetap ada supaya bisa dicoba lagi selama kartu masih tampil.
+      ajakanEl.galat.textContent =
+        r && typeof r.pesan === "string" && r.pesan
+          ? r.pesan
+          : PESAN_AJAK_GAGAL;
+      ajakanEl.galat.hidden = false;
+      return;
+    }
+    ajakanEl.info.hidden = false;
+    ajakanEl.baris.hidden = true;
+  }
+
+  function aktifkanAjakan() {
+    var N = bacaNotif();
+    if (!N || !ajakanEl || sedangAjakan) return;
+    ajakanEl.galat.textContent = "";
+    ajakanEl.galat.hidden = true;
+
+    // Kunci sebelum pop-up izin muncul: dua ketukan cepat tidak boleh jadi dua proses.
+    sedangAjakan = true;
+    var nomor = ++nomorAjakan;
+    A.sibuk(ajakanEl.aktif, true, TEKS_AJAK_AKTIF);
+    ajakanEl.nanti.disabled = true;
+
+    function akhir(r) {
+      if (nomor !== nomorAjakan) return; // sudah disembunyikan atau Keluar: hasil lama diabaikan
+      sedangAjakan = false;
+      A.sibuk(ajakanEl.aktif, false, TEKS_AJAK_AKTIF);
+      ajakanEl.nanti.disabled = false;
+      selesaiAjakan(r);
+    }
+    N.aktifkanUntukAjakan().then(akhir, function () {
+      akhir({ jenis: "gagal", pesan: PESAN_AJAK_GAGAL });
+    });
+  }
+
+  // ------------------------------------------------------------
   // Dipanggil kerangka.js
   // ------------------------------------------------------------
 
   // Tab Pesan dibuka: layar "selesai" tidak ditahan, customer kembali ke daftar menu.
   function tampil() {
     if (langkah === "selesai") {
+      sembunyikanAjakan(); // NTF.05a
       langkah = "menu";
       hasil = null;
       tampilkanLangkah();
@@ -775,6 +958,7 @@
 
   // Keluar: tidak boleh ada keranjang, alamat, atau hasil order tersisa di layar.
   function reset() {
+    sembunyikanAjakan(); // NTF.05a (penanda chata_notif_diajak sengaja tidak dihapus)
     nomorMuatAlamat++;
     nomorKirim++;
     sedangKirim = false;

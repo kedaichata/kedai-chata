@@ -1,4 +1,7 @@
 // public/notif.js
+// NTF.05a: ditambah dua fungsi untuk ajakan di layar "Pesanan terkirim" (pesan.js): `bisaDiajak()` dan
+//          `aktifkanUntukAjakan()`. Keduanya memakai alur aktifkan yang sama dengan tombol di Home (izin, berlangganan,
+//          push_daftar). Kode lama tidak diubah. Tanpa panggilan server baru.
 // NTF.05 (giliran 1): tombol "Aktifkan notifikasi" di Home, di bawah Bantuan (notifikasi.md NT6, NT5; Handoff #3).
 // Dimuat SETELAH akun.js (memakai window.KedaiAkun) dan inbox.js. Tidak menyentuh kerangka.js.
 //
@@ -269,6 +272,54 @@
   }
 
   // ------------------------------------------------------------
+  // NTF.05a: dipakai pesan.js untuk ajakan setelah order pertama
+  // ------------------------------------------------------------
+
+  // Syarat teknis yang sama dengan tombol di Home (tanpa syarat layar utama terlihat).
+  function bisaDiajak() {
+    return (
+      didukung() && kunciSah() && izinSaatIni() !== "denied" && !bacaPenanda()
+    );
+  }
+
+  // Alur aktifkan yang sama dengan tombol di Home, tetapi pesan hasilnya dikembalikan ke pemanggil
+  // (tidak ditulis ke elemen Home). Selalu selesai dengan { jenis, pesan }:
+  // "ok" | "blokir" | "belum" | "gagal" | "sibuk" | "batal" (sudah Keluar, abaikan).
+  function aktifkanUntukAjakan() {
+    if (sedangProses) return Promise.resolve({ jenis: "sibuk" });
+    if (!didukung() || !kunciSah()) {
+      return Promise.resolve({ jenis: "gagal", pesan: PESAN_BELUM_LENGKAP });
+    }
+    if (!navigator.onLine) {
+      return Promise.resolve({ jenis: "gagal", pesan: PESAN_OFFLINE });
+    }
+
+    sedangProses = true;
+    var nomor = ++nomorProses;
+    return mintaIzinLaluDaftar().then(
+      function (r) {
+        if (nomor !== nomorProses) return { jenis: "batal" };
+        sedangProses = false;
+        if (r.jenis === "ok") {
+          simpanPenanda();
+          segarkan(); // tombol di Home ikut hilang
+        } else if (r.jenis === "blokir") {
+          segarkan();
+        }
+        return r;
+      },
+      function () {
+        if (nomor !== nomorProses) return { jenis: "batal" };
+        sedangProses = false;
+        return {
+          jenis: "gagal",
+          pesan: navigator.onLine ? PESAN_UMUM : PESAN_OFFLINE,
+        };
+      },
+    );
+  }
+
+  // ------------------------------------------------------------
   // Nonaktifkan (dipanggil akun.js saat Keluar, giliran 2) dan reset
   // ------------------------------------------------------------
 
@@ -342,5 +393,7 @@
     nonaktifkan: nonaktifkan,
     reset: reset,
     segarkan: segarkan,
+    bisaDiajak: bisaDiajak, // NTF.05a, dipakai pesan.js
+    aktifkanUntukAjakan: aktifkanUntukAjakan, // NTF.05a, dipakai pesan.js
   });
 })();
