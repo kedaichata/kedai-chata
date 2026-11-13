@@ -398,4 +398,19 @@ Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Nama kolom d
 - **Belum terbukti:** isi kembalian `inbox_tulis` yang baru dan pencatatan hasil lewat `push_hasil_catat` baru terbukti saat push pertama terkirim (NTF.06, tes `order_baru`). Sampai `kedai` baru dideploy, tidak ada yang membaca kembalian baru, dan `kedai` yang live tetap jalan.
 - **Pilihan penulis** (tujuan `antrean` ditentukan di `inbox_tulis`, batas 100 dan 200, kembalian berbentuk `jsonb`, id order tidak ikut di kembalian): alasan belum tercatat.
 
+### 2026-11-13: Migration 13 Nov terbukti lewat push sungguhan (NTF.06)
+
+**Berkas tujuan:** `docs/database.md` bagian 9 (tempel paling bawah). Kejadian di lapangan, bukan keputusan baru. Sumber: `docs/notifikasi.md` bagian 9, Handoff #10, #11, dan #14. Yang paling akhir menang.
+
+- **Menimpa dua kalimat di blok 13 Nov di atas:** "**Belum terbukti** ... baru terbukti saat push pertama terkirim" dan "kodenya menyusul di sesi berikutnya". Keduanya sudah lewat: pengirim push (`kirim_push.ts`, dengan `inbox.ts` yang menyerahkan penerima) sudah di-deploy ke `kedai` dan dipakai.
+- **Terbukti (diperiksa di chat, tidak disimpan; akun dummy):**
+  - `inbox_tulis` versi baru: kembalian penerima terbaca `kedai`, dan push sampai ke penerima yang benar untuk `order_baru`, `setujui`, `tolak`, `catatan_customer`, `catatan_owner`, `status`, dan `batal_owner`.
+  - `push_langganan_ambil`: langganan aktif terambil dan push terkirim.
+  - `push_hasil_catat`: `terakhir_berhasil_pada` terisi dan cocok dengan jam log server (jam server).
+  - Log `kedai push:` menunjukkan `terkirim`, `mati 0`, `gagal 0`.
+- **Belum terbukti:**
+  - Jalur langganan mati (`p_mati`, mengubah `aktif` jadi false) belum pernah terpicu, karena semua log menunjukkan `mati 0`.
+  - `_batal.sql` belum pernah dicoba.
+- **Tidak ada perubahan** pada tabel, hak, pengaturan, atau fungsi SQL. Blok ini hanya mencatat status.
+
 ---
