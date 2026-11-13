@@ -43,6 +43,11 @@
 //   hanya satu panggilan order_detail. Id dari alamat atau pesan tidak dipercaya: aplikasi hanya mengecek bentuknya,
 //   yang memutuskan boleh atau tidak tetap server (404 atau 403, lalu layar menampilkan pesan umum yang sudah ada).
 //   Sedang mengirim aksi: fungsi mengembalikan false dan tidak mengubah apa pun.
+//
+// VIS.02: stepper status 5 titik (stepper-visual.md). Di renderDetail(), tepat sebelum kartu utama dipasang ke layar,
+//   dipanggil window.KedaiStepper.pasang(kartu, o) dari stepper.js. Blok ini berpagar: bila stepper.js belum termuat,
+//   langkah dilewati dan layar tampil seperti sebelumnya. Badge status tidak diganti. Semua logika stepper ada di
+//   stepper.js; berkas ini hanya menambah satu blok pemanggilan (tidak ada baris lama yang diubah).
 
 (function () {
   "use strict";
@@ -498,6 +503,14 @@
       if (o.isi_alamat) {
         kartu.appendChild(buat("p", "isian__bantuan", o.isi_alamat));
       }
+    }
+    // VIS.02: stepper status 5 titik (stepper.js), di bawah baris tipe, jam, dan alamat (VS4).
+    // Dilewati bila stepper.js belum termuat; badge status di atas tidak diganti (VS1).
+    if (
+      window.KedaiStepper &&
+      typeof window.KedaiStepper.pasang === "function"
+    ) {
+      window.KedaiStepper.pasang(kartu, o);
     }
     wadah.appendChild(kartu);
 

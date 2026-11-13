@@ -15,6 +15,8 @@
         <link rel="stylesheet" href="game.css" />
         <!-- RKS.03: gaya layar Ringkasan (kelas rks-), dimuat SETELAH style.css supaya memakai variabel warna :root -->
         <link rel="stylesheet" href="ringkasan.css" />
+        <!-- VIS.03: gaya stepper status di detail pesanan (kelas stp-), dimuat SETELAH style.css supaya memakai variabel warna :root -->
+        <link rel="stylesheet" href="stepper.css" />
     </head>
     <body>
         <!-- AKN.05: layar akun. Satu layar tampil dalam satu waktu; akun.js yang mengatur mana yang tampil.
@@ -2145,6 +2147,8 @@
         <script src="grup.js"></script>
         <!-- Layar Pesan customer (ORD.03): keranjang, form pesanan, Kirim; harus setelah akun.js (memakai window.KedaiAkun) -->
         <script src="pesan.js"></script>
+        <!-- VIS.03: stepper status 5 titik (stepper-visual.md). Berdiri sendiri, harus SEBELUM pesanan.js yang memanggilnya -->
+        <script src="stepper.js"></script>
         <!-- Layar Pesanan Saya customer (ORD.04): daftar, detail, Batalkan; harus setelah akun.js dan pesan.js (memakai KedaiPesan.teksBayar) -->
         <script src="pesanan.js"></script>
         <!-- Aksi owner di detail order (ORD.15): status, koreksi metode, alih hari, batal; dipakai orderowner.js, jadi dimuat sebelumnya -->

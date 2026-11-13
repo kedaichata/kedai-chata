@@ -116,3 +116,12 @@ Urutan: VIS.01, VIS.02, VIS.03, VIS.04. Mengubah status order dummy butuh akun o
 ---
 
 <!-- Berkas tujuan: docs/stepper-visual.md, tempel PALING BAWAH bagian 7. Append-only. -->
+
+### 2026-11-13: Denyut pada titik aktif ditambahkan (menimpa VS7)
+
+Keputusan ketua (disampaikan lewat PIC, sesi VIS.01). Alasan ketua selain yang tertulis di bawah belum tercatat.
+
+- **Titik aktif kini berdenyut** (cincin emas membesar lalu memudar, CSS saja). **Garis setelah titik aktif tetap bergerak (shimmer)**, tidak diganti. Dua animasi ini boleh jalan bersamaan.
+- **Menimpa** VS7 ("satu animasi saja", "bukan denyut") dan butir Ditunda "animasi tambahan atau denyut pada titik" di bagian 6. Yang paling akhir menang.
+- Aturan lain tetap: hanya saat order masih berjalan (Selesai, Ditolak, Dibatalkan tanpa animasi), hanya CSS tanpa timer JS atau requestAnimationFrame (VS14), dan mati bila HP meminta gerakan dikurangi.
+- Dampak: sedikit tambahan kerja HP untuk satu elemen (hanya transform dan opacity). Cek kelancaran di HP biasa saat VIS.04.

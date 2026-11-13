@@ -1,0 +1,152 @@
+/* public/stepper.css
+   VIS.01: gaya stepper status 5 titik di detail pesanan customer (stepper-visual.md).
+   Pengecualian dari "semua gaya di satu style.css" (VS13), mengikuti pola game.css dan ringkasan.css.
+   Dimuat SETELAH style.css (memakai variabel :root dari sana). Kelas berawalan stp-.
+   Murni tampilan: tanpa teks di sekitar stepper (VS3). Tanda centang dan silang dipasang stepper.js
+   lewat textContent (VS16). Hanya satu animasi, pada satu garis (VS7, VS14).
+
+   Susunan elemen yang diharapkan dari stepper.js (VIS.02):
+     .stp
+       .stp__titik   (x5, selang-seling dengan .stp__garis, 4 garis)
+       .stp__garis
+   Keadaan titik (tambahan pada .stp__titik):
+     (tanpa tambahan)   = belum tercapai: abu-abu redup, tanpa tanda
+     .stp__titik--lewat = terlewati: hijau Selesai + centang
+     .stp__titik--aktif = aktif: emas terang, pinggir tegas, sedikit lebih besar
+     .stp__titik--gagal = Ditolak atau Dibatalkan customer: merah + silang
+   Keadaan garis (tambahan pada .stp__garis):
+     (tanpa tambahan)   = abu-abu redup
+     .stp__garis--lewat = hijau (di antara dua titik yang sudah terlewati)
+     .stp__garis--gerak = shimmer pelan; hanya satu garis, tepat setelah titik aktif */
+
+.stp {
+    /* Warna lokal. Hijau sama dengan lencana Selesai (style.css), yang belum punya variabel sendiri. */
+    --stp-selesai: #2e7d32;
+    --stp-redup: #e3ded6;
+    --stp-garis-redup: #d9d3c9;
+
+    display: flex;
+    align-items: center;
+    /* Tinggi tetap supaya titik aktif (lebih besar) tidak menggeser layar */
+    min-height: 40px;
+    margin: 12px 0 4px;
+}
+
+/* ---- Titik: belum tercapai (bawaan) ---- */
+.stp__titik {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border: 2px solid var(--garis-tipis);
+    border-radius: 50%;
+    background: var(--stp-redup);
+    color: var(--putih);
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* ---- Titik terlewati: hijau + centang (makna tidak hanya warna, VS6) ---- */
+.stp__titik--lewat {
+    border-color: var(--stp-selesai);
+    background: var(--stp-selesai);
+}
+
+/* ---- Titik aktif: emas terang, pinggir tegas, lebih besar ----
+   Marun pekat tidak dipakai untuk status (desain.md 4.2). Kontras emas terang di latar terang tipis,
+   jadi pinggirnya emas redup yang lebih tegas dan ada cincin halus; nilai final dicek di HP (VIS.04). */
+.stp__titik--aktif {
+    position: relative;
+    width: 34px;
+    height: 34px;
+    border: 3px solid var(--emas-redup);
+    background: var(--emas-terang);
+    box-shadow: 0 0 0 3px rgba(226, 184, 74, 0.35);
+}
+
+/* Denyut (keputusan ketua 13 Nov 2026, menimpa VS7 "satu animasi saja"): cincin emas yang membesar
+   lalu memudar dari titik aktif. Hanya transform dan opacity (ringan untuk HP biasa, VS14).
+   Titik aktif hanya ada pada order yang masih berjalan, jadi Selesai, Ditolak, dan Dibatalkan
+   tidak pernah berdenyut. */
+.stp__titik--aktif::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border: 3px solid var(--emas-terang);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: stp-denyut 1.8s ease-out infinite;
+}
+
+@keyframes stp-denyut {
+    from {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    to {
+        transform: scale(1.7);
+        opacity: 0;
+    }
+}
+
+/* ---- Titik gagal (Ditolak, Dibatalkan oleh customer): merah + silang ---- */
+.stp__titik--gagal {
+    border-color: var(--bahaya);
+    background: var(--bahaya);
+}
+
+/* ---- Garis penghubung ---- */
+.stp__garis {
+    flex: 1 1 0;
+    min-width: 8px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--stp-garis-redup);
+}
+
+.stp__garis--lewat {
+    background: var(--stp-selesai);
+}
+
+/* ---- Satu-satunya animasi: kilau emas bergeser pelan pada garis setelah titik aktif (VS7).
+   Hanya CSS, tanpa timer JS dan tanpa requestAnimationFrame (VS14). ---- */
+.stp__garis--gerak {
+    background-color: var(--stp-garis-redup);
+    background-image: linear-gradient(
+        90deg,
+        var(--stp-garis-redup) 0%,
+        var(--emas-terang) 50%,
+        var(--stp-garis-redup) 100%
+    );
+    background-size: 200% 100%;
+    background-repeat: repeat-x;
+    animation: stp-geser 1.8s linear infinite;
+}
+
+@keyframes stp-geser {
+    from {
+        background-position: 200% 0;
+    }
+    to {
+        background-position: 0% 0;
+    }
+}
+
+/* HP diminta mengurangi gerakan: kilau berhenti, garis tetap diberi warna emas redup
+   supaya tetap terbaca sebagai "bagian yang sedang berjalan" (VS14) */
+@media (prefers-reduced-motion: reduce) {
+    /* Denyut juga berhenti; cincin statis di box-shadow titik aktif tetap menandai posisinya */
+    .stp__titik--aktif::after {
+        animation: none;
+        display: none;
+    }
+
+    .stp__garis--gerak {
+        animation: none;
+        background-image: none;
+        background-color: var(--emas-redup);
+    }
+}
