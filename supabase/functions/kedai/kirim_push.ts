@@ -22,6 +22,9 @@
 // KEJADIAN_PUSH_AKTIF: daftar kejadian yang sudah dipasang pengirim. Tahap 1 hanya `order_baru`;
 // tahap 2 menambah `setujui` dan `tolak`.
 // Kejadian lain ditambah bertahap (cukup menambah nama di daftar ini, lalu deploy ulang).
+// NTF.06 tahap 3 (keputusan ketua, 13 Nov 2026): semua kejadian lain ditambah sekaligus KECUALI `batal_owner`
+// (penjaga yang menekan push batal harus membuka Antrean; belum dites dengan akun penjaga, jadi ditahan).
+// Kejadian tahap 3 dirilis tanpa tes satu per satu; dipantau lewat log `kedai push:`.
 
 type Penerima = {
   akun: string;
@@ -48,7 +51,20 @@ type Langganan = {
 };
 
 // NTF.06 tahap 2: `setujui` dan `tolak` ditambah (penerima dan teks dari fungsi SQL `inbox_tulis`, tabel 4.1).
-const KEJADIAN_PUSH_AKTIF = new Set<string>(["order_baru", "setujui", "tolak"]);
+// Tahap 2 (versi lama): const KEJADIAN_PUSH_AKTIF = new Set<string>(["order_baru", "setujui", "tolak"]);
+// Tahap 3: `batal_owner` sengaja belum ada (tunggu tes penjaga). Menambahkannya = cukup tambah nama di sini lalu deploy ulang.
+const KEJADIAN_PUSH_AKTIF = new Set<string>([
+  "order_baru",
+  "setujui",
+  "tolak",
+  "status",
+  "catatan_customer",
+  "catatan_owner",
+  "batal_customer",
+  "alih_hari",
+  "foto_setelah_selesai",
+  "order_wakil",
+]);
 
 const REGEX_UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
