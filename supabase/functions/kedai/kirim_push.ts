@@ -19,7 +19,8 @@
 //   { judul, isi, nomor (opsional), tujuan ("order" atau "antrean"), id (opsional, id order) }
 // Teks isi berasal dari fungsi SQL (sama dengan teks inbox): umum, tanpa data pribadi (NT2, aturan 16).
 //
-// KEJADIAN_PUSH_AKTIF: daftar kejadian yang sudah dipasang pengirim. Tahap 1 hanya `order_baru`.
+// KEJADIAN_PUSH_AKTIF: daftar kejadian yang sudah dipasang pengirim. Tahap 1 hanya `order_baru`;
+// tahap 2 menambah `setujui` dan `tolak`.
 // Kejadian lain ditambah bertahap (cukup menambah nama di daftar ini, lalu deploy ulang).
 
 type Penerima = {
@@ -46,7 +47,8 @@ type Langganan = {
   auth: string;
 };
 
-const KEJADIAN_PUSH_AKTIF = new Set<string>(["order_baru"]);
+// NTF.06 tahap 2: `setujui` dan `tolak` ditambah (penerima dan teks dari fungsi SQL `inbox_tulis`, tabel 4.1).
+const KEJADIAN_PUSH_AKTIF = new Set<string>(["order_baru", "setujui", "tolak"]);
 
 const REGEX_UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
