@@ -143,4 +143,27 @@ Keputusan ketua (disampaikan lewat PIC, sesi VIS.01). Alasan ketua selain yang t
 
 **Saran giliran berikutnya:** selesaikan sisa VIS.04, terutama order Dibatalkan oleh owner (pastikan stepper tidak muncul dan layar tidak rusak) dan mode pesawat. Lampirkan `AGENTS.md` + `stepper-visual.md`. Commit yang hanya mengubah docs boleh memakai `[skip ci]`; sebelum push cek tiga hal anti-nyasar.
 
+### Handoff #2 | 2026-11-14 | [FREN]
+
+**Tugas selesai:** VIS.04 (tes tampilan). Dengan ini seluruh rangkaian VIS.01 sampai VIS.04 selesai dan sudah dicentang di sheet.
+
+**File yang diubah:** tidak ada. Sesi ini murni tes, tanpa perubahan kode.
+
+**Keputusan baru:** tidak ada.
+
+**Hasil tes (customer di HP Android, owner di Brave Mac, akun dan order dummy):** semua sesuai spesifikasi dan tanpa glitch.
+
+- Dibatalkan oleh owner: stepper tidak tampil, badge dan kartu pembatal normal (VS10). Dibatalkan oleh customer: stepper tampil.
+- Ditolak: titik 1 merah ✕, sisanya abu-abu, tanpa animasi (VS9).
+- Mundur satu langkah dan Alih hari: stepper turun ke titik 2 aktif, denyut hanya di titik 2 (VS8).
+- Siap disajikan (Makan di warung): titik 1 sampai 3 ✓, titik 4 berdenyut, titik 5 abu-abu (VS5).
+- Mode pesawat: aplikasi terbuka dengan pesan "tidak ada internet" dan tombol Coba lagi; setelah internet menyala, login dan detail order normal, stepper tampil.
+- Kelancaran denyut dan kilau garis di HP Android: smooth.
+- Bukti diperiksa di chat dan tidak disimpan.
+
+**Koreksi Handoff #1:** blok catatan pengecualian CSS `stepper.css` ternyata sudah ada di `AGENTS.md` bagian 12 (blok 2026-11-13, "CSS terpisah untuk stepper status"), jadi tidak ada yang perlu ditempel.
+
+**Belum beres:** pemeriksaan "tidak ada `innerHTML` baru" (daftar VIS.04) belum dilakukan sebagai pemeriksaan kode; `stepper.js` tidak ditempel di sesi ini. Tampilan tidak menunjukkan masalah, dan VS16 sudah mensyaratkan `textContent` dan `createElement`. Bila ingin ditutup tuntas, tempel `public/stepper.js` di sesi berikutnya.
+
+**Saran giliran berikutnya:** tidak ada pekerjaan VIS yang tersisa. Keluhan tampilan stepper dari pemakaian nyata (misalnya order Dibatalkan oleh owner yang tanpa stepper) ditampung di review pemakaian (`LNC.05`), lihat bagian 6 "Ditunda".
 ---
