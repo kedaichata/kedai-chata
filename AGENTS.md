@@ -263,4 +263,12 @@ Keputusan ketua (sesi NTF.06, 13 Nov 2026). Alasan ketua selain yang tertulis di
 - **Tidak berlaku untuk aksi lain.** Order, setujui, status, catatan, dan lainnya tetap atomik di fungsi SQL.
 - `inbox_tulis` kini mengembalikan daftar penerima (bukan jumlah baris) supaya penerima push tidak dihitung dua kali (IB14). Aturan penerimanya tidak berubah. Sumber: `supabase/migrations/20261113_inbox_tulis_penerima.sql`.
 
----
+### 2026-11-13: Dokumen `ringkasan.md` (prefix RKS)
+
+Keputusan ketua (sesi strategi 13 Nov 2026). Sumber: docs/ringkasan.md.
+
+- **Peta Dokumentasi (bagian 5):** tambah baris `docs/ringkasan.md`, isi: "Ringkasan order 7 hari untuk owner: kartu angka, grafik per hari, hari terlaris dan tersepi", prefix sheet **RKS**.
+- **Fitur hanya membaca.** Tidak ada tabel baru, tidak ada tulis-database, dan tidak ada pengecualian baru dari aturan bagian 7.
+- **Pengecualian "angka di database" (bagian 1):** angka 7 hari tetap di fungsi karena judul fitur memang "7 hari" (RK14, bawaan; ketua boleh meminta jadi pengaturan).
+- **Kode baru `kedai`:** aksi `ringkasan_7hari` di berkas baru `ringkasan.ts` (mengikuti blok 9 Nov 2026). Berkas JS baru wajib didaftarkan di cache `sw.js` (bagian 7, butuh "OK").
+- **Bagian 1, rencana versi:** B31 tidak lagi di daftar kandidat `bonus.md`; ia masuk versi 1.

@@ -172,4 +172,15 @@ Keputusan ketua (13 Nov 2026): kode versi 1 sudah jalan, temuan perilaku dikumpu
 **Tetap di tempatnya, tidak diulang di sini:** pengingat otomatis order menggantung, jam tenang, pengaturan per jenis notifikasi, notifikasi lewat WA atau email, dan dukungan iPhone lebih dalam (B30; `notifikasi.md` bagian 8).
 
 **Pertentangan dengan blok lama:** butir "Titik merah ikut diperbarui saat kembali ke layar" di blok 2026-11-11 (Kandidat versi 2 dari Kotak masuk) sudah dikerjakan di NTF.07 (Handoff #15 `notifikasi.md`, titik merah disegarkan lewat aksi `status`). Butir itu tidak lagi kandidat; yang paling akhir menang.
+
+### 2026-11-13: B31 naik ke versi 1 jadi dokumen `ringkasan.md`
+
+Keputusan ketua (sesi strategi 13 Nov 2026). Alasan: owner meminta fitur ini ikut versi 1, dan rilis diharapkan cepat. Sumber: docs/ringkasan.md.
+
+- **B31 (Ringkasan order 7 hari terakhir untuk owner) tidak lagi kandidat.** Sudah menjadi dokumen sendiri `docs/ringkasan.md` (prefix sheet RKS) dan dikerjakan di versi 1. Baris B31 di bagian 2 dibiarkan; yang paling akhir menang.
+- **Isi versi 1 sengaja ramping:** total order, total nilai uang, rata-rata per hari, grafik jumlah order dan nilai uang per hari, hari terlaris dan tersepi.
+- **Dua hal yang diminta ketua tetapi ditunda demi rilis cepat:** pembagian per tipe order dan menu terlaris. Keduanya susulan, urutannya ditentukan ketua.
+- **B22 (rekap harian dan pendapatan) tetap kandidat**; ringkasan ini bukan pendapatan final (memuat order Menunggu).
+- **B29 tetap tidak dikerjakan:** order menggantung ikut terhitung di ringkasan.
+
 ---

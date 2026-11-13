@@ -413,4 +413,14 @@ Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Nama kolom d
   - `_batal.sql` belum pernah dicoba.
 - **Tidak ada perubahan** pada tabel, hak, pengaturan, atau fungsi SQL. Blok ini hanya mencatat status.
 
+### 2026-11-13: Aksi `ringkasan_7hari` dan fungsi baca-saja (usulan, final di sesi kode)
+
+Rujukan: docs/ringkasan.md RK10. Yang paling akhir menang.
+
+- **Bagian 5 (aksi):** tambah `ringkasan_7hari`, siapa: **owner saja**, dokumen: `ringkasan.md` RK10.
+- **Fungsi SQL baru (baca-saja):** satu fungsi yang menghitung per hari (7 hari, hari ini ke belakang, jam server WIB) jumlah order dan jumlah `total` dari `public."order"` berstatus bukan Ditolak dan bukan Dibatalkan, menurut `hari_target`. Pola fungsi tetap: `SECURITY DEFINER`, `search_path` kosong, `public.` eksplisit, `EXECUTE` hanya `service_role`. Nama persis ditetapkan di berkas migration.
+- **Bagian 2 dan 3:** **tidak ada tabel baru dan tidak ada perubahan hak tabel.**
+- **Bagian 4:** tidak ada kunci pengaturan baru (RK14).
+- **Dampak:** hanya menambah satu fungsi; tidak menyentuh data. Dibatalkan dengan SQL pembatalan di repo. Butuh "OK" ketua sebelum dijalankan.
+
 ---

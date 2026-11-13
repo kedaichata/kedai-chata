@@ -191,3 +191,11 @@ Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Yang paling 
 **Bagian lain SEC-25 tidak berubah:** akun A tidak bisa menonaktifkan atau memakai langganan akun B; itu tetap **ditolak**. Bukti tetap balasan server dan query baca-saja (bukti tidak disimpan, bagian 4 butir 6).
 
 **Dampak pada sheet:** baris SEC-25 perlu disesuaikan oleh manusia (sheet tidak dibagikan ke AI).
+
+### 2026-11-13: Keamanan Ringkasan 7 hari (SEC-36, SEC-37)
+
+Sumber: docs/ringkasan.md RK1 dan RK15. Prefix sheet SEC.
+
+- **SEC-36 (P0):** customer atau penjaga memanggil `ringkasan_7hari` dibalas 403; tanpa token 401. Menegakkan aturan 8 (hak per peran dipaksa di server, bukan hanya tombol disembunyikan). Bukti: balasan server.
+- **SEC-37 (P0):** isi balasan `ringkasan_7hari` hanya angka dan tanggal; tanpa nama, nomor WA, alamat, atau isi catatan. Menegakkan aturan 18. Bukti: balasan server dengan data dummy.
+- Keduanya dites setelah RKS.02 (aksi sudah ada di server).
