@@ -1,6 +1,8 @@
 // supabase/functions/kedai/inbox.ts
 // INB.03: aksi `inbox_daftar` (Kotak masuk, inbox.md IB1, IB5, IB6, IB8, IB9, IB11, IB15; security.md SEC-34).
 // INB.04 (giliran 1): ditambah pembantu `tulisInbox`, pembungkus pemanggil fungsi SQL `inbox_tulis` (inbox.md IB12).
+// NTF.06 (tahap 1): `tulisInbox` kini membaca daftar penerima yang dikembalikan `inbox_tulis` (migration 13 Nov 2026)
+//         dan menyerahkannya ke pengirim push di `kirim_push.ts` (kejadian yang aktif saat ini: `order_baru`).
 // Berkas BARU, dipanggil dari `index.ts` (satu import, satu blok sambungan, satu `case`). Kode lama tidak dipindah
 // (keputusan ketua 9 Nov 2026, AGENTS.md bagian 12). Pola sama dengan `order_status.ts`, `foto.ts`, dan lainnya.
 //
@@ -26,6 +28,13 @@
 //   - Kegagalan APA PUN (galat fungsi SQL maupun jaringan) tidak dilempar: aksi order tetap berhasil (IB12).
 //   - Yang dicatat di log hanya nama kejadian dan jenis galat, tanpa data pengguna. Galat `status_tidak_cocok`
 //     (status order tidak cocok dengan kejadian = salah pasang) ditandai "SALAH PASANG" supaya mudah dicari di log.
+//
+// NTF.06: setelah inbox berhasil ditulis, daftar penerima dari `inbox_tulis` diserahkan ke `kirimPush` (kirim_push.ts).
+//   - Pengiriman push jalan di latar belakang (`EdgeRuntime.waitUntil` bila ada); bila tidak ada, ditunggu supaya
+//     proses tidak terpotong. Kegagalan push TIDAK membatalkan aksi dan TIDAK mengubah balasan (NT4).
+//   - Kejadian yang belum dipasang di `kirim_push.ts` dilewati tanpa galat.
+
+import { buatPengirimPush } from "./kirim_push.ts";
 
 // Bentuk yang sama dengan `Pengguna` di index.ts.
 type Pengguna = { id: string };
@@ -63,6 +72,9 @@ const PETA_GALAT_INBOX: PetaGalat = {
 
 export function buatAksiInbox(alat: AlatKedai) {
   const { klien, balas, galat, galatDariDb } = alat;
+
+  // NTF.06: pengirim push memakai klien database yang sama.
+  const { kirimPush, kejadianAktif } = buatPengirimPush({ klien });
 
   // ------------------------------------------------------------
   // Aksi: inbox_daftar (inbox.md IB5, IB6, IB9, IB11; security.md SEC-34)
@@ -122,14 +134,16 @@ export function buatAksiInbox(alat: AlatKedai) {
   // Isian: `pelaku` (id akun dari token), `kejadian` (kode kejadian yang dikenal fungsi SQL: order_baru,
   // catatan_customer, catatan_owner, batal_customer, batal_owner, setujui, tolak, status, foto_setelah_selesai,
   // order_wakil, alih_hari), `orderId` (uuid order). Penerima dihitung fungsi SQL, bukan dari sini.
+  // NTF.06: bila inbox berhasil ditulis dan kejadiannya sudah aktif di pengirim push, penerima dikirimi push.
   // ------------------------------------------------------------
   async function tulisInbox(
     pelaku: string,
     kejadian: string,
     orderId: string,
   ): Promise<void> {
+    let penerima: unknown = null;
     try {
-      const { error } = await klien.rpc("inbox_tulis", {
+      const { data, error } = await klien.rpc("inbox_tulis", {
         p_pelaku: pelaku,
         p_kejadian: kejadian,
         p_order_id: orderId,
@@ -145,9 +159,29 @@ export function buatAksiInbox(alat: AlatKedai) {
           jenis = "galat:" + (error.code ?? "");
         }
         console.error("kedai inbox: gagal menulis |", kejadian, "|", jenis);
+        return;
       }
+      penerima = data;
     } catch (_e) {
       console.error("kedai inbox: gagal tersambung |", kejadian);
+      return;
+    }
+
+    // NTF.06: kirim push (hanya kejadian yang sudah aktif). Tidak pernah melempar galat.
+    try {
+      if (!kejadianAktif(kejadian)) return;
+      if (!Array.isArray(penerima) || penerima.length === 0) return;
+
+      const tugas = kirimPush(kejadian, orderId, penerima);
+      // deno-lint-ignore no-explicit-any
+      const waktuJalan = (globalThis as any).EdgeRuntime;
+      if (waktuJalan && typeof waktuJalan.waitUntil === "function") {
+        waktuJalan.waitUntil(tugas);
+      } else {
+        await tugas;
+      }
+    } catch (_e) {
+      console.error("kedai push: gagal memulai |", kejadian);
     }
   }
 
