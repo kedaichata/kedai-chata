@@ -845,16 +845,16 @@ Tidak ada perubahan di `sw.js`, `akun.js`, migration, atau `kedai`; tidak ada de
 - Belum dicoba di HP Android. Ragu `performance.now()` ikut berjalan saat HP lama ditidurkan (bila tidak, refresh bisa terlewat); layak dites sekali.
 - Perilaku overlay Kotak masuk saat push ditekan belum teruji. Bila overlay terbuka saat push masuk, daftarnya tidak ikut disegarkan (tidak dikerjakan di NTF.07).
 - Dari Handoff #14, tidak berubah: layar kunci Android untuk `batal_owner` (SEC-22) belum dicek, baris SEC-22 jangan dicentang; `batal_customer`, `alih_hari`, `foto_setelah_selesai`, `order_wakil` dirilis tanpa tes sendiri; push `status` ke penjaga belum teruji; NTF.08 belum dikerjakan; logika `push_daftar` dan `push_nonaktifkan` baru terbukti penuh di NTF.08.
-- Blok `docs/database.md` bagian 9 untuk migration 13 Nov belum ditulis.
 - Teks layar Order wakil ("Belum ada notifikasi otomatis ke layar HP") perlu diperbarui.
 - Cek jadwal pembersihan foto jalan sendiri setelah Minggu 15 Nov 2026 02.00 WIB (FTO.07).
 
 **Saran giliran berikutnya:**
 
-1. Blok `docs/database.md` untuk migration 13 Nov (docs murni, boleh `[skip ci]`).
-2. NTF.08: sesi tes notifikasi (Android; SEC-22; SEC-25; kuota panggilan).
-3. Lampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #8 sampai #15), `security.md`, dan berkas yang relevan.
+1. NTF.08: sesi tes notifikasi (Android; SEC-22; SEC-25; kuota panggilan).
+2. Lampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #8 sampai #15), `security.md`, dan berkas yang relevan.
 
----
+**Sudah beres:**
+
+- blok database.md untuk migration 13 Nov sudah ditulis.
 
 ---
