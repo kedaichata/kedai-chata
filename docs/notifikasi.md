@@ -573,4 +573,111 @@ Tidak ada perubahan di `public/` dan tidak ada deploy `kedai`.
 - Urutan: kode ditulis, disalin ke repo, `kedai` di-deploy (urutan aman `AGENTS.md` bagian 8, tanpa `--no-verify-jwt`), lalu tes `order_baru` dengan akun dummy (customer memesan, owner dummy menerima push). Setelah itu cek `terakhir_berhasil_pada` lewat query baca-saja.
 - Commit kode tanpa `[skip ci]`.
 
+<!-- Berkas tujuan: docs/notifikasi.md bagian 9, tempel PALING BAWAH (di bawah Handoff #9). Append-only. -->
+
+### Handoff #10 | 2026-11-13 | ketua
+
+**Tugas:** NTF.06 (pengirim push), lanjutan Handoff #9. Tahap 1 (`order_baru`) selesai dan terbukti. Tahap 2 (`setujui`, `tolak`) sudah di-deploy tetapi **belum dites dan belum di-commit**. Sesi dihentikan di tengah tes karena ketua harus pergi. NTF.06 **belum dicentang** di sheet.
+
+**File yang diubah:**
+
+- **Sudah di-commit dan di-push** (commit `d263e2e`, `main`, 13 Nov 2026, tanpa `[skip ci]`, Actions hijau): `supabase/functions/kedai/kirim_push.ts` (baru) dan `supabase/functions/kedai/inbox.ts` (utuh; `tulisInbox` kini menyerahkan penerima ke pengirim push). `index.ts` tidak berubah.
+- **Sudah di-deploy ke `kedai`, BELUM di-commit:** `supabase/functions/kedai/kirim_push.ts` versi tahap 2 (hanya `KEJADIAN_PUSH_AKTIF` ditambah `setujui` dan `tolak`, plus komentar). `git status` terakhir: hanya berkas itu yang berubah. **Kode yang live di server kini berbeda dari repo sampai berkas ini di-commit.**
+
+Tidak ada migration baru. Token deploy sudah dibersihkan dua kali (`[]`).
+
+**Keputusan baru:**
+
+- Tahap 2 dipasang atas arahan ketua ("lanjut tahap 2 sekarang"). Alasan ketua selain itu belum tercatat.
+- **Pilihan penulis, belum dibahas dengan ketua, alasan belum tercatat:** TTL push 3600 detik, batas tunggu 8 detik per pengiriman, urgensi normal, `VAPID_KONTAK` otomatis diberi awalan `mailto:` bila belum ada; id order dikirim di isi push hanya untuk tujuan `order`; pengiriman jalan di latar belakang lewat `EdgeRuntime.waitUntil` bila ada.
+- Cara menambah kejadian push: cukup menambah nama di `KEJADIAN_PUSH_AKTIF` di `kirim_push.ts`, lalu deploy ulang `kedai`.
+
+**Terbukti (diperiksa di chat, tidak disimpan):**
+
+- Tahap 1, HP owner Android (Brave, dipasang lewat Brave), akun dummy: push `order_baru` terkirim (log `kedai push: order_baru | terkirim 1 | mati 0 | gagal 0`); `terakhir_berhasil_pada` terisi dan cocok dengan jam log (`push_hasil_catat` jalan); notifikasi ditekan membuka **detail order** yang bersangkutan (bukan sekadar daftar); layar kunci hanya "Ada order baru." tanpa data pribadi (SEC-22 lulus untuk `order_baru` saja). Pasangan kunci VAPID cocok dan impor `npm:web-push@3.6.7` jalan di `kedai`.
+- Log menunjukkan `terkirim 1` untuk order #81 (09:29:13), #82 (09:36:28), #83 (09:45:23), #84 (09:45:49).
+- Deploy tahap 2 berhasil (sepuluh berkas, project yang benar).
+
+**State terakhir (sedang menunggu):**
+
+- Ketua sedang **menunggu notifikasi order baru #83 dan #84 muncul di HP owner**. Server sudah mengirim (log di atas), jadi bila belum muncul, penyebabnya di sisi HP (kemungkinan penghemat baterai Android atau Brave tertidur), bukan kode. Notifikasi pertama (#81) juga sempat telat. Belum dipastikan apakah #83 dan #84 sudah sampai dan berapa lama telatnya.
+- Customer dummy aktif di **laptop** (Brave), karena ketua hanya punya satu HP. Langganan push customer itu aktif (query: satu baris `peran` kosong, satu baris `owner`). Penjaga **belum punya** langganan aktif.
+- Order uji tahap 2 sudah dibuat dan **belum diapa-apakan**: **#83 (order A, untuk dicoba Setujui)** dan **#84 (order B, untuk dicoba Tolak)**, keduanya Menunggu.
+
+**Belum beres:**
+
+- **Tes tahap 2 belum dijalankan.** Urutan: Brave laptop tetap berjalan (notifikasi macOS untuk Brave aktif); owner (HP) menekan Setujui pada #83, lalu Tolak pada #84. Hasil benar: laptop menerima "Pesananmu sudah disetujui." dan "Pesananmu belum bisa diterima. Buka aplikasi untuk detailnya."; HP owner **tidak** bunyi untuk dua aksi itu (pelaku tidak dikabari); notifikasi yang diklik membuka detail order yang tepat; log `kedai push: setujui | terkirim 1 ...` dan `kedai push: tolak | ...`. Push untuk penjaga (saat Setujui) tidak teruji karena belum ada langganan penjaga; catat sebagai belum teruji.
+- **Commit tahap 2 belum dibuat.** Setelah tes lulus: `git add supabase/functions/kedai/kirim_push.ts`, commit **tanpa `[skip ci]`** (isinya kode), cek anti-nyasar (`pwd`, `git remote -v`, email commit terakhir; semuanya milik ketua), baru push. Bila tes gagal dan harus mundur, deploy ulang dari commit `d263e2e`.
+- SEC-22 baru terbukti untuk `order_baru`. Baris SEC-22 **jangan dicentang** sebelum kejadian lain dites. Tes di laptop tidak punya layar kunci; yang dicek hanya teks notifikasi.
+- Tahap 3 belum dipasang: `status`, `catatan_customer`, `catatan_owner`, `batal_customer`, `batal_owner` (penjaga membuka Antrean), `alih_hari`, `foto_setelah_selesai`, `order_wakil`. Mundur satu langkah tetap tanpa push.
+- Blok `docs/database.md` bagian 9 untuk migration 13 Nov (`inbox_tulis` mengembalikan penerima, `push_langganan_ambil`, `push_hasil_catat`) **belum ditulis** (sudah disebut di Handoff #9).
+- Hasil `_batal.sql` migration 13 Nov belum pernah dicoba.
+- Dari Handoff #8, tidak berubah: NTF.05a (ajakan setelah order pertama, menyentuh `pesan.js`) menyusul setelah NTF.06; logika `push_daftar` dan `push_nonaktifkan` baru terbukti penuh di NTF.08 (perangkat ke-6, akun lain tidak bisa mematikan langganan akun B); perilaku overlay Kotak masuk saat push ditekan belum teruji.
+- **Cek jadwal pembersihan foto jalan sendiri setelah Minggu 15 Nov 2026 02.00 WIB (FTO.07).** Jadwal otomatis pertama: Sabtu 14 Nov 2026 pukul 19.00 UTC.
+- Teks layar Order wakil ("Belum ada notifikasi otomatis ke layar HP") perlu diperbarui saat kejadian `order_wakil` sudah dipasang.
+- Dashboard Supabase dan profil browser ketua: logout dan tutup bila masih terbuka.
+
+**Saran giliran berikutnya:**
+
+1. Lampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #3 sampai #10), `database.md`, `security.md`, `supabase/functions/kedai/index.ts`, `inbox.ts`, `kirim_push.ts` (versi tahap 2), dan `push.ts`.
+2. Mulai dengan menanyakan hasil notif #83 dan #84 di HP owner. Lalu jalankan tes tahap 2 (Setujui #83, Tolak #84), centang tidak dilakukan, dan commit `kirim_push.ts` setelah lulus.
+3. Lanjut tahap 3 bertahap (disarankan `status` dan `catatan` dulu, lalu `batal` dan `alih_hari`, lalu `foto` dan `order_wakil`). Tiap tahap: ubah `KEJADIAN_PUSH_AKTIF`, deploy `kedai` lewat urutan aman bagian 8 (tanpa `--no-verify-jwt`), tes dengan akun dummy. Tahap `batal_owner` perlu tes khusus: penjaga yang menekan notifikasi membuka Antrean (butuh langganan penjaga).
+4. Tulis blok `database.md` bagian 9 untuk migration 13 Nov (docs murni, boleh `[skip ci]`), dan tempel Handoff #10 ini (docs murni, boleh `[skip ci]` bila dicommit tersendiri).
+
+<!-- Berkas tujuan: docs/notifikasi.md bagian 9, tempel PALING BAWAH (di bawah Handoff #10). Append-only. -->
+
+### Handoff #11 | 2026-11-13 | ketua
+
+**Tugas:** NTF.06 (pengirim push), lanjutan Handoff #10. Tahap 2 (`setujui`, `tolak`) lulus tes dan tahap 3 sudah dipasang. **Push dirilis untuk dipakai owner.** `batal_owner` sengaja belum aktif. NTF.06 belum dicentang di sheet (lihat "Belum beres").
+
+**File yang diubah** (semua sudah di-push ke `main` 13 Nov 2026, tanpa `[skip ci]`, cek anti-nyasar lulus sebelum tiap push):
+
+- Commit `82c4eda`: `supabase/functions/kedai/kirim_push.ts` (tahap 2: `setujui`, `tolak`). Ini menutup selisih "kode live berbeda dari repo" di Handoff #10.
+- Commit `90952e4`: `supabase/functions/kedai/kirim_push.ts` (tahap 3, utuh; hanya daftar `KEJADIAN_PUSH_AKTIF` dan komentar kepala yang berubah, baris lama dijadikan komentar).
+
+`kedai` di-deploy dua kali (sepuluh berkas, project yang benar, tanpa `--no-verify-jwt`, token dibersihkan, hasil `[]`). Kode live sama dengan commit `90952e4`. Tidak ada migration dan tidak ada perubahan di `public/`.
+
+**Keputusan baru (ketua, 13 Nov 2026):**
+
+- **Rilis tanpa tes satu per satu untuk semua kejadian push.** Kejadian yang belum dites dan push untuk penjaga **dites sendiri oleh ketua**; bila ada masalah, ketua membuka sesi sendiri. Alasan ketua: owner (ibu ketua) sudah ingin memakainya, dan sedikit hal yang meleset bisa diterima. Alasan ketua selain itu belum tercatat.
+- Dasar teknis yang dibahas di chat: push pelengkap, bukan inti (NT4, NT12); kegagalan push tidak membatalkan order; kabar tetap ada lewat Kotak masuk dan buka aplikasi.
+- Tahap 3 memasang tujuh kejadian sekaligus: `status`, `catatan_customer`, `catatan_owner`, `batal_customer`, `alih_hari`, `foto_setelah_selesai`, `order_wakil`. Nama dicocokkan dengan daftar kode di `inbox.ts`.
+- **`batal_owner` sengaja belum dipasang.** Alasan: penjaga yang menekan push batal harus membuka Antrean (pengecualian NT8) dan belum ada tes dengan akun penjaga. Memasangnya: tambah nama di `KEJADIAN_PUSH_AKTIF` di `kirim_push.ts`, lalu deploy ulang `kedai`.
+- Pilihan penulis, tidak ditolak ketua, alasan belum tercatat: butir baru **NTF.06b** ("aktifkan push `batal_owner` setelah tes penjaga") disarankan ditambah di sheet.
+- **Pertentangan dengan catatan lama:** `AGENTS.md` bagian 10 butir 2 menulis "tanpa bukti jangan diberi lulus". Keputusan rilis di atas **tidak mengubah itu**: kejadian yang belum dites hanya dirilis, tidak dicentang lulus.
+
+**Terbukti (diperiksa di chat, tidak disimpan; owner di HP Android, customer di Brave laptop, akun dummy):**
+
+- Log server `kedai push: <kejadian> | terkirim 1 | mati 0 | gagal 0` untuk `order_baru`, `setujui`, `tolak`, `catatan_customer`, `catatan_owner`, dan `status` (dua kali, Diproses dan Diantar). Tidak ada baris `mati` atau `gagal`.
+- Notifikasi sampai di penerima yang benar dengan teks umum: owner untuk `order_baru` dan catatan customer; customer untuk `setujui`, `tolak`, catatan owner, dan status. Alasan tolak tidak muncul di notifikasi.
+- Klik notifikasi membuka detail order yang tepat (diuji untuk `setujui` dan `tolak`; alasan tolak tampil di aplikasi).
+- Pelaku tidak dikabari: HP owner diam saat Setujui, Tolak, dan ubah status.
+
+**Pengamatan:**
+
+- Push ke Brave **kadang telat** (beberapa menit pada `setujui` dan `tolak`; cepat pada `setujui` dan `status` berikutnya), sedangkan server selalu cepat. Pola sporadis, kemungkinan di sisi push service. Untuk review pemakaian (`LNC.05`). Pesan ke owner: notifikasi hanya bantuan, status yang pasti ada di aplikasi.
+
+**Belum beres:**
+
+- **Belum dites (dirilis tanpa tes sendiri):** `batal_customer`, `alih_hari`, `foto_setelah_selesai`, `order_wakil`.
+- **Belum aktif:** `batal_owner`.
+- **Belum teruji:** semua push ke penjaga (belum ada langganan penjaga), termasuk `setujui` dan `status`; penjaga menekan push membuka Antrean; **SEC-22 di layar kunci Android** (tes di laptop tidak punya layar kunci, jadi baris SEC-22 **jangan dicentang**); pelaku diam untuk dua kejadian catatan (belum dikonfirmasi satu per satu); id order milik customer lain lewat push (NTF.08); perilaku overlay Kotak masuk saat push ditekan.
+- **NTF.06 belum dicentang**: `batal_owner` belum dipasang. Ketua yang memutuskan apakah ditutup sebagai tahap 1 sampai 3 dengan butir NTF.06b.
+- Pemantauan: lihat log `kedai push:` (Edge Functions, kedai, Logs) di hari-hari awal. Baris `gagal` atau `mati` yang berulang, atau kejadian yang tidak muncul sama sekali, berarti ada yang perlu dilihat.
+- Komentar di `inbox.ts` baris 5 ("kejadian yang aktif saat ini: `order_baru`") sudah usang; tidak berpengaruh, dibiarkan (`AGENTS.md` aturan 2).
+- Teks layar Order wakil ("Belum ada notifikasi otomatis ke layar HP") perlu diperbarui karena `order_wakil` sudah aktif (hanya penjaga yang dapat push).
+- **Blok `docs/database.md` bagian 9 untuk migration 13 Nov belum ditulis** (`inbox_tulis` mengembalikan penerima, `push_langganan_ambil`, `push_hasil_catat`; sudah disebut di Handoff #9 dan #10).
+- `_batal.sql` migration 13 Nov belum pernah dicoba. Bila dipakai, deploy `kedai` versi lama dulu.
+- Dari Handoff #8, tidak berubah: NTF.05a (ajakan setelah order pertama, menyentuh `pesan.js`); NTF.07; logika `push_daftar` dan `push_nonaktifkan` baru terbukti penuh di NTF.08 (perangkat ke-6, akun A tidak bisa mematikan langganan akun B).
+- **Cek jadwal pembersihan foto jalan sendiri setelah Minggu 15 Nov 2026 02.00 WIB (FTO.07).** Jadwal otomatis pertama: Sabtu 14 Nov 2026 pukul 19.00 UTC.
+- Dashboard Supabase dan profil browser ketua: logout dan tutup bila masih terbuka.
+
+**Saran giliran berikutnya:**
+
+1. Ketua menguji sendiri kejadian yang belum dites dan akun penjaga (aktifkan notifikasi dari akun penjaga dummy, lalu coba `setujui` dan `status`). Bila ada masalah, buka sesi baru dengan melampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #8 sampai #11), `database.md`, `security.md`, `kedai/index.ts`, `inbox.ts`, `kirim_push.ts`, dan `push.ts`.
+2. Setelah tes penjaga lulus: pasang `batal_owner` (butir NTF.06b), tes penjaga menekan push batal membuka Antrean, lalu cek SEC-22 di layar kunci Android.
+3. Tulis blok `docs/database.md` untuk migration 13 Nov (docs murni, boleh `[skip ci]`).
+4. Lanjut NTF.05a, lalu NTF.07 dan NTF.08.
+5. Commit yang hanya berisi docs/md boleh memakai `[skip ci]`; commit yang menyentuh kode tidak.
+
 ---
