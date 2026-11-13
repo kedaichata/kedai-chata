@@ -381,4 +381,21 @@ Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Nama kolom d
 - **Belum terbukti:** logika (pemindahan akun, perangkat ke-6, `push_nonaktifkan` akun lain tidak berefek); baru bisa dites di NTF.08.
 - **Pilihan penulis** (nama fungsi, nilai kembalian, kunci penasihat, `terakhir_berhasil_pada` dikosongkan saat daftar ulang, staf nonaktif boleh mematikan): alasan belum tercatat.
 
+### 2026-11-13: `inbox_tulis` mengembalikan penerima, fungsi `push_langganan_ambil` dan `push_hasil_catat` (NTF.06)
+
+**Berkas tujuan:** `docs/database.md` bagian 9 (tempel paling bawah). Rujukan: `docs/notifikasi.md` bagian 9, Handoff #9, dan blok `AGENTS.md` bertanggal sama. Yang paling akhir menang.
+
+- **Berkas SQL:** `supabase/migrations/20261113_inbox_tulis_penerima.sql` (dan `_batal`), `supabase/templates/20261113_inbox_tulis_penerima_cek.sql`. Dijalankan dan dicek 13 Nov 2026 (cek A sampai F cocok). Tabel, hak tabel, pengaturan, dan data lama **tidak diubah**.
+- **Bagian 5 (`inbox_tulis` dibuat ulang):** fungsi dihapus lalu dibuat ulang dalam satu transaksi karena tipe kembalian berubah dari integer menjadi `jsonb`. Aturan penerima, teks, dan pemeriksaan status **sama persis** dengan versi 11 Nov. Kembalian kini array, satu elemen per penerima yang baru ditulis ke inbox: `akun`, `teks`, `nomor_order`, `tujuan`. `tujuan` = `antrean` hanya untuk penjaga pada kejadian `batal_owner` (pengecualian NT8), selain itu `order`. Array kosong bila tidak ada penerima. Hak `EXECUTE` diberikan ulang hanya ke `service_role`.
+- **Bagian 5 (fungsi baru, `SECURITY DEFINER`, `search_path` kosong, `EXECUTE` hanya `service_role`, terbukti lewat cek A sampai C):**
+  - `push_langganan_ambil(p_akun uuid[])`: hanya membaca. Mengembalikan array `{id, akun, endpoint, p256dh, auth}` untuk langganan **aktif** milik akun-akun itu. Isinya hanya untuk dipakai `kedai`, tidak dikirim ke aplikasi dan tidak ditulis di log. Batas 100 akun per panggilan.
+  - `push_hasil_catat(p_berhasil uuid[], p_mati uuid[])`: satu langkah atomik. `p_berhasil` mengisi `terakhir_berhasil_pada` (jam server); `p_mati` mengubah `aktif` jadi false (tanpa DELETE). Hanya baris yang masih aktif yang diubah. Batas 200 id per daftar. Mengembalikan `{diperbarui, dinonaktifkan}`.
+- **Pengecualian tulis (menimpa bagian 5, kalimat tentang pengiriman push):** `inbox_tulis` dan `push_hasil_catat` dipanggil `kedai` setelah aksi berhasil; kegagalannya tidak membatalkan aksi (IB12, NT4). Berlaku hanya untuk dua fungsi ini.
+- **Bagian 3 (hak):** tidak berubah. Terbukti lewat cek D dan E: `langganan_push` untuk `service_role` hanya `INSERT, SELECT, UPDATE`; `inbox` hanya `INSERT, SELECT`; `anon` dan `authenticated` nol.
+- **Bagian 5 (aksi `kedai`):** tidak ada aksi baru. Pengirim push berjalan di dalam `tulisInbox`, dan kodenya menyusul di sesi berikutnya.
+- **Kode galat baru:** `daftar_terlalu_panjang` (dari dua fungsi baru). Tidak dipetakan; hanya tercatat di log `kedai`, tidak sampai ke layar.
+- **Pembatalan:** `_batal.sql` membuang dua fungsi baru dan mengembalikan `inbox_tulis` versi 11 Nov. **Deploy `kedai` versi sebelum pengirim push lebih dulu**, karena versi pengirim mengharapkan `inbox_tulis` mengembalikan daftar. Belum pernah dicoba.
+- **Belum terbukti:** isi kembalian `inbox_tulis` yang baru dan pencatatan hasil lewat `push_hasil_catat` baru terbukti saat push pertama terkirim (NTF.06, tes `order_baru`). Sampai `kedai` baru dideploy, tidak ada yang membaca kembalian baru, dan `kedai` yang live tetap jalan.
+- **Pilihan penulis** (tujuan `antrean` ditentukan di `inbox_tulis`, batas 100 dan 200, kembalian berbentuk `jsonb`, id order tidak ikut di kembalian): alasan belum tercatat.
+
 ---

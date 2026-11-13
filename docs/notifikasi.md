@@ -533,4 +533,44 @@ Ikut terbukti: Brave bisa berlangganan push tanpa pengaturan tambahan.
 - Setelah NTF.06: **NTF.05a** (menyentuh `pesan.js`).
 - Commit yang hanya berisi docs/md boleh memakai `[skip ci]`; commit yang menyentuh kode tidak.
 
+### Handoff #9 | 2026-11-13 | ketua
+
+**Tugas:** NTF.06 (pengirim push), baru langkah SQL dan rahasia dashboard. **Kode pengirim belum ditulis.** Belum dicentang di sheet.
+
+**File yang diubah** (satu commit `154d9a4`, sudah di-push ke `main` 13 Nov 2026, tanpa `[skip ci]`):
+
+- `supabase/migrations/20261113_inbox_tulis_penerima.sql` (dan `_batal.sql`)
+- `supabase/templates/20261113_inbox_tulis_penerima_cek.sql`
+- `AGENTS.md` (blok 13 Nov: pengecualian tulis-database diperluas)
+
+Tidak ada perubahan di `public/` dan tidak ada deploy `kedai`.
+
+**Keputusan baru (ketua, 13 Nov 2026):**
+
+- `inbox_tulis` kini mengembalikan **daftar penerima** (array JSON: `akun`, `teks`, `nomor_order`, `tujuan`) sebagai ganti jumlah baris. Fungsi dibuat ulang; aturan penerima dan teks tidak berubah. Alasan: penerima push tidak dihitung dua kali (IB14).
+- Pengecualian tulis-database diperluas ke `push_hasil_catat` (hanya mencatat hasil kirim push; kegagalannya tidak membatalkan aksi, NT4).
+- `VAPID_KONTAK` memakai email warung yang sama dengan pengirim email reset password. Alasan ketua selain itu belum tercatat.
+- **Pilihan penulis, tidak ditolak ketua, alasan belum tercatat:** tujuan `antrean` (penjaga, `batal_owner`) ditentukan di `inbox_tulis`; batas `push_langganan_ambil` 100 akun dan `push_hasil_catat` 200 id; rancangan kode: `npm:web-push@3.6.7` lewat `import()` dinamis dalam `try/catch`, pengiriman di latar belakang (`EdgeRuntime.waitUntil` bila ada), tahap 1 hanya kejadian `order_baru` lewat daftar kejadian aktif di kode.
+
+**Terbukti (diperiksa di chat, tidak disimpan):**
+
+- Migration sukses di SQL Editor. Cek A sampai F cocok: tiga fungsi (satu per nama, kembalian `jsonb`, `SECURITY DEFINER`, `search_path` kosong); `EXECUTE` hanya `service_role`, tanpa PUBLIC; hak tabel `langganan_push` (`INSERT, SELECT, UPDATE`) dan `inbox` (`INSERT, SELECT`) tidak berubah; ada 1 langganan aktif dari 1 akun.
+- Lima rahasia ada di dashboard: `KUNCI_SECRET_KEDAI`, `RAHASIA_PENJADWAL`, `VAPID_PUBLIK`, `VAPID_PRIVAT` (bentuk benar, 43 karakter), `VAPID_KONTAK`. Nilainya tidak pernah ditempel ke chat.
+
+**Belum beres:**
+
+- Kode pengirim: berkas baru `supabase/functions/kedai/kirim_push.ts` dan `inbox.ts` utuh. `index.ts` tidak berubah. Belum deploy `kedai`.
+- Kecocokan pasangan kunci VAPID dan kecocokan `web-push` dengan Edge Function baru terbukti saat push pertama terkirim.
+- Akun pemilik satu-satunya langganan aktif belum dipastikan berperan owner. Tes `order_baru` butuh owner dummy dengan langganan aktif (bila bukan, aktifkan notifikasi dari akun owner dummy).
+- `_batal.sql` belum pernah dicoba. Bila dipakai, deploy `kedai` versi lama dulu.
+- Blok `docs/database.md` bagian 9 untuk migration ini belum ditulis.
+- Dashboard Supabase perlu di-logout bila belum.
+- Dari Handoff #8, tidak berubah: NTF.05a menyusul setelah NTF.06; logika `push_daftar` dan `push_nonaktifkan` baru terbukti di NTF.08; cek jadwal pembersihan foto jalan sendiri setelah Minggu 15 Nov 2026 02.00 WIB (FTO.07); teks layar Order wakil diperbarui saat push sudah jalan; perilaku overlay Kotak masuk saat push ditekan belum teruji.
+
+**Saran giliran berikutnya (NTF.06 lanjutan, ⚠️ High-Risk):**
+
+- Lampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #9), `database.md`, `security.md`, `supabase/functions/kedai/index.ts`, `inbox.ts`, dan `push.ts` (pola). Balas "gas" untuk memulai kode.
+- Urutan: kode ditulis, disalin ke repo, `kedai` di-deploy (urutan aman `AGENTS.md` bagian 8, tanpa `--no-verify-jwt`), lalu tes `order_baru` dengan akun dummy (customer memesan, owner dummy menerima push). Setelah itu cek `terakhir_berhasil_pada` lewat query baca-saja.
+- Commit kode tanpa `[skip ci]`.
+
 ---
