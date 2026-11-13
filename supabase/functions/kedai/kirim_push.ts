@@ -25,6 +25,9 @@
 // NTF.06 tahap 3 (keputusan ketua, 13 Nov 2026): semua kejadian lain ditambah sekaligus KECUALI `batal_owner`
 // (penjaga yang menekan push batal harus membuka Antrean; belum dites dengan akun penjaga, jadi ditahan).
 // Kejadian tahap 3 dirilis tanpa tes satu per satu; dipantau lewat log `kedai push:`.
+// NTF.06 tahap 4 (keputusan ketua, 13 Nov 2026, via PIC RAC): `batal_owner` ditambah. Ketua: tidak perlu tes untuk
+// semua aksi, tes cukup di bagian yang berubah. Sisi penjaga (tekan push batal membuka Antrean) belum teruji karena
+// belum ada langganan penjaga aktif.
 
 type Penerima = {
   akun: string;
@@ -53,6 +56,7 @@ type Langganan = {
 // NTF.06 tahap 2: `setujui` dan `tolak` ditambah (penerima dan teks dari fungsi SQL `inbox_tulis`, tabel 4.1).
 // Tahap 2 (versi lama): const KEJADIAN_PUSH_AKTIF = new Set<string>(["order_baru", "setujui", "tolak"]);
 // Tahap 3: `batal_owner` sengaja belum ada (tunggu tes penjaga). Menambahkannya = cukup tambah nama di sini lalu deploy ulang.
+// Tahap 4: `batal_owner` kini ada di daftar (lihat catatan kepala berkas).
 const KEJADIAN_PUSH_AKTIF = new Set<string>([
   "order_baru",
   "setujui",
@@ -61,6 +65,7 @@ const KEJADIAN_PUSH_AKTIF = new Set<string>([
   "catatan_customer",
   "catatan_owner",
   "batal_customer",
+  "batal_owner",
   "alih_hari",
   "foto_setelah_selesai",
   "order_wakil",
