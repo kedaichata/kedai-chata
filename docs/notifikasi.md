@@ -727,4 +727,88 @@ Tidak ada migration baru. Token deploy sudah dibersihkan dua kali (`[]`).
 2. Lampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #8 sampai #12), `public/pesan.js`, dan `public/notif.js` terbaru dari repo lokal.
 3. Setelahnya: NTF.07 (penyegaran saat kembali ke layar, batas NT10, saat push masuk, tombol Segarkan), lalu NTF.06b dan tes penjaga, lalu NTF.08.
 
+### Handoff #13 | 2026-11-13 | RAC
+
+**Tugas:** NTF.05a (ajakan lembut "Aktifkan notifikasi" sekali setelah order pertama terkirim), melanjutkan Handoff #12. Tes 1 sampai 4 lulus dan NTF.05a sudah dicentang di sheet.
+
+**File yang diubah** (satu commit `f12420b`, sudah di-push ke `main` 13 Nov 2026, tanpa `[skip ci]`, Actions hijau; cek anti-nyasar lulus sebelum push):
+
+- `public/pesan.js` (kartu "Mau dikabari?")
+- `public/notif.js` (`bisaDiajak()` dan `aktifkanUntukAjakan()`)
+- `docs/notifikasi.md` (Handoff #11 dan #12)
+
+Tidak ada perubahan di `index.html`, `sw.js`, `config.js`, migration, atau `kedai`. Tidak ada deploy `kedai`.
+
+**Keputusan baru:**
+
+- Tes dilakukan setelah push, di production, dengan akun dummy (sesuai AGENTS.md bagian 10 butir 1). Yang ditahan sebelum tes lulus hanya centang di sheet, bukan push.
+- Perangkat uji Brave desktop, sesuai keputusan ketua di Handoff #6.
+- Tes 5 (izin diblokir) sengaja tidak dites, demi rilis cepat. Alasan ketua selain itu belum tercatat.
+
+**Terbukti (diperiksa di chat, tidak disimpan; Brave desktop, akun customer dummy):**
+
+1. Order pertama: kartu muncul di layar "Pesanan terkirim", pop-up izin tidak muncul sebelum Aktifkan ditekan (NT6).
+2. Aktifkan: kartu berganti "Notifikasi sudah aktif di HP ini.", dua tombol hilang, tombol Home hilang, `chata_notif_diajak` dan `chata_notif_aktif` = 1, satu baris `langganan_push` aktif dengan `dibuat_pada` baru dan `terakhir_berhasil_pada` kosong (wajar, belum ada push terkirim).
+3. Order kedua: kartu tidak muncul lagi.
+4. Nanti saja (penanda dihapus lewat Console, lalu order baru): kartu hilang, hanya `chata_notif_diajak` = 1, tombol Home tetap ada, order berikutnya tanpa kartu.
+
+**Belum beres:**
+
+- Tes 5 (izin diblokir: pesan diblokir tampil dan tombol Home hilang) tidak dites.
+- Baris `langganan_push` browser tes masih `aktif = true`, karena penanda dihapus lewat Console, bukan lewat Keluar. Sisa cara tes, bukan galat aplikasi.
+- Dari Handoff #11 dan #12, tidak berubah: `batal_owner` belum aktif (NTF.06b, menunggu tes penjaga); `batal_customer`, `alih_hari`, `foto_setelah_selesai`, `order_wakil` dirilis tanpa tes sendiri; semua push ke penjaga belum teruji; SEC-22 di layar kunci Android belum teruji (baris jangan dicentang); NTF.06 belum dicentang; NTF.07 dan NTF.08 belum dikerjakan.
+- Blok `docs/database.md` bagian 9 untuk migration 13 Nov belum ditulis.
+- Teks layar Order wakil ("Belum ada notifikasi otomatis ke layar HP") perlu diperbarui.
+- Cek jadwal pembersihan foto jalan sendiri setelah Minggu 15 Nov 2026 02.00 WIB (FTO.07).
+- Push ke Brave kadang telat sementara server cepat (untuk review pemakaian, `LNC.05`).
+
+**Saran giliran berikutnya:**
+
+1. Ketua atau PIC menguji akun penjaga (aktifkan notifikasi dari akun penjaga dummy, coba `setujui` dan `status`), lalu pasang `batal_owner` (NTF.06b) dan tes penjaga menekan push batal membuka Antrean.
+2. NTF.07: penyegaran saat kembali ke layar (batas NT10), saat push masuk, tombol Segarkan.
+3. Tulis blok `docs/database.md` bagian 9 untuk migration 13 Nov (docs murni, boleh `[skip ci]`).
+4. NTF.08: sesi tes notifikasi.
+5. Lampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #8 sampai #13), `security.md`, dan berkas yang relevan. Commit yang hanya berisi docs/md boleh memakai `[skip ci]`; commit yang menyentuh kode tidak.
+
+### Handoff #14 | 2026-11-13 | RAC
+
+**Tugas:** NTF.06 tahap 4 (push `batal_owner`). Selesai dan sudah dicentang di sheet. Menimpa kalimat "`batal_owner` belum dipasang" di Handoff #11 dan #13; yang paling akhir menang.
+
+**File yang diubah** (satu commit `0fdc508`, sudah di-push ke `main` 13 Nov 2026, tanpa `[skip ci]`; cek anti-nyasar lulus):
+
+- `supabase/functions/kedai/kirim_push.ts` (hanya `"batal_owner"` ditambah di `KEJADIAN_PUSH_AKTIF` dan dua komentar; kode dan komentar lama tidak dihapus)
+
+`kedai` di-deploy 13 Nov 2026 (sepuluh berkas, project yang benar, tanpa `--no-verify-jwt`, "OK" ketua sudah ada). Token dibersihkan (`[]`) dan dashboard sudah logout. Tidak ada migration dan tidak ada perubahan di `public/`.
+
+**Keputusan baru:**
+
+- Ketua (13 Nov 2026, via WA lewat RAC): tidak perlu tes untuk semua aksi karena terlalu lama, tetapi kodenya tetap dikerjakan; tes cukup di bagian yang berubah. Ini mengoreksi bacaan Handoff #11 bahwa `batal_owner` ditahan menunggu tes penjaga.
+- Alasan ketua selain itu belum tercatat.
+
+**Terbukti (diperiksa di chat, tidak disimpan; owner di HP Android, penjaga di HP Android lain, customer di Brave laptop, akun dummy):**
+
+1. Log server: `kedai push: batal_owner | terkirim 2 | mati 0 | gagal 0`.
+2. Customer: notifikasi "Pesananmu dibatalkan. Buka aplikasi untuk detailnya." sampai, tanpa alasan di teks. Klik membuka detail order, alasan batal terbaca di aplikasi.
+3. Penjaga: notifikasi "Order #N dibatalkan." sampai. Klik membuka **Antrean**, bukan detail order (pengecualian NT8 terbukti dengan push sungguhan).
+4. Owner pelaku: diam.
+5. Ikut terbukti: `order_baru` ke owner dan `setujui` ke penjaga ("Ada order disetujui.") sampai di HP.
+
+**Belum beres:**
+
+- Layar kunci Android untuk `batal_owner` (SEC-22) belum dicek; yang dicek hanya teks notifikasi. Baris SEC-22 jangan dicentang.
+- Dirilis tanpa tes sendiri: `batal_customer`, `alih_hari`, `foto_setelah_selesai`, `order_wakil`. Push `status` ke penjaga belum teruji.
+- Push ke Brave kadang telat sementara server cepat (untuk review pemakaian, `LNC.05`).
+- NTF.07 dan NTF.08 belum dikerjakan; logika `push_daftar` dan `push_nonaktifkan` baru terbukti penuh di NTF.08.
+- Blok `docs/database.md` bagian 9 untuk migration 13 Nov belum ditulis.
+- Teks layar Order wakil ("Belum ada notifikasi otomatis ke layar HP") perlu diperbarui.
+- Cek jadwal pembersihan foto jalan sendiri setelah Minggu 15 Nov 2026 02.00 WIB (FTO.07).
+- Perilaku overlay Kotak masuk saat push ditekan belum teruji.
+
+**Saran giliran berikutnya:**
+
+1. NTF.07: penyegaran saat kembali ke layar (batas NT10), saat push masuk, tombol Segarkan.
+2. Blok `docs/database.md` untuk migration 13 Nov (docs murni, boleh `[skip ci]`).
+3. NTF.08: sesi tes notifikasi.
+4. Lampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #8 sampai #14), `security.md`, dan berkas yang relevan.
+
 ---
