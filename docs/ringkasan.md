@@ -207,3 +207,31 @@ Mengikuti `desain.md` 7 Nov 2026: item "Ringkasan order 7 hari" ada di Home owne
 - Tampilan di layar lebar (laptop) belum dibahas.
 
 **Saran giliran berikutnya:** RKS.04 di sesi ketua (P0). Lampirkan `AGENTS.md` + `ringkasan.md` + `database.md` + `security.md`. Pakai akun dan data dummy; bukti wajib: hasil query baca-saja dibandingkan dengan angka di layar. Kasus: Ditolak dan Dibatalkan tidak ikut, order Besok tidak ikut, hari kosong tampil 0, hari ini tidak dinilai, seri, dan keadaan kosong. `ringkasan-test.md` dibuat belakangan. Sebelum push apa pun, cek tiga hal anti-nyasar. Logout GitHub dan Supabase di profil browser setelah selesai.
+
+### Handoff #3 | 2026-11-14 | ketua
+
+**Tugas selesai:** RKS.04 (tes terstruktur ringkasan 7 hari; tinggal dicentang di sheet). Semua butir RKS.01 sampai RKS.04, SEC-36, dan SEC-37 kini selesai.
+
+**File yang diubah (baru semua, tabel dan fungsi lama tidak disentuh):**
+
+- `supabase/templates/20261114_ringkasan_tes_data_cek.sql` (empat query baca-saja A sampai D)
+- `supabase/templates/20261114_02_ringkasan_uji_skenario.sql` (uji skenario; berisi tulisan `ISI_ID_OWNER_DI_SINI` yang diganti hanya di dashboard, jangan simpan ID di repo)
+
+**Hasil tes** (dengan data dummy; bukti diperiksa di chat dan tidak disimpan):
+
+- Layar dan query baca-saja cocok: 64 order, Rp 1.082.000, rata-rata 9,1; tujuh angka per hari; terlaris Selasa 10 Nov, tersepi Senin 9 Nov; Ditolak, Dibatalkan, dan order Besok tidak ikut.
+- Hari ini tidak dinilai: terbukti pada data nyata (hari ini paling sepi tetapi tidak tampil sebagai tersepi) dan pada skenario hari kosong.
+- Enam skenario di dalam transaksi yang dibatalkan otomatis (semua perubahan data dibatalkan, terbukti lewat query B dan C sesudahnya): hari kosong tampil 0 dan bisa jadi tersepi; seri jumlah diputus nilai (terlaris: nilai lebih besar, tersepi: nilai lebih kecil, walau harinya lebih lama); seri jumlah dan nilai diputus hari yang lebih baru; keadaan kosong (total 0, `belum_ada_perbedaan` true, terlaris dan tersepi null).
+
+**Keputusan baru (ketua):**
+
+- `_batal.sql` RKS.01 **tidak akan dicoba**; urusannya ditutup. Alasan belum tercatat. Dampaknya diketahui: pembatal belum terbukti jalan, risiko kecil karena fungsinya baca-saja.
+- **RK9 tetap:** hari ini tidak ikut dinilai terlaris atau tersepi. Owner sempat mengusulkan hari ini ikut dinilai, lalu setuju tetap seperti RK9. Alasan belum tercatat.
+
+**Belum beres:**
+
+- Tampilan layar untuk hari bernilai 0 dan teks "Belum ada order dalam 7 hari terakhir" belum teramati langsung (server sudah terbukti). Prioritas P2; dilihat saat `LNC.01` membersihkan data uji.
+- Tidak diwajibkan RKS.04 dan tidak dites: akun staf nonaktif (`akun_nonaktif`), kode `bukan_owner` dari fungsi SQL untuk customer, jalur galat 500, dan jumlah panggilan di tab Network selama jeda Segarkan.
+- `ringkasan-test.md` belum dibuat (dibuat belakangan); dua berkas di atas bisa jadi bahan awalnya.
+
+**Saran giliran berikutnya:** tidak ada pekerjaan RKS yang tertunda. Fitur ini siap masuk review pemakaian versi 1 (`LNC.05`).
