@@ -483,4 +483,54 @@ Tidak ada perubahan di `sw.js`, `akun.js`, `config.js`, `index.html`, migration,
 - Kontrak aksi `push_daftar` dan `push_nonaktifkan` ada di Handoff #3.
 - Commit yang hanya berisi docs/md boleh memakai `[skip ci]`; commit yang menyentuh kode tidak.
 
+### Handoff #8 | 2026-11-13 | ketua
+
+**Tugas:** NTF.05 (tombol "Aktifkan notifikasi" di Home dan `push_nonaktifkan` saat Keluar). Selesai dan sudah dicentang di sheet. Butir baru **NTF.05a** (ajakan setelah order pertama) sudah ditambah ke sheet.
+
+**File yang diubah** (satu commit `aa70704`, sudah di-push ke `main` 13 Nov 2026, tanpa `[skip ci]`; "OK" ketua sudah ada):
+
+- `public/notif.js` (baru)
+- `public/index.html` (satu blok tombol di bawah Bantuan, satu `<script>`)
+- `public/akun.js` (hanya `keluar()`: memanggil `KedaiNotif.nonaktifkan()` sebelum `signOut`, dan `KedaiNotif.reset()` di `selesai`; baris `signOut` lama dijadikan komentar)
+- `public/config.js` (ditambah `VAPID_PUBLIC_KEY`, kunci publik saja)
+- `public/sw.js` (`notif.js` didaftarkan di cache; `chata-v23` jadi `chata-v24`)
+
+Tidak ada migration dan tidak ada deploy `kedai`.
+
+**Keputusan baru (ketua, 13 Nov 2026; yang paling akhir menang):**
+
+- **Tombol "Aktifkan notifikasi" ada di Home, tepat di bawah Bantuan, untuk semua peran.** Menggantikan NT6 ("menu Akun" dan ajakan staf di layar utama). Alasan ketua selain yang dibahas (Home sudah jadi pintu utama sejak HOM.01) belum tercatat.
+- **Ajakan lembut setelah order pertama dipindah ke NTF.05a**, dikerjakan setelah NTF.06. Alasan: sebelum NTF.06 server belum mengirim push, jadi ajakan menjanjikan hal yang belum terjadi; dan `pesan.js` (alur order yang dipakai nyata) tidak disentuh di NTF.05. Menimpa bagian "ajakan setelah order pertama" di langkah NTF.05 (bagian 5).
+- **Tombol tetap dirilis di NTF.05** meski push dari server baru jalan di NTF.06. Langganan tersimpan lebih awal; selama jeda, penekan tombol belum menerima apa-apa.
+- Draft isi sheet NTF.05a disiapkan AI atas permintaan ketua (pengecualian AGENTS.md aturan 3 dan 8).
+- **Pilihan penulis, tidak ditolak ketua, alasan belum tercatat:** setelah aktif tombol hilang (bukan jadi "Matikan"); tombol juga tidak tampil bila peramban tidak mendukung push atau izin diblokir. Penanda "sudah aktif" di `localStorage` kunci `chata_notif_aktif` (nilai "1", tanpa data pribadi, per perangkat bukan per akun), dihapus saat Keluar. `nonaktifkan()` dibatasi sekitar 3 detik dan kegagalannya tidak menahan Keluar. Langganan di peramban tidak di-unsubscribe saat Keluar (dipakai ulang akun berikutnya); yang dinonaktifkan adalah barisnya di server.
+
+**Terbukti (diperiksa di chat, tidak disimpan; Brave desktop mode biasa, akun dummy, query baca-saja):**
+
+1. Tombol tampil, izin, berlangganan, `push_daftar`: satu baris `langganan_push` aktif.
+2. Keluar: barisnya tetap ada, `aktif` jadi false (tanpa DELETE).
+3. Masuk lagi: tombol tampil lagi; menekannya mengaktifkan barisnya dan memperbarui `dibuat_pada`.
+4. Keluar saat offline: tidak tersangkut; baris tetap aktif karena server tidak terjangkau (wajar).
+5. Pindah akun di HP yang sama (akun dummy kedua): tetap satu baris, `akun` berganti, `aktif = true`, `dibuat_pada` lebih baru.
+
+Ikut terbukti: Brave bisa berlangganan push tanpa pengaturan tambahan.
+
+**Belum beres:**
+
+- Jumlah panggilan `push_nonaktifkan` di tab Network belum diperiksa (hasil database sudah membuktikan aksinya jalan).
+- Dari Handoff #3, masuk NTF.08: perangkat ke-6 (yang terlama nonaktif); akun A tidak bisa mematikan langganan akun B (SEC-25); isian salah dibalas 400.
+- Kecocokan pasangan kunci VAPID (publik di `config.js`, privat di pwd manager) baru terbukti saat push pertama terkirim (NTF.06) dan diterima.
+- Kunci privat VAPID belum di dashboard Supabase (NTF.06, butuh "OK").
+- Bila sesi habis tanpa lewat Keluar lalu akun lain masuk di HP yang sama, penanda tombol bisa tertinggal: tombol tidak tampil dan HP masih mengirim ke akun lama sampai ada yang menekan tombol atau Keluar. Dibiarkan; dicatat bila ternyata sering terjadi.
+- Cek jadwal pembersihan foto jalan sendiri setelah Minggu 15 Nov 2026 02.00 WIB (FTO.07).
+- Teks layar Order wakil ("Belum ada notifikasi otomatis ke layar HP") diperbarui saat push sudah jalan.
+- Catatan lingkungan: tes awal sempat di mode incognito sehingga izin terblokir (bukan galat aplikasi); izin Brave mode biasa di Mac adik ketua aktif untuk tes. Baris langganan terakhir milik akun dummy kedua masih `aktif = true` di database.
+
+**Saran giliran berikutnya (NTF.06, ⚠️ High-Risk, butuh penjelasan dampak dan "OK" ketua; bila yang bertugas bukan ketua, AI membuat ringkasan untuk diteruskan lewat WA):**
+
+- Lampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #3 sampai #8), `database.md`, `security.md`, `supabase/functions/kedai/index.ts`, `push.ts`, `inbox.ts`, berkas yang memanggil `tulisInbox` (titik pemasangan, IB14), dan `public/sw.js`.
+- Isi: kunci privat VAPID dipasang di dashboard (rahasia fungsi `kedai`, tidak lewat chat); pustaka push dengan versi dipatok; pengirim push di titik pemanggilan `tulisInbox` yang sama, per kejadian tabel 4.1, dengan bentuk isi push dari Handoff #4 (`judul`, `isi`, `nomor`, `tujuan`, `id`). Satu kali coba, kegagalan tidak membatalkan aksi (NT4). Dipasang bertahap per kejadian.
+- Setelah NTF.06: **NTF.05a** (menyentuh `pesan.js`).
+- Commit yang hanya berisi docs/md boleh memakai `[skip ci]`; commit yang menyentuh kode tidak.
+
 ---
