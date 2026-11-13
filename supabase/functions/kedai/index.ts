@@ -76,6 +76,10 @@
 //         SEC-09, SEC-25). Kodenya ada di BERKAS BARU `push.ts` (folder yang sama), diimpor di bawah; kode lama tidak
 //         dipindah. Fungsi SQL: 20261112_02_langganan_push_fungsi.sql (sudah dijalankan dan lulus cek SEBELUM berkas ini
 //         dideploy). Pengirim push TIDAK ada di sini (NTF.06); belum ada yang memanggil dua aksi ini sampai NTF.05.
+// RKS.02: ditambah `ringkasan_7hari` (ringkasan.md RK1, RK10; owner saja; hanya membaca; semua isian dari aplikasi
+//         diabaikan, akun dari token, SEC-06, SEC-36). Kodenya ada di BERKAS BARU `ringkasan.ts` (folder yang sama),
+//         diimpor di bawah; kode lama tidak dipindah. Fungsi SQL: 20261113_02_ringkasan_7hari.sql (sudah dijalankan
+//         dan lulus cek SEBELUM berkas ini dideploy).
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -101,6 +105,8 @@ import { buatAksiFoto } from "./foto.ts";
 import { buatAksiInbox } from "./inbox.ts";
 // NTF.03: aksi push_daftar dan push_nonaktifkan ada di berkas terpisah.
 import { buatAksiPush } from "./push.ts";
+// RKS.02: aksi ringkasan_7hari ada di berkas terpisah.
+import { buatAksiRingkasan } from "./ringkasan.ts";
 
 // ------------------------------------------------------------
 // Pengaturan dasar
@@ -1524,6 +1530,19 @@ const { aksiPushDaftar, aksiPushNonaktifkan } = buatAksiPush({
 });
 
 // ------------------------------------------------------------
+// RKS.02: sambungan ke berkas ringkasan.ts. Hanya perlu klien, bacaPeran, balas, galat, dan galatDariDb.
+// ------------------------------------------------------------
+
+const { aksiRingkasan7Hari } = buatAksiRingkasan({
+  // deno-lint-ignore no-explicit-any
+  klien: admin as any,
+  bacaPeran,
+  balas,
+  galat,
+  galatDariDb,
+});
+
+// ------------------------------------------------------------
 // Pintu masuk
 // ------------------------------------------------------------
 
@@ -1640,6 +1659,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
         return await aksiPushDaftar(req, pengguna, isi);
       case "push_nonaktifkan":
         return await aksiPushNonaktifkan(req, pengguna, isi);
+      case "ringkasan_7hari":
+        return await aksiRingkasan7Hari(req, pengguna, isi);
       default:
         return galat(req, 400, "Aksi tidak dikenal.");
     }
