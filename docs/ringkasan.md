@@ -177,3 +177,33 @@ Keputusan ketua (sesi strategi 13 Nov 2026). Menambah RK11.
 ### 2026-11-13: Letak item Ringkasan di Home
 
 Mengikuti `desain.md` 7 Nov 2026: item "Ringkasan order 7 hari" ada di Home owner, bukan menu Lainnya. Layar dibuka sebagai tab tersembunyi "ringkasan" dengan tombol Kembali ke Home dan tombol Segarkan sendiri (RKS.03). Gaya di `ringkasan.css`.
+
+### Handoff #2 | 2026-11-13 | FREN
+
+**Tugas selesai:** RKS.03 (layar Ringkasan; tinggal dicentang di sheet). RKS.01, RKS.02, SEC-36, dan SEC-37 sudah dicentang sebelumnya.
+
+**File yang diubah:**
+
+- Baru: `public/ringkasan.js`, `public/ringkasan.css`.
+- Diubah (hanya tambahan, kode lama tidak dihapus): `public/kerangka.js` (tab tersembunyi "ringkasan"), `public/index.html` (link CSS, panel, item Home jadi tombol, script), `public/sw.js` (cache `chata-v24` jadi `chata-v25`, dua berkas masuk daftar cache; "OK" ketua sudah diberikan).
+- Satu commit `047a709` di `main`. Tiga cek anti-nyasar lolos sebelum push. Tanpa `[skip ci]` (isi commit memuat kode). `style.css` tidak disentuh.
+
+**Isi:** item "Ringkasan order 7 hari" di Home owner membuka layar baru: kartu angka (total nilai, total order, rata-rata), dua grafik batang SVG sendiri (jumlah order dan nilai uang per hari), kartu hari terlaris dan tersepi, keterangan RK12, keadaan memuat, kosong, galat, dan offline. Semua angka dari server; aplikasi hanya menggambar. Hasil hanya di memori, dibuang saat Keluar.
+
+**Keputusan baru:**
+
+- Gaya layar di `ringkasan.css` (kelas `rks-`), pengecualian dari "semua gaya di satu `style.css`" (blok `AGENTS.md` 13 Nov 2026, keputusan ketua).
+- Letak layar mengikuti Home, bukan menu Lainnya (RK2 lama tertimpa; yang paling akhir menang). Dibuka sebagai tab tersembunyi dengan tombol Kembali ke Home.
+- Layar punya tombol Segarkan sendiri dengan jeda 5 detik ("Tunggu sebentar"), sesuai blok 13 Nov. Selama jeda layar memakai hasil di memori, tanpa panggilan server.
+- Pilihan penulis kode, alasan belum tercatat dari ketua: angka uang di atas batang dipendekkan (1,25jt, 310rb) supaya muat di HP; hari ini ditandai tulisan "Hari ini" dengan batang emas redup; keadaan kosong tidak menampilkan kartu angka.
+
+**Hasil tes:** dites di HP dengan data dummy (tes tampilan, Low-Risk): angka, grafik, kartu terlaris dan tersepi, keterangan, jeda Segarkan, Kembali, Keluar, mode pesawat dan Coba lagi, serta item tidak tampil untuk customer dan penjaga, semuanya sesuai. Bukti diperiksa di chat dan tidak disimpan.
+
+**Belum beres:**
+
+- RKS.04 (tes terstruktur High-Risk, P0) belum dikerjakan.
+- Tombol Segarkan di bilah atas tetap memanggil `status` seperti biasa; hanya panggilan ringkasan yang dijeda.
+- Jumlah panggilan di tab Network selama jeda belum dilaporkan; jedanya sendiri terbukti jalan.
+- Tampilan di layar lebar (laptop) belum dibahas.
+
+**Saran giliran berikutnya:** RKS.04 di sesi ketua (P0). Lampirkan `AGENTS.md` + `ringkasan.md` + `database.md` + `security.md`. Pakai akun dan data dummy; bukti wajib: hasil query baca-saja dibandingkan dengan angka di layar. Kasus: Ditolak dan Dibatalkan tidak ikut, order Besok tidak ikut, hari kosong tampil 0, hari ini tidak dinilai, seri, dan keadaan kosong. `ringkasan-test.md` dibuat belakangan. Sebelum push apa pun, cek tiga hal anti-nyasar. Logout GitHub dan Supabase di profil browser setelah selesai.
