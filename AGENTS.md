@@ -255,4 +255,12 @@ Keputusan ketua (disampaikan lewat PIC, sesi NTF.04a). Alasan ketua selain yang 
 - **AI tidak menambahkan `[skip ci]` sendiri** pada pesan commit yang disarankan. AI hanya menyarankannya bila seluruh isi commit adalah docs/md, dan menyebut alasannya.
 - Kejadian pemicu: pada sesi NTF.04a, pesan commit berisi kode sempat disarankan dengan `[skip ci]` karena meniru commit docs sebelumnya. Belum sempat di-push, jadi pesannya diganti dengan `git commit --amend` tanpa dampak.
 
+### 2026-11-13: Pengecualian tulis-database diperluas untuk catatan hasil push
+
+Keputusan ketua (sesi NTF.06, 13 Nov 2026). Alasan ketua selain yang tertulis di bawah belum tercatat.
+
+- Pengecualian blok 11 Nov 2026 (hanya `inbox_tulis`) **diperluas satu fungsi: `push_hasil_catat`**, yang dipanggil `kedai` setelah push terkirim untuk menandai langganan mati (`aktif` jadi false, tanpa DELETE) dan mengisi `terakhir_berhasil_pada`. Kegagalannya **tidak membatalkan aksi order** (NT4). Alasan: sama dengan inbox, push bukan inti sistem.
+- **Tidak berlaku untuk aksi lain.** Order, setujui, status, catatan, dan lainnya tetap atomik di fungsi SQL.
+- `inbox_tulis` kini mengembalikan daftar penerima (bukan jumlah baris) supaya penerima push tidak dihitung dua kali (IB14). Aturan penerimanya tidak berubah. Sumber: `supabase/migrations/20261113_inbox_tulis_penerima.sql`.
+
 ---
