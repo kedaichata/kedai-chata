@@ -279,3 +279,12 @@ Keputusan ketua (sesi RKS.03, 13 Nov 2026). Alasan: `style.css` sudah panjang da
 
 - Gaya layar Ringkasan ada di `public/ringkasan.css` (kelas berawalan `rks-`), dimuat setelah `style.css`. Pengecualian dari "semua gaya di satu `style.css`" (bagian 3 dan 6), mengikuti pola `game.css`. Layar lain tetap di `style.css`.
 - `ringkasan.css` dan `ringkasan.js` wajib didaftarkan di cache `sw.js` (bagian 7, butuh "OK").
+
+### 2026-11-13: Dokumen `stepper-visual.md` (prefix VIS)
+
+Sumber: docs/stepper-visual.md. Masuk versi 1 dikonfirmasi di sesi review 13 Nov 2026; alasan belum tercatat.
+
+- **Peta Dokumentasi (bagian 5):** tambah baris `docs/stepper-visual.md`, isi: "Stepper status 5 titik di detail pesanan customer, murni tampilan", prefix sheet **VIS**.
+- **Fitur hanya menggambar dan 100% frontend.** Tidak ada tabel baru, fungsi SQL, aksi `kedai`, tulis-database, atau panggilan server baru. Tidak ada pengecualian baru dari aturan bagian 7.
+- **Bagian 1, rencana versi:** fitur ini masuk versi 1.
+- **Kode baru:** `public/stepper.js` dan `public/stepper.css`. `pesanan.js` hanya ditambah satu blok pemanggilan (tanpa menghapus kode lama). Kedua berkas baru wajib didaftarkan di cache `sw.js` (bagian 7, butuh "OK"). Pengecualian CSS `stepper.css` dicatat di blok terpisah saat VIS.01.
