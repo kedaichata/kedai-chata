@@ -326,6 +326,7 @@
   // Keluar: tutup layar dan hapus semua keadaan di memori. Hanya angka penanda yang tersisa di HP (IB11).
   function reset() {
     nomorMuat += 1;
+    nomorTitik += 1; // NTF.07: balasan segarkanTitik yang masih di jalan diabaikan
     if (layar) {
       layar.hidden = true;
       kosongkanDaftar();
@@ -353,6 +354,44 @@
         ? terbaru
         : null;
     perbaruiTitik();
+  }
+
+  // NTF.07: segarkan titik merah tanpa layar memuat. Dipanggil kerangka.js saat push masuk atau saat aplikasi
+  // kembali ke layar (sudah dibatasi NT10 di sana). Satu panggilan `status`; yang dipakai hanya `inbox_terbaru`.
+  // Gagal, offline, atau akun berganti di tengah jalan: diam saja, titik tetap seperti semula (NT12: Segarkan manual
+  // tetap ada). Angka terbaru tidak pernah diturunkan, jadi balasan basi tidak mematikan titik yang sudah benar.
+  var nomorTitik = 0; // penanda permintaan terakhir, supaya balasan basi diabaikan
+
+  function segarkanTitik() {
+    if (
+      !idAkun ||
+      !navigator.onLine ||
+      !window.KedaiAkun ||
+      typeof window.KedaiAkun.panggilKedai !== "function"
+    ) {
+      return;
+    }
+    nomorTitik += 1;
+    var saya = nomorTitik;
+    var idSaya = idAkun;
+    window.KedaiAkun.panggilKedai("status")
+      .then(function (h) {
+        if (saya !== nomorTitik || idSaya !== idAkun) return; // Keluar atau ganti akun di tengah jalan
+        var d = h ? h.data : null;
+        if (!h || h.status !== 200 || !d || d.ok !== true) return;
+        if (typeof d.inbox_terbaru === "number" && isFinite(d.inbox_terbaru)) {
+          if (
+            typeof terbaruServer !== "number" ||
+            d.inbox_terbaru > terbaruServer
+          ) {
+            terbaruServer = d.inbox_terbaru;
+          }
+          perbaruiTitik();
+        }
+      })
+      .catch(function () {
+        // Diam saja (lihat catatan di atas).
+      });
   }
 
   // ------------------------------------------------------------
@@ -383,10 +422,18 @@
     }
   }).observe(layarUtama, { attributes: true, attributeFilter: ["hidden"] });
 
+  // window.KedaiInbox = Object.freeze({
+  //   atur: atur,
+  //   reset: reset,
+  //   buka: buka,
+  //   tutup: tutup,
+  // });
+  // NTF.07: segarkanTitik ditambah (dipanggil kerangka.js).
   window.KedaiInbox = Object.freeze({
     atur: atur,
     reset: reset,
     buka: buka,
     tutup: tutup,
+    segarkanTitik: segarkanTitik,
   });
 })();

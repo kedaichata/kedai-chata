@@ -59,6 +59,13 @@
 //   dibatasi sekitar 30 detik (NT10). Bila masih di dalam batas, dijadwalkan SATU penyegaran susulan di akhir batas
 //   (bukan timer berulang). Aplikasi di latar belakang: ditandai, dan disegarkan sekali saat kembali ke layar.
 //
+// NTF.07: penyegaran saat kembali ke layar dan titik merah Kotak masuk (notifikasi.md NT10, NT12; inbox.md IB10).
+// - Semua pemuatan lewat buka() (buka tab, Segarkan manual, dari notifikasi) kini menghidupkan jam NT10 (terakhirSegar).
+// - Kembali ke layar TANPA penanda push: bila sudah lewat sekitar 30 detik sejak penyegaran terakhir, layar order dimuat
+//   ulang dan titik merah disegarkan; bila belum, dilewati begitu saja (tanpa timer, NT3 dan NT10).
+// - Titik merah (window.KedaiInbox.segarkanTitik, satu panggilan `status`) ikut disegarkan di SEMUA tab, sedangkan
+//   muat ulang data hanya untuk empat layar order. Jalurnya sama dengan penyegaran karena push, jadi batas NT10 sama.
+//
 // Aturan yang dijaga:
 // - Peran datang dari balasan server (aksi status) lewat akun.js; aplikasi tidak pernah mengirim peran.
 //   Menyembunyikan tab di sini hanya kemudahan; yang menolak akses sebenarnya server.
@@ -216,6 +223,7 @@
         t.nama + " belum tersedia. Fitur ini menyusul.";
     }
     window.scrollTo(0, 0);
+    terakhirSegar = performance.now(); // NTF.07: tiap pemuatan lewat buka() menghidupkan jam batas NT10
 
     // Layar Kelola Menu memuat daftar saat dibuka (MN7: sekali saat dibuka dan lewat Segarkan).
     if (
@@ -536,19 +544,40 @@
     }
   }
 
+  // NTF.07: titik merah Kotak masuk (satu panggilan `status`, tanpa layar memuat). Hanya bila inbox.js terpasang.
+  function segarkanTitikInbox() {
+    if (
+      window.KedaiInbox &&
+      typeof window.KedaiInbox.segarkanTitik === "function"
+    ) {
+      window.KedaiInbox.segarkanTitik();
+    }
+  }
+
+  // function segarkanSekarang() {
+  //   terakhirSegar = performance.now();
+  //   muatIsiAktif();
+  // }
+  // NTF.07: titik merah ikut disegarkan. muatIsiAktif() sendiri hanya bekerja di empat layar order.
   function segarkanSekarang() {
     terakhirSegar = performance.now();
     muatIsiAktif();
+    segarkanTitikInbox();
   }
 
   // Penyegaran karena push, dengan batas NT10. Di dalam batas: satu penyegaran susulan di akhir batas.
   function jalankanSegar() {
     var t = peran ? cariTab(tab) : null;
-    if (
-      !t ||
-      !Object.prototype.hasOwnProperty.call(PANEL_SEGAR, t.panel) ||
-      el("layar-sementara").hidden
-    ) {
+    // if (
+    //   !t ||
+    //   !Object.prototype.hasOwnProperty.call(PANEL_SEGAR, t.panel) ||
+    //   el("layar-sementara").hidden
+    // ) {
+    //   return;
+    // }
+    // NTF.07: tidak lagi disaring per tab di sini (titik merah ikut di semua tab). Yang dibatasi ke empat layar
+    // order kini muatIsiAktif(), memakai pemeriksaan panel yang sama.
+    if (!t || el("layar-sementara").hidden) {
       return;
     }
     if (timerSegar) return; // sudah ada satu yang dijadwalkan
@@ -604,10 +633,33 @@
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.addEventListener("message", terimaPesanSw);
   }
+  // document.addEventListener("visibilitychange", function () {
+  //   if (!document.hidden && perluSegar) {
+  //     perluSegar = false;
+  //     jalankanSegar();
+  //   }
+  // });
+  // NTF.07: kembali ke layar tanpa penanda push. Sudah lewat batas NT10: segarkan sekali. Belum: lewati (tanpa timer).
+  function kembaliTanpaPush() {
+    var t = peran ? cariTab(tab) : null;
+    if (!t || el("layar-sementara").hidden) return;
+    if (timerSegar) return; // penyegaran susulan sudah dijadwalkan
+    if (
+      terakhirSegar !== null &&
+      performance.now() - terakhirSegar < BATAS_SEGAR_MS
+    ) {
+      return;
+    }
+    segarkanSekarang();
+  }
+
   document.addEventListener("visibilitychange", function () {
-    if (!document.hidden && perluSegar) {
+    if (document.hidden) return;
+    if (perluSegar) {
       perluSegar = false;
       jalankanSegar();
+    } else {
+      kembaliTanpaPush();
     }
   });
 
