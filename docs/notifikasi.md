@@ -811,4 +811,50 @@ Tidak ada perubahan di `index.html`, `sw.js`, `config.js`, migration, atau `keda
 3. NTF.08: sesi tes notifikasi.
 4. Lampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #8 sampai #14), `security.md`, dan berkas yang relevan.
 
+<!-- Berkas tujuan: docs/notifikasi.md bagian 9, tempel PALING BAWAH (di bawah Handoff #14). Append-only. -->
+
+### Handoff #15 | 2026-11-13 | [FREN]
+
+**Tugas:** NTF.07 (penyegaran saat kembali ke layar, titik merah Kotak masuk, tombol Segarkan), melanjutkan saran Handoff #14. Semua tes lulus; butir siap dicentang di sheet.
+
+**File yang diubah** (satu commit `b083c1d`, sudah di-push ke `main` 13 Nov 2026, tanpa `[skip ci]`; cek anti-nyasar lulus; run Actions hijau):
+
+- `public/kerangka.js`
+- `public/inbox.js`
+
+Tidak ada perubahan di `sw.js`, `akun.js`, migration, atau `kedai`; tidak ada deploy; daftar cache `sw.js` tidak berubah. Kode dan komentar lama tidak dihapus (baris yang diganti dijadikan komentar).
+
+**Keputusan baru:** (keputusan PIC, bukan ketua; tidak menyentuh area berisiko jadi tanpa "OK" ketua; alasan ketua belum tercatat. Alasan teknis di bawah dari sesi kode.)
+
+- **Titik merah Kotak masuk disegarkan lewat aksi `status`**, bukan lewat `order_daftar` (fungsi baru `segarkanTitik` di `inbox.js`: 1 panggilan, hanya `inbox_terbaru` yang dipakai, gagal = diam). Ini mempertegas blok 11 Nov (`order_daftar` tidak diubah). Alasan: sejak tanda "Catatan baru" dibatalkan, titik merah adalah satu-satunya sinyal catatan baru dan jalur cadangan NT12; sebelumnya titik hanya hidup dari `status` (login dan Segarkan manual), jadi push dan kembali ke layar tidak memperbaruinya.
+- **Titik merah disegarkan di semua tab; muat ulang data tetap hanya untuk empat layar order** (Pesanan Saya, Order Masuk, Semua Order, Antrean). Menimpa kalimat Handoff #6 "Home dan tab lain tidak disegarkan" **hanya untuk titik merah**; yang paling akhir menang. Gerbang `PANEL_SEGAR` dipindah dari `jalankanSegar` ke `muatIsiAktif`; konstanta `PANEL_SEGAR` tidak terpakai lagi tetapi tidak dihapus.
+- **Jam NT10 (`terakhirSegar`) kini dihidupkan oleh semua pemuatan lewat `buka()`** (buka tab, Segarkan manual, dari notifikasi), supaya Segarkan lalu pindah app dan balik tidak memicu refresh dobel.
+- **Kembali ke layar tanpa penanda push:** lewat sekitar 30 detik, layar order dimuat ulang dan titik disegarkan; belum 30 detik, dilewati **tanpa timer** (NT3, NT10). Ada penanda push: jalur lama (`jalankanSegar`) tidak berubah.
+- **Tombol Segarkan manual sengaja tidak diubah** (`muatStatus`: layar memuat penuh, 2 panggilan). Bagian "tombol Segarkan" NTF.07 sudah terpenuhi tanpa kode baru.
+- **Biaya panggilan:** +1 panggilan `status` per refresh yang lolos batas NT10.
+
+**Terbukti (diperiksa di chat, tidak disimpan; Brave desktop incognito, akun dummy customer dan owner):**
+
+1. Kembali ke layar setelah lebih dari 30 detik di tab Pesanan: 2 panggilan `kedai` (data layar dan `status`), tanpa layar memuat penuh.
+2. Kembali sebelum 30 detik (dua kali): tidak ada panggilan baru.
+3. Customer di Home, owner menyetujui order dari jendela lain: titik merah muncul setelah kembali ke layar, tanpa Segarkan (1 panggilan `status`, tanpa muat layar order). Notifikasi tidak aktif di incognito, jadi hasil murni dari jalur baru.
+4. Segarkan manual normal; membuka Kotak masuk mematikan titik.
+
+**Belum beres:**
+
+- Belum dicoba di HP Android. Ragu `performance.now()` ikut berjalan saat HP lama ditidurkan (bila tidak, refresh bisa terlewat); layak dites sekali.
+- Perilaku overlay Kotak masuk saat push ditekan belum teruji. Bila overlay terbuka saat push masuk, daftarnya tidak ikut disegarkan (tidak dikerjakan di NTF.07).
+- Dari Handoff #14, tidak berubah: layar kunci Android untuk `batal_owner` (SEC-22) belum dicek, baris SEC-22 jangan dicentang; `batal_customer`, `alih_hari`, `foto_setelah_selesai`, `order_wakil` dirilis tanpa tes sendiri; push `status` ke penjaga belum teruji; NTF.08 belum dikerjakan; logika `push_daftar` dan `push_nonaktifkan` baru terbukti penuh di NTF.08.
+- Blok `docs/database.md` bagian 9 untuk migration 13 Nov belum ditulis.
+- Teks layar Order wakil ("Belum ada notifikasi otomatis ke layar HP") perlu diperbarui.
+- Cek jadwal pembersihan foto jalan sendiri setelah Minggu 15 Nov 2026 02.00 WIB (FTO.07).
+
+**Saran giliran berikutnya:**
+
+1. Blok `docs/database.md` untuk migration 13 Nov (docs murni, boleh `[skip ci]`).
+2. NTF.08: sesi tes notifikasi (Android; SEC-22; SEC-25; kuota panggilan).
+3. Lampirkan `AGENTS.md`, `notifikasi.md` (dengan Handoff #8 sampai #15), `security.md`, dan berkas yang relevan.
+
+---
+
 ---
