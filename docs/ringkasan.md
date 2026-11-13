@@ -143,3 +143,37 @@ Keputusan ketua (sesi strategi 13 Nov 2026). Menambah RK11.
 - CEK F baru dites dengan akun penjaga; akun customer belum (opsional, dites di SEC-36).
 
 **Saran giliran berikutnya:** RKS.02. Lampirkan `AGENTS.md`, `ringkasan.md`, `database.md`, `security.md`, `index.ts`, dan `order_status.ts` (contoh pola `buatAksi...(alat)`). Aksi baru ditaruh di `supabase/functions/kedai/ringkasan.ts`. Deploy `kedai` butuh OK ketua dan urutan aman AGENTS.md bagian 8.
+
+### Handoff #2 | 2026-11-13 | ketua
+
+**Tugas:** RKS.02 (aksi `ringkasan_7hari` dan deploy `kedai`), SEC-36, SEC-37.
+
+**File yang diubah:**
+
+- `supabase/functions/kedai/ringkasan.ts` (baru)
+- `supabase/functions/kedai/index.ts` (hanya ditambah: satu import, satu blok sambungan, satu `case`, komentar kepala; tidak ada baris lama yang berubah)
+
+**Status:** commit `1bf1b5e` di-push, Actions #114 dan #115 hijau. `kedai` di-deploy 13 Nov 2026 (urutan aman bagian 8, tanpa `--no-verify-jwt`), token sudah dibersihkan dari Terminal. SEC-36 lulus (customer 403, penjaga 403, tanpa token 401). SEC-37 lulus (owner 200, isi hanya angka dan tanggal; total dan rata-rata cocok dengan penjumlahan per hari). Bukti tidak disimpan. Sheet: RKS.02, SEC-36, SEC-37 sudah dicentang.
+
+**Keputusan baru:** tidak ada.
+
+**Kontrak untuk RKS.03:**
+
+- Aksi `ringkasan_7hari`, tanpa isian (isian apa pun diabaikan). Hanya owner; selain itu 403, tanpa token 401.
+- Balasan sukses: `{ ok: true, ringkasan: { hari_ini, total_order, total_nilai, rata_rata_order, per_hari, belum_ada_perbedaan, terlaris, tersepi } }`.
+- `per_hari`: 7 elemen urut terlama ke hari ini, tiap elemen `tanggal`, `hari` (1 = Senin sampai 7 = Minggu), `jumlah`, `nilai`. `terlaris` dan `tersepi`: `tanggal`, `hari`, `jumlah`, atau null.
+- Layar hanya menggambar. Label seperti "Sen 9" disusun dari `hari` dan `tanggal` dari server, tanpa menghitung ulang apa pun.
+- Pilihan penulis (balasan dibungkus `ringkasan`; `id_kosong` tidak dipetakan sehingga jadi galat umum 500; bentuk balasan tidak sesuai dilempar jadi 500): alasan belum tercatat dari ketua.
+
+**Belum beres:**
+
+- `_batal.sql` RKS.01 belum pernah dicoba.
+- Penolakan customer terbukti dari lapis kedua di `kedai`; kode `bukan_owner` dari fungsi SQL untuk customer belum dites langsung (tidak mendesak).
+- Akun staf nonaktif (`akun_nonaktif`) belum dites.
+- Jalur galat 500 (bentuk balasan tidak sesuai) belum pernah terpicu.
+
+**Saran giliran berikutnya:** RKS.03 (layar Ringkasan). Lampirkan `AGENTS.md`, `ringkasan.md`, `desain.md`, `public/sw.js`, `public/style.css`, berkas JS yang menggambar menu Lainnya owner (yang memuat item "Segera"), dan satu berkas layar owner pendek sebagai contoh pola. Ingat blok "Jeda tombol Segarkan" (13 Nov) di bagian 8. Perubahan `sw.js` butuh "OK" ketua; bila yang giliran bukan ketua, AI memberi ringkasan untuk diteruskan lewat WA.
+
+### 2026-11-13: Letak item Ringkasan di Home
+
+Mengikuti `desain.md` 7 Nov 2026: item "Ringkasan order 7 hari" ada di Home owner, bukan menu Lainnya. Layar dibuka sebagai tab tersembunyi "ringkasan" dengan tombol Kembali ke Home dan tombol Segarkan sendiri (RKS.03). Gaya di `ringkasan.css`.

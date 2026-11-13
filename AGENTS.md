@@ -272,3 +272,10 @@ Keputusan ketua (sesi strategi 13 Nov 2026). Sumber: docs/ringkasan.md.
 - **Pengecualian "angka di database" (bagian 1):** angka 7 hari tetap di fungsi karena judul fitur memang "7 hari" (RK14, bawaan; ketua boleh meminta jadi pengaturan).
 - **Kode baru `kedai`:** aksi `ringkasan_7hari` di berkas baru `ringkasan.ts` (mengikuti blok 9 Nov 2026). Berkas JS baru wajib didaftarkan di cache `sw.js` (bagian 7, butuh "OK").
 - **Bagian 1, rencana versi:** B31 tidak lagi di daftar kandidat `bonus.md`; ia masuk versi 1.
+
+### 2026-11-13: CSS terpisah untuk layar Ringkasan
+
+Keputusan ketua (sesi RKS.03, 13 Nov 2026). Alasan: `style.css` sudah panjang dan ketua ingin tidak bertambah gemuk.
+
+- Gaya layar Ringkasan ada di `public/ringkasan.css` (kelas berawalan `rks-`), dimuat setelah `style.css`. Pengecualian dari "semua gaya di satu `style.css`" (bagian 3 dan 6), mengikuti pola `game.css`. Layar lain tetap di `style.css`.
+- `ringkasan.css` dan `ringkasan.js` wajib didaftarkan di cache `sw.js` (bagian 7, butuh "OK").

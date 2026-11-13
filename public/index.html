@@ -13,6 +13,8 @@
         <link rel="stylesheet" href="style.css" />
         <!-- GIM.01: gaya hamburger dan game (kelas gim-), dimuat SETELAH style.css supaya memakai variabel warna :root -->
         <link rel="stylesheet" href="game.css" />
+        <!-- RKS.03: gaya layar Ringkasan (kelas rks-), dimuat SETELAH style.css supaya memakai variabel warna :root -->
+        <link rel="stylesheet" href="ringkasan.css" />
     </head>
     <body>
         <!-- AKN.05: layar akun. Satu layar tampil dalam satu waktu; akun.js yang mengatur mana yang tampil.
@@ -1566,6 +1568,9 @@
                 <!-- Panel Bantuan (semua peran, BTN.03): isi dan tombol Kembali dibuat bantuan.js -->
                 <div id="panel-bantuan" hidden></div>
 
+                <!-- Panel Ringkasan order 7 hari (owner, RKS.03): isi, tombol Kembali, dan Segarkan dibuat ringkasan.js -->
+                <div id="panel-ringkasan" hidden></div>
+
                 <!-- Panel Lainnya (owner): Pelanggan dan Bantuan menyusul, Akun dipasang kerangka.js -->
                 <!-- HOM.01: tab Lainnya sudah tidak ada di navigasi, panel ini tidak terjangkau.
                      Pelanggan dan Bantuan pindah ke Home di HOM.03 dan HOM.04. -->
@@ -1736,6 +1741,7 @@
                              penjaga: password saja. -->
                         <div class="home-grup" data-grup hidden>
                             <div class="daftar">
+                                <!-- RKS.03: item Ringkasan "Segera" diganti tombol aktif (kode lama disimpan di komentar ini):
                                 <div
                                     class="daftar__item daftar__item--segera"
                                     data-peran="owner"
@@ -1749,6 +1755,25 @@
                                     </span>
                                     <span class="daftar__nilai">Segera</span>
                                 </div>
+                                -->
+                                <button
+                                    type="button"
+                                    class="daftar__item daftar__item--tombol"
+                                    data-aksi="ringkasan"
+                                    data-peran="owner"
+                                    hidden
+                                >
+                                    <span class="daftar__utama">
+                                        <span class="daftar__nama"
+                                            >Ringkasan order 7 hari</span
+                                        >
+                                    </span>
+                                    <span
+                                        class="daftar__panah"
+                                        aria-hidden="true"
+                                        >&rsaquo;</span
+                                    >
+                                </button>
                                 <button
                                     type="button"
                                     class="daftar__item daftar__item--tombol"
@@ -2138,6 +2163,8 @@
         <script src="orderwakil.js"></script>
         <!-- Layar Bantuan (BTN.03); harus setelah akun.js (memakai window.KedaiAkun) dan SEBELUM kerangka.js -->
         <script src="bantuan.js"></script>
+        <!-- Layar Ringkasan order 7 hari (RKS.03); harus setelah akun.js (memakai window.KedaiAkun) dan SEBELUM kerangka.js -->
+        <script src="ringkasan.js"></script>
         <!-- Kerangka layar utama per peran (KRG.01); harus setelah akun.js dan menu.js -->
         <script src="kerangka.js"></script>
         <!-- GIM.01 dan GIM.02: game Arithmetics dan menu hamburger. Berdiri sendiri, tanpa server. gim.js sebelum gimmenu.js -->

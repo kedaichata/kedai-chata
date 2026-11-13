@@ -1,0 +1,107 @@
+/* public/ringkasan.css
+   RKS.03: gaya layar Ringkasan order 7 hari (ringkasan.md RK12). Kelas berawalan rks-.
+   Dimuat SETELAH style.css supaya memakai variabel warna di :root. Pengecualian dari
+   "semua gaya di satu style.css" (keputusan ketua 13 Nov 2026, AGENTS.md bagian 12), pola sama dengan game.css.
+   Komponen yang sudah ada (.kartu, .tombol, .keadaan, .baris-tombol, .isian__bantuan) dipakai dari style.css,
+   tidak disalin di sini. Grafik digambar dengan SVG sendiri (tanpa pustaka, tanpa CDN). */
+
+/* ---- Kartu angka: total nilai uang selebar penuh, total order dan rata-rata berdampingan ---- */
+.rks-angka {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 0 0 12px;
+}
+
+/* .kartu punya jarak bawah sendiri; di dalam grid jarak diatur oleh gap */
+.rks-angka .kartu {
+    margin: 0;
+}
+
+.rks-kotak--lebar {
+    grid-column: 1 / -1;
+}
+
+.rks-kotak__label {
+    margin: 0 0 4px;
+    font-size: 0.9rem;
+    color: var(--teks-samar);
+}
+
+.rks-kotak__nilai {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--marun);
+    overflow-wrap: anywhere;
+}
+
+.rks-kotak--lebar .rks-kotak__nilai {
+    font-size: 1.8rem;
+}
+
+/* ---- Grafik batang (SVG): angka di atas batang, label hari di bawah ---- */
+.rks-grafik {
+    display: block;
+    width: 100%;
+    max-width: 480px;
+    height: auto;
+    margin: 10px auto 0;
+}
+
+.rks-garis {
+    stroke: var(--emas-redup);
+    stroke-width: 1.5;
+}
+
+.rks-batang {
+    fill: var(--marun);
+}
+
+/* Hari ini: warna emas redup, dan tetap ada tulisan "Hari ini" (tidak hanya warna, DS11) */
+.rks-batang--ini {
+    fill: var(--emas-redup);
+}
+
+.rks-nilai {
+    fill: var(--teks-gelap);
+    font-size: 13px;
+    font-weight: 700;
+    text-anchor: middle;
+}
+
+.rks-label {
+    fill: var(--teks-gelap);
+    font-size: 13px;
+    text-anchor: middle;
+}
+
+.rks-label--ini {
+    fill: var(--marun);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* ---- Kartu hari terlaris dan tersepi ---- */
+.rks-hari__nama {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--marun);
+    overflow-wrap: anywhere;
+}
+
+.rks-hari__jumlah {
+    margin: 2px 0 0;
+}
+
+/* Wadah isi: jarak dari baris tombol Kembali dan Segarkan */
+.rks-isi {
+    margin-top: 12px;
+}
+
+/* Keterangan kecil di bawah grafik */
+.rks-ket {
+    margin: 0 0 12px;
+}

@@ -48,6 +48,12 @@
 // membuka tab itu lagi, dan navigasi bawah tetap menandai tab asal. Ikon ? disembunyikan saat layar Bantuan terbuka.
 // window.KedaiBantuan .tampil() dipanggil saat tab dibuka dan lewat Segarkan, .reset() saat Keluar.
 //
+// RKS.03: layar Ringkasan order 7 hari (owner) memakai tab tersembunyi "ringkasan" (panel "ringkasan", tanpa tombol
+// di navigasi bawah, pola sama dengan tab "pelanggan"). Pintunya item "Ringkasan order 7 hari" di Home owner
+// (data-aksi="ringkasan"); navigasi bawah tetap menandai Home. Tombol Kembali (#ringkasan-kembali, dibuat ringkasan.js)
+// membuka Home lagi. window.KedaiRingkasan .tampil() dipanggil saat tab dibuka dan lewat Segarkan (jeda 5 detik diatur
+// ringkasan.js), .reset() saat Keluar. Server yang menolak non-owner (SEC-36); menyembunyikan item hanya kemudahan.
+//
 // NTF.04a: membuka layar dari notifikasi dan menyegarkan data saat push masuk (notifikasi.md NT8, NT10; Handoff #4).
 // - sw.js membawa tujuan lewat alamat (?buka=order&id=... atau ?buka=antrean) bila aplikasi tertutup, atau lewat pesan
 //   {jenis:"buka", tujuan, id} bila aplikasi sudah terbuka. Alamat dibaca saat berkas dimuat dan DIPAKAI setelah login
@@ -99,6 +105,8 @@
       { id: "buat-order", nama: "Buat Order", panel: "buatorder" },
       // ORD.13: layar Kelola Pelanggan, dibuka dari item Pelanggan di Home (tanpa tombol di navigasi bawah).
       { id: "pelanggan", nama: "Pelanggan", panel: "pelanggan" },
+      // RKS.03: layar Ringkasan order 7 hari, dibuka dari item di Home (tanpa tombol di navigasi bawah).
+      { id: "ringkasan", nama: "Ringkasan", panel: "ringkasan" },
       { id: "menu", nama: "Menu", panel: "menu" },
       { id: "bantuan", nama: "Bantuan", panel: "bantuan" }, // BTN.03
       // HOM.01: { id: "lainnya", nama: "Lainnya", panel: "lainnya" },
@@ -150,6 +158,7 @@
     "buatorder", // ORD.13
     "pelanggan", // ORD.13
     "bantuan", // BTN.03
+    "ringkasan", // RKS.03
   ];
 
   // HOM.02: tulisan lencana peran di kartu sapaan (HM4). Peran tak dikenal: lencana disembunyikan.
@@ -215,6 +224,7 @@
     var idTanda = t.id;
     if (t.id === "bantuan") idTanda = tabAsalBantuan || "home";
     if (idTanda === "pelanggan") idTanda = "home";
+    if (idTanda === "ringkasan") idTanda = "home"; // RKS.03
     tandaiNav(idTanda);
     el("tombol-bantuan-atas").hidden = t.id === "bantuan";
 
@@ -314,6 +324,15 @@
     ) {
       window.KedaiBantuan.tampil();
     }
+
+    // RKS.03: layar Ringkasan order 7 hari (ringkasan.js); diambil saat tab dibuka dan lewat Segarkan, tanpa polling.
+    if (
+      t.panel === "ringkasan" &&
+      window.KedaiRingkasan &&
+      typeof window.KedaiRingkasan.tampil === "function"
+    ) {
+      window.KedaiRingkasan.tampil();
+    }
   }
 
   // BTN.03: buka layar Bantuan dari tab mana pun, ingat tab asalnya. Tombol Kembali membukanya lagi.
@@ -383,6 +402,10 @@
     // ORD.13: item Pelanggan (owner) membuka layar Kelola Pelanggan.
     pelanggan: function () {
       buka("pelanggan");
+    },
+    // RKS.03: item "Ringkasan order 7 hari" (owner) membuka layar Ringkasan.
+    ringkasan: function () {
+      buka("ringkasan");
     },
     // BTN.03: tombol Bantuan di Home membuka layar yang sama dengan ikon ? di bilah atas.
     bantuan: function () {
@@ -760,6 +783,13 @@
     ) {
       window.KedaiBantuan.reset();
     }
+    // RKS.03: angka ringkasan (omzet) tidak boleh tersisa setelah Keluar.
+    if (
+      window.KedaiRingkasan &&
+      typeof window.KedaiRingkasan.reset === "function"
+    ) {
+      window.KedaiRingkasan.reset();
+    }
     // NTF.04a: tujuan notifikasi dan penyegaran tertunda tidak boleh terbawa ke akun berikutnya.
     tujuanTertunda = null;
     if (timerSegar) {
@@ -796,6 +826,17 @@
         : null;
     if (sasaran) {
       kembaliDariBantuan();
+    }
+  });
+
+  // RKS.03: tombol Kembali (dibuat ringkasan.js di dalam #panel-ringkasan) membuka Home lagi.
+  el("panel-ringkasan").addEventListener("click", function (e) {
+    var sasaran =
+      e.target && e.target.closest
+        ? e.target.closest("#ringkasan-kembali")
+        : null;
+    if (sasaran) {
+      buka("home");
     }
   });
 
