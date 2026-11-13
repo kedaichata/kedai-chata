@@ -113,10 +113,6 @@ Urutan: VIS.01, VIS.02, VIS.03, VIS.04. Mengubah status order dummy butuh akun o
 
 > Tempel blok baru di bawah garis ini. Format: `### YYYY-MM-DD: topik`. Yang paling akhir menang.
 
----
-
-<!-- Berkas tujuan: docs/stepper-visual.md, tempel PALING BAWAH bagian 7. Append-only. -->
-
 ### 2026-11-13: Denyut pada titik aktif ditambahkan (menimpa VS7)
 
 Keputusan ketua (disampaikan lewat PIC, sesi VIS.01). Alasan ketua selain yang tertulis di bawah belum tercatat.
@@ -125,3 +121,26 @@ Keputusan ketua (disampaikan lewat PIC, sesi VIS.01). Alasan ketua selain yang t
 - **Menimpa** VS7 ("satu animasi saja", "bukan denyut") dan butir Ditunda "animasi tambahan atau denyut pada titik" di bagian 6. Yang paling akhir menang.
 - Aturan lain tetap: hanya saat order masih berjalan (Selesai, Ditolak, Dibatalkan tanpa animasi), hanya CSS tanpa timer JS atau requestAnimationFrame (VS14), dan mati bila HP meminta gerakan dikurangi.
 - Dampak: sedikit tambahan kerja HP untuk satu elemen (hanya transform dan opacity). Cek kelancaran di HP biasa saat VIS.04.
+
+### Handoff #1 | 2026-11-14 | [RAC]
+
+**Tugas selesai:** VIS.01, VIS.02, VIS.03 (tinggal dicentang di sheet). VIS.04 baru sebagian, lihat "Belum beres".
+
+**File yang diubah:** `public/stepper.css` (baru), `public/stepper.js` (baru), `public/pesanan.js` (hanya tambahan 13 baris: komentar kepala dan satu blok pemanggilan berpagar di `renderDetail()`), `public/index.html` (link `stepper.css` dan script `stepper.js` sebelum `pesanan.js`), `public/sw.js` (kedua berkas masuk daftar cache, `chata-v25` jadi `chata-v26`), `docs/stepper-visual.md` (blok denyut). Satu commit `5ca2008` di `main`. Tiga cek anti-nyasar lolos sebelum push, Actions hijau. "OK" ketua untuk `sw.js` sudah diberikan.
+
+**Keputusan baru:**
+
+- Titik aktif berdenyut dan garis setelahnya tetap berkilau (blok 13 Nov 2026, menimpa VS7).
+- Hijau titik terlewati memakai variabel lokal `--stp-selesai` (#2e7d32) di dalam `.stp`, sama dengan lencana Selesai, karena belum ada variabel global untuk hijau itu. Dipilih penulis kode, alasan belum tercatat dari ketua.
+- Label pembaca layar untuk Ditolak dan Dibatalkan hanya "Ditolak" dan "Dibatalkan", mengikuti contoh VS15.
+
+**Hasil tes (layar sempit, order dummy):** Menunggu, Disetujui, Diproses, titik 4 untuk Diambil (Siap diambil) dan Diantar, Selesai, dan Dibatalkan oleh customer tampil sesuai spesifikasi: tanda ✓ dan ✕, ukuran titik aktif, cincin denyut dan kilau garis hanya pada order berjalan, tanpa teks tambahan, badge status tetap ada. Order yang sudah Selesai tidak bisa dimundurkan (sudah terkunci di aplikasi). Bukti diperiksa di chat dan tidak disimpan.
+
+**Belum beres:**
+
+- VIS.04 belum penuh. Belum dites: Dibatalkan oleh owner (stepper harus tidak tampil, VS10), Ditolak, mundur satu langkah dan Alih hari, Siap disajikan (Makan di warung), mode pesawat, dan kelancaran denyut di HP biasa. Alasan dilewati: dianggap risiko kecil (stepper tanpa ingatan, pemetaan titik 4 sama untuk tiga status), keputusan penguji. Belum ada bukti bahwa tes dijalankan di HP Android.
+- Blok catatan pengecualian CSS `stepper.css` untuk `AGENTS.md` bagian 12 belum ditempel (draf sudah ada di chat sesi ini; hanya docs, boleh pakai `[skip ci]`).
+
+**Saran giliran berikutnya:** selesaikan sisa VIS.04, terutama order Dibatalkan oleh owner (pastikan stepper tidak muncul dan layar tidak rusak) dan mode pesawat. Lampirkan `AGENTS.md` + `stepper-visual.md`. Commit yang hanya mengubah docs boleh memakai `[skip ci]`; sebelum push cek tiga hal anti-nyasar.
+
+---

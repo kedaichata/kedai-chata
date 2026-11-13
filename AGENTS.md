@@ -288,3 +288,10 @@ Sumber: docs/stepper-visual.md. Masuk versi 1 dikonfirmasi di sesi review 13 Nov
 - **Fitur hanya menggambar dan 100% frontend.** Tidak ada tabel baru, fungsi SQL, aksi `kedai`, tulis-database, atau panggilan server baru. Tidak ada pengecualian baru dari aturan bagian 7.
 - **Bagian 1, rencana versi:** fitur ini masuk versi 1.
 - **Kode baru:** `public/stepper.js` dan `public/stepper.css`. `pesanan.js` hanya ditambah satu blok pemanggilan (tanpa menghapus kode lama). Kedua berkas baru wajib didaftarkan di cache `sw.js` (bagian 7, butuh "OK"). Pengecualian CSS `stepper.css` dicatat di blok terpisah saat VIS.01.
+
+### 2026-11-13: CSS terpisah untuk stepper status
+
+Keputusan ketua (sesi VIS.01, 13 Nov 2026). Alasan: `style.css` sudah panjang dan ketua ingin tidak bertambah gemuk.
+
+- Gaya stepper status di detail pesanan customer ada di `public/stepper.css` (kelas berawalan `stp-`), dimuat setelah `style.css`. Pengecualian dari "semua gaya di satu `style.css`" (bagian 3 dan 6), mengikuti pola `game.css` dan `ringkasan.css`. Layar lain tetap di `style.css`.
+- `stepper.css` dan `stepper.js` wajib didaftarkan di cache `sw.js` (bagian 7, butuh "OK"); sudah dikerjakan di VIS.03 (cache `chata-v26`).
