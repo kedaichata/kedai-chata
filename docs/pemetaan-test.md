@@ -335,3 +335,17 @@ Sisa: SEC-19 (Android), non-SEC (O22, wizard Besok, jumlah menu, Segarkan, pilih
 **Tidak diamati sendiri (diwakili, keputusan ketua):** push `alih_hari`, `foto_setelah_selesai`, `order_wakil`.
 
 **Sisa:** SEC-23 sebelum `LNC.01`; SEC-27 kapan saja (P1); SEC-30, SEC-31, SEC-04, dan SEC-03 menunggu BTN.
+
+### 2026-11-14 | ketua: GLR (SEC-39, GLR.07)
+
+**Baru terbukti** (tanpa bukti dan tanpa data pelanggan):
+
+- **SEC-39:** balasan `gelar_saya` hanya berisi `tingkat`, `menu`, `apresiasi`; order wakil tidak menambah hitungan (dibuktikan lewat akun dengan order wakil Selesai yang memuat menu gelar, plus query baca-saja); gelar akun A dan B terpisah; isian palsu (id akun lain, peran owner) diabaikan.
+- **GLR.07:** hanya Selesai yang ikut (Menunggu, Disetujui, Diproses, Siap diambil tidak menambah); naik tepat di ambang; satu order banyak porsi dihitung 1; belum punya gelar (server, Home, layar Gelar Saya); nama panjang di Home dan pratinjau banner; GL9 lengkap (tambah tingkat di atas, turunkan ambang, naikkan ambang jalur menu dan tingkat, sisipan di tengah, nonaktifkan baris).
+  **SEC yang dicentang di sheet:** SEC-39 siap dicentang (tanggal centang oleh PIC: ...). SEC-38 sudah dicentang sebelumnya (Handoff #2). GLR.07 sudah dicentang.
+
+**Tes tidak perlu diulang:** seluruh tes di atas, kecuali yang kodenya berubah sejak itu.
+
+**Belum teruji (catatan):** status Diantar, Ditolak, Dibatalkan satu per satu; PNG hasil unduhan dengan nama panjang.
+
+**Sisa:** GLR.08 (demo), GLR.09 (kembalikan ambang, wajib sebelum LNC.04), GLR.10 (Bantuan). SEC-23 sebelum `LNC.01`; SEC-27 kapan saja (P1); SEC-30, SEC-31, SEC-04, dan SEC-03 menunggu BTN.

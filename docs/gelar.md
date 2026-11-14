@@ -226,3 +226,21 @@ _(belum ada blok)_
   - **GLR.08** (demo ke owner) dan **GLR.10** (isi Bantuan, bersama BTN.05) belum dikerjakan.
   - Nama menu di database masih dummy. Saat peluncuran, edit nama menu yang ada, jangan membuat menu baru lalu menonaktifkan yang lama (GL12).
 - **Saran giliran berikutnya:** sesi tes SEC-39, dipegang ketua (P0). Lampirkan `AGENTS.md`, `gelar.md` (dengan Handoff #2 sampai #4), `security.md`, dan `database.md`. Tambahan berguna: `supabase/templates/20261114_02_gelar_saya_uji.sql` (isian uji berupa placeholder, diisi di SQL Editor saja) dan `docs/pemetaan-test.md` bila ketua ingin status tes ikut tercatat. Tes dari konsol lewat `window.KedaiAkun.panggilKedai("gelar_saya")`.
+
+### Handoff #5 | 14 Nov 2026 | Ketua
+
+- **Tugas:** tes SEC-39 dan GLR.07 (sesi tes, akun dan data dummy, dari konsol lewat `window.KedaiAkun.panggilKedai("gelar_saya")`).
+- **File yang diubah:** tidak ada kode aplikasi, tabel, fungsi SQL, atau Edge Function yang berubah. Satu berkas template baru perlu disalin ke repo: `supabase/templates/20261114_05_gelar_sec39_cek.sql` (query baca-saja hitungan order Selesai per akun). Isi tabel `gelar` diubah lewat lembar `gelar-isi` dan SQL Editor akun ketua (SQL impor tidak disimpan di repo, GL14), dengan "OK" ketua per langkah.
+- **Terbukti 14 Nov 2026 (bukti diperiksa di chat, tidak disimpan; data dummy):**
+  - **SEC-39:** balasan hanya `tingkat`, `menu`, `apresiasi` tanpa data pribadi; order wakil tidak menambah hitungan (akun 03 tetap Pelanggan Baru tanpa gelar menu walau order wakil Selesai memuat Karage ada, cocok dengan query baca-saja); gelar akun A dan B terpisah; isian palsu (id akun lain dan peran owner) diabaikan.
+  - **GLR.07:** hanya Selesai yang ikut (tidak berubah saat Menunggu, Disetujui, Diproses, Siap diambil; naik saat Selesai); naik tepat di ambang 2; satu order Katsu 5 porsi dihitung 1 (gelar menu tidak muncul); belum punya gelar (balasan `tingkat: null`, Home tanpa pil, layar Gelar Saya berisi ajakan); nama 20 huruf lebar di Home dan pratinjau banner; GL9 lengkap (tambah tingkat di atas, turunkan ambang, naikkan ambang jalur menu dan jalur tingkat, sisipan ambang 6, nonaktifkan).
+- **Status sheet:** SEC-39 selesai, silakan dicentang. GLR.07 siap dicentang dengan catatan di bawah (keputusan ketua).
+- **Keputusan baru:** tidak ada.
+- **Keadaan database sekarang:** `menu-katsu` kembali ke ambang 2 (nilai demo). Dua baris uji, `tingkat-uji-enam` dan `tingkat-uji-tujuh`, masih ada di tabel `gelar` dengan `aktif = tidak` dan tidak dihapus. Nama akun uji sudah dikembalikan.
+- **Belum teruji (catatan GLR.07):** status Diantar, Ditolak, dan Dibatalkan belum dicoba satu per satu (yang dicoba: Menunggu, Disetujui, Diproses, Siap diambil); PNG hasil unduhan dengan nama panjang belum dibuka (pratinjau saja); dua baris uji di tabel tidak berpengaruh ke hitungan.
+- **Belum beres:**
+  - **GLR.09 wajib sebelum LNC.04:** ambang masih nilai demo (tingkat 1 sampai 5, gelar menu 2). Kembalikan ke 1, 10, 25, 50, 100 dan gelar menu 20. Baris uji tetap nonaktif. Cara mengembalikan sudah terbukti jalan (lewat baris yang sama di lembar), tetapi dengan ambang demo; belum dengan angka asli.
+  - **GLR.08** (demo ke owner) dan **GLR.10** (isi Bantuan, bersama BTN.05) belum dikerjakan.
+  - Blok susulan di dokumen lain masih menunggu persetujuan ketua (isi di `blok-susulan-gelar.md`): `AGENTS.md`, `home.md`, `bonus.md`, `features.md`, `bantuan.md`.
+  - Nama menu di database masih dummy. Saat peluncuran, edit nama menu yang ada, jangan membuat menu baru lalu menonaktifkan yang lama (GL12).
+- **Saran giliran berikutnya:** GLR.08 (demo ke owner dengan set demo). Revisi nama atau ambang setelah demo lewat lembar, dengan "OK" ketua bila menaikkan ambang. Lalu GLR.09 sebelum LNC.04.
