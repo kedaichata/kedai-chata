@@ -291,4 +291,29 @@ Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Yang paling 
 - Isi Bantuan ditambah satu jawaban singkat: di mana tombol QRIS (Home), bahwa pembayaran mengikuti arahan perwakilan ChATA lewat WA, dan bahwa pesanan diproses setelah pembayaran dikonfirmasi.
 - Ditulis manual di lembar Bantuan, **tanpa angka** dan tanpa menarik otomatis dari aplikasi. Tidak ada perubahan skema atau kode.
 
+### Handoff #1 | 2026-11-14 | Ketua
+
+**Tugas:** QRS.01 (siapkan gambar QRIS). Selesai.
+
+**File yang diubah:**
+
+- `public/img/qris.jpg` (baru). Hasil Squoosh dari JPG asli: 709 × 1000 px, MozJPEG kualitas 90, sekitar 123 KB. Latar putih, kode tidak terpotong, tanpa data pribadi lain. Sudah dipindai di aplikasi pembaca GoPay dan ShopeePay (konfirmasi ketua).
+
+**Keputusan baru:**
+
+- **Format gambar QRIS jadi `.jpg`, nama berkas `qris.jpg`** (bukan `qris.png`). Dasar: QR1 membolehkan format diganti selama namanya dicatat; blok ini adalah catatannya. Alasan: JPG asli 146 KB, saat dikonversi ke PNG malah membengkak jadi sekitar 300 KB.
+- Semua penyebutan `qris.png` di dokumen ini (QR1, QR9, QR10, bagian 4, QRS.01 sampai QRS.03, bagian 6, bagian 7) dibaca **`qris.jpg`**. Yang paling akhir menang.
+
+**Belum beres:**
+
+- Belum tercatat apakah `qris.jpg` sudah di-push. Bila belum, push mengikuti aturan anti-nyasar (`AGENTS.md` bagian 8).
+- Teks QRS.02 dan QRS.03 di sheet mungkin masih menyebut `qris.png`; ubah manual.
+
+**Saran giliran berikutnya:**
+
+- Kerjakan QRS.02 bersama QRS.03. Lampirkan `AGENTS.md`, `qris.md` (termasuk blok ini), `home.md`, `desain.md`, `public/index.html`, `public/kerangka.js`, `public/style.css`, `public/sw.js`.
+- QRS.03 (menyentuh `sw.js`): daftarkan `qris.jpg` dan `qris.js`, naikkan cache `chata-v27` jadi `chata-v28`. Butuh "OK" ketua.
+- Gambarnya **tegak (709 × 1000)**. Pop-up harus membatasi tinggi gambar atau bisa digulir, supaya tombol **Simpan gambar** dan **Tutup** tetap terlihat di HP kecil.
+- Tautan Simpan gambar mengarah ke `qris.jpg`.
+
 ---
