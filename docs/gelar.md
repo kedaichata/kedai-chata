@@ -181,3 +181,23 @@ _(belum ada blok)_
 - **Keputusan baru:** tidak ada.
 - **Belum beres:** pertanyaan untuk ketua sebelum GLR.04: apakah di production sudah ada customer asli dengan order Selesai? Bila ada, jangan pakai ambang kecil (GL24). Lembar `gelar-isi` belum dibuat (bagian adik ketua).
 - **Saran giliran berikutnya:** GLR.04 (High-Risk, butuh penjelasan dampak dan "OK" ketua), lalu GLR.05. Pengingat GLR.05: Home sebaiknya diam saja (tanpa pil dan tanpa pesan galat) bila `gelar_saya` dibalas 400 `profil_tidak_ada`. Tes SEC-38 dan SEC-39 dilakukan dari konsol lewat `window.KedaiAkun.panggilKedai`.
+
+### Handoff #3 | 14 Nov 2026 | RAC
+
+- **Tugas:** GLR.04 (lembar `gelar-isi` dan impor set demo ke production).
+- **File yang diubah:** tidak ada kode aplikasi, tabel, atau fungsi yang berubah. Isi tabel `gelar` (sebelumnya kosong) kini 7 baris lewat SQL Editor akun ketua. Dua query cek baca-saja baru perlu disimpan di `supabase/templates/` bila belum disalin: `20261114_03_gelar_impor_cek.sql` dan `20261114_04_gelar_impor_hasil_cek.sql`. Lembar `gelar-isi` (Google Sheet, di luar repo) berisi sheet `petunjuk-gelar`, `Isi`, dan `Apresiasi`. SQL impor tidak disimpan di repo (GL14).
+- **Terbukti 14 Nov 2026 (bukti diperiksa di chat, tidak disimpan; data dummy):** sebelum impor, tabel `gelar` kosong dan "ayam karage" dan "Ayam Katsu" masing-masing ketemu satu kali sebagai menu aktif. Impor dijalankan, hasil Success. Sesudah impor: 7 baris, semua aktif, lima tingkat berambang 1 sampai 5, `menu-karage` dan `menu-katsu` berambang 2 dan terhubung ke menu yang benar. "OK" ketua diterima lewat WA; PIC menyatakan semua data di production masih dummy.
+- **Status sheet:** GLR.04 selesai, silakan dicentang. **SEC-39 belum boleh dicentang:** akun A dan B terpisah serta "order wakil tidak menambah hitungan" belum terbukti. Datanya kini ada, jadi bisa dites (dua akun customer dummy dengan jumlah order Selesai berbeda).
+- **Keputusan baru:** tidak ada dari ketua. Ketua menetapkan set demo (nama dan ambang saat ini) dipakai dulu sampai demo ke owner; revisi menyusul setelah demo.
+- **Pilihan penulis (alasan belum tercatat dari ketua):** (1) lembar punya sheet tambahan `Apresiasi` untuk kalimat GL16; (2) kolom Cek menolak deskripsi yang memuat angka (GL15), dan kalimat apresiasi dibatasi 1 sampai 200 karakter; (3) nama menu dicocokkan tanpa membedakan huruf besar kecil, hanya ke menu aktif; (4) `kunci` berisi arti gelar, bukan angka, supaya baris yang sama bisa ditimpa saat ambang dikembalikan; (5) kolom waktu `diubah_pada` tertulis langsung di rumus SQL, tanpa sel pengaturan; (6) teks deskripsi pada baris demo adalah draf penulis.
+- **Belum beres:**
+  - **GLR.09 wajib sebelum LNC.04:** ambang masih nilai demo. Kembalikan ke angka asli (tingkat 1, 10, 25, 50, 100; gelar menu 20) lewat baris yang sama di lembar. Cara ini belum pernah dicoba.
+  - Nama menu masih dummy. Saat peluncuran, **edit nama menu yang ada, jangan bikin menu baru lalu menonaktifkan yang lama**, supaya gelar menu tidak putus (GL12).
+  - SQL kalimat apresiasi di sheet `Apresiasi` belum pernah dijalankan (isi awal sudah ada dari migration).
+- **Saran giliran berikutnya:** GLR.05 (pil gelar dan tombol Gelar Saya di Home). Lampirkan `AGENTS.md`, `gelar.md`, `home.md`, `desain.md`, `kerangka.js`, `index.html`, `style.css`. Pengingat: Home diam saja (tanpa pil dan tanpa pesan galat) bila `gelar_saya` dibalas 400 `profil_tidak_ada`. Lalu GLR.06 (butuh "OK" untuk `sw.js`). Tes SEC-39 bisa dilakukan kapan saja sebelum GLR.07.
+- **Kalau ada revisi, caranya begini** (rincian lengkap ada di sheet `petunjuk-gelar`):
+  1. Edit atau tambah baris di sheet `Isi`, pastikan kolom Cek berisi OK.
+  2. Salin kolom H baris itu, jalankan di SQL Editor (akun ketua), lalu Segarkan di aplikasi.
+  3. Ganti nama atau deskripsi, tambah tingkat baru, atau **turunkan** ambang: aman.
+  4. **Naikkan** ambang atau nonaktifkan gelar yang sudah dipakai: bisa menurunkan gelar customer, jadi minta "OK" ketua dulu (GL9).
+  5. Jangan hapus baris dan jangan ganti `kunci` yang sudah diimpor.
