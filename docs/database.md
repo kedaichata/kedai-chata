@@ -423,4 +423,19 @@ Rujukan: docs/ringkasan.md RK10. Yang paling akhir menang.
 - **Bagian 4:** tidak ada kunci pengaturan baru (RK14).
 - **Dampak:** hanya menambah satu fungsi; tidak menyentuh data. Dibatalkan dengan SQL pembatalan di repo. Butuh "OK" ketua sebelum dijalankan.
 
+### 2026-11-14: Tabel `gelar`, pengaturan `gelar_apresiasi`, dan fungsi `gelar_saya` (GLR.01, GLR.02)
+
+**Berkas tujuan:** `docs/database.md` bagian 9. Rujukan: `docs/gelar.md` bagian 9, Handoff #1. Yang paling akhir menang.
+
+- **Berkas SQL:** `supabase/migrations/20261114_gelar.sql` dan `20261114_02_gelar_saya.sql` (masing-masing dengan `_batal`), `supabase/templates/20261114_gelar_cek.sql`, `20261114_02_gelar_saya_cek.sql`, dan `20261114_02_gelar_saya_uji.sql` (isian uji berupa placeholder, diisi di SQL Editor saja). Dijalankan dan dicek 14 Nov 2026. Tabel lama dan data lama tidak diubah.
+- **Bagian 2 (tabel baru, nama kolom persis):** `gelar`: `id`, `kunci` (unik; huruf kecil, angka, strip; 3 sampai 40), `jenis` (`tingkat` atau `menu`), `ambang` (bilangan bulat 1 atau lebih), `menu_id` (merujuk `menu`; wajib untuk jenis menu dan kosong untuk tingkat), `nama` (3 sampai 40), `deskripsi` (1 sampai 120), `aktif`, `dibuat_pada`, `diubah_pada`. Nama dan deskripsi tanpa spasi di tepi dan tanpa karakter kontrol. Ambang tingkat **aktif** tidak boleh kembar (indeks unik sebagian). `diubah_pada` diisi SQL impor, tanpa trigger. Tabel dibuat kosong.
+- **Bagian 3 (hak):** `gelar` masuk kelompok "Hanya baca": `service_role` hanya `SELECT`, `anon` dan `authenticated` nol, RLS aktif tanpa policy, tanpa DELETE. Terbukti lewat query cek.
+- **Bagian 4 (pengaturan):** kunci baru `gelar_apresiasi` berisi kalimat GL16.
+- **Bagian 5 (fungsi SQL, `SECURITY DEFINER`, `search_path` kosong, `EXECUTE` hanya `service_role`, terbukti):** `gelar_saya(p_akun uuid)` mengembalikan `jsonb`, baca-saja (`STABLE`). Hanya order `Selesai` milik akun itu (order wakil tidak ikut karena `pemesan` kosong). Gelar tingkat: aktif dengan ambang tertinggi yang terpenuhi, atau null. Gelar menu: aktif yang terpenuhi, dihitung per order unik yang memuat menunya. Balasan `{tingkat: {nama, deskripsi} atau null, menu: [{nama}], apresiasi}`, tanpa angka dan tanpa nama tampilan.
+- **Kode galat baru:** `profil_tidak_ada`. Dipakai ulang: `id_kosong`, `peran_tidak_boleh`, `pengaturan_rusak`. Pemetaan ke status HTTP ada di `gelar.ts` (GLR.03).
+- **Terbukti (14 Nov 2026):** uji hitung dengan tiga akun dummy dan tiga cabang galat sesuai harapan; tabel `gelar` kembali kosong setelah uji.
+- **Belum terbukti:** satu order banyak porsi atau baris dihitung 1, order wakil tidak ikut, batas tengah tingkat (GLR.07); kedua `_batal.sql` belum pernah dicoba.
+- **Pembatalan:** bila aksi di `kedai` (GLR.03) sudah dideploy, deploy `kedai` versi sebelumnya dulu. Buang fungsi (`20261114_02_gelar_saya_batal.sql`) sebelum membuang tabel (`20261114_gelar_batal.sql`).
+- **Pilihan penulis** (format `kunci`, tanpa aturan satu gelar aktif per menu, bentuk balasan, staf aktif atau tidak selalu ditolak, menu nonaktif tetap dihitung): alasan belum tercatat.
+
 ---
