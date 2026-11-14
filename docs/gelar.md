@@ -170,3 +170,14 @@ _(belum ada blok)_
 - **Belum terbukti:** satu order banyak porsi atau baris dihitung 1, order wakil tidak ikut, batas tengah tingkat (GLR.07); kedua `_batal.sql` belum pernah dicoba.
 - **Pembatalan:** bila aksi di `kedai` (GLR.03) sudah dideploy, deploy `kedai` versi sebelumnya dulu. Buang fungsi (`20261114_02_gelar_saya_batal.sql`) sebelum membuang tabel (`20261114_gelar_batal.sql`).
 - **Pilihan penulis** (format `kunci`, tanpa aturan satu gelar aktif per menu, bentuk balasan, staf aktif atau tidak selalu ditolak, menu nonaktif tetap dihitung): alasan belum tercatat.
+
+### Handoff #2 | 14 Nov 2026 | Ketua
+
+- **Tugas:** GLR.03 (aksi `gelar_saya` di `kedai`) dan tes SEC-38 dan SEC-39.
+- **File yang diubah:** `supabase/functions/kedai/gelar.ts` (baru) dan `supabase/functions/kedai/index.ts` (hanya tambahan: komentar, satu import, satu blok sambungan, satu `case`; tidak ada baris lama yang diubah). Dikerjakan di commit `ca3c848`, `kedai` sudah dideploy tanpa `--no-verify-jwt` dan token dibuang sesuai AGENTS.md bagian 8. `sw.js`, tabel, dan SQL tidak disentuh.
+- **Aksi `gelar_saya`:** hanya customer aktif. Staf nonaktif dan owner atau penjaga dibalas 403 (lapis kedua; fungsi SQL jadi pagar kedua). `profil_tidak_ada` dipetakan 400 "Lengkapi profil dulu". `id_kosong` dan `pengaturan_rusak` tidak dipetakan (galat umum 500). Semua isian dari aplikasi diabaikan, id akun dari token. Bentuk balasan dicek sebelum diteruskan; balasan sukses `{ok, gelar: {tingkat, menu, apresiasi}}`.
+- **Terbukti 14 Nov 2026 (bukti diperiksa di chat, tidak disimpan):** order baru tetap bisa dibuat setelah deploy; owner dan penjaga dibalas 403; tanpa token dibalas 401 oleh platform; customer dummy dibalas 200 berisi hanya `tingkat`, `menu`, `apresiasi`; isian palsu (id akun karangan dan `peran: "owner"`) diabaikan.
+- **Status sheet:** GLR.03 dan SEC-38 selesai. **SEC-39 belum boleh dicentang:** gelar akun A dan B belum terbukti terpisah dan "order wakil tidak menambah hitungan" belum terbukti, karena tabel `gelar` masih kosong. Keduanya menunggu set demo (GLR.04), paling lambat GLR.07.
+- **Keputusan baru:** tidak ada.
+- **Belum beres:** pertanyaan untuk ketua sebelum GLR.04: apakah di production sudah ada customer asli dengan order Selesai? Bila ada, jangan pakai ambang kecil (GL24). Lembar `gelar-isi` belum dibuat (bagian adik ketua).
+- **Saran giliran berikutnya:** GLR.04 (High-Risk, butuh penjelasan dampak dan "OK" ketua), lalu GLR.05. Pengingat GLR.05: Home sebaiknya diam saja (tanpa pil dan tanpa pesan galat) bila `gelar_saya` dibalas 400 `profil_tidak_ada`. Tes SEC-38 dan SEC-39 dilakukan dari konsol lewat `window.KedaiAkun.panggilKedai`.
