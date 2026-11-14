@@ -80,6 +80,10 @@
 //         diabaikan, akun dari token, SEC-06, SEC-36). Kodenya ada di BERKAS BARU `ringkasan.ts` (folder yang sama),
 //         diimpor di bawah; kode lama tidak dipindah. Fungsi SQL: 20261113_02_ringkasan_7hari.sql (sudah dijalankan
 //         dan lulus cek SEBELUM berkas ini dideploy).
+// GLR.03: ditambah `gelar_saya` (gelar.md GL7, GL22, GL23; customer saja; hanya membaca; semua isian dari aplikasi
+//         diabaikan, akun dari token, SEC-06, SEC-38). Kodenya ada di BERKAS BARU `gelar.ts` (folder yang sama),
+//         diimpor di bawah; kode lama tidak dipindah. Fungsi SQL: 20261114_02_gelar_saya.sql (sudah dijalankan
+//         dan lulus cek SEBELUM berkas ini dideploy).
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -107,6 +111,8 @@ import { buatAksiInbox } from "./inbox.ts";
 import { buatAksiPush } from "./push.ts";
 // RKS.02: aksi ringkasan_7hari ada di berkas terpisah.
 import { buatAksiRingkasan } from "./ringkasan.ts";
+// GLR.03: aksi gelar_saya ada di berkas terpisah.
+import { buatAksiGelar } from "./gelar.ts";
 
 // ------------------------------------------------------------
 // Pengaturan dasar
@@ -1543,6 +1549,19 @@ const { aksiRingkasan7Hari } = buatAksiRingkasan({
 });
 
 // ------------------------------------------------------------
+// GLR.03: sambungan ke berkas gelar.ts. Hanya perlu klien, bacaPeran, balas, galat, dan galatDariDb.
+// ------------------------------------------------------------
+
+const { aksiGelarSaya } = buatAksiGelar({
+  // deno-lint-ignore no-explicit-any
+  klien: admin as any,
+  bacaPeran,
+  balas,
+  galat,
+  galatDariDb,
+});
+
+// ------------------------------------------------------------
 // Pintu masuk
 // ------------------------------------------------------------
 
@@ -1661,6 +1680,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
         return await aksiPushNonaktifkan(req, pengguna, isi);
       case "ringkasan_7hari":
         return await aksiRingkasan7Hari(req, pengguna, isi);
+      case "gelar_saya":
+        return await aksiGelarSaya(req, pengguna, isi);
       default:
         return galat(req, 400, "Aksi tidak dikenal.");
     }
