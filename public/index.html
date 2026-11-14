@@ -1678,59 +1678,13 @@
                                 hidden
                             ></div>
                         </div>
-                        <!-- GLR.05: tombol Gelar Saya (gelar.md GL18), customer saja, tepat di atas Bantuan.
-                             Membuka layar tersembunyi (panel-gelar). Item ditampilkan kerangka.js lewat data-peran. -->
-                        <div class="baris-tombol" data-peran="customer" hidden>
-                            <button
-                                type="button"
-                                class="tombol tombol--sekunder"
-                                id="home-gelar"
-                                data-aksi="gelar"
-                            >
-                                Gelar Saya
-                            </button>
-                        </div>
-                        <!-- QRS.02: tombol Bayar dengan QRIS (qris.md QR3), semua peran, tepat di atas Bantuan
-                             (customer: sapaan, Gelar Saya, QRIS, Bantuan). Selalu tampil dan bisa diketuk.
-                             Tanpa data-peran dan tanpa data-aksi; pendengar klik dipasang qris.js. -->
-                        <div class="baris-tombol">
-                            <button
-                                type="button"
-                                class="tombol tombol--sekunder"
-                                id="home-qris"
-                                aria-haspopup="dialog"
-                            >
-                                Bayar dengan QRIS
-                            </button>
-                        </div>
-                        <!-- HOM.03: tombol Bantuan (HM5), semua peran. Tampil "Segera" dan tidak bisa diketuk
-                             (disabled) sampai bantuan.md selesai; saat itu tombol ini diaktifkan di sana. -->
-                        <!-- BTN.03: tombol Bantuan "Segera" diganti tombol aktif (kode lama disimpan di komentar ini):
-<div class="baris-tombol">
-                            <button
-                                type="button"
-                                class="tombol tombol--sekunder tombol--segera"
-                                id="home-bantuan"
-                                disabled
-                                aria-disabled="true"
-                            >
-                                <span>Bantuan</span>
-                                <span class="tombol__segera">Segera</span>
-                            </button>
-                        </div>
-                        -->
-                        <div class="baris-tombol">
-                            <button
-                                type="button"
-                                class="tombol tombol--sekunder"
-                                id="home-bantuan"
-                                data-aksi="bantuan"
-                            >
-                                Bantuan
-                            </button>
-                        </div>
 
-                        <!-- NTF.05: tombol Aktifkan notifikasi (notifikasi.md NT6), di bawah Bantuan, semua peran.
+                        <!-- HOM.06: tata letak baru. Urutan: sapaan, Aktifkan notifikasi (1 baris penuh),
+                             lalu 3 tombol sejajar (Gelar, QRIS, Bantuan: emoji di atas, teks di bawah).
+                             Blok lama Gelar Saya, QRIS, Bantuan, dan Aktifkan notifikasi (posisi lama)
+                             dijadikan komentar di bawah; id dan data-aksi dipindahkan ke tombol baru. -->
+
+                        <!-- NTF.05: tombol Aktifkan notifikasi (notifikasi.md NT6), kini tepat di bawah sapaan, 1 baris penuh, semua peran.
                              Tampil/sembunyi diatur notif.js (hilang bila sudah aktif, diblokir, atau peramban tidak mendukung). -->
                         <div
                             class="baris-tombol"
@@ -1757,6 +1711,115 @@
                             role="alert"
                             hidden
                         ></p>
+
+                        <!-- HOM.06: baris 3 tombol. Gelar hanya untuk customer (data-peran; kerangka.js yang menampilkan),
+                             QRIS dan Bantuan untuk semua peran. Tanpa Gelar, dua tombol sisanya melebar rata.
+                             Pendengar: QRIS di qris.js (id home-qris), Gelar dan Bantuan lewat data-aksi di kerangka.js. -->
+                        <div class="home-aksi">
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder home-aksi__tombol"
+                                id="home-gelar"
+                                data-aksi="gelar"
+                                data-peran="customer"
+                                hidden
+                            >
+                                <span
+                                    class="home-aksi__emoji"
+                                    aria-hidden="true"
+                                    >&#127941;</span
+                                >
+                                <span class="home-aksi__teks">Gelar</span>
+                            </button>
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder home-aksi__tombol"
+                                id="home-qris"
+                                aria-haspopup="dialog"
+                            >
+                                <span
+                                    class="home-aksi__emoji"
+                                    aria-hidden="true"
+                                    >&#128179;</span
+                                >
+                                <span class="home-aksi__teks">QRIS</span>
+                            </button>
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder home-aksi__tombol"
+                                id="home-bantuan"
+                                data-aksi="bantuan"
+                            >
+                                <span
+                                    class="home-aksi__emoji"
+                                    aria-hidden="true"
+                                    >&#10067;</span
+                                >
+                                <span class="home-aksi__teks">Bantuan</span>
+                            </button>
+                        </div>
+
+                        <!-- HOM.06: blok lama (kode lama disimpan di komentar ini, tidak dihapus):
+                        GLR.05: tombol Gelar Saya (gelar.md GL18), customer saja:
+                        <div class="baris-tombol" data-peran="customer" hidden>
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder"
+                                id="home-gelar"
+                                data-aksi="gelar"
+                            >
+                                Gelar Saya
+                            </button>
+                        </div>
+                        QRS.02: tombol Bayar dengan QRIS (qris.md QR3), semua peran:
+                        <div class="baris-tombol">
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder"
+                                id="home-qris"
+                                aria-haspopup="dialog"
+                            >
+                                Bayar dengan QRIS
+                            </button>
+                        </div>
+                        BTN.03: tombol Bantuan aktif:
+                        <div class="baris-tombol">
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder"
+                                id="home-bantuan"
+                                data-aksi="bantuan"
+                            >
+                                Bantuan
+                            </button>
+                        </div>
+                        NTF.05: tombol Aktifkan notifikasi (posisi lama, di bawah Bantuan):
+                        <div
+                            class="baris-tombol"
+                            id="home-notif-bungkus"
+                            hidden
+                        >
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder"
+                                id="home-notif"
+                            >
+                                Aktifkan notifikasi
+                            </button>
+                        </div>
+                        <p
+                            class="isian__bantuan"
+                            id="home-notif-info"
+                            role="status"
+                            hidden
+                        ></p>
+                        <p
+                            class="isian__galat"
+                            id="home-notif-galat"
+                            role="alert"
+                            hidden
+                        ></p>
+                        -->
 
                         <!-- HOM.04: item Home menurut peran (HM6, HM7, HM12). Atribut data-peran berisi peran yang
                              boleh melihat item (dipisah spasi); kerangka.js yang menampilkan atau menyembunyikan.

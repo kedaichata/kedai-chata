@@ -116,3 +116,63 @@ Urutan: QRS.01, QRS.02 bersama QRS.03, QRS.04.
 ---
 
 _(belum ada blok)_
+
+### Handoff #1 | 2026-11-14 | Ketua
+
+**Tugas:** QRS.01 (siapkan gambar QRIS). Selesai.
+
+**File yang diubah:**
+
+- `public/img/qris.jpg` (baru). Hasil Squoosh dari JPG asli: 709 × 1000 px, MozJPEG kualitas 90, sekitar 123 KB. Latar putih, kode tidak terpotong, tanpa data pribadi lain. Sudah dipindai di aplikasi pembaca GoPay dan ShopeePay (konfirmasi ketua).
+
+**Keputusan baru:**
+
+- **Format gambar QRIS jadi `.jpg`, nama berkas `qris.jpg`** (bukan `qris.png`). Dasar: QR1 membolehkan format diganti selama namanya dicatat; blok ini adalah catatannya. Alasan: JPG asli 146 KB, saat dikonversi ke PNG malah membengkak jadi sekitar 300 KB.
+- Semua penyebutan `qris.png` di dokumen ini (QR1, QR9, QR10, bagian 4, QRS.01 sampai QRS.03, bagian 6, bagian 7) dibaca **`qris.jpg`**. Yang paling akhir menang.
+
+**Belum beres:**
+
+- Belum tercatat apakah `qris.jpg` sudah di-push. Bila belum, push mengikuti aturan anti-nyasar (`AGENTS.md` bagian 8).
+- Teks QRS.02 dan QRS.03 di sheet mungkin masih menyebut `qris.png`; ubah manual.
+
+**Saran giliran berikutnya:**
+
+- Kerjakan QRS.02 bersama QRS.03. Lampirkan `AGENTS.md`, `qris.md` (termasuk blok ini), `home.md`, `desain.md`, `public/index.html`, `public/kerangka.js`, `public/style.css`, `public/sw.js`.
+- QRS.03 (menyentuh `sw.js`): daftarkan `qris.jpg` dan `qris.js`, naikkan cache `chata-v27` jadi `chata-v28`. Butuh "OK" ketua.
+- Gambarnya **tegak (709 × 1000)**. Pop-up harus membatasi tinggi gambar atau bisa digulir, supaya tombol **Simpan gambar** dan **Tutup** tetap terlihat di HP kecil.
+- Tautan Simpan gambar mengarah ke `qris.jpg`.
+
+### Handoff #2 | 2026-11-14 | Ketua
+
+**Tugas selesai:** QRS.02, QRS.03, dan QRS.04 (tinggal dicentang di sheet). QRS.01 sudah selesai di Handoff #1. QRS.05 dikerjakan manual oleh ketua di lembar Bantuan bersama BTN.05.
+
+**File yang diubah:** commit `98c8167` di `main`, tanpa `[skip ci]`. Tiga cek anti-nyasar lolos sebelum push.
+
+- `public/index.html` (hanya tambahan): tombol "Bayar dengan QRIS" tepat di atas tombol Bantuan, pop-up `#qris-dialog` di dalam `#layar-sementara`, dan tag `<script src="qris.js">` setelah `notif.js`.
+- `public/style.css` (hanya tambahan di akhir): kelas `qrs-`, tanpa `qris.css`. Pop-up memakai ulang gaya `dialog-keluar`.
+- `public/qris.js` (baru): buka dan tutup pop-up, memasang gambar, teks, dan tautan Simpan gambar.
+- `public/sw.js`: cache `chata-v27` jadi `chata-v28` (baris lama dijadikan komentar), `qris.js` dan `img/qris.jpg` masuk daftar cache. "OK" ketua diberikan di chat.
+- `public/kerangka.js` **tidak disentuh** (lihat keputusan).
+- Kode lama tidak ada yang dihapus.
+
+**Isi:**
+
+- Tombol QRIS untuk semua peran, selalu tampil dan bisa diketuk. Urutan di Home customer: kartu sapaan, Gelar Saya, QRIS, Bantuan. Owner dan penjaga: kartu sapaan, QRIS, Bantuan.
+- Pop-up: gambar `img/qris.jpg`, kalimat petunjuk QR5, tombol Simpan gambar (tautan unduh biasa) dan Tutup. Tutup lewat tombol, ketuk area gelap, atau Esc.
+- Gambar tegak (709 x 1000), jadi tingginya dibatasi dan kotak pop-up bisa digulir supaya tombol tetap terlihat di HP kecil.
+- Semua teks dipasang lewat `textContent`. Tanpa panggilan server, tanpa database.
+
+**Keputusan baru:**
+
+- **Pop-up ditutup saat Keluar lewat pengamat atribut `hidden` pada `#layar-sementara` di `qris.js`, bukan lewat `reset()` di `kerangka.js`** (QR13 menyebut `kerangka.js` hanya bila perlu). Alasan: `akun.js` `keluar()` selalu berakhir di `tampilkan("masuk")` yang menyembunyikan `#layar-sementara`, jadi semua jalur Keluar tercakup tanpa menyentuh berkas besar. `window.KedaiQris.reset()` tetap disediakan; bila suatu saat perlu, cukup satu baris pemanggilan di `kerangka.js` `reset()`.
+- Nama gambar `qris.jpg` (Handoff #1) dipakai di seluruh kode dan daftar cache.
+- Nama berkas unduhan Simpan gambar: `qris-kedai-chata.jpg`. Alasan belum tercatat dari ketua; dipilih penulis kode.
+
+**Hasil tes:** dites dengan akun dummy tiga peran (customer, owner, penjaga) di HP; semua berfungsi sesuai, dan di mode pesawat QRIS tetap tampil. Bukti diperiksa di chat dan tidak disimpan.
+
+**Belum beres:**
+
+- Tidak ada yang menghalangi. Bila belum diuji terpisah: pindai QRIS dari layar pop-up, Simpan gambar di Android, dan Keluar lalu masuk lagi (pop-up tidak muncul sendiri).
+- Blok susulan di dokumen lain (`AGENTS.md`, `home.md`, `desain.md` sudah ada di sesi strategi); `features.md` dan `bonus.md` (kandidat versi 2: owner ganti QRIS sendiri) belum diperbarui.
+
+**Saran giliran berikutnya:** QRS.05 (jawaban Bantuan) bersama BTN.05, lalu lanjut ke pekerjaan sebelum LNC.04. Mengganti QRIS nanti: ganti berkas `public/img/qris.jpg` dengan nama sama lalu push (aturan anti-nyasar `AGENTS.md` bagian 8); tidak perlu mengubah `sw.js`.

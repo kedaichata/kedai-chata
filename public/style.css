@@ -1811,3 +1811,50 @@ body.sheet-terbuka {
 .qrs-aksi {
     flex-direction: column;
 }
+
+/* ------------------------------------------------------------------
+   HOM.06: tata letak baru tab Home (14 Nov 2026)
+   1) Kartu sampul dikecilkan supaya tombol notifikasi dan aksi cepat terlihat tanpa gulir.
+   2) Baris 3 tombol aksi cepat (Gelar, QRIS, Bantuan): emoji di atas, teks di bawah.
+      Tombol bertanda hidden (Gelar untuk non-customer) tidak memakan tempat, sisanya melebar rata.
+   Hanya tambahan; aturan lama di atas tidak diubah (yang di bawah ini menimpa lewat urutan).
+   ------------------------------------------------------------------ */
+.kartu-sampul {
+    padding: 14px 16px 12px;
+}
+
+.kartu-sampul__logo {
+    width: min(110px, 32vw);
+    filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.45));
+}
+
+.kartu-sampul__hias {
+    margin-top: 10px;
+}
+
+.home-aksi {
+    display: flex;
+    gap: 8px;
+    margin: 12px 0 0;
+}
+
+.home-aksi .home-aksi__tombol {
+    flex: 1 1 0;
+    min-width: 0;
+    flex-direction: column;
+    gap: 2px;
+    min-height: 72px;
+    padding: 8px 4px;
+    line-height: 1.2;
+}
+
+.home-aksi__emoji {
+    font-size: 1.7rem;
+    line-height: 1;
+}
+
+.home-aksi__teks {
+    font-size: 0.85rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
