@@ -248,3 +248,14 @@ _(belum ada blok)_
 - Tombol **Bantuan di Home tetap** ("Segera"), diaktifkan di BTN.03 ke layar yang sama dengan ikon ?.
 - Aturan "Tombol Keluar jangan dekat tombol utama" (DS12) kini berlaku untuk dialog konfirmasi, bukan lagi untuk Home.
 - Isi Home selebihnya tidak berubah.
+
+### 2026-11-14: Pil gelar dan tombol Gelar Saya di Home customer
+
+Keputusan ketua (sesi strategi 14 Nov 2026). Sumber: docs/gelar.md GL17 dan GL18. Yang paling akhir menang.
+
+- **Kartu sapaan customer** bertambah satu baris pil gelar di bawah teks sapaan (gelar tingkat pil emas, gelar menu pil kecil). Tidak muncul bila belum punya gelar. Lencana CUSTOMER tetap di kanan.
+- **Tombol "Gelar Saya"** (customer saja) tepat di bawah kartu sapaan, di atas Bantuan. Membuka layar tersembunyi dengan tombol Kembali ke Home.
+- **HM10 ("Home tidak memanggil server baru") dikecualikan untuk customer:** Home memanggil `gelar_saya` saat dibuka dan lewat Segarkan, satu panggilan tambahan.
+- Owner dan penjaga tidak berubah.
+
+---

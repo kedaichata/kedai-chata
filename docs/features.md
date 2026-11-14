@@ -124,3 +124,10 @@ Sumber: docs/inbox.md. Yang paling akhir menang.
 - **Layar per peran:** semua peran punya **Kotak masuk** di menu hamburger (di bawah Arithmetics), dengan titik merah di ikon hamburger bila ada yang belum dibaca. Ini jalur kabar cadangan bagi yang notifnya diblokir.
 - **Urutan versi 1:** Foto Bukti, lalu Inbox (INB), lalu Notifikasi (NTF), lalu isi Bantuan, tes akhir, dan Peluncuran.
 - **Peluncuran (bagian 10):** pembersihan data uji (LNC.01) ikut mencakup isi inbox uji; pengingat rutin ketua ditambah hapus inbox lama.
+
+### 2026-11-14: Fitur Gelar Customer masuk versi 1
+
+Sumber: docs/gelar.md. Yang paling akhir menang.
+
+- **Layar per peran:** customer punya layar **Gelar Saya** (dibuka dari Home) berisi pratinjau banner, Bagikan, dan Unduh PNG. Owner dan penjaga tidak berubah.
+- **Urutan versi 1:** fitur ini ditambahkan sebelum Peluncuran. **Peluncuran (bagian 10):** pembersihan data uji (LNC.01) mencakup akun dummy demo gelar; sebelum LNC.04 ambang gelar dikembalikan ke angka asli (GLR.09).

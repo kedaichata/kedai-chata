@@ -183,4 +183,14 @@ Keputusan ketua (sesi strategi 13 Nov 2026). Alasan: owner meminta fitur ini iku
 - **B22 (rekap harian dan pendapatan) tetap kandidat**; ringkasan ini bukan pendapatan final (memuat order Menunggu).
 - **B29 tetap tidak dikerjakan:** order menggantung ikut terhitung di ringkasan.
 
+### 2026-11-14: Kandidat versi 2 dari fitur Gelar
+
+Keputusan ketua (sesi strategi 14 Nov 2026). Sumber: docs/gelar.md bagian 8. Nomor B dan kolom Alasan diisi saat review pemakaian (`LNC.05`); alasan pemakaian belum tercatat.
+
+- **Customer memilih gelar mana yang dipajang** di banner dan Home (saat gelar menu bertambah banyak). Butuh menyimpan pilihan per akun, yaitu tulis-database baru yang berisiko.
+- **Gelar tersimpan** (gelar yang sudah diraih tidak turun walau aturan berubah). Hanya bila perubahan aturan di pemakaian nyata meresahkan; menyentuh inti order.
+- **Deskripsi gelar menu tampil di banner.**
+- **Push saat naik gelar**, **gelar periodik (bulanan)**, **leaderboard**, **banner bergambar atau animasi**.
+- **B8 (penggabungan pelanggan tanpa akun)** dan **B28 (pengaturan dari aplikasi)** ikut menguntungkan fitur ini bila dikerjakan.
+
 ---

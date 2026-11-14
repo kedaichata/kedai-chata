@@ -295,3 +295,16 @@ Keputusan ketua (sesi VIS.01, 13 Nov 2026). Alasan: `style.css` sudah panjang da
 
 - Gaya stepper status di detail pesanan customer ada di `public/stepper.css` (kelas berawalan `stp-`), dimuat setelah `style.css`. Pengecualian dari "semua gaya di satu `style.css`" (bagian 3 dan 6), mengikuti pola `game.css` dan `ringkasan.css`. Layar lain tetap di `style.css`.
 - `stepper.css` dan `stepper.js` wajib didaftarkan di cache `sw.js` (bagian 7, butuh "OK"); sudah dikerjakan di VIS.03 (cache `chata-v26`).
+
+### 2026-11-14: Dokumen `gelar.md` (prefix GLR), CSS terpisah, perluasan pengecualian SQL data
+
+Keputusan ketua (sesi strategi 14 Nov 2026, usulan owner setelah demo). Sumber: docs/gelar.md.
+
+- **Peta Dokumentasi (bagian 5):** tambah baris `docs/gelar.md`, isi: "Gelar customer berdasarkan order Selesai, pil di Home, banner untuk dibagikan ke WA", prefix sheet **GLR**.
+- **Fitur hanya membaca.** Tabel baru `gelar` (aturan), satu baris `pengaturan` (kalimat apresiasi), dan fungsi SQL baca-saja `gelar_saya`. Tidak ada tulis-database baru dan tidak ada pengecualian baru dari aturan bagian 7. Tabel `order` dan fungsi order lama tidak disentuh.
+- **Pengecualian "angka di database" (bagian 1):** tidak ada; ambang dan nama gelar ada di database.
+- **Bagian 3 dan 6, pengecualian CSS:** gaya di `public/gelar.css` (kelas berawalan `glr-`), dimuat setelah `style.css`, mengikuti pola `game.css`, `ringkasan.css`, dan `stepper.css`. `gelar.css` dan `gelar.js` wajib didaftarkan di cache `sw.js` (bagian 7, butuh "OK").
+- **Perluasan pengecualian BT7 (SQL isi dari lembar tidak disimpan di repo):** berlaku juga untuk **SQL impor gelar** dari lembar `gelar-isi`, karena berupa data. Lembar adalah sumber dan cadangannya. Skema tabel `gelar` tetap lewat migration. Alasan ketua selain yang tertulis belum tercatat.
+- **Kode baru `kedai`:** aksi `gelar_saya` di berkas baru `gelar.ts` (mengikuti blok 9 Nov 2026).
+- **Bagian 1, rencana versi:** fitur ini masuk versi 1; peluncuran mundur sekitar 3 hari atas persetujuan owner.
+- **Bagian 4 (pengingat sebelum peluncuran):** kembalikan ambang gelar ke angka asli sebelum LNC.04 (GLR.09).
