@@ -284,4 +284,11 @@ Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Yang paling 
 - Saat menulis isi awal (BTN.05), tambahkan penjelasan singkat untuk customer, owner, dan penjaga: apa itu Kotak masuk, arti **titik merah** di hamburger, bahwa pesan hanya tampil **14 hari**, dan bahwa status dibaca **per HP** (HP baru: semua tampil belum dibaca sekali).
 - Tanpa data pribadi, rekening, atau QRIS (aturan BTN.05 tetap).
 
+### 2026-11-14: Isi Bantuan tentang QRIS
+
+**Berkas tujuan:** `docs/bantuan.md`. Sumber: `docs/qris.md` (QRS.05). Yang paling akhir menang.
+
+- Isi Bantuan ditambah satu jawaban singkat: di mana tombol QRIS (Home), bahwa pembayaran mengikuti arahan perwakilan ChATA lewat WA, dan bahwa pesanan diproses setelah pembayaran dikonfirmasi.
+- Ditulis manual di lembar Bantuan, **tanpa angka** dan tanpa menarik otomatis dari aplikasi. Tidak ada perubahan skema atau kode.
+
 ---

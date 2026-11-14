@@ -308,3 +308,15 @@ Keputusan ketua (sesi strategi 14 Nov 2026, usulan owner setelah demo). Sumber: 
 - **Kode baru `kedai`:** aksi `gelar_saya` di berkas baru `gelar.ts` (mengikuti blok 9 Nov 2026).
 - **Bagian 1, rencana versi:** fitur ini masuk versi 1; peluncuran mundur sekitar 3 hari atas persetujuan owner.
 - **Bagian 4 (pengingat sebelum peluncuran):** kembalikan ambang gelar ke angka asli sebelum LNC.04 (GLR.09).
+
+### 2026-11-14: Dokumen `qris.md` (prefix QRS)
+
+Keputusan ketua (sesi strategi 14 Nov 2026, usulan owner setelah demo). Sumber: docs/qris.md. Alasan ketua selain yang tertulis belum tercatat.
+
+- **Peta Dokumentasi (bagian 5):** tambah baris `docs/qris.md`, isi: "Tombol QRIS di Home untuk semua peran, pop-up gambar tetap dari `public/img/`", prefix sheet **QRS**.
+- **Fitur hanya menampilkan gambar tetap.** Tidak ada tabel, fungsi SQL, aksi `kedai`, atau tulis-database, dan tidak ada pengecualian baru dari aturan bagian 7. Alur pembayaran tidak berubah (bagian 1): hanya owner yang menekan Setujui.
+- **Tidak ada pengecualian CSS:** gaya pop-up di `public/style.css` (kelas berawalan `qrs-`), tanpa `qris.css`.
+- **Pengecualian "angka di database" (bagian 1):** tidak ada.
+- **Kode baru:** `public/qris.js` dan `public/img/qris.png`. Keduanya wajib didaftarkan di cache `sw.js` (bagian 7, butuh "OK"; versi cache naik dari versi terakhir).
+- **Repo public:** gambar QRIS bisa dilihat siapa saja; diterima ketua (QRIS memang dipasang terbuka di warung). Mengganti QRIS = ganti berkas `qris.png` dengan nama sama lalu push, dilakukan ketua atau adik ketua.
+- **Bagian 1, rencana versi:** fitur ini masuk versi 1, sebelum Peluncuran.

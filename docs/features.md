@@ -131,3 +131,11 @@ Sumber: docs/gelar.md. Yang paling akhir menang.
 
 - **Layar per peran:** customer punya layar **Gelar Saya** (dibuka dari Home) berisi pratinjau banner, Bagikan, dan Unduh PNG. Owner dan penjaga tidak berubah.
 - **Urutan versi 1:** fitur ini ditambahkan sebelum Peluncuran. **Peluncuran (bagian 10):** pembersihan data uji (LNC.01) mencakup akun dummy demo gelar; sebelum LNC.04 ambang gelar dikembalikan ke angka asli (GLR.09).
+
+### 2026-11-14: Tombol QRIS di Home masuk versi 1
+
+Sumber: docs/qris.md. Yang paling akhir menang.
+
+- **Layar per peran:** semua peran (customer, owner, penjaga) punya tombol **QRIS** di Home yang membuka pop-up gambar QRIS warung. Layar dan menu lain tidak berubah.
+- **Urutan versi 1:** fitur ini ditambahkan sebelum Peluncuran; kecil dan tanpa server, jadi tidak menambah panggilan ke kuota.
+- **Peluncuran (bagian 10):** sebelum LNC.04, pastikan `public/img/qris.png` adalah QRIS asli warung. Tidak ada data uji yang perlu dibersihkan untuk fitur ini.

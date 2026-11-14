@@ -193,4 +193,13 @@ Keputusan ketua (sesi strategi 14 Nov 2026). Sumber: docs/gelar.md bagian 8. Nom
 - **Push saat naik gelar**, **gelar periodik (bulanan)**, **leaderboard**, **banner bergambar atau animasi**.
 - **B8 (penggabungan pelanggan tanpa akun)** dan **B28 (pengaturan dari aplikasi)** ikut menguntungkan fitur ini bila dikerjakan.
 
+### 2026-11-14: Kandidat versi 2 dari fitur QRIS
+
+Keputusan ketua (sesi strategi 14 Nov 2026). Sumber: docs/qris.md bagian 8. Nomor B dan kolom Alasan diisi saat review pemakaian (`LNC.05`); alasan pemakaian belum tercatat.
+
+- **Owner mengganti QRIS sendiri dari aplikasi** (butuh Storage atau tulis-database; mirip B28). Sekarang penggantian dilakukan ketua atau adik ketua lewat berkas dan push.
+- **QRIS dinamis dengan nominal otomatis** dan **payment gateway** (sudah ada sebagai B6).
+- **Beberapa QRIS atau pilihan rekening bank.**
+- **Zoom atau cetak gambar dari dalam pop-up.**
+
 ---

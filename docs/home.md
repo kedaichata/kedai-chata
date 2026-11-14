@@ -258,4 +258,12 @@ Keputusan ketua (sesi strategi 14 Nov 2026). Sumber: docs/gelar.md GL17 dan GL18
 - **HM10 ("Home tidak memanggil server baru") dikecualikan untuk customer:** Home memanggil `gelar_saya` saat dibuka dan lewat Segarkan, satu panggilan tambahan.
 - Owner dan penjaga tidak berubah.
 
+### 2026-11-14: Tombol QRIS di Home (semua peran)
+
+**Berkas tujuan:** `docs/home.md`, Catatan Susulan. Sumber: `docs/qris.md` (QR2, QR3). Yang paling akhir menang.
+
+- Home mendapat tombol **"Bayar dengan QRIS"** untuk **semua peran**, tepat di atas tombol Bantuan. Mengetuknya membuka pop-up berisi gambar QRIS (tanpa pindah layar).
+- **Urutan (bawaan, ketua boleh membalik):** customer: kartu sapaan, Gelar Saya, QRIS, Bantuan. Owner dan penjaga: kartu sapaan, QRIS, Bantuan. Ini menggeser "Gelar Saya tepat di atas Bantuan" di `gelar.md` GL18; yang paling akhir menang.
+- Tombol selalu tampil dan bisa diketuk. Pop-up ikut tertutup saat Keluar.
+
 ---

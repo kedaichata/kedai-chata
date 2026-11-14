@@ -330,4 +330,12 @@ Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Yang paling 
 - Layar Kotak masuk: daftar teks + waktu WIB, belum dibaca di atas dan diberi tanda, memakai komponen kartu dan daftar yang sudah ada (DSN.04), keadaan kosong dan offline memakai pola DSN.05. Item tidak bisa diketuk.
 - **Hamburger tetap tidak muncul di sub-layar** (GM5); DS10 tetap tertimpa GM7 seperti catatan 10 Nov.
 
+### 2026-11-14: Pop-up QRIS dan tombol QRIS di Home
+
+**Berkas tujuan:** `docs/desain.md` bagian 9. Sumber: `docs/qris.md` (QR3, QR4, QR11). Yang paling akhir menang.
+
+- **Tombol QRIS** di Home berpinggir marun, bergaya sama dengan tombol Bantuan (aksi sekunder), bukan tombol berbahaya (DS12 tidak berlaku).
+- **Pop-up QRIS** mengikuti pola kotak konfirmasi Keluar (DSN.08): area gelap di belakang, ketuk di luar kotak atau Esc menutup. Isi: gambar QRIS, kalimat petunjuk, tombol **Simpan gambar** (sekunder) dan **Tutup** (utama, isian marun).
+- **DS7 tidak ditimpa:** gaya pop-up tetap di `public/style.css` (kelas `qrs-`), tanpa berkas CSS baru.
+
 ---
