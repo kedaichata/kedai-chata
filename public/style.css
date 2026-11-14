@@ -1774,3 +1774,40 @@ body.sheet-terbuka {
     height: auto;
     max-height: 75vh;
 }
+
+/* ------------------------------------------------------------------
+   QRS.02: pop-up QRIS (qris.md QR4, QR11; desain.md blok 14 Nov 2026)
+   Memakai ulang .dialog-keluar (latar, kotak, judul, isi). Hanya tambahan kelas qrs-.
+   Gambar QRIS berbentuk tegak (709 x 1000), jadi tingginya dibatasi dan kotak bisa digulir
+   supaya tombol Simpan gambar dan Tutup tetap terlihat di HP kecil.
+   ------------------------------------------------------------------ */
+.qrs-kotak {
+    max-height: 92vh;
+    max-height: 92dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    text-align: center;
+}
+
+.qrs-gambar {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 52vh;
+    max-height: 52dvh;
+    margin: 12px auto;
+    background: var(--putih); /* latar putih di sekeliling kode (QR7) */
+    border: 1px solid var(--garis-tipis);
+    border-radius: 10px;
+    object-fit: contain;
+}
+
+.qrs-petunjuk {
+    margin: 0 0 4px;
+}
+
+/* Tombol ditumpuk ke bawah: dua tombol berdampingan terlalu sempit di HP kecil */
+.qrs-aksi {
+    flex-direction: column;
+}

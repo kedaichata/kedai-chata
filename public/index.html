@@ -862,6 +862,39 @@
                     </div>
                 </div>
 
+                <!-- QRS.02: pop-up QRIS (qris.md QR4). Memakai ulang gaya kotak konfirmasi Keluar (dialog-keluar).
+                     Gambar, teks, dan tautan diisi qris.js (teks lewat textContent). Tutup: tombol, ketuk area gelap, Esc. -->
+                <div
+                    class="dialog-keluar"
+                    id="qris-dialog"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="qris-judul"
+                    hidden
+                >
+                    <div class="dialog-keluar__latar" id="qris-latar"></div>
+                    <div class="dialog-keluar__kotak qrs-kotak">
+                        <h2 class="dialog-keluar__judul" id="qris-judul"></h2>
+                        <img class="qrs-gambar" id="qris-gambar" alt="" />
+                        <p
+                            class="dialog-keluar__isi qrs-petunjuk"
+                            id="qris-petunjuk"
+                        ></p>
+                        <div class="baris-tombol qrs-aksi">
+                            <a
+                                class="tombol tombol--sekunder"
+                                id="qris-simpan"
+                                href="#"
+                            ></a>
+                            <button
+                                type="button"
+                                class="tombol tombol--utama"
+                                id="qris-tutup"
+                            ></button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Panel: fitur yang belum dibuat (Order, Pesan, Antrean, dll.) -->
                 <div id="panel-segera" hidden>
                     <div class="keadaan" role="status">
@@ -1657,6 +1690,19 @@
                                 Gelar Saya
                             </button>
                         </div>
+                        <!-- QRS.02: tombol Bayar dengan QRIS (qris.md QR3), semua peran, tepat di atas Bantuan
+                             (customer: sapaan, Gelar Saya, QRIS, Bantuan). Selalu tampil dan bisa diketuk.
+                             Tanpa data-peran dan tanpa data-aksi; pendengar klik dipasang qris.js. -->
+                        <div class="baris-tombol">
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder"
+                                id="home-qris"
+                                aria-haspopup="dialog"
+                            >
+                                Bayar dengan QRIS
+                            </button>
+                        </div>
                         <!-- HOM.03: tombol Bantuan (HM5), semua peran. Tampil "Segera" dan tidak bisa diketuk
                              (disabled) sampai bantuan.md selesai; saat itu tombol ini diaktifkan di sana. -->
                         <!-- BTN.03: tombol Bantuan "Segera" diganti tombol aktif (kode lama disimpan di komentar ini):
@@ -2203,6 +2249,8 @@
         <script src="inbox.js"></script>
         <!-- NTF.05: tombol Aktifkan notifikasi (notifikasi.md NT6). Setelah akun.js (memakai window.KedaiAkun) dan inbox.js. -->
         <script src="notif.js"></script>
+        <!-- QRS.02: pop-up QRIS (qris.md QR12). Berdiri sendiri, tanpa server. Tidak menyentuh kerangka.js (tutup saat Keluar lewat pengamat #layar-sementara). -->
+        <script src="qris.js"></script>
         <script>
             // Mendaftarkan service worker (sw.js) supaya aplikasi bisa dipasang dan terbuka offline.
             // Path relatif (tanpa awalan /) supaya jalan di GitHub Pages.
