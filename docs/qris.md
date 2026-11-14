@@ -176,3 +176,11 @@ _(belum ada blok)_
 - Blok susulan di dokumen lain (`AGENTS.md`, `home.md`, `desain.md` sudah ada di sesi strategi); `features.md` dan `bonus.md` (kandidat versi 2: owner ganti QRIS sendiri) belum diperbarui.
 
 **Saran giliran berikutnya:** QRS.05 (jawaban Bantuan) bersama BTN.05, lalu lanjut ke pekerjaan sebelum LNC.04. Mengganti QRIS nanti: ganti berkas `public/img/qris.jpg` dengan nama sama lalu push (aturan anti-nyasar `AGENTS.md` bagian 8); tidak perlu mengubah `sw.js`.
+
+### 2026-11-14: Letak dan label tombol QRIS berubah
+
+Sumber: `home.md` HOM.08. Menimpa QR3 (letak dan label). Yang paling akhir menang.
+
+- Tombol QRIS kini salah satu dari **3 tombol sejajar** di Home (Gelar, QRIS, Bantuan), emoji 💳 di atas teks **"QRIS"**. Bukan lagi tombol penuh "Bayar dengan QRIS" tepat di atas Bantuan.
+- Urutan customer: sapaan, Aktifkan notifikasi, baris [Gelar, QRIS, Bantuan]. Owner dan penjaga: baris [QRIS, Bantuan].
+- Pop-up (QR4), kalimat petunjuk (QR5), dan Simpan gambar (QR6) tidak berubah. `id` tombol `home-qris` tetap, jadi `qris.js` tidak berubah.

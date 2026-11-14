@@ -244,3 +244,11 @@ _(belum ada blok)_
   - Blok susulan di dokumen lain masih menunggu persetujuan ketua (isi di `blok-susulan-gelar.md`): `AGENTS.md`, `home.md`, `bonus.md`, `features.md`, `bantuan.md`.
   - Nama menu di database masih dummy. Saat peluncuran, edit nama menu yang ada, jangan membuat menu baru lalu menonaktifkan yang lama (GL12).
 - **Saran giliran berikutnya:** GLR.08 (demo ke owner dengan set demo). Revisi nama atau ambang setelah demo lewat lembar, dengan "OK" ketua bila menaikkan ambang. Lalu GLR.09 sebelum LNC.04.
+
+### 2026-11-14: Tombol Gelar Saya jadi tombol ikon di baris 3 kolom
+
+Sumber: `home.md` HOM.08. Menimpa GL18 (letak "tepat di bawah kartu sapaan, di atas Bantuan"). Yang paling akhir menang.
+
+- Tombol Gelar kini bagian dari baris 3 tombol (Gelar, QRIS, Bantuan), khusus customer, emoji 🏅 di atas teks **"Gelar"**. Di bawah kartu sapaan dan tombol Aktifkan notifikasi.
+- Tetap membuka layar Gelar Saya (judul layar tidak berubah) dan tetap memanggil `gelar_saya` lewat jalur yang sama. Pil gelar di kartu sapaan tidak berubah.
+- Owner dan penjaga tidak melihat tombol ini.

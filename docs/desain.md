@@ -338,4 +338,25 @@ Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Yang paling 
 - **Pop-up QRIS** mengikuti pola kotak konfirmasi Keluar (DSN.08): area gelap di belakang, ketuk di luar kotak atau Esc menutup. Isi: gambar QRIS, kalimat petunjuk, tombol **Simpan gambar** (sekunder) dan **Tutup** (utama, isian marun).
 - **DS7 tidak ditimpa:** gaya pop-up tetap di `public/style.css` (kelas `qrs-`), tanpa berkas CSS baru.
 
+### 2026-11-14: Komponen tombol ikon di Home
+
+Sumber: `home.md` HOM.08. Hanya tambahan; tidak menimpa keputusan DS lain.
+
+- Baris aksi cepat di Home: tombol sekunder (berpinggir marun) berisi emoji di atas dan teks pendek di bawah, selebar sama (flex). Bukan tombol berbahaya, DS12 tidak berlaku.
+- Kartu sampul Home dikecilkan (logo sekitar 110 px) supaya aksi utama terlihat tanpa gulir. Gaya ada di `public/style.css` (blok `HOM.06`), tanpa CSS baru.
+
+### 2026-11-14: Kandidat recolor tombol aksi Home (belum diputuskan)
+
+Sumber: `home.md` HOM.08. Hanya catatan persiapan; tidak menimpa keputusan DS lain. Kejadian pemicu: tim melihat contoh komentar pemakai soal warna tombol; alasan rinci belum tercatat.
+
+- **Keadaan sekarang:** tiga tombol aksi Home (Gelar, QRIS, Bantuan) berpinggir marun di latar putih (aksi sekunder).
+- **Syarat bila warna diubah:** emoji harus tetap terbaca. Emoji ❓ dan pita 🏅 berwarna merah, jadi hilang di latar marun gelap polos.
+- **Tiga opsi yang sudah dipikirkan:**
+  1. Tombol isian marun, emoji di dalam lingkaran krem (sekitar 40 px).
+  2. Tombol krem keemasan dengan pinggir lebih tebal, teks marun, dan bayangan tipis (emoji tidak diubah). Rekomendasi penulis bila keluhan hanya "kurang kelihatan".
+  3. Tombol emas terang dengan teks marun gelap. Risiko: mirip lencana "Legenda ChATA" dan bersaing dengan tombol utama.
+- **Pemilihan** menunggu komentar dan tangkapan layar contoh dari pemakai; warna dan bentuk dicocokkan dari contoh itu.
+- **Biaya:** sekitar 10 baris CSS di blok `HOM.06` `public/style.css`. Tanpa perubahan `index.html`, JS, atau `sw.js` (Low-Risk).
+- DS12 tidak terganggu: ketiganya bukan tombol berbahaya, dan isian marun tetap milik aksi utama seperti Setujui.
+
 ---

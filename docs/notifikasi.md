@@ -892,4 +892,11 @@ Tidak ada perubahan di `sw.js`, `akun.js`, migration, atau `kedai`; tidak ada de
 2. `LNC.05`: cek kuota 7 hari, keluhan iPhone, dan push telat (penghemat baterai).
 3. FTO.07 setelah Minggu 15 Nov 2026 02.00 WIB; `LNC.01` untuk data uji.
 
+### 2026-11-14: Tombol Aktifkan notifikasi pindah ke bawah sapaan
+
+Sumber: `home.md` HOM.08. Menimpa penempatan "di bawah Bantuan" (NT6, NTF.05). Yang paling akhir menang.
+
+- Alasan: di Home customer tombol ini tidak kelihatan tanpa menggulir.
+- Tombol kini tepat di bawah kartu sapaan, 1 baris penuh, sebelum baris 3 tombol. Aturan tampil/sembunyi (hilang bila sudah aktif, diblokir, atau tidak didukung) tidak berubah; `notif.js` tidak diubah.
+
 ---

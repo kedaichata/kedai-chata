@@ -266,4 +266,16 @@ Keputusan ketua (sesi strategi 14 Nov 2026). Sumber: docs/gelar.md GL17 dan GL18
 - **Urutan (bawaan, ketua boleh membalik):** customer: kartu sapaan, Gelar Saya, QRIS, Bantuan. Owner dan penjaga: kartu sapaan, QRIS, Bantuan. Ini menggeser "Gelar Saya tepat di atas Bantuan" di `gelar.md` GL18; yang paling akhir menang.
 - Tombol selalu tampil dan bisa diketuk. Pop-up ikut tertutup saat Keluar.
 
+### 2026-11-14: Tata letak Home disusun ulang (HOM.08)
+
+Permintaan tim, dikerjakan di sesi kode 14 Nov 2026. Menimpa urutan tombol di blok "Tombol QRIS di Home" (14 Nov) dan penempatan Gelar Saya (blok "Pil gelar dan tombol Gelar Saya"). Yang paling akhir menang.
+
+- **Alasan:** tombol Aktifkan notifikasi di Home customer tidak kelihatan tanpa menggulir layar.
+- **Urutan baru Home (dari atas):** kartu sampul (logo dikecilkan, sekitar 110 px dari 180 px), kartu sapaan, tombol **Aktifkan notifikasi** (1 baris penuh), baris **3 tombol** (emoji di atas, teks di bawah), lalu daftar pengaturan seperti sebelumnya.
+- **Baris 3 tombol:** 🏅 **Gelar** (membuka layar Gelar Saya), 💳 **QRIS** (membuka pop-up QRIS), ❓ **Bantuan** (membuka layar Bantuan). **Customer: 3 kolom. Owner dan penjaga: 2 kolom** (QRIS dan Bantuan), melebar rata karena tombol Gelar khusus customer.
+- **Label berubah:** "Gelar Saya" menjadi "Gelar" dan "Bayar dengan QRIS" menjadi "QRIS" di tombol Home. Judul layar tetap "Gelar Saya"; isi pop-up QRIS tidak berubah.
+- Tombol yang sudah aktif/diblokir notifikasinya (tombol hilang) tidak meninggalkan ruang kosong.
+- **Kode:** hanya `public/index.html` dan `public/style.css` (blok `HOM.06`, hanya tambahan). Id dan `data-aksi` tombol dipertahankan (`home-gelar`, `home-qris`, `home-bantuan`, `home-notif-bungkus`), jadi `kerangka.js`, `qris.js`, dan `notif.js` tidak berubah. `sw.js` tidak disentuh (tidak ada berkas baru). Blok tombol lama dijadikan komentar, tidak dihapus.
+- **Tes:** HP dan laptop, tiga peran, termasuk mode pesawat, sesuai. Bukti diperiksa di chat dan tidak disimpan.
+
 ---
