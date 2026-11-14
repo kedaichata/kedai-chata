@@ -252,3 +252,17 @@ Sumber: `home.md` HOM.08. Menimpa GL18 (letak "tepat di bawah kartu sapaan, di a
 - Tombol Gelar kini bagian dari baris 3 tombol (Gelar, QRIS, Bantuan), khusus customer, emoji 🏅 di atas teks **"Gelar"**. Di bawah kartu sapaan dan tombol Aktifkan notifikasi.
 - Tetap membuka layar Gelar Saya (judul layar tidak berubah) dan tetap memanggil `gelar_saya` lewat jalur yang sama. Pil gelar di kartu sapaan tidak berubah.
 - Owner dan penjaga tidak melihat tombol ini.
+
+### Handoff #6 | 14 Nov 2026 | Ketua
+
+- **Tugas:** GLR.09 (kembalikan ambang gelar ke angka asli).
+- **File yang diubah:** tidak ada kode aplikasi, tabel, fungsi SQL, atau Edge Function yang berubah; tidak ada deploy dan `sw.js` tidak disentuh. Tujuh baris di tabel `gelar` diperbarui lewat lembar `gelar-isi` dan SQL Editor akun ketua (SQL impor tidak disimpan di repo, GL14). Nama, deskripsi, dan `kunci` tidak berubah.
+- **Keputusan baru:** tidak ada. "OK" ketua untuk GLR.09 diberikan di chat. Owner dalam demo tidak meminta perubahan nama dan deskripsi gelar, jadi teks dipakai apa adanya. Ketua mengonfirmasi semua data di production masih data uji (GL24).
+- **Terbukti 14 Nov 2026 (bukti diperiksa di chat, tidak disimpan; data dummy):** kolom Cek lembar berisi OK untuk ketujuh baris aktif. Query baca-saja sesudah impor menampilkan 9 baris: tingkat aktif berambang 1, 10, 25, 50, 100; `menu-karage` dan `menu-katsu` berambang 20 dan terhubung ke menu; dua baris uji tetap nonaktif. Di aplikasi, satu akun dummy turun dari Legenda ChATA dengan dua pil menu menjadi Pelanggan Baru tanpa pil menu setelah Segarkan; banner mengikuti.
+- **Status sheet:** GLR.09 selesai, silakan dicentang. Kalau tanggal selesai diisi: 14 Nov 2026.
+- **Belum beres:**
+  - Blok susulan di dokumen lain masih menunggu persetujuan ketua (isi di `blok-susulan-gelar.md`): `AGENTS.md`, `home.md`, `bonus.md`, `features.md`, `bantuan.md`.
+  - **GLR.10** (isi Bantuan tentang gelar, bersama BTN.05) belum dikerjakan.
+  - Nama menu di database masih dummy. Saat peluncuran, **edit nama menu yang ada, jangan membuat menu baru lalu menonaktifkan yang lama**, supaya gelar menu tidak putus (GL12).
+  - Akun dummy yang bergelar dibersihkan di LNC.01. Dua baris uji nonaktif (`tingkat-uji-enam`, `tingkat-uji-tujuh`) masih ada di tabel `gelar`; tidak berpengaruh ke hitungan.
+- **Saran giliran berikutnya:** GLR.10 bersama BTN.05, atau menempel blok susulan dokumen lain bila ketua sudah menyetujuinya.

@@ -139,3 +139,11 @@ Sumber: docs/qris.md. Yang paling akhir menang.
 - **Layar per peran:** semua peran (customer, owner, penjaga) punya tombol **QRIS** di Home yang membuka pop-up gambar QRIS warung. Layar dan menu lain tidak berubah.
 - **Urutan versi 1:** fitur ini ditambahkan sebelum Peluncuran; kecil dan tanpa server, jadi tidak menambah panggilan ke kuota.
 - **Peluncuran (bagian 10):** sebelum LNC.04, pastikan `public/img/qris.png` adalah QRIS asli warung. Tidak ada data uji yang perlu dibersihkan untuk fitur ini.
+
+### 2026-11-14: Layar Gelar Saya (customer) masuk versi 1
+
+Sumber: docs/gelar.md. Keputusan ketua (usulan owner setelah demo); peluncuran mundur sekitar 3 hari atas persetujuan owner.
+
+- Layar customer bertambah: pil gelar di kartu sapaan Home dan layar **Gelar Saya** (pratinjau banner, Bagikan, Unduh PNG). Hanya customer.
+- Gelar dihitung server dari order Selesai milik akun sendiri; order wakil owner dan pelanggan tanpa akun tidak ikut (GL6).
+- Peluncuran: ambang gelar harus dikembalikan ke angka asli sebelum LNC.04 (GLR.09, sudah dikerjakan 14 Nov 2026). Akun dummy bergelar dibersihkan di LNC.01.

@@ -316,4 +316,21 @@ Keputusan ketua (sesi strategi 11 Nov 2026). Sumber: docs/inbox.md. Yang paling 
 - Gambarnya **tegak (709 × 1000)**. Pop-up harus membatasi tinggi gambar atau bisa digulir, supaya tombol **Simpan gambar** dan **Tutup** tetap terlihat di HP kecil.
 - Tautan Simpan gambar mengarah ke `qris.jpg`.
 
+### 2026-11-14: Isi Bantuan tentang gelar (rencana GLR.10)
+
+Sumber: docs/gelar.md GL25. Isi ditulis manual di lembar Bantuan bersama BTN.05, bukan lewat md.
+
+- Topik: apa itu gelar, gelar naik seiring pesanan yang selesai, **pesanan yang dicatatkan oleh pihak ChATA tidak menambah gelar**, dan cara membuat banner.
+- **Tanpa angka ambang** (mudah berubah, GL15, GL25). Berlaku untuk peran customer.
+- Belum dikerjakan; saat ditulis, ikuti pola impor BT7 (SQL isi tidak disimpan di repo).
+
+### 2026-11-14: Pedoman menulis isi Bantuan tentang gelar (GLR.10)
+
+Keputusan ketua (sesi GLR.09, 14 Nov 2026). Melengkapi blok "Isi Bantuan tentang gelar (rencana GLR.10)" di atas; bila ada pertentangan, yang ini menang. Dasar: gelar.md GL9, GL15, GL25.
+
+- **Jangan menyebut angka ambang atau nama gelar tertentu.** Ambang dan nama gelar ada di tabel dan bisa diubah lewat lembar `gelar-isi`, sedangkan teks Bantuan ditulis manual dan tidak ikut berubah, jadi tulisannya bisa menjadi salah tanpa ada yang tahu. Perluasan ke nama gelar adalah usulan penulis sesi ini; alasan lain belum tercatat.
+- **Contoh:** hindari "Selesaikan 10 pesanan untuk jadi Langganan." Pakai "Gelarmu naik seiring jumlah pesananmu yang sudah selesai."
+- **Aman disebut (aturan stabil):** hanya pesanan berstatus Selesai yang dihitung (GL2), dan pesanan yang dicatatkan pihak ChATA tidak menambah gelar (GL6).
+- Cara membuat banner: tombol **Gelar** di Home, lalu **Bagikan** atau **Unduh PNG**.
+
 ---
