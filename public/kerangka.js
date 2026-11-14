@@ -54,6 +54,12 @@
 // membuka Home lagi. window.KedaiRingkasan .tampil() dipanggil saat tab dibuka dan lewat Segarkan (jeda 5 detik diatur
 // ringkasan.js), .reset() saat Keluar. Server yang menolak non-owner (SEC-36); menyembunyikan item hanya kemudahan.
 //
+// GLR.05 dan GLR.06: gelar customer (gelar.md GL17 sampai GL22). Layar Gelar Saya memakai tab tersembunyi "gelar"
+// (panel "gelar", tanpa tombol di navigasi bawah, pola sama dengan tab "ringkasan"), khusus customer. Pintunya tombol
+// "Gelar Saya" di Home (data-aksi="gelar"); navigasi bawah tetap menandai Home. atur() memanggil window.KedaiGelar.atur(peran, nama)
+// sehingga gelar_saya dimuat SATU kali tiap balasan `status` dimuat (masuk, Segarkan); .tampil() hanya menggambar dari memori
+// saat layar dibuka (tanpa panggilan server), .reset() saat Keluar. Tombol Kembali (#gelar-kembali, dibuat gelar.js) membuka Home.
+// Server yang menolak non-customer (SEC-38); menyembunyikan tombol hanya kemudahan.
 // NTF.04a: membuka layar dari notifikasi dan menyegarkan data saat push masuk (notifikasi.md NT8, NT10; Handoff #4).
 // - sw.js membawa tujuan lewat alamat (?buka=order&id=... atau ?buka=antrean) bila aplikasi tertutup, atau lewat pesan
 //   {jenis:"buka", tujuan, id} bila aplikasi sudah terbuka. Alamat dibaca saat berkas dimuat dan DIPAKAI setelah login
@@ -117,6 +123,8 @@
       { id: "pesan", nama: "Pesan", panel: "pesan" },
       // ORD.04: { id: "pesanan-saya", nama: "Pesanan Saya", panel: "segera" },
       { id: "pesanan-saya", nama: "Pesanan Saya", panel: "pesanan" },
+      // GLR.06: layar Gelar Saya, dibuka dari tombol di Home (tanpa tombol di navigasi bawah).
+      { id: "gelar", nama: "Gelar Saya", panel: "gelar" },
       { id: "bantuan", nama: "Bantuan", panel: "bantuan" }, // BTN.03
       // HOM.01: { id: "akun", nama: "Akun", panel: "akun" },
     ],
@@ -159,6 +167,7 @@
     "pelanggan", // ORD.13
     "bantuan", // BTN.03
     "ringkasan", // RKS.03
+    "gelar", // GLR.06
   ];
 
   // HOM.02: tulisan lencana peran di kartu sapaan (HM4). Peran tak dikenal: lencana disembunyikan.
@@ -225,6 +234,7 @@
     if (t.id === "bantuan") idTanda = tabAsalBantuan || "home";
     if (idTanda === "pelanggan") idTanda = "home";
     if (idTanda === "ringkasan") idTanda = "home"; // RKS.03
+    if (idTanda === "gelar") idTanda = "home"; // GLR.06
     tandaiNav(idTanda);
     el("tombol-bantuan-atas").hidden = t.id === "bantuan";
 
@@ -333,6 +343,15 @@
     ) {
       window.KedaiRingkasan.tampil();
     }
+
+    // GLR.06: layar Gelar Saya (gelar.js); hanya menggambar dari memori, tanpa panggilan server.
+    if (
+      t.panel === "gelar" &&
+      window.KedaiGelar &&
+      typeof window.KedaiGelar.tampil === "function"
+    ) {
+      window.KedaiGelar.tampil();
+    }
   }
 
   // BTN.03: buka layar Bantuan dari tab mana pun, ingat tab asalnya. Tombol Kembali membukanya lagi.
@@ -406,6 +425,10 @@
     // RKS.03: item "Ringkasan order 7 hari" (owner) membuka layar Ringkasan.
     ringkasan: function () {
       buka("ringkasan");
+    },
+    // GLR.06: tombol "Gelar Saya" (customer) membuka layar Gelar Saya.
+    gelar: function () {
+      buka("gelar");
     },
     // BTN.03: tombol Bantuan di Home membuka layar yang sama dengan ikon ? di bilah atas.
     bantuan: function () {
@@ -713,6 +736,11 @@
     }
     isiSapaan(peran, namaDariServer); // HOM.02
     aturItemHome(peran); // HOM.03, HOM.04
+    // GLR.05: gelar customer dimuat SATU kali tiap status dimuat (masuk, Segarkan). Sebelum buka(tab) supaya layar Gelar Saya yang
+    // sedang terbuka langsung menampilkan keadaan memuat. Peran selain customer: gelar.js tidak memanggil server.
+    if (window.KedaiGelar && typeof window.KedaiGelar.atur === "function") {
+      window.KedaiGelar.atur(peran, namaDariServer);
+    }
     buka(tab);
     bukaTertunda(); // NTF.04a: tujuan dari notifikasi, dipakai sekali setelah peran dikenal
   }
@@ -790,6 +818,10 @@
     ) {
       window.KedaiRingkasan.reset();
     }
+    // GLR.05: nama, gelar, dan banner tidak boleh tersisa setelah Keluar.
+    if (window.KedaiGelar && typeof window.KedaiGelar.reset === "function") {
+      window.KedaiGelar.reset();
+    }
     // NTF.04a: tujuan notifikasi dan penyegaran tertunda tidak boleh terbawa ke akun berikutnya.
     tujuanTertunda = null;
     if (timerSegar) {
@@ -835,6 +867,15 @@
       e.target && e.target.closest
         ? e.target.closest("#ringkasan-kembali")
         : null;
+    if (sasaran) {
+      buka("home");
+    }
+  });
+
+  // GLR.06: tombol Kembali (dibuat gelar.js di dalam #panel-gelar) membuka Home lagi.
+  el("panel-gelar").addEventListener("click", function (e) {
+    var sasaran =
+      e.target && e.target.closest ? e.target.closest("#gelar-kembali") : null;
     if (sasaran) {
       buka("home");
     }

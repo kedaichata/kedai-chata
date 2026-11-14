@@ -17,6 +17,8 @@
         <link rel="stylesheet" href="ringkasan.css" />
         <!-- VIS.03: gaya stepper status di detail pesanan (kelas stp-), dimuat SETELAH style.css supaya memakai variabel warna :root -->
         <link rel="stylesheet" href="stepper.css" />
+        <!-- GLR.05: gaya pil gelar di Home dan layar Gelar Saya (kelas glr-), dimuat SETELAH style.css supaya memakai variabel warna :root -->
+        <link rel="stylesheet" href="gelar.css" />
     </head>
     <body>
         <!-- AKN.05: layar akun. Satu layar tampil dalam satu waktu; akun.js yang mengatur mana yang tampil.
@@ -1573,6 +1575,9 @@
                 <!-- Panel Ringkasan order 7 hari (owner, RKS.03): isi, tombol Kembali, dan Segarkan dibuat ringkasan.js -->
                 <div id="panel-ringkasan" hidden></div>
 
+                <!-- Panel Gelar Saya (customer, GLR.06): isi, pratinjau banner, dan tombol Kembali dibuat gelar.js -->
+                <div id="panel-gelar" hidden></div>
+
                 <!-- Panel Lainnya (owner): Pelanggan dan Bantuan menyusul, Akun dipasang kerangka.js -->
                 <!-- HOM.01: tab Lainnya sudah tidak ada di navigasi, panel ini tidak terjangkau.
                      Pelanggan dan Bantuan pindah ke Home di HOM.03 dan HOM.04. -->
@@ -1633,6 +1638,24 @@
                                 id="home-peran"
                                 hidden
                             ></span>
+                            <!-- GLR.05: pil gelar (gelar.md GL17), baris sendiri di bawah teks sapaan. Diisi gelar.js lewat textContent; customer saja. -->
+                            <div
+                                class="glr-pil-baris"
+                                id="glr-pil-baris"
+                                hidden
+                            ></div>
+                        </div>
+                        <!-- GLR.05: tombol Gelar Saya (gelar.md GL18), customer saja, tepat di atas Bantuan.
+                             Membuka layar tersembunyi (panel-gelar). Item ditampilkan kerangka.js lewat data-peran. -->
+                        <div class="baris-tombol" data-peran="customer" hidden>
+                            <button
+                                type="button"
+                                class="tombol tombol--sekunder"
+                                id="home-gelar"
+                                data-aksi="gelar"
+                            >
+                                Gelar Saya
+                            </button>
                         </div>
                         <!-- HOM.03: tombol Bantuan (HM5), semua peran. Tampil "Segera" dan tidak bisa diketuk
                              (disabled) sampai bantuan.md selesai; saat itu tombol ini diaktifkan di sana. -->
@@ -2169,6 +2192,8 @@
         <script src="bantuan.js"></script>
         <!-- Layar Ringkasan order 7 hari (RKS.03); harus setelah akun.js (memakai window.KedaiAkun) dan SEBELUM kerangka.js -->
         <script src="ringkasan.js"></script>
+        <!-- Gelar customer: pil di Home dan layar Gelar Saya (GLR.05 dan GLR.06); harus setelah akun.js (memakai window.KedaiAkun) dan SEBELUM kerangka.js -->
+        <script src="gelar.js"></script>
         <!-- Kerangka layar utama per peran (KRG.01); harus setelah akun.js dan menu.js -->
         <script src="kerangka.js"></script>
         <!-- GIM.01 dan GIM.02: game Arithmetics dan menu hamburger. Berdiri sendiri, tanpa server. gim.js sebelum gimmenu.js -->
