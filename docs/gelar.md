@@ -201,3 +201,28 @@ _(belum ada blok)_
   3. Ganti nama atau deskripsi, tambah tingkat baru, atau **turunkan** ambang: aman.
   4. **Naikkan** ambang atau nonaktifkan gelar yang sudah dipakai: bisa menurunkan gelar customer, jadi minta "OK" ketua dulu (GL9).
   5. Jangan hapus baris dan jangan ganti `kunci` yang sudah diimpor.
+
+### Handoff #4 | 14 Nov 2026 | FREN
+
+- **Tugas:** GLR.05 (pil gelar dan tombol Gelar Saya di Home) dan GLR.06 (layar Gelar Saya, banner canvas, Bagikan, Unduh PNG, cache `sw.js`).
+- **File yang diubah:** `public/gelar.js` (baru), `public/gelar.css` (baru), `public/index.html` (hanya tambahan), `public/kerangka.js` (hanya tambahan), `public/sw.js` (cache `chata-v26` jadi `chata-v27`; daftar cache bertambah `gelar.css` dan `gelar.js`; satu baris `NAMA_CACHE` lama dijadikan komentar). Satu commit `554c07e` di `main`, tanpa `[skip ci]`. Tiga cek anti-nyasar lolos sebelum push. Tabel, fungsi SQL, dan Edge Function tidak disentuh. "OK" ketua untuk `sw.js` diberikan di chat.
+- **Cara kerja (bahasa sederhana):**
+  - `gelar_saya` dipanggil **satu kali** tiap balasan `status` dimuat: saat login, Segarkan, dan kembali dari layar lain. Pemanggilnya `KedaiKerangka.atur`, bukan `buka`. Alasan: Segarkan dan kembali dari layar lain tercakup tanpa timer, dan pindah tab lewat navigasi bawah tidak memanggil server.
+  - Hasil disimpan di memori (bukan `localStorage`). Home menggambar pil dari memori. Layar Gelar Saya menggambar banner dari memori. Menggambar banner, Bagikan, dan Unduh tidak memanggil server.
+  - Tombol "Coba lagi" di layar Gelar Saya memanggil `gelar_saya` sekali, dan hanya muncul bila pemuatan gagal.
+- **Keputusan baru:** tidak ada dari ketua. Pilihan penulis (alasan belum tercatat dari ketua):
+  1. Bila pemuatan ulang gagal tetapi data lama masih di memori, pil tetap tampil tanpa pesan galat. Pesan galat hanya di layar Gelar Saya bila belum pernah berhasil memuat.
+  2. Tombol Bagikan disembunyikan bila HP tidak mendukung bagikan berkas; Unduh PNG jadi tombol utama (GL18, tanpa tombol yang diam).
+  3. Kalimat apresiasi dibatasi 3 baris di banner dan menempel di bawah. Gelar menu yang tidak muat di banner tidak digambar.
+  4. Balasan 400 (profil belum ada) dianggap "belum punya gelar": Home diam, layar Gelar Saya menampilkan ajakan menyelesaikan pesanan pertama.
+  5. Banner dibuat otomatis saat layar dibuka (GL19, bawaan), ditegaskan tanpa tambahan panggilan server.
+- **Terbukti 14 Nov 2026 (akun dummy, bukti diperiksa di chat, tidak disimpan):** pil emas dan dua pil menu tampil di kartu sapaan customer dengan lencana CUSTOMER tetap di kanan; tombol Gelar Saya tepat di atas Bantuan; banner tampil benar di layar dan di berkas PNG; **Bagikan ke WA berhasil di Android**; **Unduh PNG berhasil di Android**; mode pesawat tidak merusak layar Gelar Saya; Keluar lalu masuk akun lain tidak meninggalkan nama atau banner akun lama; owner dan penjaga tidak melihat pil maupun tombol.
+- **Status sheet:** GLR.05 dan GLR.06 selesai, silakan dicentang. **SEC-39 belum boleh dicentang** (lihat di bawah). GLR.07 belum dikerjakan.
+- **Belum beres:**
+  - **SEC-39** (P0, bagian ketua): akun A dan B terpisah serta "order wakil tidak menambah hitungan" belum terbukti. Datanya kini ada (7 baris di tabel `gelar`, set demo).
+  - **GLR.07:** hitungan lain belum terbukti: hanya Selesai ikut, satu order banyak porsi dihitung 1, batas tengah tingkat, sisipan tingkat, ambang naik dan turun (GL9), nama panjang (di banner sudah terlihat dipotong).
+  - **GLR.09 wajib sebelum LNC.04:** ambang masih nilai demo (tingkat 1 sampai 5, gelar menu 2). Kembalikan ke 1, 10, 25, 50, 100 dan gelar menu 20. Cara ini belum pernah dicoba.
+  - **Blok susulan di dokumen lain masih menunggu persetujuan ketua** (isi ada di `blok-susulan-gelar.md`): `AGENTS.md` (peta bagian 5, pengecualian CSS `gelar.css`, pengecualian SQL data BT7, kode baru `gelar.ts`, rencana versi), `home.md`, `bonus.md`, `features.md`, `bantuan.md`.
+  - **GLR.08** (demo ke owner) dan **GLR.10** (isi Bantuan, bersama BTN.05) belum dikerjakan.
+  - Nama menu di database masih dummy. Saat peluncuran, edit nama menu yang ada, jangan membuat menu baru lalu menonaktifkan yang lama (GL12).
+- **Saran giliran berikutnya:** sesi tes SEC-39, dipegang ketua (P0). Lampirkan `AGENTS.md`, `gelar.md` (dengan Handoff #2 sampai #4), `security.md`, dan `database.md`. Tambahan berguna: `supabase/templates/20261114_02_gelar_saya_uji.sql` (isian uji berupa placeholder, diisi di SQL Editor saja) dan `docs/pemetaan-test.md` bila ketua ingin status tes ikut tercatat. Tes dari konsol lewat `window.KedaiAkun.panggilKedai("gelar_saya")`.
