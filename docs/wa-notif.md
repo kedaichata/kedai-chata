@@ -243,3 +243,35 @@ Migration dijalankan di SQL Editor pada 15 Nov 2026 dengan "OK" ketua. Tidak ada
 
 - WAG.03 (⚠️ High-Risk, butuh "OK" ketua): pasang tiga secret di dashboard fungsi `kedai` (`WA_GATEWAY_URL`, `WA_GATEWAY_API_KEY`, `WA_URL_APLIKASI`), diketik langsung di dashboard, tidak lewat chat. Tanpa kode, jadi bisa dikerjakan paralel dengan WAG.04 (tugas adik ketua, di luar repo).
 - Lalu SEC-44 dan SEC-45, baru WAG.05 (`kirim_wa.ts`). Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 dan #2), `database.md`, `security.md`, `supabase/functions/kedai/index.ts`, `inbox.ts`, dan `kirim_push.ts`.
+
+### Handoff #3 | 2026-11-15 | ketua
+
+**Tugas:** WAG.03 (pasang secret di dashboard fungsi `kedai`). Selesai dan sudah dicentang di sheet. Yang dipasang **dua secret, bukan tiga** (lihat keputusan baru).
+
+**File yang diubah:** tidak ada. Tidak ada perubahan di repo, `public/`, database, maupun kode `kedai`, dan tidak ada deploy. Satu-satunya perubahan ada di dashboard Supabase (Edge Functions → Secrets), dikerjakan 15 Nov 2026 dengan "OK" ketua.
+
+**Keputusan baru** (yang paling akhir menang atas `wa-notif.md` WAG04, WAG06, dan bagian 4.1):
+
+- **`WA_URL_APLIKASI` sengaja tidak dipasang.** Gateway adik ketua sudah menambahkan footer sendiri yang berisi kalimat "hanya notifikasi, mohon tidak dibalas" dan link umum aplikasi (tanpa ID order atau parameter, jadi tetap sesuai WAG06). Bila `kedai` juga menempel link, pesan jadi punya dua link. WAG04 membolehkan secret ini kosong (link dilewati, pesan tetap terkirim). Alasan ketua: mengikuti alur; footer dan link sudah ditambahkan gateway oleh adik ketua, jadi `kedai` tidak menambah lagi supaya tidak dobel.
+- **Akibat untuk WAG.05:** `kirim_wa.ts` hanya mengirim **kalimat kejadian**, tanpa footer, tanpa link, tanpa kalimat "jangan balas". Kalimat footer di gateway beda dari contoh di bagian 4.1, maknanya sama dan diterima.
+- **Bila nanti pindah ke WA resmi (WAG01):** footer dan link harus dipindah ke `kirim_wa.ts`. Bila link mau ditangani `kedai` lagi, pasang `WA_URL_APLIKASI` dan hapus footer di gateway; tidak perlu deploy ulang.
+
+**Terbukti** (screenshot dashboard, diperiksa di chat, tidak disimpan):
+
+- Daftar Custom secrets berisi tujuh nama: empat lama (`KUNCI_SECRET_KEDAI`, `RAHASIA_PENJADWAL`, `VAPID_PUBLIK`, `VAPID_PRIVAT`), `VAPID_KONTAK` (sudah ada sejak 13 Nov), dan dua baru: `WA_GATEWAY_URL` dan `WA_GATEWAY_API_KEY`.
+- Kolom Updated: dua secret baru bertanggal 15 Nov 2026 (selisih sekitar 35 detik); enam lainnya bertanggal lama, jadi tidak ada secret lama yang tertimpa.
+
+**Belum beres:**
+
+- **Isi kedua secret belum terbukti benar** (dashboard hanya menampilkan nama dan digest). Baru ketahuan saat tes pengiriman di WAG.07. Bila typo, timpa dengan nama yang sama.
+- **Asumsi bentuk `WA_GATEWAY_URL`:** alamat dasar saja, tanpa `/send-message` dan tanpa `/` di ujung. Di WAG.05, kode menambahkan `/send-message` sendiri. Bila ternyata adik ketua memasukkan path, sesuaikan di kode, bukan di dashboard.
+- **WAG.04 (tugas adik ketua, di luar repo) belum dicentang.** Footer di `index.js` menunjukkan revisi sudah dimulai, tetapi poin lainnya belum dikonfirmasi: antrean maks 50, jeda acak 3 sampai 8 detik, `/` hanya dari laptop, listen `127.0.0.1`, validasi, `/send-image` mati, reconnect aman.
+- Teks tugas WAG.03 di sheet masih menyebut tiga secret; boleh dibiarkan.
+- Status commit berkas Handoff #1 dan #2 dan lima docs hasil sesi strategi belum dikonfirmasi (cek `git status`). Commit yang hanya berisi docs/md boleh memakai `[skip ci]`; bila ikut memuat `supabase/`, jangan. Lakukan cek anti-nyasar sebelum push.
+- Logout dashboard Supabase dan tutup jendela privat.
+
+**Saran giliran berikutnya:**
+
+- Tunggu WAG.04 selesai (adik ketua), lalu SEC-44 dan SEC-45 (bukti keamanan, termasuk halaman QR tidak bisa dibuka lewat ngrok).
+- Baru WAG.05 (⚠️ High-Risk, butuh penjelasan dampak dan "OK" ketua): `kirim_wa.ts` dan sambungan di `index.ts` dan `inbox.ts`, deploy `kedai` dengan urutan aman bagian 8 tanpa `--no-verify-jwt`, commit tanpa `[skip ci]`.
+- Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 sampai #3), `database.md`, `security.md`, `supabase/functions/kedai/index.ts`, `inbox.ts`, dan `kirim_push.ts`.
