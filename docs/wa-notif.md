@@ -195,3 +195,51 @@ Urutan: WAG.01, WAG.02, WAG.03, WAG.04 (paralel, adik ketua), SEC-44 dan SEC-45,
 - Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1), `database.md`, `security.md`, `supabase/migrations/20261113_inbox_tulis_penerima.sql` dan `supabase/templates/20261113_inbox_tulis_penerima_cek.sql` (pola `push_langganan_ambil`), `supabase/migrations/20261105_akun.sql`, dan tiga berkas `20261115_staf_nomor_wa*`.
 - Salinan SQL dan pembatal ditulis di repo sebelum dijalankan; uji dengan data dummy; `wa_nomor_ambil` dibuang lebih dulu bila kolom `nomor_wa` mau dibatalkan.
 - Commit yang hanya berisi docs/md boleh memakai `[skip ci]`; commit yang menyentuh kode atau `supabase/` tidak.
+
+### Handoff #2 | 2026-11-15 | ketua
+
+**Tugas:** WAG.02 (fungsi SQL baca-saja `wa_nomor_ambil`). Selesai: fungsi sudah dijalankan di database dan terbukti lewat cek A sampai I serta uji jalur staf. Butir ini siap dicentang di sheet.
+
+**File yang diubah** (semua berkas baru, tidak ada berkas lama yang diubah; status commit saat handoff ditulis belum dikonfirmasi, cek `git status`):
+
+- `supabase/migrations/20261115_02_wa_nomor_ambil.sql`
+- `supabase/migrations/20261115_02_wa_nomor_ambil_batal.sql`
+- `supabase/templates/20261115_02_wa_nomor_ambil_cek.sql`
+- `supabase/templates/20261115_02_wa_nomor_ambil_uji.sql`
+
+Migration dijalankan di SQL Editor pada 15 Nov 2026 dengan "OK" ketua. Tidak ada perubahan di `public/`, tidak ada deploy `kedai`, dan tidak ada tabel, kolom, hak tabel, atau data yang disentuh. Satu-satunya objek baru: `public.wa_nomor_ambil(uuid[])`.
+
+**Keputusan baru** (lima pilihan penulis, diterima ketua 15 Nov 2026 tanpa perubahan; alasan ketua selain itu belum tercatat):
+
+1. Staf nonaktif: nomornya tidak dikembalikan, dan akun itu tidak jatuh menjadi customer walau punya profil.
+2. Customer = punya baris di `profil` dan tidak punya baris di `staf`. Akun tanpa profil maupun staf dilewati. Tidak ada cek "aktif" untuk customer karena `profil` tidak punya kolom `aktif`.
+3. Bentuk nomor dicek lagi di fungsi (`^628[0-9]{8,11}$`) sebagai pagar kedua.
+4. Urutan kembalian tidak dijamin; `kedai` yang mengurutkan customer dulu (WAG13).
+5. Satu akun muncul paling banyak sekali; elemen null di `p_akun` diabaikan.
+
+- Kembalian: array `{akun, peran, nomor}`; `peran` = `customer`, `owner`, atau `penjaga`. Kosong bila tidak ada.
+- Galat: `id_kosong` (daftar null) dan `daftar_terlalu_panjang` (lebih dari 100 elemen, dihitung dari panjang masuk termasuk duplikat). Keduanya tidak dipetakan ke layar, hanya tercatat di log `kedai` tanpa nomor.
+- Pilihan penulis tanpa keputusan ketua: fungsi dibuat `STABLE`; kembalian diurutkan di dalam fungsi hanya demi keteraturan, bukan janji urutan.
+- **Cara uji jalur staf:** awalnya direncanakan `BEGIN ... ROLLBACK` lalu sempat ditunda ke WAG.06; akhirnya dikerjakan di sesi yang sama (keputusan ketua 15 Nov 2026, "biar tuntas"). Bentuknya diganti satu blok `DO` yang selalu diakhiri galat sengaja, sehingga semua perubahan sementara (tiga baris `staf` dan dua baris `profil` dummy) dibatalkan otomatis dan tidak bisa tertinggal. Alasan penggantian: SQL Editor hanya menampilkan hasil statement terakhir, dan cara ini tidak bergantung pada `ROLLBACK` yang bisa terlupa.
+
+**Terbukti** (diperiksa di chat, tidak disimpan; query baca-saja dan uji dummy, 15 Nov 2026):
+
+- Satu fungsi, `p_akun uuid[]`, kembalian `jsonb`, `SECURITY DEFINER`, `search_path` kosong, sifat STABLE.
+- `EXECUTE` hanya `service_role` (acl hanya `postgres` dan `service_role`, tanpa PUBLIC); `anon` dan `authenticated` false.
+- Hak tabel `profil` (`service_role`: INSERT, SELECT, UPDATE) dan `staf` (`service_role`: SELECT) tidak berubah.
+- Jalur customer: 6 dari 6 profil dikembalikan. Akun duplikat muncul sekali; uuid acak dan elemen null tidak menghasilkan apa-apa (tanpa galat); null dibalas `id_kosong`; 101 elemen dibalas `daftar_terlalu_panjang`; tepat 100 elemen diterima.
+- Jalur staf (uji dummy): staf aktif bernomor dikembalikan dengan peran dari tabel `staf` (bukan customer) dan nomor yang benar; staf nonaktif (walau punya nomor dan profil) tidak dikembalikan; staf aktif tanpa nomor tidak dikembalikan; staf yang juga punya profil tidak jatuh menjadi customer.
+- Cek pasca-uji: data kembali persis seperti sebelum uji (3 staf, 0 nomor terisi, 0 nonaktif, 6 profil, 0 profil milik staf, 0 nomor dummy tersisa).
+
+**Belum beres:**
+
+- `_batal.sql` belum pernah dicoba. Urutan bila perlu dibatalkan: buang fungsi ini lebih dulu, baru kolom `staf.nomor_wa` (`20261115_staf_nomor_wa_batal.sql`).
+- Di WAG.06 (setelah nomor staf asli diisi), jalankan ulang CEK E sebagai konfirmasi dengan nomor asli: `staf_kembali` harus sama dengan jumlah staf aktif yang nomornya terisi. Jalur staf sendiri tidak perlu dibuktikan ulang. Template isian nomor staf (dari Handoff #1) belum dibuat; nomor nyata hanya diketik di SQL Editor, tidak masuk repo.
+- **Kecelakaan di berkas cek (sudah diperbaiki):** query F versi pertama memakai `min(id)` pada kolom `uuid`, yang tidak ada di Postgres, sehingga galat sebelum fungsi dipanggil. Diganti dengan `ORDER BY ... LIMIT 1`; berkas di repo harus versi perbaikan. Pencegahan: jangan memakai `min` atau `max` pada `uuid`.
+- Belum ada blok susulan di `database.md` untuk fungsi ini (blok usulan 14 Nov masih menyebut nama sebagai "usulan"); tempel hanya bila ketua minta.
+- Commit berkas ini **tanpa `[skip ci]`** (menyentuh `supabase/`); cek anti-nyasar (folder aktif, `git remote -v`, email commit terakhir) sebelum push. Ingat logout dashboard Supabase.
+
+**Saran giliran berikutnya:**
+
+- WAG.03 (⚠️ High-Risk, butuh "OK" ketua): pasang tiga secret di dashboard fungsi `kedai` (`WA_GATEWAY_URL`, `WA_GATEWAY_API_KEY`, `WA_URL_APLIKASI`), diketik langsung di dashboard, tidak lewat chat. Tanpa kode, jadi bisa dikerjakan paralel dengan WAG.04 (tugas adik ketua, di luar repo).
+- Lalu SEC-44 dan SEC-45, baru WAG.05 (`kirim_wa.ts`). Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 dan #2), `database.md`, `security.md`, `supabase/functions/kedai/index.ts`, `inbox.ts`, dan `kirim_push.ts`.
