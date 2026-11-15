@@ -185,7 +185,7 @@ Urutan: WAG.01, WAG.02, WAG.03, WAG.04 (paralel, adik ketua), SEC-44 dan SEC-45,
   **Belum beres:**
 
 - `_batal.sql` belum pernah dicoba; **sengaja tidak dites** (keputusan ketua 15 Nov 2026, alasan ketua: pengetesan mengharuskan memasang ulang kolomnya). Isinya hanya `DROP COLUMN IF EXISTS`.
-- Ketiga berkas SQL belum di-commit dan di-push. Commit **tanpa `[skip ci]`** (memuat folder `supabase/`); lakukan cek anti-nyasar (`pwd`, `git remote -v`, email commit terakhir) sebelum push. Lima docs hasil sesi strategi (`AGENTS.md`, `database.md`, `notifikasi.md`, `security.md`, `wa-notif.md`) juga masih belum di-commit.
+- Ketiga berkas SQL sudah di-commit dan di-push `a64c476`. Commit **tanpa `[skip ci]`** (memuat folder `supabase/`); lakukan cek anti-nyasar (`pwd`, `git remote -v`, email commit terakhir) sebelum push. Lima docs hasil sesi strategi (`AGENTS.md`, `database.md`, `notifikasi.md`, `security.md`, `wa-notif.md`) juga masih belum di-commit.
 - Template isian nomor staf (komponen di `wa-notif.md` bagian 4.2, dipakai di WAG.06) belum dibuat. Nomor nyata hanya diketik di SQL Editor, tidak masuk repo.
 - Dashboard Supabase sudah logout.
 - Tidak berubah dari rencana: WAG.02 sampai WAG.09 belum dikerjakan.
