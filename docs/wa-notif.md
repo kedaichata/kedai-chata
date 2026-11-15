@@ -472,3 +472,39 @@ Keputusan ketua (15 Nov 2026, disampaikan lewat PIC [RAC]). Alasan ketua: tiap S
 - **WAG.08** (⚠️ P0, butuh "OK" ketua): gateway dimatikan, order tetap sukses dalam waktu normal tanpa galat di layar.
 - Lalu SEC-44, WAG.06 sebagai prasyarat nomor staf, SEC-40 sampai SEC-43, WAG.09.
 - Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 sampai #8), `database.md`, `security.md`, `supabase/functions/kedai/inbox.ts`, dan `kirim_wa.ts`. Untuk membuat template nomor staf, tambahkan `supabase/migrations/20261115_02_wa_nomor_ambil.sql` dan `supabase/templates/20261115_02_wa_nomor_ambil_cek.sql`.
+
+### Handoff #9 | 2026-11-15 | ketua
+
+**Tugas:** WAG.06 (isi `nomor_wa` staf aktif dan nomor tester di profil akun dummy). Selesai dan sudah dicentang di sheet (15 Nov 2026). Butir baru WAG.06a sudah ditambahkan ke sheet.
+
+**File yang diubah** (satu berkas baru, berisi placeholder saja; status commit saat handoff ditulis belum dikonfirmasi, cek `git status`):
+
+- `supabase/templates/20261115_03_staf_nomor_wa_isi.sql`
+  Template dijalankan di SQL Editor 15 Nov 2026 dengan nomor diketik langsung di dashboard. Tidak ada perubahan di `public/`, tidak ada deploy `kedai`, tidak ada skema, fungsi, atau hak yang berubah. Yang berubah hanya data: kolom `nomor_wa` di tiga baris `staf`, dan nomor di satu akun dummy customer (lewat menu Akun di aplikasi).
+
+**Keputusan baru** (alasan ketua selain yang tertulis belum tercatat):
+
+- **Template memakai `nama_tampilan`, bukan UUID** (pilihan ketua, "pakai nama tampilan"). Pengaman: satu blok `DO` (satu kesatuan); bila nama tidak cocok tepat 1 staf aktif, semua perubahan batal dengan galat `staf_tidak_tepat_satu`. Baris yang nomornya masih `628XXXXXXXXXX` dilewati, jadi boleh diisi sebagian. Template dipakai ulang saat peluncuran.
+- **Nomor staf saat ini sementara**, milik ketua dan adik ketua, bukan nomor asli staf. Pembagian: Bu Owner 2 = nomor adik ketua (bukan nomor pengirim gateway, jadi tidak ada risiko pesan ke diri sendiri); Owner Uji = nomor ketua; Penjaga Uji = nomor kedua ketua. Diganti saat peluncuran (WAG.06a).
+- **Nomor tester customer:** satu akun dummy ("test pakai plus") diberi nomor tambahan dari adik ketua lewat menu Akun. Hanya akun ini yang boleh memesan di WAG.07.
+- Penulis menyarankan WAG.06a bertipe Low-Risk (sama dengan WAG.06); di sheet tertulis High-Risk. Belum diputuskan, tidak menghalangi.
+- Melengkapi Handoff #1: template isian nomor staf (komponen `wa-notif.md` bagian 4.2) kini ada.
+  **Terbukti** (diperiksa di chat, tidak disimpan; 15 Nov 2026):
+
+- Hasil template: tiga baris staf, semuanya `bernomor = true`; tidak ada galat. Nomor tidak ikut tampil.
+- CEK E (`20261115_02_wa_nomor_ambil_cek.sql`): `customer_kembali` 6, `staf_kembali` 3, `profil_bukan_staf` 6, `staf_aktif_bernomor` 3. Jadi `wa_nomor_ambil` mengembalikan ketiga staf.
+- Screenshot menu Akun: "Nomor WA berhasil diganti", kolom nomor kosong kembali (tanpa nomor di layar).
+  **Belum beres:**
+
+- Nomor tester di akun customer baru terbukti **tersimpan**; terbukti **sampai** hanya setelah pesan masuk di WAG.07.
+- Lima akun dummy customer lain masih bernomor dummy. Nomor palsu yang lolos bentuk `628` + 8 sampai 11 angka diterima gateway (202) dan dicoba dikirim; bisa mengenai orang asing dan menambah risiko blokir. Di WAG.07 hanya akun tester yang memesan.
+- **WAG.06a** (ganti nomor staf sementara dengan nomor asli) belum dikerjakan; selesaikan sebelum LNC.04. Caranya: isi nomor benar di template (di SQL Editor saja), Run, lalu ulang CEK E (`staf_kembali` sama dengan jumlah staf aktif bernomor).
+- Isi secret `WA_GATEWAY_URL` dan `WA_GATEWAY_API_KEY` di dashboard belum terbukti benar (Handoff #3); bila tes pertama WAG.07 gagal, curigai ini dulu dan cek log `kedai wa:`.
+- Status commit template dan lima docs hasil sesi strategi serta Handoff #1 sampai #9 belum dikonfirmasi. Commit yang menyentuh `supabase/` **tanpa** `[skip ci]`; commit yang hanya docs/md boleh `[skip ci]`. Cek anti-nyasar (folder aktif, `git remote -v`, email commit terakhir) sebelum push. Pastikan template di repo tetap berisi placeholder.
+- Dashboard Supabase: logout dan tutup jendela privat.
+  **Saran giliran berikutnya:**
+
+- **WAG.07** (Low-Risk): nyalakan gateway (`./startwagw-ngrok.sh`), pesan hanya dari akun tester. Harapan: order baru ke Bu Owner 2 dan Owner Uji; disetujui ke customer dan Penjaga Uji; Diantar, Siap diambil, atau Siap disajikan ke customer; Diproses dan Selesai tidak mengirim WA; customer dikirimi lebih dulu; teks sesuai 4.1; restart script sekali dan URL ngrok tetap sama. Cek log `kedai wa:`. Sesudahnya clear inspector ngrok dan matikan gateway (`./stopwagw-ngrok.sh`).
+- **WAG.08** (⚠️ P0, butuh "OK" ketua): gateway dimatikan, order tetap sukses dalam waktu normal tanpa galat di layar.
+- Lalu SEC-44, SEC-40 sampai SEC-43, WAG.06a, WAG.09.
+- Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 sampai #9), `security.md`, dan `pemetaan-test.md`.
