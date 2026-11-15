@@ -199,3 +199,23 @@ Sumber: docs/ringkasan.md RK1 dan RK15. Prefix sheet SEC.
 - **SEC-36 (P0):** customer atau penjaga memanggil `ringkasan_7hari` dibalas 403; tanpa token 401. Menegakkan aturan 8 (hak per peran dipaksa di server, bukan hanya tombol disembunyikan). Bukti: balasan server.
 - **SEC-37 (P0):** isi balasan `ringkasan_7hari` hanya angka dan tanggal; tanpa nama, nomor WA, alamat, atau isi catatan. Menegakkan aturan 18. Bukti: balasan server dengan data dummy.
 - Keduanya dites setelah RKS.02 (aksi sudah ada di server).
+
+### 2026-11-14: Keamanan WA gateway (aturan 7, 16, 18 diperluas; SEC-40 sampai SEC-45)
+
+**Berkas tujuan:** `docs/security.md` bagian 7. Rujukan: `docs/wa-notif.md`. Yang paling akhir menang. Tidak ada pertentangan dengan blok lama; blok ini **menambah**.
+
+**Perluasan aturan:**
+
+- **Aturan 7 (rahasia):** `WA_GATEWAY_URL` dan `WA_GATEWAY_API_KEY` termasuk rahasia (hanya secret fungsi `kedai`). URI database gateway dan sesi login WA di laptop gateway juga rahasia. `WA_URL_APLIKASI` bukan rahasia. Tidak ada yang boleh di `public/config.js`.
+- **Aturan 16 (push tanpa data pribadi) berlaku juga untuk pesan WA.** Teks umum, boleh memuat nomor order, tanpa nama, alamat, isi catatan, nama menu, atau alasan. Link tanpa ID order atau parameter.
+- **Aturan 18 (data pribadi hanya tampil ke yang berhak):** nomor WA staf dan customer hanya dibaca server (`wa_nomor_ambil`) dan dikirim ke gateway; **tidak pernah** ke aplikasi dan tidak ditulis di log.
+- **Aturan 12 (tanpa DELETE) dan hak tabel:** tidak berubah. `service_role` pada `staf` tetap hanya baca.
+  **Tambahan uji (bukti: balasan server, log, query baca-saja, atau screenshot data dummy; bukti tidak disimpan, bagian 4 butir 6):**
+
+- **SEC-40 (P0):** gateway mati, lambat, atau menolak: order dan aksi (`order_buat`, `order_setuju`, `order_status`) tetap dibalas sukses dalam waktu normal. Bukti: balasan server dan log `kedai`.
+- **SEC-41 (P0):** URL ngrok dan API key tidak ada di repo (termasuk riwayat commit), `public/config.js`, log `kedai`, dan chat. Bukti: pencarian di repo dan riwayat, isi `config.js`, log.
+- **SEC-42 (P0):** isi pesan WA hanya kalimat umum, nomor order, link umum, dan footer; tanpa data pribadi. Bukti: screenshot pesan di HP tester (data dummy).
+- **SEC-43 (P0):** WA hanya untuk 4 kejadian WAG07; tidak ada WA untuk tolak, catatan, batal, alih hari, foto, Diproses, Selesai, mundur status, dan order wakil. Bukti: log server per kejadian.
+- **SEC-44 (P0):** `service_role` pada `staf` tetap hanya baca; `anon` dan `authenticated` tidak bisa memanggil `wa_nomor_ambil`; balasan aksi `kedai` tidak memuat nomor WA staf atau customer lain. Bukti: query baca-saja hak tabel dan fungsi, balasan server. (Hak tabel juga dicek di SEC-04.)
+- **SEC-45 (P0):** gateway: panggilan tanpa key atau key salah dibalas 401; halaman QR (`/`) **tidak bisa dibuka lewat URL ngrok** tetapi bisa dari laptop; server hanya mendengarkan `127.0.0.1`; nomor atau pesan tidak sah ditolak; `/send-image` tidak aktif. Bukti: balasan gateway (URL ngrok tidak ditempel ke chat; samarkan).
+  **Dampak pada sheet:** SEC-40 sampai SEC-45 baris baru (TSV di `wa-notif-sheet.tsv`). SEC-04 dan SEC-23 ikut mencakup kolom `nomor_wa` dan rahasia WA.

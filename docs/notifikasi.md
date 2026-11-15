@@ -899,4 +899,16 @@ Sumber: `home.md` HOM.08. Menimpa penempatan "di bawah Bantuan" (NT6, NTF.05). Y
 - Alasan: di Home customer tombol ini tidak kelihatan tanpa menggulir.
 - Tombol kini tepat di bawah kartu sapaan, 1 baris penuh, sebelum baris 3 tombol. Aturan tampil/sembunyi (hilang bila sudah aktif, diblokir, atau tidak didukung) tidak berubah; `notif.js` tidak diubah.
 
+### 2026-11-14: WA gateway sebagai saluran ketiga, sementara
+
+**Berkas tujuan:** `docs/notifikasi.md` bagian 9. Rujukan: `docs/wa-notif.md`. Yang paling akhir menang.
+
+- Selain push (VAPID) dan Kotak masuk, ada **saluran ketiga yang sementara**: WhatsApp via gateway lokal, hanya untuk 4 kejadian (order baru ke owner; disetujui ke customer dan penjaga; status Diantar, Siap diambil, atau Siap disajikan ke customer).
+- **Tabel 4.1 tetap satu-satunya daftar siapa dapat kabar kapan.** WA adalah **himpunan bagian** dari tabel itu dan memakai penerima yang sama dengan `inbox_tulis`, tanpa hitungan kedua. Teks WA ada di `wa-notif.md` bagian 4.1.
+- **Titik pemanggilan** sama dengan pengirim push: setelah aksi order berhasil (menumpang `tulisInbox`). Sifatnya sama dengan NT4: satu kali coba, tanpa antrean di sisi `kedai`, kegagalan tidak membatalkan aksi. Bedanya: WA jalan sesudah balasan ke aplikasi dan **tidak menambah waktu tunggu**.
+- **NT12 tetap berlaku:** status yang pasti ada di aplikasi dan Kotak masuk. WA bukan jalur utama.
+- **Order wakil (O15):** tidak mengirim WA, termasuk ke penjaga (bawaan; push tetap).
+- **Pengecualian NT8 (penjaga membuka Antrean)** tidak berlaku: pesan WA tidak bisa diketuk ke layar tertentu.
+- **Untuk sesi kode:** cek apakah `inbox.ts` menyerahkan **status tujuan** ke pemanggil; WA hanya untuk status Diantar, Siap diambil, Siap disajikan, bukan semua kejadian `status`.
+
 ---

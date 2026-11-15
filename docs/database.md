@@ -438,4 +438,30 @@ Rujukan: docs/ringkasan.md RK10. Yang paling akhir menang.
 - **Pembatalan:** bila aksi di `kedai` (GLR.03) sudah dideploy, deploy `kedai` versi sebelumnya dulu. Buang fungsi (`20261114_02_gelar_saya_batal.sql`) sebelum membuang tabel (`20261114_gelar_batal.sql`).
 - **Pilihan penulis** (format `kunci`, tanpa aturan satu gelar aktif per menu, bentuk balasan, staf aktif atau tidak selalu ditolak, menu nonaktif tetap dihitung): alasan belum tercatat.
 
+### 2026-11-14: Kolom `nomor_wa` di `staf` dan fungsi baca nomor untuk WA (WAG.01, WAG.02, usulan)
+
+**Berkas tujuan:** `docs/database.md` bagian 9. Rujukan: `docs/wa-notif.md` WAG11 dan WAG12. Nama persis ditetapkan di sesi kode dan butuh "OK" ketua sebelum dijalankan. Yang paling akhir menang.
+
+- **Bagian 2 (tabel `staf`, kolom baru):** `nomor_wa`, teks, **boleh kosong**. Pagar bentuk di tabel: bila terisi, hanya angka dan diawali `62` (panjang batas ditetapkan di sesi kode; nomor di `profil` yang ada berbentuk `62xxx` dengan panjang 11 sampai 13). Baris yang ada otomatis kosong. **Sesi kode wajib mengecek skema `staf` yang sebenarnya lebih dulu** (jangan menebak kolom).
+- **Bagian 3 (hak):** tidak berubah. `service_role` pada `staf` tetap **hanya baca**; kolom diisi ketua lewat SQL Editor. Terbukti lewat query cek. `nomor_wa` termasuk data pribadi.
+- **Bagian 4 (pengaturan):** tidak ada kunci baru. URL gateway, API key, dan alamat aplikasi ada di Secret dashboard `kedai`, bukan di tabel `pengaturan`.
+- **Bagian 5 (fungsi SQL baru, baca-saja, `SECURITY DEFINER`, `search_path` kosong, `public.` eksplisit, `EXECUTE` hanya `service_role`):** nama usulan `wa_nomor_ambil(p_akun uuid[])`, mengembalikan array `{akun, peran, nomor}` untuk akun yang diminta: customer dari `profil`, staf aktif dari `staf`. Nomor kosong tidak dikembalikan. Batas 100 akun per panggilan (usulan). Hasil hanya untuk `kedai`, tidak dikirim ke aplikasi dan tidak ditulis di log.
+- **Bagian 5 (aksi `kedai`):** tidak ada aksi baru. `kirim_wa` adalah fungsi bantu di dalam `kedai`, dipanggil setelah aksi order berhasil, bukan dari aplikasi. Ia adalah **panggilan HTTP keluar**, bukan tulis-database, jadi **bukan** pengecualian tulis-database seperti `inbox_tulis` dan `push_hasil_catat`.
+- **Template:** isian nomor staf di `supabase/templates/` (placeholder saja, nomor nyata hanya diketik di SQL Editor).
+- **Pembatalan:** buang fungsi dulu, lalu kolom. Nomor yang sudah diisi ikut hilang. Belum pernah dicoba.
+- **Pilihan penulis** (nama fungsi, batas 100, pagar panjang, peran ikut dikembalikan): alasan belum tercatat.
+
+### 2026-11-15: Kolom `nomor_wa` di `staf` terpasang (WAG.01)
+
+**Berkas tujuan:** `docs/database.md` bagian 9. Rujukan: `docs/wa-notif.md` WAG11 dan Handoff #1. Menimpa bagian "kolom `nomor_wa`" di blok usulan 14 Nov 2026 di atas. Yang paling akhir menang.
+
+- **Berkas SQL:** `supabase/migrations/20261115_staf_nomor_wa.sql` (dan `_batal`), `supabase/templates/20261115_staf_nomor_wa_cek.sql`. Dijalankan dan dicek 15 Nov 2026 dengan "OK" ketua. Tabel lain, fungsi, dan data lama tidak diubah.
+- **Bagian 2 (tabel `staf`, kolom baru, nama persis):** `nomor_wa`, `text`, boleh kosong, tanpa nilai bawaan. Constraint `staf_wa_cek`: `nomor_wa IS NULL OR nomor_wa ~ '^628[0-9]{8,11}$'`. Baris staf yang sudah ada otomatis kosong. `nomor_wa` adalah data pribadi.
+- **Koreksi panjang nomor:** blok usulan 14 Nov di atas dan `wa-notif.md` menulis panjang "11 sampai 13". Yang benar **11 sampai 14 digit** (`628` ditambah 8 sampai 11 angka), sama persis dengan `profil.nomor_wa` (`profil_wa_cek` di `20261105_akun.sql`). Dokumennya yang keliru, bukan kodenya.
+- **Bagian 3 (hak):** tidak berubah. `service_role` pada `staf` tetap hanya `SELECT`; hak tingkat tabel otomatis mencakup kolom baru, jadi tidak ada GRANT atau REVOKE baru. Nomor diisi ketua lewat SQL Editor (WAG.06), tidak lewat aplikasi.
+- **Bagian 4 (pengaturan):** tidak ada kunci baru.
+- **Terbukti (15 Nov 2026, query baca-saja; skema `staf` sebelumnya dicek di database hidup, lima kolom sama dengan `20261105_akun.sql`):** kolom ada, boleh kosong, tanpa nilai bawaan; `staf_wa_cek` terpasang; `service_role` hanya `SELECT`; `anon` dan `authenticated` nol hak; RLS aktif dan 0 policy; 3 baris staf, 0 nomor terisi; tidak ada hak tingkat kolom untuk `anon` atau `authenticated`.
+- **Belum terbukti:** `_batal.sql` belum pernah dicoba. Bila dipakai: buang `wa_nomor_ambil` (WAG.02) lebih dulu bila sudah ada, dan ingat nomor yang sudah terisi ikut hilang.
+- **Pilihan penulis** (nama constraint `staf_wa_cek`, tanpa nilai bawaan, pagar disamakan dengan `profil`): pagar disetujui ketua 15 Nov 2026; alasan ketua selain itu belum tercatat.
+
 ---

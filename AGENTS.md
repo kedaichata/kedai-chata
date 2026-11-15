@@ -320,3 +320,19 @@ Keputusan ketua (sesi strategi 14 Nov 2026, usulan owner setelah demo). Sumber: 
 - **Kode baru:** `public/qris.js` dan `public/img/qris.png`. Keduanya wajib didaftarkan di cache `sw.js` (bagian 7, butuh "OK"; versi cache naik dari versi terakhir).
 - **Repo public:** gambar QRIS bisa dilihat siapa saja; diterima ketua (QRIS memang dipasang terbuka di warung). Mengganti QRIS = ganti berkas `qris.png` dengan nama sama lalu push, dilakukan ketua atau adik ketua.
 - **Bagian 1, rencana versi:** fitur ini masuk versi 1, sebelum Peluncuran.
+
+### 2026-11-14: Dokumen `wa-notif.md` (prefix WAG) dan pengecualian self-host khusus fitur ini
+
+Permintaan owner, disetujui ketua (sesi strategi 14 Nov 2026). Sumber: docs/wa-notif.md. Alasan: memudahkan peralihan pelanggan dari WA ke aplikasi.
+
+- **Peta Dokumentasi (bagian 5):** tambah baris `docs/wa-notif.md`, isi: "Notifikasi WhatsApp via gateway lokal, sementara, pelengkap push untuk 4 kejadian", prefix sheet **WAG**.
+- **Pengecualian dari "Dilarang menyarankan Docker, VPS, atau self-host" (bagian 3):** gateway WhatsApp berjalan di **laptop adik ketua lewat ngrok**. **Hanya berlaku untuk fitur `wa-notif`; tidak berlaku untuk hal lain.** Script gateway, sesi login WA, berkas `.env`, dan URI database gateway **tidak masuk repo**.
+- **Fitur sementara dan pelengkap:** sekitar 1 sampai 2 bulan sejak peluncuran ke customer, lalu dievaluasi (stop atau WA resmi). Fire and forget: kegagalan gateway tidak membatalkan, menunda, atau mengubah aksi order.
+- **Pengecualian "angka di database" (bagian 1):** timeout 3 detik ke gateway tetap di kode karena fitur sementara.
+- **Tidak ada pengecualian baru dari aturan tulis-database (bagian 7).** `kirim_wa` adalah panggilan HTTP keluar, bukan tulis-database. Fungsi SQL baru bersifat baca-saja.
+- **Perubahan tabel yang sudah ada:** kolom `nomor_wa` (boleh kosong) ditambah di `staf` lewat migration (butuh penjelasan dampak dan "OK" ketua). Tabel `staf` tetap hanya diubah ketua lewat SQL Editor; `service_role` tetap hanya baca.
+- **Bagian 7, daftar rahasia diperluas:** `WA_GATEWAY_URL` dan `WA_GATEWAY_API_KEY` (secret fungsi `kedai`), URI database gateway, dan sesi login WA di laptop gateway. `WA_URL_APLIKASI` bukan rahasia. Semuanya dilarang di repo, `public/config.js`, md, dan chat.
+- **Data pribadi:** nomor WA customer dan staf dikirim dari `kedai` ke laptop gateway (risiko diterima owner, `wa-notif.md` WAG09). Nomor nyata tidak boleh masuk chat, md, repo, atau berkas SQL di repo; nomor staf diketik langsung di SQL Editor.
+- **Kode baru `kedai`:** `kirim_wa.ts` di `supabase/functions/kedai/` (mengikuti blok 9 Nov 2026). Tidak ada berkas baru di `public/`, jadi daftar cache `sw.js` tidak berubah.
+- **Bagian 1, rencana versi:** fitur ini masuk versi 1. **Peluncuran mundur lagi sekitar 2 sampai 3 hari** (dari Rabu ke akhir pekan berikutnya) atas permintaan owner, disetujui ketua. Total mundur dari rencana awal belum tercatat.
+- **Bagian 4 (pengingat rutin):** tambah pengingat cek penggunaan ngrok dan evaluasi fitur ini bersama `LNC.05`.
