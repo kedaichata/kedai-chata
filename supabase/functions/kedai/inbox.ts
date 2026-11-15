@@ -3,6 +3,12 @@
 // INB.04 (giliran 1): ditambah pembantu `tulisInbox`, pembungkus pemanggil fungsi SQL `inbox_tulis` (inbox.md IB12).
 // NTF.06 (tahap 1): `tulisInbox` kini membaca daftar penerima yang dikembalikan `inbox_tulis` (migration 13 Nov 2026)
 //         dan menyerahkannya ke pengirim push di `kirim_push.ts` (kejadian yang aktif saat ini: `order_baru`).
+// WAG.05: `tulisInbox` juga menyerahkan daftar penerima yang sama ke pengirim WA di `kirim_wa.ts` (wa-notif.md WAG02,
+//         WAG07). Hanya tambahan: satu import, satu baris pembuatan pengirim, satu blok di `tulisInbox`. Tanda tangan
+//         `tulisInbox` TIDAK berubah, jadi `index.ts` dan berkas aksi lain tidak perlu disentuh. Blok WA sengaja dipasang
+//         SEBELUM blok push (bukan sesudahnya) karena blok push punya `return` dini yang akan melewati kode sesudahnya;
+//         keduanya jalan di latar belakang dan blok push tidak diubah. Kegagalan WA tidak membatalkan aksi dan tidak
+//         mengubah balasan.
 // Berkas BARU, dipanggil dari `index.ts` (satu import, satu blok sambungan, satu `case`). Kode lama tidak dipindah
 // (keputusan ketua 9 Nov 2026, AGENTS.md bagian 12). Pola sama dengan `order_status.ts`, `foto.ts`, dan lainnya.
 //
@@ -35,6 +41,8 @@
 //   - Kejadian yang belum dipasang di `kirim_push.ts` dilewati tanpa galat.
 
 import { buatPengirimPush } from "./kirim_push.ts";
+// WAG.05: pengirim WhatsApp lewat gateway lokal.
+import { buatPengirimWa } from "./kirim_wa.ts";
 
 // Bentuk yang sama dengan `Pengguna` di index.ts.
 type Pengguna = { id: string };
@@ -75,6 +83,9 @@ export function buatAksiInbox(alat: AlatKedai) {
 
   // NTF.06: pengirim push memakai klien database yang sama.
   const { kirimPush, kejadianAktif } = buatPengirimPush({ klien });
+
+  // WAG.05: pengirim WA memakai klien database yang sama.
+  const { kirimWa } = buatPengirimWa({ klien });
 
   // ------------------------------------------------------------
   // Aksi: inbox_daftar (inbox.md IB5, IB6, IB9, IB11; security.md SEC-34)
@@ -135,6 +146,7 @@ export function buatAksiInbox(alat: AlatKedai) {
   // catatan_customer, catatan_owner, batal_customer, batal_owner, setujui, tolak, status, foto_setelah_selesai,
   // order_wakil, alih_hari), `orderId` (uuid order). Penerima dihitung fungsi SQL, bukan dari sini.
   // NTF.06: bila inbox berhasil ditulis dan kejadiannya sudah aktif di pengirim push, penerima dikirimi push.
+  // WAG.05: penerima yang sama diserahkan ke `kirimWa`, yang sendiri menyaring 4 kejadian WAG07.
   // ------------------------------------------------------------
   async function tulisInbox(
     pelaku: string,
@@ -165,6 +177,21 @@ export function buatAksiInbox(alat: AlatKedai) {
     } catch (_e) {
       console.error("kedai inbox: gagal tersambung |", kejadian);
       return;
+    }
+
+    // WAG.05: kirim WA (hanya 4 kejadian WAG07, disaring di kirim_wa.ts). Dipasang SEBELUM blok push karena blok push
+    // punya `return` dini; blok push di bawah TIDAK diubah. Jalan di latar belakang: balasan aksi tidak menunggu WA.
+    // Tidak pernah melempar galat.
+    try {
+      const tugasWa = kirimWa(kejadian, penerima);
+      // deno-lint-ignore no-explicit-any
+      const waktuJalanWa = (globalThis as any).EdgeRuntime;
+      if (waktuJalanWa && typeof waktuJalanWa.waitUntil === "function") {
+        waktuJalanWa.waitUntil(tugasWa);
+      }
+      // Tanpa `EdgeRuntime`, WA sengaja TIDAK ditunggu supaya push yang sudah teruji tidak ikut tertunda.
+    } catch (_e) {
+      console.error("kedai wa: gagal memulai |", kejadian);
     }
 
     // NTF.06: kirim push (hanya kejadian yang sudah aktif). Tidak pernah melempar galat.
