@@ -349,3 +349,15 @@ Sisa: SEC-19 (Android), non-SEC (O22, wizard Besok, jumlah menu, Segarkan, pilih
 **Belum teruji (catatan):** status Diantar, Ditolak, Dibatalkan satu per satu; PNG hasil unduhan dengan nama panjang.
 
 **Sisa:** GLR.08 (demo), GLR.09 (kembalikan ambang, wajib sebelum LNC.04), GLR.10 (Bantuan). SEC-23 sebelum `LNC.01`; SEC-27 kapan saja (P1); SEC-30, SEC-31, SEC-04, dan SEC-03 menunggu BTN.
+
+### 2026-11-15 | (FREN): SEC-45 (gateway WA)
+
+**Baru terbukti** (tanpa bukti dan tanpa data pelanggan): gateway versi final (`index.js` dan `package.json` tidak berubah sejak WAG.04a): `/send-image` dengan key 404; nomor tidak sah 400; pesan kosong 400; key salah 401; halaman `/` tampil dari laptop (`connected`, tanpa QR) dan 404 lewat ngrok. Dipakai ulang dari Handoff `wa-notif.md` #6: tanpa key 401, hanya mendengarkan `127.0.0.1`, header `Host` palsu 404.
+
+**SEC yang dicentang di sheet:** SEC-45 (15 Nov 2026).
+
+**Tes tidak perlu diulang:** seluruh tes SEC-45 di atas, selama `index.js`, `package.json`, dan `.env` gateway tidak berubah lagi. Bila salah satunya berubah, ulang ringan.
+
+**Belum teruji (catatan):** pesan lebih dari 1000 karakter dan body lebih dari 10 KB tidak diulang di versi final (terbukti di Handoff #4); reconnect putus lama (berjam-jam).
+
+**Sisa:** SEC-44 (setelah WAG.05, karena butuh `kirim_wa.ts` jalan); SEC-40 sampai SEC-43 sesudah WAG.07 dan WAG.08. SEC-23 sebelum `LNC.01`; SEC-27 kapan saja (P1); SEC-30, SEC-31, SEC-04, dan SEC-03 menunggu BTN.

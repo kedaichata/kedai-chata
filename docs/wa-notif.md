@@ -400,3 +400,31 @@ Keputusan ketua (15 Nov 2026, disampaikan lewat PIC [RAC]). Alasan ketua: tiap S
 - **SEC-45 dites resmi di sesi tes**, bukan dianggap lulus dari tes WAG.04 hari ini. Bukti gateway 15 Nov 2026 (Handoff #4 sampai #6) boleh dipakai ulang di sesi itu selama gateway tidak berubah lagi. Bila `index.js`, `package.json`, atau `.env` gateway berubah sebelum sesi SEC-45, tes ringan diulang.
 - **SEC-40 sampai SEC-43** tidak terpengaruh: tetap sesudah WAG.08.
 - **Sesi tes SEC-45** melampirkan `AGENTS.md`, `security.md`, `wa-notif.md` (dengan Handoff #1 sampai #6), dan `pemetaan-test.md`.
+
+### Handoff #7 | 2026-11-15 | (FREN)
+
+**Tugas:** SEC-45 (tes resmi gateway WA, sesuai urutan baru 15 Nov: SEC-45, lalu WAG.05, lalu SEC-44). Selesai dan sudah dicentang di sheet (15 Nov 2026).
+
+**File yang diubah:** tidak ada. Tidak ada perubahan di repo, `public/`, database, Supabase, kode `kedai`, maupun gateway, dan tidak ada deploy.
+
+**Keputusan baru:** tidak ada. Dasar pemakaian ulang bukti: PIC mengonfirmasi `index.js` terakhir berubah di WAG.04, `package.json` di WAG.04a, dan `.env` tidak berubah, jadi bukti Handoff #6 sah dipakai ulang.
+
+**Terbukti** (diperiksa di chat, tidak disimpan; 15 Nov 2026):
+
+- Hari ini, lewat ngrok: `/send-image` dengan key 404; nomor tidak sah 400; pesan kosong 400; key salah 401; `/` 404; `/status` dengan key 200.
+- Hari ini, dari laptop: `/` (`localhost:3000`) tampil, status `connected`, antrean 0, tanpa QR.
+- Dipakai ulang dari Handoff #6 (versi final): tanpa key 401; hanya mendengarkan `127.0.0.1` (IP WiFi ditolak, localhost 200); header `Host` palsu 404.
+- Inspector ngrok sebelum dibersihkan hanya memuat request tes hari ini, tanpa request lain.
+  **Belum beres:**
+
+- Pesan lebih dari 1000 karakter dan body lebih dari 10 KB (413) tidak diulang di versi final; terbukti di Handoff #4 sebelum pembuangan pustaka. Tidak menghalangi SEC-45.
+- Isi secret `WA_GATEWAY_URL` dan `WA_GATEWAY_API_KEY` di `kedai` belum terbukti benar (Handoff #3). Tes hari ini memakai nilai yang diketik di Terminal, bukan secret di dashboard. Bukti baru muncul di WAG.07.
+- Reconnect saat putus lama (berjam-jam) belum diuji (Handoff #5).
+- **SEC-44 belum bisa dibuktikan penuh** sebelum `kirim_wa.ts` ada dan jalan (WAG.05).
+- Status commit lima docs hasil sesi strategi dan berkas Handoff sebelumnya belum dikonfirmasi (cek `git status`). Commit yang hanya berisi docs/md boleh `[skip ci]`; yang menyentuh kode atau `supabase/` tidak. Lakukan cek anti-nyasar (folder aktif, `git remote -v`, email commit terakhir) sebelum push.
+- Penutupan sesi sudah beres: inspector ngrok di-Clear, gateway dimatikan (`./stopwagw-ngrok.sh`), Terminal ditutup, `GW_KEY` terbukti kosong.
+  **Saran giliran berikutnya:**
+
+- **WAG.05** (⚠️ High-Risk, butuh penjelasan dampak dan "OK" ketua): `kirim_wa.ts` dan sambungan di `index.ts` dan `inbox.ts`, 4 kejadian, deploy `kedai` urutan aman bagian 8 tanpa `--no-verify-jwt`, commit tanpa `[skip ci]`. Bila yang bertugas bukan ketua, AI memberi ringkasan untuk diteruskan lewat WA (aturan 12).
+- Lalu SEC-44, WAG.06, WAG.07 (gateway dinyalakan lewat `./startwagw-ngrok.sh` dan dimatikan sesudahnya, WAG17), WAG.08, SEC-40 sampai SEC-43, WAG.09.
+- Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 sampai #7), `database.md`, `security.md`, `supabase/functions/kedai/index.ts`, `inbox.ts`, dan `kirim_push.ts`.
