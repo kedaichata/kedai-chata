@@ -275,3 +275,47 @@ Migration dijalankan di SQL Editor pada 15 Nov 2026 dengan "OK" ketua. Tidak ada
 - Tunggu WAG.04 selesai (adik ketua), lalu SEC-44 dan SEC-45 (bukti keamanan, termasuk halaman QR tidak bisa dibuka lewat ngrok).
 - Baru WAG.05 (⚠️ High-Risk, butuh penjelasan dampak dan "OK" ketua): `kirim_wa.ts` dan sambungan di `index.ts` dan `inbox.ts`, deploy `kedai` dengan urutan aman bagian 8 tanpa `--no-verify-jwt`, commit tanpa `[skip ci]`.
 - Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 sampai #3), `database.md`, `security.md`, `supabase/functions/kedai/index.ts`, `inbox.ts`, dan `kirim_push.ts`.
+
+## Handoff #4 | 2026-11-15 | [RAC]
+
+**Tugas:** WAG.04 (revisi dan tes gateway WA, tugas adik ketua, di luar repo). Selesai dan sudah dicentang di sheet.
+
+**File yang diubah** (semua di folder gateway di laptop, **tidak ada yang masuk repo**, WAG19). Tidak ada perubahan di repo, `public/`, database, Supabase, maupun kode `kedai`, dan tidak ada deploy:
+
+- `index.js` (revisi 15 Nov 2026 di atas revisi 14 Nov)
+- `startwagw-ngrok.sh` dan `stopwagw-ngrok.sh`
+- `package.json` (dan `package-lock.json`)
+  **Keputusan baru** (yang paling akhir menang atas WAG14 dan WAG16 bila ada selisih):
+
+- **Urutan cek di gateway:** halaman `/` didaftarkan lebih dulu (tanpa API key, hanya dari laptop sendiri); semua route lain cek API key **sebelum** parser JSON, jadi tanpa key selalu 401 walau body rusak. Halaman `/` mengecek loopback, tanpa header `x-forwarded-*`, **dan** header `Host` lokal.
+- **Regex nomor gateway** disamakan dengan database: `^628\d{8,11}$` (sebelumnya `^62\d{9,13}$`). Pesan galatnya menyebut "628xxx".
+- **Batas:** body 10 KB (lebih dari itu dibalas 413), pesan maksimal 1000 karakter, antrean maksimal 50 (penuh = 429), jeda acak 3 sampai 8 detik. Route yang tidak dikenal, termasuk `/send-image`, dibalas 404 JSON (tambahan penulis, tanpa keputusan ketua).
+- **Footer tetap tulis mati di `index.js`** (kalimat "tidak dibalas" dan link umum). Baris `FOOTERENV` di `.env.example` dan baris yang dikomentari di `index.js` **dibiarkan, belum dipakai** (permintaan PIC, untuk persiapan bila nanti dipakai versi env). Bila pindah ke versi env, link harus ikut masuk ke nilai `FOOTERENV`, atau pasang `WA_URL_APLIKASI` di `kedai` dan hapus link dari footer gateway; jangan sampai dobel (Handoff #3).
+- **Script start/stop:** mematikan proses lewat berkas PID (`logs/node.pid`, `logs/ngrok.pid`), **tidak memakai `pkill`**, karena laptop dipakai bersama. Keduanya `nohup`; script start langsung selesai dan Terminal boleh ditutup. `PORT` dibaca dari `.env`. ngrok tidak dinyalakan bila node gagal start. `NGROK_DOMAIN` diisi manual di script dan tidak dibagikan di chat.
+- **`package.json`:** `@whiskeysockets/baileys` dipatok `7.0.0-rc14` dan `mongodb` dicatat sendiri `7.8.0` (sebelumnya hanya menumpang lewat `mongoose`). Node yang dipakai v24.20.0. Pustaka yang tidak dipakai (`multer`, `mongoose`, `socket.io`, `qrcode-terminal`) **belum dibuang**, supaya penyebab tetap satu bila ada masalah di WAG.07 dan WAG.08.
+- **Untuk `kirim_wa.ts` (WAG.05):** **202 = sukses (diterima antrean)**; 400, 401, 413, 429, 503, dan timeout = gagal (sisa penerima dilewati, WAG13). Kirim ke `<WA_GATEWAY_URL>/send-message` dengan header `x-api-key`, `Content-Type: application/json`, dan `ngrok-skip-browser-warning: true`. Isi hanya `number` (`628xxx`) dan `message` berupa kalimat kejadian; footer dan link ditambah gateway.
+  **Terbukti** (diperiksa di chat, tidak disimpan; 15 Nov 2026):
+
+- Lewat ngrok: `/` dibalas 404 tanpa QR dan tanpa status; tanpa key, key salah, dan JSON rusak tanpa key semuanya 401.
+- Dengan key benar: nomor ngawur 400, pesan kosong 400, body lebih dari 10 KB 413, `/send-image` 404.
+- Kirim ke nomor tester: 202 dan pesan masuk dengan footer. Antrean penuh: 55 kali 202 dan 15 kali 429. Pesan masuk berurutan.
+- Jeda acak: pesan pertama langsung keluar, lalu selisih 8, 6, dan 3 detik (dari penghitung `terkirim` di `/status`).
+- Restart sekali: URL ngrok sama (WAG18) dan WA balik `connected` tanpa scan QR.
+- Server hanya mendengarkan `127.0.0.1`: akses lewat alamat WiFi laptop ditolak, lewat localhost 200.
+- Setelah `package.json` diganti: `npm ls` menunjukkan `baileys 7.0.0-rc14` dan `mongodb 7.8.0` sejajar di tingkat atas; start dingin, status `connected`, satu pesan ke tester 202 dan masuk dengan footer.
+- Inspector ngrok kosong, jendela Terminal ditutup (variabel key dan nomor hilang).
+  **Belum beres:**
+
+- **Belum dites langsung:** reconnect saat WiFi putus di tengah jalan (kode lolos review), dan cek `Host` untuk halaman `/` sebagai pagar tersendiri (yang terbukti baru 404 lewat ngrok).
+- **Butir baru yang perlu ditambah ke sheet:** "Rapikan pustaka gateway yang tidak terpakai" (P2, setelah WAG.07 dan WAG.08; `mongodb` sudah dicatat sendiri, jadi membuang `mongoose` aman) dan "Tes reconnect gateway saat WiFi putus" (P1).
+- Antrean ada di memori: sisa pesan hilang bila script dihentikan (WAG09 butir c).
+- Inspector ngrok (`localhost:4040`) menyimpan header `x-api-key`, nomor, dan isi pesan dari semua request yang lewat ngrok. Setiap sesi tes: Clear, atau matikan gateway sesudahnya.
+- Berkas `package.json.bak` dan `package-lock.json.bak` boleh dihapus setelah WAG.07 dan WAG.08 selesai.
+- Status commit lima docs hasil sesi strategi dan berkas Handoff sebelumnya belum dikonfirmasi (cek `git status`). Commit yang hanya berisi docs/md boleh memakai `[skip ci]`; commit yang ikut menyentuh `supabase/` atau kode tidak.
+- Baris SEC-44 dan SEC-45 belum dicentang oleh AI: bukti "halaman QR tidak bisa dibuka lewat ngrok" sudah ada, tetapi centang hanya bila semua aksi di barisnya terbukti dan jenis buktinya cocok dengan kolom Catatan sheet.
+  **Saran giliran berikutnya:**
+
+- SEC-44 dan SEC-45, lalu **WAG.05** (⚠️ High-Risk, butuh penjelasan dampak dan "OK" ketua): `kirim_wa.ts` dan sambungan di `index.ts` dan `inbox.ts`, 4 kejadian, deploy `kedai` dengan urutan aman bagian 8 (tanpa `--no-verify-jwt`), commit tanpa `[skip ci]`. Bila yang bertugas bukan ketua, AI memberi ringkasan untuk diteruskan lewat WA (aturan 12).
+- Isi `WA_GATEWAY_URL` dan `WA_GATEWAY_API_KEY` belum terbukti benar (Handoff #3). Gateway sekarang sudah siap menerima, jadi bukti baru muncul di tes pengiriman WAG.07.
+- **Gateway harus dinyalakan** lewat `./startwagw-ngrok.sh` sebelum tes WAG.07 dan WAG.08, dan dimatikan lewat `./stopwagw-ngrok.sh` sesudahnya (WAG17).
+- Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 sampai #4), `database.md`, `security.md`, `supabase/functions/kedai/index.ts`, `inbox.ts`, dan `kirim_push.ts`.
