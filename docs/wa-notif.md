@@ -428,3 +428,47 @@ Keputusan ketua (15 Nov 2026, disampaikan lewat PIC [RAC]). Alasan ketua: tiap S
 - **WAG.05** (⚠️ High-Risk, butuh penjelasan dampak dan "OK" ketua): `kirim_wa.ts` dan sambungan di `index.ts` dan `inbox.ts`, 4 kejadian, deploy `kedai` urutan aman bagian 8 tanpa `--no-verify-jwt`, commit tanpa `[skip ci]`. Bila yang bertugas bukan ketua, AI memberi ringkasan untuk diteruskan lewat WA (aturan 12).
 - Lalu SEC-44, WAG.06, WAG.07 (gateway dinyalakan lewat `./startwagw-ngrok.sh` dan dimatikan sesudahnya, WAG17), WAG.08, SEC-40 sampai SEC-43, WAG.09.
 - Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 sampai #7), `database.md`, `security.md`, `supabase/functions/kedai/index.ts`, `inbox.ts`, dan `kirim_push.ts`.
+
+### Handoff #8 | 2026-11-15 | ketua
+
+**Tugas:** WAG.05 (`kirim_wa.ts` dan sambungan di `inbox.ts`, deploy `kedai`). Selesai dan sudah dicentang di sheet. Kode sudah live, tetapi **belum pernah mengirim pesan sungguhan** (gateway mati; tes ada di WAG.07 dan WAG.08).
+
+**File yang diubah** (satu commit `1bf5151`, sudah di-push ke `main` 15 Nov 2026, tanpa `[skip ci]`; cek anti-nyasar lulus: folder CHATA, remote `kedaichata/kedai-chata`, email noreply milik kedaichata):
+
+- `supabase/functions/kedai/kirim_wa.ts` (baru)
+- `supabase/functions/kedai/inbox.ts` (hanya tambahan: `git diff --numstat` = 27 baris ditambah, 0 dihapus; satu import, satu baris pembuatan pengirim, satu blok di `tulisInbox`)
+  `index.ts` dan `order_status.ts` **tidak berubah**. Tidak ada migration, tidak ada perubahan di `public/` (daftar cache `sw.js` tidak berubah). `kedai` di-deploy 15 Nov 2026 (13 berkas, project yang benar, tanpa `--no-verify-jwt`, "OK" ketua sudah ada). Token deploy dibersihkan (`[]`) dan dashboard sudah logout.
+
+**Keputusan baru** (yang paling akhir menang atas `wa-notif.md` bila ada selisih):
+
+- **Status tujuan dibaca dari TEKS penerima yang dikembalikan `inbox_tulis`, bukan dari argumen baru di `tulisInbox`.** Alasan teknis: pembungkus `tulisInbox` di `index.ts` hanya meneruskan tiga isian, jadi argumen baru akan hilang di tengah jalan, dan mengubahnya berarti menyentuh `index.ts` dan `order_status.ts` yang sudah teruji. Hanya tiga teks yang dikenali (`Pesananmu sedang diantar.`, `Pesananmu siap diambil.`, `Pesananmu siap disajikan.`); Diproses dan Selesai tidak cocok sehingga tidak kirim WA (WAG07). Bila teks di SQL `inbox_tulis` diubah, WA berhenti terkirim (arah aman), jadi ubah `STATUS_WA` di `kirim_wa.ts` bersamaan. Ini menjawab catatan sheet WAG.05 "cek inbox.ts menyerahkan status tujuan" dan menggantikan rencana "argumen opsional status tujuan". Pilihan penulis, tidak ditolak ketua.
+- **Blok WA dipasang SEBELUM blok push di `tulisInbox`**, bukan sesudahnya, karena blok push punya `return` dini yang akan melewati kode sesudahnya. Blok push tidak diubah. Keduanya jalan di latar belakang (`EdgeRuntime.waitUntil`). Tanpa `EdgeRuntime`, WA sengaja **tidak ditunggu** supaya push tidak tertunda. Pilihan penulis, tidak ditolak ketua.
+- **Kalimat pesan** mengikuti tabel 4.1, disetujui ketua 15 Nov 2026: order baru ke owner "Kedai ChATA: ada order baru."; setujui ke customer "Kedai ChATA: pesananmu #N sudah disetujui." dan ke penjaga "Kedai ChATA: ada order disetujui." (tanpa nomor); status ke customer "Kedai ChATA: pesananmu #N sedang diantar." / "siap diambil." / "siap disajikan.". Tanpa footer dan tanpa link (Handoff #3).
+- **Pilihan penulis, tidak ditolak ketua, alasan belum tercatat:** `WA_GATEWAY_URL` dirapikan di kode (tanda "/" di ujung dan "/send-message" dibuang, lalu "/send-message" ditambah sendiri; wajib diawali `http://` atau `https://`, selain itu WA dilewati dan dicatat di log); 202 = sukses, selain itu gagal dan sisa penerima kejadian itu dilewati (Handoff #4, WAG13); nomor dicek lagi `^628[0-9]{8,11}$` sebelum kirim; peran dan nomor dari `wa_nomor_ambil`, urutan customer dulu dibuat di `kirim_wa.ts`; timeout 3000 ms tetap di kode (WAG03).
+- **Format log** (tanpa nomor, tanpa isi pesan, tanpa URL dan key): `kedai wa: <kejadian> | terkirim N | gagal 0`, atau saat gagal `... | terkirim N | gagal 1 (<alasan>) | dilewati M` dengan alasan `timeout`, `tidak terjangkau`, atau `http <kode>`. Kejadian di luar tiga yang dikenali tidak mencatat apa-apa.
+  **Terbukti** (diperiksa di chat, tidak disimpan; 15 Nov 2026):
+
+- `git status` sebelum commit: hanya `inbox.ts` modified dan `kirim_wa.ts` untracked.
+- `git diff --numstat inbox.ts`: 27 ditambah, 0 dihapus (kode lama utuh).
+- Commit `1bf5151`: 2 berkas, 299 baris tambahan. Push `cd7bf2e..1bf5151` berhasil.
+- Deploy: tiga belas berkas terunggah (termasuk `kirim_wa.ts` dan `inbox.ts`), "Deployed Functions on project ... : kedai", project cocok dengan dashboard. Token bersih setelahnya.
+  **Belum beres:**
+
+- **Perilaku pengiriman belum pernah jalan.** Kode belum diperiksa sintaksnya oleh alat (tidak ada Deno di sesi penulis); deploy berhasil, tetapi bukti kerja baru muncul di WAG.07 dan WAG.08. Cek log `kedai wa:` saat tes.
+- **Isi `WA_GATEWAY_URL` dan `WA_GATEWAY_API_KEY` di dashboard belum terbukti benar** (tetap dari Handoff #3). Bila ternyata URL berisi path lain, sesuaikan di `alamatKirim` di `kirim_wa.ts`, bukan di dashboard.
+- **WAG.06 belum dikerjakan:** nomor staf aktif (`nomor_wa` di `staf`) belum diisi. Ketua menanyakan nomornya dulu ke ibu ketua. Nomor diketik langsung di SQL Editor, tidak ditempel ke chat atau repo. Template isian nomor staf (dari Handoff #1) **belum dibuat**; AI siap membuat template placeholder bila diminta. Nomor tester di profil akun dummy diisi lewat menu Akun di aplikasi.
+- Setelah WAG.06: jalankan ulang CEK E dari `20261115_02_wa_nomor_ambil_cek.sql` (Handoff #2): `staf_kembali` harus sama dengan jumlah staf aktif yang nomornya terisi.
+- **Sampai nomor staf diisi, hanya customer ber-nomor yang bisa dapat WA.** Selama masa tes, pastikan hanya akun dummy dengan nomor tester yang ikut memesan.
+- Penerima WA untuk `setujui` dan `order_baru` bergantung pada `inbox_tulis` (pelaku tidak dikabari, owner aktif, penjaga aktif); belum diamati di lapangan.
+- **Gateway harus dinyalakan** (`./startwagw-ngrok.sh`) sebelum WAG.07 dan WAG.08 dan dimatikan (`./stopwagw-ngrok.sh`) sesudahnya (WAG17). Selama gateway mati, order tetap normal dan log hanya mencatat `gagal 1 (tidak terjangkau)`.
+- SEC-44 belum bisa dibuktikan penuh sebelum `kirim_wa.ts` terbukti jalan (WAG.07); SEC-40 sampai SEC-43 tetap sesudah WAG.08.
+- Status Actions Pages untuk commit `1bf5151` belum dikonfirmasi (commit tidak menyentuh `public/`, jadi aplikasi tidak berubah).
+- Status commit lima docs hasil sesi strategi dan berkas Handoff #1 sampai #8 belum dikonfirmasi (cek `git status`). Commit yang hanya berisi docs/md boleh memakai `[skip ci]`; yang ikut menyentuh kode atau `supabase/` tidak. Lakukan cek anti-nyasar (folder aktif, `git remote -v`, email commit terakhir) sebelum push.
+- Dashboard Supabase sudah logout.
+  **Saran giliran berikutnya:**
+
+- **WAG.06** (Low-Risk): isi nomor staf aktif di SQL Editor dan nomor tester di profil akun dummy; lalu CEK E. Opsional: minta AI membuat template isian nomor staf (placeholder saja).
+- **WAG.07:** nyalakan gateway, tes 4 kejadian dengan akun dummy (order baru ke owner, setujui ke customer dan penjaga, status Diantar atau Siap diambil atau Siap disajikan ke customer), cek urutan customer dulu, teks sesuai tabel 4.1, dan log `kedai wa:`; restart script sekali dan pastikan URL ngrok tetap sama. Pastikan Diproses dan Selesai **tidak** mengirim WA. Bersihkan inspector ngrok dan matikan gateway sesudahnya.
+- **WAG.08** (⚠️ P0, butuh "OK" ketua): gateway dimatikan, order tetap sukses dalam waktu normal tanpa galat di layar.
+- Lalu SEC-44, WAG.06 sebagai prasyarat nomor staf, SEC-40 sampai SEC-43, WAG.09.
+- Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 sampai #8), `database.md`, `security.md`, `supabase/functions/kedai/inbox.ts`, dan `kirim_wa.ts`. Untuk membuat template nomor staf, tambahkan `supabase/migrations/20261115_02_wa_nomor_ambil.sql` dan `supabase/templates/20261115_02_wa_nomor_ambil_cek.sql`.
