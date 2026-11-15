@@ -319,3 +319,84 @@ Migration dijalankan di SQL Editor pada 15 Nov 2026 dengan "OK" ketua. Tidak ada
 - Isi `WA_GATEWAY_URL` dan `WA_GATEWAY_API_KEY` belum terbukti benar (Handoff #3). Gateway sekarang sudah siap menerima, jadi bukti baru muncul di tes pengiriman WAG.07.
 - **Gateway harus dinyalakan** lewat `./startwagw-ngrok.sh` sebelum tes WAG.07 dan WAG.08, dan dimatikan lewat `./stopwagw-ngrok.sh` sesudahnya (WAG17).
 - Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 sampai #4), `database.md`, `security.md`, `supabase/functions/kedai/index.ts`, `inbox.ts`, dan `kirim_push.ts`.
+
+### Handoff #5 | 2026-11-15 | [RAC]
+
+**Tugas:** WAG.04b (tes reconnect gateway saat WiFi putus, di luar repo). Selesai dan sudah dicentang di sheet.
+
+**File yang diubah:** tidak ada. Tidak ada perubahan di repo, `public/`, database, Supabase, kode `kedai`, maupun `index.js` gateway, dan tidak ada deploy. Tes hanya menyalakan gateway, mematikan WiFi laptop sekitar 3 menit (10.45 sampai 10.48), lalu mengecek pulihnya.
+
+**Keputusan baru:** tidak ada.
+
+**Terbukti** (diperiksa di chat, tidak disimpan; 15 Nov 2026):
+
+- Log Node memuat empat kali "Koneksi terputus" (satu kode 428, tiga kode 408) dengan jeda coba ulang bertahap 4, 8, 16, 32 detik (sesuai WAG16), lalu "Berhasil Terhubung" lagi tanpa scan QR dan tanpa start ulang.
+- Setelah WiFi pulih dan halaman di-refresh: status `connected`, antrean 0, tanpa QR.
+- Jalur lengkap: curl ke `/send-message` dibalas "Diterima antrean" (202) dan satu pesan ke nomor tester masuk di HP lengkap dengan footer gateway.
+- Catatan proses: screenshot pertama (sebelum refresh) sempat ditolak sebagai bukti karena halaman tidak auto-refresh; bukti yang dipakai adalah screenshot setelah refresh, log, dan pesan masuk.
+
+**Belum beres:**
+
+- Yang diuji hanya putus WiFi sekitar 3 menit (pulih dalam rentang backoff sampai 32 detik). Putus lama (berjam-jam) belum diuji.
+- Cek `Host` untuk halaman `/` sebagai pagar tersendiri belum dites langsung (tetap dari Handoff #4; yang terbukti baru 404 lewat ngrok).
+- URL ngrok sempat tampil utuh di output Terminal yang ditempel ke chat (domain statis, tidak bisa diganti). Key tidak ikut tampil, jadi gateway tetap terlindungi oleh `x-api-key`.
+- WAG.04a (buang pustaka tidak terpakai) tetap ditunda sampai WAG.07 dan WAG.08 selesai; butuh `index.js` dengan key, URI database, dan nomor sudah dibuang.
+- Status commit lima docs hasil sesi strategi dan berkas Handoff sebelumnya belum dikonfirmasi (cek `git status`). Commit yang hanya berisi docs/md boleh memakai `[skip ci]`; commit yang ikut menyentuh `supabase/` atau kode tidak. Lakukan cek anti-nyasar (folder aktif, `git remote -v`, email commit terakhir) sebelum push.
+
+**Saran giliran berikutnya:**
+
+- SEC-44 dan SEC-45 (bukti keamanan; baris belum dicentang oleh AI sampai semua aksi di barisnya terbukti dan jenis buktinya cocok dengan kolom Catatan sheet).
+- Lalu WAG.05 (⚠️ High-Risk, butuh penjelasan dampak dan "OK" ketua): `kirim_wa.ts` dan sambungan di `index.ts` dan `inbox.ts`, 4 kejadian, deploy `kedai` urutan aman bagian 8 tanpa `--no-verify-jwt`, commit tanpa `[skip ci]`. Isi `WA_GATEWAY_URL` dan `WA_GATEWAY_API_KEY` belum terbukti benar; bukti baru muncul di tes pengiriman WAG.07.
+- Gateway harus dinyalakan (`./startwagw-ngrok.sh`) sebelum WAG.07 dan WAG.08, dan dimatikan (`./stopwagw-ngrok.sh`) sesudahnya (WAG17).
+- Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 sampai #5), `database.md`, `security.md`, `supabase/functions/kedai/index.ts`, `inbox.ts`, dan `kirim_push.ts`.
+
+### Handoff #6 | 2026-11-15 | [RAC]
+
+**Tugas:** WAG.04a (rapikan pustaka gateway yang tidak terpakai, di luar repo). Selesai dan sudah dicentang di sheet.
+
+**File yang diubah** (semua di folder gateway di laptop, **tidak ada yang masuk repo**, WAG19). Tidak ada perubahan di repo, `public/`, database, Supabase, kode `kedai`, maupun `index.js`, dan tidak ada deploy:
+
+- `package.json` dan `package-lock.json` (empat pustaka dibuang lewat `npm uninstall`)
+- Cadangan baru: `package.json.bak2` dan `package-lock.json.bak2` (kondisi sebelum pembuangan)
+
+**Keputusan baru** (yang paling akhir menang atas catatan "ditunda sampai WAG.07 dan WAG.08" di Handoff #4 dan sheet):
+
+- **04a dikerjakan SEBELUM tes SEC, bukan setelah WAG.07 dan WAG.08.** Disetujui ketua 15 Nov 2026. Alasan ketua: supaya sesi tes SEC sudah menyentuh gateway versi terakhir dan tidak perlu mengulang.
+- Prinsip yang dicatat: pekerjaan yang mengubah artefak yang akan diuji dituntaskan sebelum tes keamanannya; butir "rapikan" yang ikut mengubah berkas jangan ditaruh sesudah tes.
+- Pilihan penulis tanpa keputusan ketua: peringatan `npm warn install-scripts` (baileys dan protobufjs) **tidak ditindaklanjuti** (`npm install-scripts approve` tidak dijalankan), karena di luar lingkup 04a. Bila mau dibahas, jadikan butir terpisah.
+
+**Terbukti** (diperiksa di chat, tidak disimpan; 15 Nov 2026):
+
+- Dasar pembuangan: `index.js` revisi 15 Nov hanya memakai baileys, mongodb, express, pino, qrcode, dotenv (plus `http` dan `crypto` bawaan Node). `npm ls` menunjukkan multer, mongoose, socket.io, dan qrcode-terminal hanya terpasang langsung di `package.json` (tidak ada pustaka lain yang memakainya).
+- `npm uninstall`: 35 paket dihapus, 0 kerentanan, tanpa galat.
+- `npm ls --depth=0`: tepat enam pustaka (`baileys 7.0.0-rc14`, `dotenv 18.0.10`, `express 5.3.0`, `mongodb 7.8.0`, `pino 10.4.0`, `qrcode 1.5.4`); keempat yang dibuang tidak muncul.
+- Start dingin: tanpa galat, status `connected`, tanpa QR.
+- Lewat ngrok: `/` dibalas 404 (tanpa QR dan tanpa status), tanpa key dibalas 401.
+- Server hanya mendengarkan `127.0.0.1`: akses lewat alamat WiFi laptop ditolak, lewat `127.0.0.1` 200.
+- Dengan key: 202 "Diterima antrean" dan pesan masuk di HP tester lengkap dengan footer.
+- **Pagar `Host` terbukti** (menutup butir "belum dites langsung" dari Handoff #4): curl dari `127.0.0.1` dengan header `Host` palsu dibalas 404.
+- Inspector ngrok dibersihkan, gateway dimatikan, jendela Terminal ditutup.
+
+**Belum beres:**
+
+- Dua tes dengan key tidak diulang di versi final: `/send-image` (404) dan validasi nomor atau pesan (400). Terbukti di Handoff #4 pada versi sebelum pembuangan; `index.js` tidak berubah. Ulang bila baris SEC-45 di sheet mensyaratkannya.
+- Baris **SEC-44 dan SEC-45 belum dinyatakan siap centang oleh AI** (isi kolom Catatan sheet tidak dibagikan ke AI); dicocokkan oleh ketua atau PIC.
+- Reconnect saat putus lama (berjam-jam) belum diuji (dari Handoff #5).
+- `package.json.bak2` dan `package-lock.json.bak2` boleh dihapus setelah WAG.07 dan WAG.08 selesai.
+- Status commit lima docs hasil sesi strategi dan berkas Handoff sebelumnya belum dikonfirmasi (cek `git status`). Commit yang hanya berisi docs/md boleh memakai `[skip ci]`; commit yang ikut menyentuh `supabase/` atau kode tidak. Lakukan cek anti-nyasar (folder aktif, `git remote -v`, email commit terakhir) sebelum push.
+
+**Saran giliran berikutnya:**
+
+- Cocokkan SEC-44 dan SEC-45 dengan kolom Catatan sheet, lalu **WAG.05** (⚠️ High-Risk, butuh penjelasan dampak dan "OK" ketua): `kirim_wa.ts` dan sambungan di `index.ts` dan `inbox.ts`, 4 kejadian, deploy `kedai` urutan aman bagian 8 tanpa `--no-verify-jwt`, commit tanpa `[skip ci]`. Isi `WA_GATEWAY_URL` dan `WA_GATEWAY_API_KEY` belum terbukti benar; bukti baru muncul di WAG.07.
+- Gateway harus dinyalakan (`./startwagw-ngrok.sh`) sebelum WAG.07 dan WAG.08, dan dimatikan (`./stopwagw-ngrok.sh`) sesudahnya (WAG17).
+- Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 sampai #6), `database.md`, `security.md`, `supabase/functions/kedai/index.ts`, `inbox.ts`, dan `kirim_push.ts`.
+
+### 2026-11-15: Urutan tes SEC diubah (SEC-45, lalu WAG.05, lalu SEC-44)
+
+Keputusan ketua (15 Nov 2026, disampaikan lewat PIC [RAC]). Alasan ketua: tiap SEC dites saat artefak yang diuji sudah ada.
+
+- **Urutan baru: SEC-45, lalu WAG.05, lalu SEC-44.** Yang paling akhir menang atas urutan di bagian 5 (SEC-44 dan SEC-45 sama-sama sebelum WAG.05). Bagian 5 tidak diubah.
+- **Penerapan:** SEC-45 menguji gateway, yang sudah final sesudah WAG.04a (Handoff #6). SEC-44 menguji nomor tidak bocor ke aplikasi atau log, dan hanya bisa dibuktikan penuh setelah `kirim_wa.ts` ada dan jalan (WAG.05).
+- **SEC-45 dites resmi di sesi tes**, bukan dianggap lulus dari tes WAG.04 hari ini. Bukti gateway 15 Nov 2026 (Handoff #4 sampai #6) boleh dipakai ulang di sesi itu selama gateway tidak berubah lagi. Bila `index.js`, `package.json`, atau `.env` gateway berubah sebelum sesi SEC-45, tes ringan diulang.
+- **SEC-40 sampai SEC-43** tidak terpengaruh: tetap sesudah WAG.08.
+- **Sesi tes SEC-45** melampirkan `AGENTS.md`, `security.md`, `wa-notif.md` (dengan Handoff #1 sampai #6), dan `pemetaan-test.md`.
