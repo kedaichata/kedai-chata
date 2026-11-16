@@ -434,3 +434,18 @@ Sisa: SEC-19 (Android), non-SEC (O22, wizard Besok, jumlah menu, Segarkan, pilih
 **Belum teruji (catatan):** penyaringan peran untuk owner dan penjaga dari balasan server (baru dari layar); SEC-32 bagian JWT `anon` lama; SEC-01 dan SEC-02 menunggu dicocokkan dengan teks barisnya di sheet.
 
 **Sisa:** SEC-04 dan SEC-03 untuk semua tabel (tabel `bantuan` sudah dicek hak dan RLS-nya). SEC-23 sebelum `LNC.01`; SEC-27 kapan saja (P1).
+
+### 2026-11-16 | ketua: SEC-04, ulang SEC-03 (tabel dan fungsi baru)
+
+**Baru terbukti** (tanpa bukti dan tanpa data pelanggan):
+
+- **SEC-04:** hak `service_role` di 19 tabel `public` sesuai `database.md` bagian 3 (hanya baca, baca dan tambah, baca-tambah-ubah), tanpa DELETE dan TRUNCATE. RLS aktif dan 0 policy di semua tabel; `anon` dan `authenticated` tanpa hak. Tabel baru (`inbox`, `bantuan`, `gelar`, `grup_pilihan`, `opsi_pilihan`, `menu_grup`, `foto_bukti`, `langganan_push`) ikut tercakup.
+- **SEC-03 (diulang; sudah dicentang 6 Nov 2026):** 13 tabel dipanggil langsung dengan kunci publishable, semua 401. Hak `EXECUTE` fungsi: 47 fungsi buatan kita `anon` dan `authenticated` = false, `SECURITY DEFINER`, `search_path` kosong.
+- **Pengecualian diterima:** `rls_auto_enable` (fungsi bawaan Supabase) masih bisa dijangkau `anon`, dibalas 400 galat tipe data. Keputusan ketua: dibiarkan (blok `database.md` 16 Nov 2026).
+  **SEC yang dicentang di sheet:** SEC-04 (tanggal centang oleh PIC: ...). SEC-03 sudah dicentang 6 Nov 2026; hari ini hanya diulang untuk tabel dan fungsi baru (sesuai catatan sheet), hasilnya tetap lulus, tidak dicentang ulang.
+
+**Tes tidak perlu diulang:** seluruh tes di atas, kecuali ada tabel atau fungsi baru, atau migration yang mengubah hak (ulang dua query cek di `supabase/templates/`).
+
+**Belum teruji (catatan):** pemanggilan fungsi lewat API dengan nama parameter yang benar (bukti utamanya query hak, bukan panggilan API); peran `authenticated` dengan token login tidak dicoba langsung (yang dites `anon`); isi `rls_auto_enable` tidak dibaca.
+
+**Sisa:** SEC-23 (sebelum `LNC.01`), SEC-27 (P1, kapan saja). SEC-01, SEC-02, dan SEC-32 menunggu dicocokkan dengan teks barisnya di sheet.

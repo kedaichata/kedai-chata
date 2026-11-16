@@ -219,3 +219,24 @@ Sumber: docs/ringkasan.md RK1 dan RK15. Prefix sheet SEC.
 - **SEC-44 (P0):** `service_role` pada `staf` tetap hanya baca; `anon` dan `authenticated` tidak bisa memanggil `wa_nomor_ambil`; balasan aksi `kedai` tidak memuat nomor WA staf atau customer lain. Bukti: query baca-saja hak tabel dan fungsi, balasan server. (Hak tabel juga dicek di SEC-04.)
 - **SEC-45 (P0):** gateway: panggilan tanpa key atau key salah dibalas 401; halaman QR (`/`) **tidak bisa dibuka lewat URL ngrok** tetapi bisa dari laptop; server hanya mendengarkan `127.0.0.1`; nomor atau pesan tidak sah ditolak; `/send-image` tidak aktif. Bukti: balasan gateway (URL ngrok tidak ditempel ke chat; samarkan).
   **Dampak pada sheet:** SEC-40 sampai SEC-45 baris baru (TSV di `wa-notif-sheet.tsv`). SEC-04 dan SEC-23 ikut mencakup kolom `nomor_wa` dan rahasia WA.
+
+### Handoff #N | 2026-11-16 | (ketua)
+
+**Tugas:** sesi tes SEC-04 (hak `service_role` semua tabel) dan pengulangan SEC-03 untuk tabel dan fungsi baru. SEC-04 lulus; SEC-03 tetap lulus (sudah dicentang 6 Nov, hanya diulang).
+
+**Berkas yang berubah:** empat berkas baru di `supabase/templates/` (query baca-saja, tanpa data nyata): `20261116_sec04_hak_tabel_cek.sql`, `20261116_sec03_hak_fungsi_cek.sql`, `20261116_sec03_rls_auto_enable_cek.sql`, dan `20261116_sec03_panggil_langsung.sh`. **Status commit belum dikonfirmasi.** Tidak ada perubahan database, kode aplikasi, atau Edge Function.
+
+**Keputusan baru:** fungsi bawaan Supabase `rls_auto_enable` masih bisa dijangkau `anon` (dibalas 400, galat tipe data). Ketua memilih dibiarkan dan menerima risikonya. Rincian ada di blok `docs/database.md` bagian 9 bertanggal 16 Nov 2026.
+
+**Belum beres:**
+
+- **SEC-23** (P0, periksa repo; wajib sebelum `LNC.01`) dan **SEC-27** (P1, galat umum). Keduanya boleh dikerjakan adik ketua (tanpa akun Supabase ketua), dengan akun dummy dan pagar anti-nyasar bagian 8.
+- Dua blok catatan (`database.md` bagian 9 dan `pemetaan-test.md` bagian 5) perlu dipastikan sudah ditempel. SEC-04 dicentang di sheet oleh manusia.
+- SEC-01, SEC-02, dan SEC-32 masih menunggu dicocokkan dengan teks barisnya di sheet.
+
+**Saran giliran berikutnya:**
+
+1. Commit dan push empat berkas di atas dengan pengecekan anti-nyasar. **Jangan pakai `[skip ci]`** karena menyentuh `supabase/`.
+2. Kerjakan SEC-23 **setelah** push selesai (hasilnya hanya sah untuk kondisi repo saat dites).
+3. Lalu SEC-27.
+4. Awal sesi: lampirkan `AGENTS.md`, `security.md`, dan `pemetaan-test.md`, lalu **cocokkan status SEC dengan screenshot sheet dulu**. Hari ini SEC-03 sempat dianggap belum selesai padahal sudah dicentang 6 Nov, karena `pemetaan-test.md` tidak diperbarui.

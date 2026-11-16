@@ -464,4 +464,15 @@ Rujukan: docs/ringkasan.md RK10. Yang paling akhir menang.
 - **Belum terbukti:** `_batal.sql` belum pernah dicoba. Bila dipakai: buang `wa_nomor_ambil` (WAG.02) lebih dulu bila sudah ada, dan ingat nomor yang sudah terisi ikut hilang.
 - **Pilihan penulis** (nama constraint `staf_wa_cek`, tanpa nilai bawaan, pagar disamakan dengan `profil`): pagar disetujui ketua 15 Nov 2026; alasan ketua selain itu belum tercatat.
 
+### 2026-11-16: Fungsi `rls_auto_enable` bawaan Supabase, hak `anon` diterima sebagai risiko (SEC-03)
+
+Keputusan ketua (16 Nov 2026, sesi tes SEC-04 dan SEC-03). Yang paling akhir menang.
+
+- **Temuan:** query baca-saja hak fungsi di skema `public` menunjukkan satu fungsi yang tidak ada di migration kita: `rls_auto_enable()`. Pemilik `postgres`, `SECURITY DEFINER`, `search_path=pg_catalog`, `EXECUTE` terbuka untuk `anon` dan `authenticated` (ACL bawaan). Tipe hasil `event_trigger`, dipakai pemicu `ensure_rls` (`ddl_command_end`, aktif).
+- **Panggilan langsung** dengan kunci publishable dibalas HTTP 400 (galat tipe data, bukan 401, 403, atau 404): fungsi terjangkau, tetapi tidak mengembalikan data.
+- **Keputusan:** dibiarkan, **tidak ada perubahan database**; risiko diterima. Dasarnya penjelasan di sesi: fungsi bawaan Supabase yang hanya relevan saat tabel baru dibuat, dan mencabut haknya berisiko mengganggu RLS otomatis, sedangkan tabel kita selalu dikunci manual lewat migration. Alasan ketua selain menyetujui belum tercatat.
+- **Belum terbukti:** isi fungsi tidak dibaca langsung dari database; tujuannya berasal dari pengetahuan umum tentang fungsi bawaan Supabase.
+- **Bagian 3 tidak berubah.** 47 fungsi buatan kita lainnya terbukti: `anon` dan `authenticated` tanpa `EXECUTE`, `SECURITY DEFINER`, `search_path` kosong.
+- **Cek ulang** bila ada pembaruan platform Supabase atau fungsi baru: `supabase/templates/20261116_sec03_hak_fungsi_cek.sql`.
+
 ---
