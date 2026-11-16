@@ -359,4 +359,13 @@ Sumber: `home.md` HOM.08. Hanya catatan persiapan; tidak menimpa keputusan DS la
 - **Biaya:** sekitar 10 baris CSS di blok `HOM.06` `public/style.css`. Tanpa perubahan `index.html`, JS, atau `sw.js` (Low-Risk).
 - DS12 tidak terganggu: ketiganya bukan tombol berbahaya, dan isian marun tetap milik aksi utama seperti Setujui.
 
+### 2026-11-16: Tombol dan layar Pengenalan Aplikasi
+
+Sumber: `docs/pengenalan.md` (PG1, PG4, PG6, PG7, PG8). Hanya tambahan; tidak menimpa keputusan DS lain.
+
+- **Tombol "Pengenalan Aplikasi"** di layar Masuk berpinggir marun, bergaya sama dengan "Lupa password?" (aksi sekunder). Bukan tombol berbahaya, DS12 tidak berlaku.
+- **Layar Pengenalan:** bilah atas berjudul "Pengenalan Aplikasi" dengan tombol Kembali (tanpa Segarkan karena tidak ada data dari server), lalu daftar topik dilipat memakai pola akordeon yang sama dengan layar Bantuan (DS15).
+- **Format teks:** tebal, miring, dan tiga warna dari palet tetap (marun, merah peringatan, hijau). Warna tidak menjadi satu-satunya penanda (DS11). Emas tidak dipakai untuk teks di latar terang (DS3).
+- **DS7 diperlakukan sebagai pengecualian**, bukan ditimpa: gaya di `public/pengenalan.css` (kelas `pgn-`), mengikuti pola `game.css`.
+
 ---

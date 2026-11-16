@@ -336,3 +336,16 @@ Permintaan owner, disetujui ketua (sesi strategi 14 Nov 2026). Sumber: docs/wa-n
 - **Kode baru `kedai`:** `kirim_wa.ts` di `supabase/functions/kedai/` (mengikuti blok 9 Nov 2026). Tidak ada berkas baru di `public/`, jadi daftar cache `sw.js` tidak berubah.
 - **Bagian 1, rencana versi:** fitur ini masuk versi 1. **Peluncuran mundur lagi sekitar 2 sampai 3 hari** (dari Rabu ke akhir pekan berikutnya) atas permintaan owner, disetujui ketua. Total mundur dari rencana awal belum tercatat.
 - **Bagian 4 (pengingat rutin):** tambah pengingat cek penggunaan ngrok dan evaluasi fitur ini bersama `LNC.05`.
+
+### 2026-11-16: Dokumen `pengenalan.md` (prefix PGN), CSS terpisah, dan pengecualian layar Masuk
+
+Keputusan ketua (sesi strategi 16 Nov 2026, usulan owner). Sumber: docs/pengenalan.md. Alasan: calon customer ragu memasang karena aplikasi resmi tidak ada di Play Store. Ketua menyetujui rancangan fitur, termasuk perubahan `index.html` dan `sw.js` sebagai rencana; di sesi kode tetap ada konfirmasi singkat sebelum kedua berkas itu diubah (bagian 2 butir 5). Alasan keputusan di luar yang tertulis belum tercatat.
+
+- **Peta Dokumentasi (bagian 5):** tambah baris `docs/pengenalan.md`, isi: "Pengenalan Aplikasi (PWA): layar penjelasan terbuka di layar Masuk, tanpa server, isi di berkas terpisah", prefix sheet **PGN**.
+- **Fitur 100% frontend dan statis.** Tidak ada tabel, fungsi SQL, aksi `kedai`, tulis-database, `localStorage`, atau panggilan jaringan. Tidak ada pengecualian baru dari aturan bagian 7. Tidak ada baris SEC baru.
+- **Bagian 3 dan 6, pengecualian CSS:** gaya di `public/pengenalan.css` (kelas berawalan `pgn-`), dimuat setelah `style.css`, mengikuti pola `game.css`, `ringkasan.css`, `stepper.css`, dan `gelar.css`. Layar lain tetap di `style.css`.
+- **Kode baru di `public/`:** `pengenalan-isi.js` (hanya data teks), `pengenalan.js` (logika layar), `pengenalan.css`. Ketiganya wajib didaftarkan di cache `sw.js` (bagian 7, butuh "OK"; versi cache naik dari versi terakhir). Teks isi dipasang lewat `textContent`, tanpa `innerHTML`.
+- **Menyentuh layar Masuk (kategori "login", bagian 7):** `index.html` hanya **ditambah** satu tombol "Pengenalan Aplikasi" (di bawah "Lupa password?") dan satu section. Kode lama layar Masuk tidak dihapus atau diubah. Rancangan sudah disetujui ketua (16 Nov 2026); penjelasan dampak dan konfirmasi singkat tetap diminta saat berkas diubah.
+- **Layar Pengenalan tidak memakai bagian `#` alamat dan tidak mengubah alamat peramban**, karena `#` dipakai link reset password (`akun.md`, AKN.09).
+- **Revisi kata-kata** hanya di `public/pengenalan-isi.js` (satu berkas, push seperti biasa); bukan lewat Google Sheet atau SQL.
+- **Bagian 1, rencana versi:** fitur ini masuk versi 1, sebelum Peluncuran (bawaan; ketua boleh mengubah).

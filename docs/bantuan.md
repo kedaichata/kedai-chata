@@ -333,4 +333,11 @@ Keputusan ketua (sesi GLR.09, 14 Nov 2026). Melengkapi blok "Isi Bantuan tentang
 - **Aman disebut (aturan stabil):** hanya pesanan berstatus Selesai yang dihitung (GL2), dan pesanan yang dicatatkan pihak ChATA tidak menambah gelar (GL6).
 - Cara membuat banner: tombol **Gelar** di Home, lalu **Bagikan** atau **Unduh PNG**.
 
+### 2026-11-16: Hubungan Bantuan dengan Pengenalan Aplikasi
+
+Sumber: `docs/pengenalan.md` PG7 dan bagian 1. Hanya penjelasan; tidak ada perubahan skema atau kode. Yang paling akhir menang.
+
+- **Pengenalan Aplikasi** adalah layar terpisah yang terbuka **tanpa login** dari layar Masuk, isinya satu berkas tetap di repo (`public/pengenalan-isi.js`). **Bantuan** tetap butuh login, per peran, dan isinya dari lembar Google Sheet (BT2).
+- Saat menulis isi awal (BTN.05), tidak perlu menyalin topik umum yang sudah ada di Pengenalan (apa itu PWA, cara memasang, update otomatis). Bantuan boleh menyebut "lihat Pengenalan Aplikasi di layar Masuk" tanpa menyalin isinya, supaya tidak ada dua versi yang bisa saling bertentangan.
+
 ---

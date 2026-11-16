@@ -147,3 +147,11 @@ Sumber: docs/gelar.md. Keputusan ketua (usulan owner setelah demo); peluncuran m
 - Layar customer bertambah: pil gelar di kartu sapaan Home dan layar **Gelar Saya** (pratinjau banner, Bagikan, Unduh PNG). Hanya customer.
 - Gelar dihitung server dari order Selesai milik akun sendiri; order wakil owner dan pelanggan tanpa akun tidak ikut (GL6).
 - Peluncuran: ambang gelar harus dikembalikan ke angka asli sebelum LNC.04 (GLR.09, sudah dikerjakan 14 Nov 2026). Akun dummy bergelar dibersihkan di LNC.01.
+
+### 2026-11-16: Layar Pengenalan Aplikasi di layar Masuk
+
+Sumber: docs/pengenalan.md. Yang paling akhir menang.
+
+- **Layar per peran:** layar **Masuk** (sebelum login, semua orang) bertambah tombol **Pengenalan Aplikasi** yang membuka layar penjelasan 10 topik (dilipat per topik). Layar lain tidak berubah.
+- **Urutan versi 1:** fitur ini ditambahkan sebelum Peluncuran; kecil dan tanpa server, jadi tidak menambah panggilan ke kuota.
+- **Peluncuran (bagian 10):** sebelum LNC.04, isi sudah dicek ke satu pemakai iPhone dan satu customer (PGN.05). Tidak ada data uji yang perlu dibersihkan untuk fitur ini.
