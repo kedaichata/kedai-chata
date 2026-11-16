@@ -170,3 +170,27 @@ Tidak ada baris SEC baru: fitur tidak menyentuh server, data, atau akses. Pemeri
 
 1. PGN.05: satu pemakai iPhone mencoba langkah topik 4 dan topik 7; satu ibu customer membaca dan menyebut bagian yang membingungkan. Revisi hanya di `public/pengenalan-isi.js`, lalu push biasa. Tanpa `[skip ci]`, karena berkas di `public/` berubah. Revisi isi tidak mengubah daftar berkas, jadi `sw.js` tidak perlu diubah.
 2. PGN.06: sebelum peluncuran (`LNC.04`), pastikan isi final sudah dicek lewat PGN.05.
+
+### Handoff #3 | 16 Nov 2026 | [RAC]
+
+**Tugas:** PGN.05a (infografik di bagian paling atas layar Pengenalan). Status: selesai, sudah di-push (commit `4404072`, tanpa `[skip ci]`) dan dites.
+
+**File yang diubah:**
+
+- `public/pengenalan.js`: hanya ditambah. Fungsi `buatInfografik()` dan dua konstanta (path gambar dan teks alternatif). Gambar dipasang sebelum daftar topik. Gambar gagal dimuat: pembungkusnya disembunyikan, layar tetap rapi.
+- `public/pengenalan.css`: hanya ditambah di akhir, kelas `pgn-infografik`.
+- Tidak berubah: `index.html` dan `sw.js`. `img/infografik.webp` sudah ada di `DAFTAR_CACHE` sejak `chata-v19`, jadi versi cache tetap `chata-v29`.
+
+**Keputusan baru:**
+
+- Infografik di Pengenalan memakai **gambar yang sama dengan Bantuan** (`img/infografik.webp`), bukan gambar baru. Pilihan PIC di sesi ini; alasan lain belum tercatat.
+- PGN.05 ditandai Selesai di sheet (16 Nov 2026) **tanpa tes di perangkat iPhone**, karena tidak ada yang punya iPhone. Disetujui ketua (16 Nov 2026, lewat PIC); alasan persetujuan di luar itu belum tercatat. Topik 4 dan bagian iPhone di topik 6, 7, dan 10 tetap berstatus draf yang belum terbukti. Sesuai `AGENTS.md` bagian 10 butir 7, iPhone diasumsikan jalan dan keluhan pemakai iPhone ditampung untuk `LNC.05`. Apakah seorang ibu customer sudah membaca isi Pengenalan: belum tercatat.
+
+**Hasil tes (dikonfirmasi PIC di chat):** infografik tampil paling atas dan 10 topik tetap normal, akordeon tetap bekerja. Layar tetap terbuka saat offline. Isian email dan password tetap ada setelah buka Pengenalan lalu Kembali.
+
+**Belum beres:**
+
+- PGN.06: sebelum peluncuran (`LNC.04`), pastikan isi final sudah dicek.
+- Gambar `infografik.webp` dipakai bersama oleh Bantuan dan Pengenalan. Bila diganti dengan **nama berkas lain**, ubah `PATH_INFOGRAFIK` di `pengenalan.js` dan daftarkan berkas baru di `sw.js` (butuh "OK" ketua). Bila nama sama, cukup ganti berkasnya.
+
+**Saran giliran berikutnya:** PGN.06 menjelang peluncuran. Isi Pengenalan hanya direvisi di `public/pengenalan-isi.js`, push biasa tanpa `[skip ci]`.
