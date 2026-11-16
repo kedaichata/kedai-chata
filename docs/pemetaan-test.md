@@ -400,3 +400,20 @@ Sisa: SEC-19 (Android), non-SEC (O22, wizard Besok, jumlah menu, Segarkan, pilih
 **Tes tidak perlu diulang:** seluruh tes SEC-44 dan SEC-41 di atas, kecuali `kedai` atau gateway berubah.
 
 **Sisa:** SEC-43 dan SEC-42 (gateway nyala, akun tester saja). SEC-23 sebelum `LNC.01`; SEC-27 kapan saja (P1); SEC-30, SEC-31, SEC-04, dan SEC-03 menunggu BTN.
+
+### 2026-11-16 | RAC: SEC-42, SEC-43 (gateway WA)
+
+**Baru terbukti** (tanpa bukti dan tanpa data pelanggan):
+
+- **SEC-42:** screenshot pesan WA dari HP ketua (customer dan penjaga) dan HP ibu (owner): hanya kalimat kejadian, nomor order, footer, dan link umum tanpa data pribadi, untuk order baru, setujui, Diantar, Siap diambil, dan Siap disajikan.
+- **SEC-43:** dari baca kode (`kirim_wa.ts`, `inbox.ts`, SQL `inbox_tulis`, `grep` pemanggil `tulisInbox`): WA hanya bisa keluar untuk order baru (owner), setujui (customer dan penjaga), dan status Diantar, Siap diambil, atau Siap disajikan (customer). Tolak, catatan, batal, alih hari, foto, order wakil, Diproses, Selesai, dan mundur status tidak punya jalur ke WA.
+
+**SEC yang dicentang di sheet:** SEC-42 dan SEC-43 (16 Nov 2026). Dengan ini SEC-40 sampai SEC-45 semuanya selesai.
+
+**Keputusan ketua:** SEC-43 diterima dari baca kode, bukan diamati langsung. Alasan: tes ulang dengan order baru tidak menambah temuan keamanan, dan peluncuran sudah dekat.
+
+**Tes tidak perlu diulang:** seluruh SEC-42 dan SEC-43 di atas, kecuali `kirim_wa.ts`, `inbox.ts`, teks SQL `inbox_tulis`, atau pemanggil `tulisInbox` berubah (ulang cek ringan).
+
+**Belum teruji (catatan):** perilaku SEC-43 tidak diamati langsung di HP atau counter gateway; gateway lambat sungguhan; reconnect putus lama.
+
+**Sisa:** WAG.06a (sebelum LNC.04) dan WAG.09. SEC-23 sebelum `LNC.01`; SEC-27 kapan saja (P1); SEC-30, SEC-31, SEC-04, dan SEC-03 menunggu BTN.

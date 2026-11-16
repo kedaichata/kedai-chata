@@ -612,3 +612,40 @@ Keputusan ketua (15 Nov 2026, disampaikan lewat PIC [RAC]). Alasan ketua: tiap S
 - Nyalakan gateway (`./startwagw-ngrok.sh`), tes SEC-43 per kejadian dengan akun tester saja dan cek log `kedai wa:` tiap kejadian; sekalian ambil screenshot pesan WA untuk SEC-42. Sesudahnya Clear inspector ngrok dan matikan gateway (`./stopwagw-ngrok.sh`).
 - Lalu WAG.06a dan WAG.09.
 - Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 sampai #12), `security.md`, dan `pemetaan-test.md`.
+
+### Handoff #13 | 2026-11-16 | RAC
+
+**Tugas:** SEC-42 dan SEC-43 (tes keamanan WA). Keduanya selesai dan sudah dicentang di sheet (16 Nov 2026), kolom Catatan sudah diisi.
+
+**File yang diubah:** tidak ada. Tidak ada perubahan di repo, `public/`, database, kode `kedai`, maupun gateway, dan tidak ada deploy. Gateway tidak dinyalakan.
+
+**Keputusan baru** (yang paling akhir menang):
+
+- **SEC-43 dibuktikan dari baca kode, tidak diamati langsung.** Keputusan ketua, disampaikan lewat PIC. Alasan ketua: tes ulang tolak, catatan, batal, dan seterusnya dengan order baru tidak menambah temuan keamanan (yang dicari SEC adalah celah, bukan isi pesan, dan isi pesan sudah dicek di SEC-42); peluncuran sudah dekat. Catatan penulis: tes lama di tes sebelumnya jalan sebelum `kirim_wa.ts` di-deploy (`1bf5151`, 15 Nov), jadi tidak bisa dipakai sebagai bukti WA.
+- Kolom Catatan SEC-43 di sheet diberi tanda ⚠️ dan menyebut dasar baca kode. Kolom Catatan SEC-42 menyebut sumber bukti: HP ketua dan HP ibu.
+- `index.js` gateway tidak dibaca: gateway tidak tahu soal kejadian, dan SEC-45 sudah selesai.
+
+**Terbukti** (diperiksa di chat, tidak disimpan; 16 Nov 2026):
+
+- **SEC-42 (screenshot, data dummy):** pesan setujui ke customer (#105, #106, #107) dan ke penjaga ("ada order disetujui."), Diantar (#105), Siap diambil (#106), Siap disajikan (#107) dari HP ketua; "ada order baru." berulang dari HP ibu (owner). Semua hanya kalimat kejadian, nomor order (bila ada), footer, dan link umum tanpa ID order atau parameter. Tanpa nama, alamat, nomor WA, nama menu, atau alasan.
+- **SEC-43 (baca `kirim_wa.ts`, `inbox.ts`, `20261113_inbox_tulis_penerima.sql`, dan hasil `grep "tulisInbox("` di `kedai`):**
+  - `kirimWa` langsung berhenti bila kejadian bukan `order_baru`, `setujui`, atau `status` (`KEJADIAN_WA`).
+  - Untuk `status`, kalimat hanya dibuat bila teks inbox persis salah satu dari tiga di `STATUS_WA`. Teks Diproses dan Selesai tidak cocok, jadi tidak ada WA. Status yang membuat SQL melempar `status_tidak_cocok` (misalnya Disetujui) tidak menghasilkan penerima.
+  - Penerima per peran: `order_baru` hanya owner; `setujui` customer dan penjaga; `status` hanya customer; pelaku tidak dikabari.
+  - Pemanggil `tulisInbox`: `order_baru` hanya `index.ts:1139`; `setujui` hanya `index.ts:1351`; `status` hanya `order_status.ts:203`; `tolak` `index.ts:1396`; `alih_hari` `order_status.ts:307`; `order_wakil` `order_wakil.ts:210`; `foto_setelah_selesai` `foto.ts:283`; `catatan_owner` atau `catatan_customer` di `catatan.ts:173`; `batal_owner` atau `batal_customer` di `index.ts:1287`, keduanya dari peran yang dibaca server. Baris 1419, 1437, 1477, 1509 hanya pembungkus yang meneruskan kejadian.
+  - Kegagalan WA tidak melempar galat dan jalan di latar belakang (sejalan dengan SEC-40).
+
+**Belum beres:**
+
+- Perilaku SEC-43 tidak diamati langsung (tidak ada pesan nyasar yang diuji di HP, counter `terkirim` gateway tidak dicek). Syarat berlaku selama kode tidak berubah: bila `kirim_wa.ts`, `inbox.ts`, teks di SQL `inbox_tulis`, atau salah satu pemanggil `tulisInbox` berubah, ulang cek ringan.
+- Pemanggil di `index.ts` hanya diperiksa lewat `grep` dan potongan baris; hash commit berkas yang ditempel tidak dicek.
+- Jumlah pasti bubble "ada order baru" di HP ibu tidak dihitung (dua owner memakai HP yang sama, Handoff #10). Footer gateway berbeda kalimat dari contoh tabel 4.1, sudah diterima (Handoff #3).
+- Gateway "lambat" sungguhan, reconnect putus lama, dan pesan di atas 1000 karakter di versi final tetap belum diuji (dari Handoff #5, #7, #11).
+- **WAG.06a** (nomor staf sementara diganti nomor asli) belum; wajib sebelum LNC.04, lalu ulang CEK E (`staf_kembali` sama dengan jumlah staf aktif bernomor). **WAG.09** belum waktunya.
+- Status commit docs Handoff #1 sampai #13 belum dikonfirmasi (cek `git status`). Commit yang hanya docs/md boleh `[skip ci]`; yang menyentuh kode atau `supabase/` tidak. Lakukan cek anti-nyasar (folder aktif, `git remote -v`, email commit terakhir) sebelum push.
+
+**Saran giliran berikutnya:**
+
+- WAG.06a sebelum LNC.04, lalu WAG.09 setelah peluncuran.
+- SEC WA (SEC-40 sampai SEC-45) semuanya selesai. Sisa SEC di luar WA: SEC-23 sebelum `LNC.01`; SEC-27 kapan saja (P1); SEC-30, SEC-31, SEC-04, dan SEC-03 menunggu BTN.
+- Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 sampai #13), `security.md`, dan `pemetaan-test.md`.
