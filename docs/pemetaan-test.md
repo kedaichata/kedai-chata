@@ -449,3 +449,15 @@ Sisa: SEC-19 (Android), non-SEC (O22, wizard Besok, jumlah menu, Segarkan, pilih
 **Belum teruji (catatan):** pemanggilan fungsi lewat API dengan nama parameter yang benar (bukti utamanya query hak, bukan panggilan API); peran `authenticated` dengan token login tidak dicoba langsung (yang dites `anon`); isi `rls_auto_enable` tidak dibaca.
 
 **Sisa:** SEC-23 (sebelum `LNC.01`), SEC-27 (P1, kapan saja). SEC-01, SEC-02, dan SEC-32 menunggu dicocokkan dengan teks barisnya di sheet.
+
+### 2026-11-16 | (RAC): SEC-23 (periksa repo)
+
+**Baru terbukti** (tanpa bukti dan tanpa data pelanggan): pada HEAD 9aa1527, tidak ada kunci secret, token, kunci privat, atau alamat ngrok sungguhan di berkas maupun riwayat commit; `supabase/.temp` tidak pernah ter-commit dan masuk `.gitignore`; `public/config.js` hanya memuat URL project, kunci publishable, dan kunci publik VAPID; tidak ada nomor WA, koordinat, URL peta, atau media di luar `public/img/`; email hanya dummy.
+
+**SEC yang dicentang di sheet:** SEC-23 (16 Nov 2026).
+
+**Tes tidak perlu diulang:** seluruh sapuan di atas, kecuali ada commit baru (ulang ringan).
+
+**Belum teruji (catatan):** sapuan alamat jalan dan nama sekolah belum menjangkau riwayat commit; nama orang nyata tidak bisa disapu otomatis.
+
+**Sisa:** SEC-27 (P1, kapan saja; sebelum LNC.01). SEC-01, SEC-02, SEC-32 menunggu dicocokkan dengan teks barisnya di sheet.

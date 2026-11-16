@@ -220,7 +220,7 @@ Sumber: docs/ringkasan.md RK1 dan RK15. Prefix sheet SEC.
 - **SEC-45 (P0):** gateway: panggilan tanpa key atau key salah dibalas 401; halaman QR (`/`) **tidak bisa dibuka lewat URL ngrok** tetapi bisa dari laptop; server hanya mendengarkan `127.0.0.1`; nomor atau pesan tidak sah ditolak; `/send-image` tidak aktif. Bukti: balasan gateway (URL ngrok tidak ditempel ke chat; samarkan).
   **Dampak pada sheet:** SEC-40 sampai SEC-45 baris baru (TSV di `wa-notif-sheet.tsv`). SEC-04 dan SEC-23 ikut mencakup kolom `nomor_wa` dan rahasia WA.
 
-### Handoff #N | 2026-11-16 | (ketua)
+### Handoff #1 | 2026-11-16 | (ketua)
 
 **Tugas:** sesi tes SEC-04 (hak `service_role` semua tabel) dan pengulangan SEC-03 untuk tabel dan fungsi baru. SEC-04 lulus; SEC-03 tetap lulus (sudah dicentang 6 Nov, hanya diulang).
 
@@ -240,3 +240,27 @@ Sumber: docs/ringkasan.md RK1 dan RK15. Prefix sheet SEC.
 2. Kerjakan SEC-23 **setelah** push selesai (hasilnya hanya sah untuk kondisi repo saat dites).
 3. Lalu SEC-27.
 4. Awal sesi: lampirkan `AGENTS.md`, `security.md`, dan `pemetaan-test.md`, lalu **cocokkan status SEC dengan screenshot sheet dulu**. Hari ini SEC-03 sempat dianggap belum selesai padahal sudah dicentang 6 Nov, karena `pemetaan-test.md` tidak diperbarui.
+
+### Handoff #2 | 2026-11-16 | (RAC)
+
+**Tugas:** sesi tes SEC-23 (periksa repo) dan mulai SEC-27 (galat umum). SEC-23 lulus dan sudah dicentang di sheet (16 Nov 2026). SEC-27 belum dimulai di layar.
+
+**Berkas yang berubah:** tidak ada. Tidak ada commit baru di sesi ini (HEAD tetap 9aa1527, working tree bersih).
+
+**Keputusan baru:**
+
+- Commit 9aa1527 memakai `[skip ci]` padahal menyentuh `supabase/templates/`. Itu dilakukan ketua sendiri; diterima karena tidak ada perubahan di Pages yang diterbitkan. Tidak perlu blok catatan.
+- `docs/teaser.md` (ide video TikTok dari owner) berisi data dummy semua, tidak masuk `AGENTS.md`.
+
+**Belum beres:**
+
+- **SEC-27 (P1):** baru dijelaskan, belum dikerjakan. Tiga pemicu: jaringan mati, input salah, token kedaluwarsa. Bukti screenshot, akun customer dummy.
+- **LNC.01** menunggu SEC-27 dan "OK" ketua.
+- SEC-01, SEC-02, SEC-32 masih menunggu dicocokkan dengan teks barisnya di sheet.
+- Batas SEC-23: sapuan alamat jalan dan nama sekolah hanya di berkas saat ini (HEAD), belum riwayat commit. Nomor WA, email, dan rahasia sudah disapu sampai riwayat. Nama orang nyata hanya terjaga lewat aturan data dummy.
+
+**Saran giliran berikutnya:**
+
+1. Awal sesi: lampirkan `AGENTS.md`, `security.md`, `pemetaan-test.md`.
+2. Kerjakan SEC-27 mulai langkah 1 (jaringan mati, DevTools > Network > Offline, ketuk Segarkan, screenshot pesannya), lalu input salah, lalu token kedaluwarsa.
+3. Bila ada commit baru sebelum SEC-27 selesai, ulang sapuan SEC-23 secara ringan.
