@@ -372,3 +372,23 @@ Keputusan ketua (sesi kode FTO.02, 11 Nov 2026). Menjabarkan FT2 dan FT5; tidak 
   - Butir baru yang perlu ditambah ke sheet: **"Template rotasi isian Vault"** dan **"Uji penjaga kedua foto (opsional)"**. Butir "Tes pembersihan foto bersama FTO.07" dari Handoff #7 tidak jadi diperlukan.
   - Baris SEC selain yang sudah dicentang jangan dicentang dari pekerjaan ini.
 - **Rahasia:** sesi ini tidak memakai token CLI dan tidak ada deploy. Rahasia penjadwal hanya dibaca dari Vault oleh database, tidak pernah tampil di chat, repo, atau md. Logout dashboard Supabase belum dikonfirmasi; logout dan tutup profil browser ketua.
+
+### Handoff #9 | 2026-11-16 | (KETUA)
+
+- **Tugas:** FTO.07 selesai (cek jadwal foto jalan pertama). Butir FTO.07 sudah dicentang di sheet. Tidak ada kode, SQL, migration, `kedai`, `bersihkan`, atau `sw.js` yang diubah, jadi tidak ada commit kode.
+- **File yang diubah:** tidak ada selain blok catatan ini.
+- **Keputusan baru:** tidak ada.
+- **Terbukti (bukti diperiksa di chat, tidak disimpan):**
+  - Jadwal berjalan sendiri pada 14 Nov 2026 pukul 19.00 UTC (Minggu 15 Nov 02.00 WIB), status `succeeded` di `cron.job_run_details`.
+  - Balasan `bersihkan` di `net._http_response`: status 200, `"ok":true`, `"simulasi":false`, `gagal` 0, `sapuan_terpotong` false, tanpa `error_msg`. Jalur penjadwal, rahasia dari Vault, dan pengecekan `bersihkan` bekerja.
+  - Balasan `pg_net` masih tersimpan sekitar dua hari setelah jadwal jalan.
+- **Belum beres:**
+  - Balasan menunjukkan `foto_diproses` 1 dan `foto_ditandai` 1, tetapi foto mana yang diproses belum diperiksa. Dugaan: foto dummy yang sudah lewat 14 hari atau yang masih ditandai diganti. Opsional dicek lewat query baca-saja pada `foto_bukti` (kolom `dibersihkan_pada` sekitar 14 Nov 19.00 UTC).
+  - Penyapuan berkas tanpa baris lewat jadwal belum terbukti menemukan berkas yatim (`yatim_diproses` 0). Jalur galat Storage dan `sapuan_terpotong` belum pernah dipicu.
+  - Kedua pembatalan migration (03 dan 04) belum pernah dicoba.
+  - Kolom `keterangan` pengaturan `foto_tautan_detik` masih kosong (tidak mendesak).
+  - Foto dan order dummy menunggu pembersihan data uji di LNC.01.
+- **Saran giliran berikutnya:**
+  - Urutan versi 1 sesuai `AGENTS.md`: Foto Bukti beres. Inbox dan Notifikasi juga sudah dikerjakan, sisanya mengikuti sheet.
+  - Butir baru yang perlu ditambah ke sheet (prioritas rendah, tidak mendesak): **"Template rotasi isian Vault"** dan **"Uji penjaga kedua foto (opsional)"**. Tambahkan bila belum ada.
+- **Rahasia:** sesi ini tidak memakai token CLI dan tidak ada deploy. Query hanya baca, tidak ada rahasia yang tampil. Logout dashboard Supabase dan tutup profil browser ketua.

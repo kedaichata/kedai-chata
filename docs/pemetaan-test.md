@@ -376,3 +376,15 @@ Sisa: SEC-19 (Android), non-SEC (O22, wizard Besok, jumlah menu, Segarkan, pilih
 **Belum teruji (catatan):** gateway lambat sungguhan (menggantung) tidak diamati langsung. Alasan gagal tercatat `http 404`, bukan `tidak terjangkau`; dugaan ngrok yang menjawab saat terowongan mati, belum terbukti langsung. Jeda sekitar 1 detik di Diantar tidak diukur (bukan dari gateway menurut baca kode). Laporan layar dari HP secara lisan, tanpa screenshot.
 
 **Sisa:** SEC-44 (sudah bisa dites), SEC-43 (log per kejadian; log hari ini baru memuat `order_baru`, `setujui`, `status`), SEC-41, SEC-42 (butuh gateway menyala), WAG.06a (sebelum LNC.04), WAG.09. SEC-23 sebelum `LNC.01`; SEC-27 kapan saja (P1); SEC-30, SEC-31, SEC-04, dan SEC-03 menunggu BTN.
+
+### 2026-11-16 | (isi nama PIC): FTO.07 (jadwal foto jalan pertama)
+
+**Baru terbukti** (tanpa bukti dan tanpa data pelanggan): jadwal mingguan berjalan sendiri pada 14 Nov 2026 pukul 19.00 UTC (Minggu 15 Nov 02.00 WIB) dengan status `succeeded`. Balasan `bersihkan`: 200, `"ok":true`, `"simulasi":false`, tanpa gagal (FT-21).
+
+**SEC yang dicentang di sheet:** tidak ada (FTO.07 tidak punya baris SEC). **FTO.07 dicentang** (tanggal selesai di sheet: 16 Nov 2026, diisi PIC).
+
+**Tes tidak perlu diulang:** FT-01 sampai FT-21 di `foto-bukti-test.md`, kecuali yang kodenya berubah sejak itu.
+
+**Belum teruji (catatan):** foto yang diproses jadwal ini (`foto_diproses` 1) belum diperiksa satu per satu; penyapuan berkas yatim lewat jadwal belum terbukti (`yatim_diproses` 0); jalur galat Storage dan `sapuan_terpotong`; FT-22 (penjaga kedua, opsional).
+
+**Sisa:** tidak ada tes foto yang tertunda. SEC-44 (sudah bisa dites), SEC-43, SEC-41, SEC-42 (butuh gateway menyala), WAG.06a, WAG.09. SEC-23 sebelum `LNC.01`; SEC-27 kapan saja (P1); SEC-30, SEC-31, SEC-04, dan SEC-03 menunggu BTN.
