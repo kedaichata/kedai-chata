@@ -340,4 +340,27 @@ Sumber: `docs/pengenalan.md` PG7 dan bagian 1. Hanya penjelasan; tidak ada perub
 - **Pengenalan Aplikasi** adalah layar terpisah yang terbuka **tanpa login** dari layar Masuk, isinya satu berkas tetap di repo (`public/pengenalan-isi.js`). **Bantuan** tetap butuh login, per peran, dan isinya dari lembar Google Sheet (BT2).
 - Saat menulis isi awal (BTN.05), tidak perlu menyalin topik umum yang sudah ada di Pengenalan (apa itu PWA, cara memasang, update otomatis). Bantuan boleh menyebut "lihat Pengenalan Aplikasi di layar Masuk" tanpa menyalin isinya, supaya tidak ada dua versi yang bisa saling bertentangan.
 
+### Handoff #5 | 2026-11-16 | FREN
+
+**Tugas:** BTN.06 (sesi tes bantuan) selesai dan terbukti. SEC-30 dan SEC-31 ikut selesai.
+
+**Berkas yang berubah:** tidak ada berkas di repo. Di lembar `bantuan-isi` (Google Sheet, BT7) ditambah satu baris uji `uji-html` (bagian `Uji impor`, urutan 940, peran `semua`, isi berisi tag HTML dan `<script>`). Baris itu diimpor ke tabel `bantuan`, dites, lalu dimatikan (`aktif = tidak`) dan diimpor ulang. Baris tidak dihapus di lembar maupun tabel. Tanpa migration dan tanpa deploy.
+
+**Keputusan baru:** tidak ada. "OK" ketua untuk impor dan pematian baris uji sudah diberikan di chat.
+
+**Hasil tes** (bukti diperiksa di chat dan tidak disimpan, aturan 10):
+
+- **SEC-30:** isi berisi tag HTML tampil sebagai teks biasa di layar Bantuan, tanpa pop-up. Baris uji sudah hilang dari layar customer setelah dimatikan.
+- **SEC-31:** `bantuan_daftar` dari customer dengan peran dan isian palsu di isi permintaan memberi balasan yang sama persis dengan panggilan normal. Kolom hanya `kunci, bagian, urutan, judul, isi`. Tanpa token, hanya `apikey`, token palsu, dan kunci publishable sebagai Bearer semuanya dibalas 401. Hak `service_role` pada `bantuan` hanya SELECT, RLS aktif, 0 policy.
+- **Per peran:** customer tidak melihat Tugas owner dan Tugas penjaga. Owner hanya melihat Tugas owner. Penjaga hanya melihat Tugas penjaga. Owner dan penjaga tidak melihat isi khusus customer (Memulai).
+
+**Belum beres:**
+
+- Penyaringan peran untuk **owner dan penjaga** baru teramati di layar (sebagian laporan lisan), belum dari balasan server seperti customer. Perintah konsol yang sama bisa dijalankan sekali di tiap akun bila ketua mau lebih ketat.
+- Kelompok `Uji impor` kini berisi 4 baris, semuanya `aktif = tidak` (`uji-kutip`, `uji-baris`, `uji-nonaktif`, `uji-html`), jadi tidak tampil. Jangan diaktifkan lagi.
+- `bantuan-test.md` belum dibuat. Sheet menyebutnya, tetapi bukti tidak disimpan (`AGENTS.md` bagian 10), jadi dokumen itu hanya akan memuat kasus uji tanpa hasil. Perlu diputuskan ketua apakah masih dibutuhkan.
+
+**Saran giliran berikutnya:** SEC-04 dan SEC-03 untuk semua tabel (bantuan, inbox, gelar, staf, dan lainnya), High-Risk. Lampirkan `AGENTS.md`, `security.md`, `database.md`, dan `pemetaan-test.md`. SEC-32 bagian JWT `anon` lama bisa dites bila dashboard masih menampilkan kunci lama.
+
+**Butir baru yang perlu ditambah ke sheet:** tidak ada.
 ---

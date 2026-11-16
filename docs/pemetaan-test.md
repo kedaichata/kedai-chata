@@ -417,3 +417,20 @@ Sisa: SEC-19 (Android), non-SEC (O22, wizard Besok, jumlah menu, Segarkan, pilih
 **Belum teruji (catatan):** perilaku SEC-43 tidak diamati langsung di HP atau counter gateway; gateway lambat sungguhan; reconnect putus lama.
 
 **Sisa:** WAG.06a (sebelum LNC.04) dan WAG.09. SEC-23 sebelum `LNC.01`; SEC-27 kapan saja (P1); SEC-30, SEC-31, SEC-04, dan SEC-03 menunggu BTN.
+
+### 2026-11-16 | FREN: BTN.06 (Bantuan), SEC-30, SEC-31
+
+**Baru terbukti** (tanpa bukti dan tanpa data pelanggan):
+
+- **SEC-30:** isi bantuan berisi tag HTML dan `<script>` tampil sebagai teks biasa di layar Bantuan, tanpa pop-up. Baris uji sudah dimatikan dan hilang dari layar.
+- **SEC-31:** isian peran dan akun palsu di `bantuan_daftar` diabaikan (balasan customer identik dengan panggilan normal, tanpa isi owner dan penjaga, kolom tanpa `peran` dan `aktif`); isi `aktif = tidak` tidak tampil; tanpa token, token palsu, hanya `apikey`, dan kunci publishable sebagai Bearer dibalas 401; hak `service_role` pada `bantuan` hanya SELECT, RLS aktif, 0 policy.
+- **Per peran:** customer, owner, dan penjaga hanya melihat isi perannya (owner dan penjaga dari layar).
+- Tanpa token dan token palsu pada `kedai` dibalas 401, relevan untuk SEC-01 dan SEC-02. Kunci publishable sebagai Bearer dibalas 401, bagian pertama SEC-32.
+
+**SEC yang dicentang di sheet:** SEC-30 dan SEC-31 (16 Nov 2026). BTN.06 siap dicentang (tanggal centang oleh PIC: ...).
+
+**Tes tidak perlu diulang:** seluruh tes di atas, kecuali `bantuan.ts`, tabel `bantuan`, atau `bantuan.js` berubah.
+
+**Belum teruji (catatan):** penyaringan peran untuk owner dan penjaga dari balasan server (baru dari layar); SEC-32 bagian JWT `anon` lama; SEC-01 dan SEC-02 menunggu dicocokkan dengan teks barisnya di sheet.
+
+**Sisa:** SEC-04 dan SEC-03 untuk semua tabel (tabel `bantuan` sudah dicek hak dan RLS-nya). SEC-23 sebelum `LNC.01`; SEC-27 kapan saja (P1).
