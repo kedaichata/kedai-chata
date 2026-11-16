@@ -582,7 +582,7 @@ Keputusan ketua (15 Nov 2026, disampaikan lewat PIC [RAC]). Alasan ketua: tiap S
 - Lalu **WAG.06a** (sebelum LNC.04) dan WAG.09.
 - Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 sampai #11), `security.md`, dan `pemetaan-test.md`.
 
-### Handoff #12 | 2026-11-16 | (isi nama PIC)
+### Handoff #12 | 2026-11-16 | (RAC)
 
 **Tugas:** SEC-44 dan SEC-41 (tes keamanan WA). Keduanya selesai dan siap dicentang di sheet.
 
