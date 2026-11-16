@@ -264,3 +264,22 @@ Sumber: docs/ringkasan.md RK1 dan RK15. Prefix sheet SEC.
 1. Awal sesi: lampirkan `AGENTS.md`, `security.md`, `pemetaan-test.md`.
 2. Kerjakan SEC-27 mulai langkah 1 (jaringan mati, DevTools > Network > Offline, ketuk Segarkan, screenshot pesannya), lalu input salah, lalu token kedaluwarsa.
 3. Bila ada commit baru sebelum SEC-27 selesai, ulang sapuan SEC-23 secara ringan.
+
+### Handoff #3 | 2026-11-16 | (RAC)
+
+**Tugas:** sesi tes SEC-27 (galat umum, P1). Lulus untuk ketiga pemicu: jaringan mati (pesan "Tidak ada internet", pulih lewat Coba lagi), input salah (login salah, email sudah terdaftar, email tidak valid, password pendek), dan token kedaluwarsa (pesan umum, tanpa galat mentah). SEC-27 sudah dicentang di sheet oleh PIC.
+
+**Berkas yang berubah:** tidak ada. Tidak ada perubahan database, kode aplikasi, atau Edge Function.
+
+**Keputusan baru:**
+
+- Pesan "Email ini sudah terdaftar. Silakan masuk." disengaja demi kemudahan ibu-ibu (ketua, 16 Nov 2026).
+- Pesan saat token kedaluwarsa ("Daftar pesanan belum bisa dimuat. Coba lagi sebentar lagi.") dinilai ketua **kurang definitif**: tidak menyebut sesi habis dan tidak mengarahkan ke layar Masuk. Perbaikannya dijadwalkan di **versi 2**; tidak mengubah hasil SEC-27.
+
+**Belum beres:**
+
+- Perbaikan pesan sesi habis (versi 2). Butir baru untuk sheet: "Pesan sesi habis lebih jelas".
+- LNC.01 menunggu OK ketua.
+- SEC-01, SEC-02, SEC-32 masih menunggu dicocokkan dengan teks barisnya di sheet.
+
+**Saran giliran berikutnya:** lampirkan `AGENTS.md`, `security.md`, `pemetaan-test.md`; cocokkan status SEC dengan screenshot sheet dulu.

@@ -461,3 +461,15 @@ Sisa: SEC-19 (Android), non-SEC (O22, wizard Besok, jumlah menu, Segarkan, pilih
 **Belum teruji (catatan):** sapuan alamat jalan dan nama sekolah belum menjangkau riwayat commit; nama orang nyata tidak bisa disapu otomatis.
 
 **Sisa:** SEC-27 (P1, kapan saja; sebelum LNC.01). SEC-01, SEC-02, SEC-32 menunggu dicocokkan dengan teks barisnya di sheet.
+
+### 2026-11-16 | (RAC): SEC-27 (galat umum)
+
+**Baru terbukti** (tanpa bukti dan tanpa data pelanggan): jaringan mati menampilkan pesan umum dan layar pulih lewat Coba lagi tanpa login ulang; login salah, daftar dengan email terdaftar, email tidak valid, dan password pendek semuanya menampilkan pesan Bahasa Indonesia tanpa galat mentah; token kedaluwarsa menampilkan pesan umum tanpa galat mentah dan layar tidak macet.
+
+**SEC yang dicentang di sheet:** SEC-27 (16 Nov 2026).
+
+**Tes tidak perlu diulang:** seluruh tes di atas, kecuali ada perubahan pada penanganan galat di `akun.js` atau layar offline.
+
+**Belum teruji (catatan):** galat di form order dan form lain di luar Masuk dan Daftar; pesan sesi habis kurang definitif (dijadwalkan versi 2).
+
+**Sisa:** LNC.01 menunggu OK ketua. SEC-01, SEC-02, SEC-32 menunggu dicocokkan dengan teks barisnya di sheet.

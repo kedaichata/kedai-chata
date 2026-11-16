@@ -202,4 +202,14 @@ Keputusan ketua (sesi strategi 14 Nov 2026). Sumber: docs/qris.md bagian 8. Nomo
 - **Beberapa QRIS atau pilihan rekening bank.**
 - **Zoom atau cetak gambar dari dalam pop-up.**
 
+### 2026-11-16: Kandidat versi 2: pesan sesi habis yang definitif
+
+Keputusan ketua (sesi tes SEC-27, 16 Nov 2026): pesan saat sesi login habis dinilai kurang definitif, perbaikannya dikerjakan di versi 2. Sumber: docs/security.md, Handoff #3. Nomor B dan kolom Alasan diisi saat review pemakaian (`LNC.05`); alasan pemakaian belum tercatat.
+
+- **Kondisi sekarang (lulus SEC-27):** bila token login kedaluwarsa, layar Pesanan Saya hanya menampilkan pesan umum "Daftar pesanan belum bisa dimuat. Coba lagi sebentar lagi." Pesan tidak menyebut sesi habis dan aplikasi tidak kembali ke layar Masuk. Customer yang mengetuk Segarkan berulang tidak akan berhasil; harus keluar lalu masuk lagi.
+- **Kandidat perbaikan:** pesan yang menyebut sesi habis dan mengarahkan customer ke layar Masuk. Berlaku untuk semua layar yang memanggil `kedai`, tidak hanya Pesanan Saya.
+- **Menyentuh kategori login (`AGENTS.md` bagian 7):** perubahannya butuh penjelasan dampak dan "OK" ketua saat dikerjakan.
+- **Hasil SEC-27 tidak berubah (lulus).** Tidak ada baris SEC baru; tes ulang lewat langkah token kedaluwarsa di SEC-27.
+- **Butir baru untuk sheet (aturan 8):** "Pesan sesi habis lebih jelas".
+
 ---
