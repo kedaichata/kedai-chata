@@ -19,6 +19,8 @@
         <link rel="stylesheet" href="stepper.css" />
         <!-- GLR.05: gaya pil gelar di Home dan layar Gelar Saya (kelas glr-), dimuat SETELAH style.css supaya memakai variabel warna :root -->
         <link rel="stylesheet" href="gelar.css" />
+        <!-- PGN.02: gaya layar Pengenalan Aplikasi (kelas pgn-), dimuat SETELAH style.css supaya memakai variabel warna :root -->
+        <link rel="stylesheet" href="pengenalan.css" />
     </head>
     <body>
         <!-- AKN.05: layar akun. Satu layar tampil dalam satu waktu; akun.js yang mengatur mana yang tampil.
@@ -125,6 +127,38 @@
                         tetap ada di akun lama).
                     </p>
                 </div>
+                <!-- PGN.02 (pengenalan.md PG1): tombol Pengenalan Aplikasi di bawah Lupa password.
+                     Hanya di layar Masuk. Logika di pengenalan.js (tanpa server, tanpa mengubah alamat). -->
+                <div class="baris-tombol">
+                    <button
+                        type="button"
+                        class="tombol tombol--sekunder"
+                        id="ke-pengenalan"
+                    >
+                        Pengenalan Aplikasi
+                    </button>
+                </div>
+            </section>
+
+            <!-- PGN.02 (pengenalan.md PG2, PG4): layar Pengenalan Aplikasi, terbuka tanpa login dari layar Masuk.
+                 Bilah atas: tombol Kembali dan judul (tanpa Segarkan, tidak ada data dari server).
+                 Daftar topik digambar pengenalan.js dari pengenalan-isi.js lewat textContent. -->
+            <section id="layar-pengenalan" hidden>
+                <header class="bilah-atas pgn-bilah">
+                    <button
+                        type="button"
+                        class="pgn-kembali"
+                        id="pengenalan-kembali"
+                        aria-label="Kembali ke layar Masuk"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <line x1="19" y1="12" x2="5" y2="12" />
+                            <polyline points="12 19 5 12 12 5" />
+                        </svg>
+                    </button>
+                    <div class="bilah-atas__judul">Pengenalan Aplikasi</div>
+                </header>
+                <div id="pengenalan-isi"></div>
             </section>
 
             <!-- Daftar (AK2: kalimat email aktif) -->
@@ -2314,6 +2348,10 @@
         <script src="notif.js"></script>
         <!-- QRS.02: pop-up QRIS (qris.md QR12). Berdiri sendiri, tanpa server. Tidak menyentuh kerangka.js (tutup saat Keluar lewat pengamat #layar-sementara). -->
         <script src="qris.js"></script>
+        <!-- PGN.02: layar Pengenalan Aplikasi (pengenalan.md). Berdiri sendiri, tanpa server dan tanpa akun.js.
+             pengenalan-isi.js (hanya data teks) harus SEBELUM pengenalan.js (logika layar). -->
+        <script src="pengenalan-isi.js"></script>
+        <script src="pengenalan.js"></script>
         <script>
             // Mendaftarkan service worker (sw.js) supaya aplikasi bisa dipasang dan terbuka offline.
             // Path relatif (tanpa awalan /) supaya jalan di GitHub Pages.

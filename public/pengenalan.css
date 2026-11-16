@@ -1,0 +1,125 @@
+/* public/pengenalan.css
+   PGN.02: gaya layar Pengenalan Aplikasi (pengenalan.md PG4, PG6, PG7, PG8).
+   Kelas berawalan pgn-. Dimuat SETELAH style.css supaya memakai variabel warna :root.
+   Pengecualian dari "semua gaya di satu style.css", mengikuti pola game.css, ringkasan.css, stepper.css, dan gelar.css.
+   Hanya tambahan; layar lain tidak berubah. */
+
+/* Bilah atas: tombol Kembali di kiri, judul mengisi sisanya (tanpa Segarkan) */
+.pgn-bilah {
+    padding-left: 8px;
+}
+
+.pgn-kembali {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: var(--tinggi-tombol);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--emas-terang);
+    cursor: pointer;
+}
+
+.pgn-kembali:active {
+    background: rgba(226, 184, 74, 0.18);
+}
+
+.pgn-kembali:focus-visible {
+    outline: 2px solid var(--emas-terang);
+    outline-offset: -2px;
+}
+
+.pgn-kembali svg {
+    width: 26px;
+    height: 26px;
+}
+
+/* Satu topik: baris judul bisa diketuk, isi terbuka di bawahnya (akordeon bawaan peramban, seperti Bantuan) */
+.pgn-tanya {
+    border-top: 1px solid var(--garis-tipis);
+}
+
+.pgn-tanya:first-child {
+    border-top: 0;
+}
+
+.pgn-tanya__judul {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: var(--tinggi-tombol);
+    padding: 10px 0;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+    list-style: none;
+}
+
+.pgn-tanya__judul::-webkit-details-marker {
+    display: none;
+}
+
+/* Panah kecil di kiri judul; berputar saat terbuka */
+.pgn-tanya__judul::before {
+    content: "\203A";
+    flex: 0 0 auto;
+    width: 18px;
+    font-size: 1.6rem;
+    line-height: 1;
+    color: var(--marun);
+    transition: transform 0.15s ease;
+}
+
+.pgn-tanya[open] > .pgn-tanya__judul::before {
+    transform: rotate(90deg);
+}
+
+.pgn-tanya__judul:focus-visible {
+    outline: 3px solid var(--emas-terang);
+    outline-offset: 2px;
+}
+
+.pgn-jawab {
+    padding: 0 0 8px 28px;
+    overflow-wrap: anywhere;
+}
+
+.pgn-p {
+    margin: 0 0 10px;
+}
+
+/* Langkah bernomor dan butir: sedikit rapat dan menjorok supaya terbaca sebagai daftar */
+.pgn-langkah {
+    margin-bottom: 6px;
+}
+
+.pgn-butir {
+    margin: 0 0 4px;
+    padding-left: 12px;
+}
+
+/* Palet warna tetap (PG7). Bukan satu-satunya penanda: teks tetap diawali kata penjelas seperti "Catatan".
+   Emas tidak dipakai untuk teks di latar terang (DS3). */
+.pgn-warna--marun {
+    color: var(--marun);
+    font-weight: 700;
+}
+
+.pgn-warna--merah {
+    color: var(--bahaya);
+    font-weight: 700;
+}
+
+.pgn-warna--hijau {
+    color: #1f5a14;
+    font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pgn-tanya__judul::before {
+        transition: none;
+    }
+}
