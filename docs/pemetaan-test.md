@@ -361,3 +361,18 @@ Sisa: SEC-19 (Android), non-SEC (O22, wizard Besok, jumlah menu, Segarkan, pilih
 **Belum teruji (catatan):** pesan lebih dari 1000 karakter dan body lebih dari 10 KB tidak diulang di versi final (terbukti di Handoff #4); reconnect putus lama (berjam-jam).
 
 **Sisa:** SEC-44 (setelah WAG.05, karena butuh `kirim_wa.ts` jalan); SEC-40 sampai SEC-43 sesudah WAG.07 dan WAG.08. SEC-23 sebelum `LNC.01`; SEC-27 kapan saja (P1); SEC-30, SEC-31, SEC-04, dan SEC-03 menunggu BTN.
+
+### 2026-11-16 | ketua: WAG.08, SEC-40 (gateway WA mati)
+
+**Baru terbukti** (tanpa bukti dan tanpa data pelanggan):
+
+- **WAG.08 / SEC-40:** gateway mati (`localhost:3000` ditolak). `order_buat`, `order_setuju`, dan `order_status` (Diproses lalu Diantar) tetap sukses tanpa galat di layar; push ke owner tetap sampai. Log `kedai` mencatat `gagal 1 (http 404)` untuk `order_baru`, `setujui`, dan `status` Diantar; `status` Diproses "tidak ada yang dikirimi".
+- **"Lambat" dari baca kode** (keputusan ketua): timeout 3 detik di `kirim_wa.ts`; `kirimWa` tanpa `await` dan lewat `EdgeRuntime.waitUntil` di `inbox.ts`, jadi balasan aksi tidak menunggu WA.
+
+**SEC yang lengkap:** SEC-40 (baca kode untuk "lambat"). WAG.08 selesai. Keduanya sudah dicentang di sheet; tanggal selesai di sheet tertulis 15 Nov dan perlu diganti ke 16 Nov oleh PIC.
+
+**Tes tidak perlu diulang:** seluruh tes di atas, kecuali `kirim_wa.ts` atau `inbox.ts` berubah.
+
+**Belum teruji (catatan):** gateway lambat sungguhan (menggantung) tidak diamati langsung. Alasan gagal tercatat `http 404`, bukan `tidak terjangkau`; dugaan ngrok yang menjawab saat terowongan mati, belum terbukti langsung. Jeda sekitar 1 detik di Diantar tidak diukur (bukan dari gateway menurut baca kode). Laporan layar dari HP secara lisan, tanpa screenshot.
+
+**Sisa:** SEC-44 (sudah bisa dites), SEC-43 (log per kejadian; log hari ini baru memuat `order_baru`, `setujui`, `status`), SEC-41, SEC-42 (butuh gateway menyala), WAG.06a (sebelum LNC.04), WAG.09. SEC-23 sebelum `LNC.01`; SEC-27 kapan saja (P1); SEC-30, SEC-31, SEC-04, dan SEC-03 menunggu BTN.

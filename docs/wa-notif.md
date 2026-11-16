@@ -508,3 +508,76 @@ Keputusan ketua (15 Nov 2026, disampaikan lewat PIC [RAC]). Alasan ketua: tiap S
 - **WAG.08** (⚠️ P0, butuh "OK" ketua): gateway dimatikan, order tetap sukses dalam waktu normal tanpa galat di layar.
 - Lalu SEC-44, SEC-40 sampai SEC-43, WAG.06a, WAG.09.
 - Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 sampai #9), `security.md`, dan `pemetaan-test.md`.
+
+### Handoff #10 | 2026-11-16 | ketua
+
+**Tugas:** WAG.07 (tes normal dengan akun dan nomor tester: 4 kejadian, teks, footer). Selesai dan siap dicentang di sheet.
+
+**File yang diubah:** tidak ada. Tidak ada perubahan di repo, `public/`, database (skema, fungsi, hak), kode `kedai`, maupun gateway, dan tidak ada deploy. Yang berubah hanya data dummy: order #102, #105, #106, #107 (semua akun tester) dan nomor WA di akun (lewat menu Akun dan SQL Editor, tidak ditempel ke chat).
+
+**Keputusan baru** (alasan ketua selain yang tertulis belum tercatat):
+
+- **Urutan customer dulu dibuktikan dari baca kode** (`kirim_wa.ts`: `antrean.sort` memberi customer nilai 0 dan peran lain 1; kirim satu per satu dengan `await`; gagal sekali = `break`), **tidak diamati langsung**. Alasan: HP tester dipegang orang lain dan jam di WA hanya sampai menit, jadi selisih 3 sampai 8 detik tidak terbedakan. Pola sama dengan IB12 di tes inbox.
+- **Formasi nomor sementara untuk tes:** dua akun owner (Bu Owner 2 dan Owner Uji) di HP ibu ketua; Penjaga Uji di nomor 1 ketua; akun tester (customer) di nomor 2 ketua. Adik ketua tidak diperlukan lagi untuk tes status.
+- **Dua akun boleh memakai nomor WA yang sama:** cek `pg_indexes` menunjukkan hanya `profil_pkey` dan `staf_pkey`, tidak ada unique index pada `nomor_wa`; menu Akun tidak menolak saat nomor tester diganti.
+- **Restart script dengan URL ngrok tetap sama tidak diulang di WAG.07;** dianggap dipenuhi lewat bukti Handoff #4 (WAG.04), karena gateway tidak berubah.
+- **Cara lapor penguji:** laporan singkat; hal kecil yang sesuai harapan dianggap benar bila tidak diprotes; AI bertanya satu kali bila ada yang janggal.
+  **Terbukti** (diperiksa di chat, tidak disimpan; 15 dan 16 Nov 2026):
+
+- Secret `WA_GATEWAY_URL` dan `WA_GATEWAY_API_KEY` di `kedai` benar: pesan sungguhan dari `kedai` lewat gateway sampai ke WA (menutup butir "belum terbukti" dari Handoff #3, #8, #9).
+- **Order baru (#102):** masuk ke Owner Uji dan Bu Owner 2 dengan teks yang sama; pembuat order (tester) tidak menerima apa pun. Pada #106 dan #107 hanya dua owner yang menerima.
+- **Setujui (#102):** customer menerima "pesananmu #102 sudah disetujui"; Penjaga menerima "ada order disetujui" (tanpa nomor order); kedua owner tidak menerima.
+- **Diproses (#105):** tidak ada WA (gateway `connected` saat tes, jadi hasil "tidak ada" bermakna).
+- **Diantar (#105), Siap diambil (#106), Siap disajikan (#107):** hanya customer yang menerima, dengan teks sesuai tabel 4.1. Teks `inbox_tulis` cocok persis dengan `STATUS_WA`.
+- **Selesai (#106 dan #107):** tidak ada WA di semua HP selama 2 menit, gateway tetap `connected`, antrean 0.
+- Format pesan: kalimat kejadian, baris kosong, footer "tidak dibalas", link aplikasi yang bisa diketuk (footer dan link dari gateway, Handoff #3).
+- Penutupan: gateway dimatikan (`localhost:3000` tidak bisa dibuka), inspector ngrok di-Clear, dashboard Supabase sudah logout.
+  **Belum beres:**
+
+- **WAG.08 belum dikerjakan** (⚠️ P0, High-Risk, butuh "OK" ketua). Gateway sedang mati, kondisi awalnya sudah pas. Bukti yang dibutuhkan: balasan server dan log `kedai` (`gagal 1 (tidak terjangkau)`). Log `kedai wa:` belum pernah dilihat di dashboard, jadi isinya belum terbukti.
+- **WAG.06a belum:** nomor staf dan nomor tester masih sementara (nomor ketua dan ibu ketua). Ganti ke nomor asli sebelum LNC.04 lewat template `20261115_03_staf_nomor_wa_isi.sql` (nomor diketik di SQL Editor saja), lalu ulang CEK E (`staf_kembali` sama dengan jumlah staf aktif bernomor). Kembalikan nomor akun tester ke nomor tester semula bila perlu tes lagi.
+- Teks pesan dilaporkan penguji secara lisan, bukan screenshot (kecuali kalimat "ada order baru" yang dicocokkan di #102). Jumlah pasti pesan "ada order baru" untuk #106 dan #107 tidak dihitung.
+- **SEC-44 kini bisa dites** (`kirim_wa.ts` sudah terbukti jalan); SEC-40 sampai SEC-43 tetap sesudah WAG.08. SEC-43 butuh log per kejadian.
+- Reconnect saat putus lama (berjam-jam) dan pesan lebih dari 1000 karakter atau body lebih dari 10 KB di versi final belum diuji (dari Handoff #5 dan #7).
+- Status commit docs hasil sesi strategi dan Handoff #1 sampai #10 belum dikonfirmasi (cek `git status`). Commit yang hanya docs/md boleh `[skip ci]`; yang menyentuh kode atau `supabase/` tidak. Lakukan cek anti-nyasar sebelum push.
+  **Saran giliran berikutnya:**
+
+- **WAG.08** (⚠️ P0, butuh "OK" ketua): gateway tetap mati; buat order, setujui, ubah satu status dari akun dummy; order harus tetap sukses dalam waktu normal tanpa galat di layar; cek log `kedai` di dashboard (lalu logout).
+- Lalu **SEC-44**, **SEC-40 sampai SEC-43**, **WAG.06a** (sebelum LNC.04), dan WAG.09.
+- Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 sampai #10), `security.md`, dan `pemetaan-test.md`.
+
+### Handoff #11 | 2026-11-16 | ketua
+
+**Tugas:** WAG.08 (tes skenario gagal: gateway dimatikan, order tetap sukses dalam waktu normal) dan SEC-40. Keduanya selesai dan siap dicentang di sheet.
+
+**File yang diubah:** tidak ada. Tidak ada perubahan di repo, `public/`, database, kode `kedai`, maupun gateway, dan tidak ada deploy. Yang berubah hanya data dummy: order #108 (akun tester, owner dummy).
+
+**Keputusan baru** (alasan ketua selain yang tertulis belum tercatat):
+
+- **Bagian "lambat" di SEC-40 cukup dibuktikan dari baca kode**, tidak diamati langsung. Dasarnya `kirim_wa.ts` (timeout 3 detik lewat `AbortController`, gagal sekali sisanya dilewati, fungsi tidak pernah melempar galat) dan `inbox.ts` (`kirimWa` tanpa `await`, diserahkan ke `EdgeRuntime.waitUntil`, sehingga balasan aksi tidak menunggu WA). Pola sama dengan IB12 dan Handoff #10.
+
+**Terbukti** (diperiksa di chat, tidak disimpan; 16 Nov 2026):
+
+- Gateway mati saat tes (`localhost:3000` ditolak).
+- `order_buat` (#108), `order_setuju`, dan `order_status` (Diproses lalu Diantar) tetap sukses tanpa galat di layar. Buat order, setujui, dan Diproses seketika; Diantar ada jeda sekitar 1 detik (laporan lisan dari HP, tanpa screenshot).
+- Log `kedai` di dashboard: `order_baru` dan `setujui` masing-masing `terkirim 0 | gagal 1 (http 404) | dilewati 1`; `status` untuk Diproses "tidak ada yang dikirimi"; `status` untuk Diantar `terkirim 0 | gagal 1 (http 404) | dilewati 0`. Ini juga menutup butir "log `kedai wa:` belum pernah dilihat" dari Handoff #10.
+- Push ke owner tetap sampai saat gateway mati.
+
+**Catatan temuan (bukan masalah):**
+
+- Alasan gagal di log adalah `http 404`, bukan `tidak terjangkau` seperti perkiraan Handoff #10. Dugaan: ngrok sendiri yang menjawab 404 saat terowongan mati. Belum terbukti langsung; efeknya sama (gagal, dicatat, order jalan terus).
+- Jeda sekitar 1 detik di Diantar bukan dari gateway: `order_baru` dan `setujui` gagal WA dengan cara yang sama dan seketika, dan WA tidak ditunggu balasan (baca kode). Penyebab pastinya (inbox dan push) tidak diukur.
+
+**Belum beres:**
+
+- **SEC-41, SEC-42, SEC-43, SEC-44** belum dites. SEC-43 butuh log per kejadian; log hari ini baru memuat `order_baru`, `setujui`, dan `status`. SEC-44 sudah bisa dites (Handoff #10).
+- **WAG.06a belum:** nomor staf dan tester masih sementara. Ganti ke nomor asli sebelum LNC.04 lewat template `20261115_03_staf_nomor_wa_isi.sql` (nomor diketik di SQL Editor saja), lalu ulang CEK E.
+- **WAG.09** (evaluasi 1 sampai 2 bulan setelah peluncuran) belum waktunya.
+- Gateway "lambat" sungguhan (menggantung) tidak diamati langsung (keputusan di atas). Reconnect putus lama dan pesan di atas 1000 karakter di versi final juga belum diuji (dari Handoff #5 dan #7).
+- Status commit docs Handoff #1 sampai #11 belum dikonfirmasi (cek `git status`). Commit yang hanya docs/md boleh `[skip ci]`; yang menyentuh kode atau `supabase/` tidak. Lakukan cek anti-nyasar sebelum push.
+
+**Saran giliran berikutnya:**
+
+- **SEC-44** (sudah bisa dites), lalu **SEC-43, SEC-41, SEC-42**. SEC-42 butuh gateway menyala dan screenshot pesan di HP tester (data dummy); gateway dimatikan lagi sesudahnya (WAG17).
+- Lalu **WAG.06a** (sebelum LNC.04) dan WAG.09.
+- Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 sampai #11), `security.md`, dan `pemetaan-test.md`.
