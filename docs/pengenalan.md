@@ -141,3 +141,32 @@ Tidak ada baris SEC baru: fitur tidak menyentuh server, data, atau akses. Pemeri
 1. PGN.03: tambah tiga berkas ke `DAFTAR_CACHE` di `sw.js` dan naikkan versi cache menjadi `chata-v29`, setelah "OK" ketua. Commit ini menyentuh kode, jadi tanpa `[skip ci]`.
 2. PGN.04: tes Android sesuai daftar di bagian 6 (termasuk offline dan link reset password tetap membuka layar Buat password baru).
 3. PGN.05 dan PGN.06 menyusul sebelum peluncuran (`LNC.04`).
+
+### Handoff #2 | 16 Nov 2026 | Ketua
+
+**Tugas:** PGN.03 (daftar cache `sw.js`) dan PGN.04 (tes Android). Status: keduanya selesai.
+
+**File yang diubah:**
+
+- `public/sw.js`: ditambah `pengenalan.css`, `pengenalan-isi.js`, dan `pengenalan.js` di `DAFTAR_CACHE` (komentar `// PGN.03`). Versi cache naik dari `chata-v28` ke `chata-v29`; baris v28 dijadikan komentar, tidak dihapus. Logika install, activate, fetch, dan push tidak disentuh. Disetujui ketua ("OK", 16 Nov 2026). Sudah di-push (commit `4c83b83`, tanpa `[skip ci]`).
+- `docs/pengenalan.md`: Handoff #1 ditempel.
+
+**Hasil tes Android (PGN.04), dikonfirmasi ketua di chat:**
+
+- Versi baru muncul setelah update dan cache `chata-v29` aktif di browser (network first jalan).
+- Tombol Pengenalan Aplikasi terbuka, 10 topik bisa buka-tutup, tebal, miring, dan warna tampil benar.
+- Tombol Kembali tidak mengosongkan isian email dan password.
+- Layar Pengenalan terbuka saat offline.
+- Link reset password tetap membuka layar Buat password baru.
+
+**Keputusan baru:** tidak ada.
+
+**Belum beres:**
+
+- Poin "karakter `<` dan `&` tampil apa adanya" belum dibuktikan lewat layar, karena isi sekarang tidak memuat karakter itu. Dianggap cukup lewat bacaan kode (semua teks lewat `textContent`, tanpa `innerHTML`). Keputusan menerima ini ada di ketua; alasan penerimaan belum tercatat.
+- **PGN.05:** bagian iPhone (topik 4, serta iPhone di topik 6, 7, dan 10) belum dites di perangkat nyata. Belum ada pembacaan oleh ibu customer.
+
+**Saran giliran berikutnya:**
+
+1. PGN.05: satu pemakai iPhone mencoba langkah topik 4 dan topik 7; satu ibu customer membaca dan menyebut bagian yang membingungkan. Revisi hanya di `public/pengenalan-isi.js`, lalu push biasa. Tanpa `[skip ci]`, karena berkas di `public/` berubah. Revisi isi tidak mengubah daftar berkas, jadi `sw.js` tidak perlu diubah.
+2. PGN.06: sebelum peluncuran (`LNC.04`), pastikan isi final sudah dicek lewat PGN.05.
