@@ -581,3 +581,34 @@ Keputusan ketua (15 Nov 2026, disampaikan lewat PIC [RAC]). Alasan ketua: tiap S
 - **SEC-44** (sudah bisa dites), lalu **SEC-43, SEC-41, SEC-42**. SEC-42 butuh gateway menyala dan screenshot pesan di HP tester (data dummy); gateway dimatikan lagi sesudahnya (WAG17).
 - Lalu **WAG.06a** (sebelum LNC.04) dan WAG.09.
 - Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 sampai #11), `security.md`, dan `pemetaan-test.md`.
+
+### Handoff #12 | 2026-11-16 | (isi nama PIC)
+
+**Tugas:** SEC-44 dan SEC-41 (tes keamanan WA). Keduanya selesai dan siap dicentang di sheet.
+
+**File yang diubah:** tidak ada. Tidak ada perubahan di repo, `public/`, database, kode `kedai`, maupun gateway, dan tidak ada deploy. Gateway tidak dinyalakan hari ini.
+
+**Keputusan baru:**
+
+- SEC-41, bagian "chat": URL ngrok yang pernah tampil utuh di chat saat WAG.04b (Handoff #5, key tidak ikut) **diterima sebagai risiko tercatat**. Disampaikan ketua lewat PIC. Alasan ketua selain itu belum tercatat.
+
+**Terbukti** (diperiksa di chat, tidak disimpan; 16 Nov 2026):
+
+- SEC-44: `anon` dan `authenticated` tidak bisa EXECUTE `wa_nomor_ambil`; `service_role` bisa EXECUTE; `service_role` pada `staf` hanya SELECT (tanpa INSERT, UPDATE, DELETE). Balasan `kedai` akun tester (4 balasan fetch) hanya memuat nomor tester sendiri. Balasan `kedai` akun owner: daftar order tidak memuat nomor; detail satu order hanya memuat `nomor_wa_pemesan` (nomor tester). Tidak ada nomor staf di balasan mana pun.
+- SEC-41: URL ngrok utuh tidak ada di berkas repo, seluruh riwayat commit, dan `public/config.js`. API key tidak ada di repo dan riwayat (hanya `Deno.env.get("WA_GATEWAY_API_KEY")` di `kirim_wa.ts` dan komentar di berkas pembatal). Log `kedai` (15 Nov 10.04 sampai 16 Nov 10.04): pencarian `ngrok`, `x-api-key`, dan `628` kosong; baris `kedai wa:` hanya berformat kejadian, terkirim, gagal, dilewati.
+
+**Belum beres:**
+
+- SEC-44 hanya diperiksa lewat layar tester dan owner; layar penjaga tidak diperiksa. Kecocokan nomor tester dengan menu Akun dilaporkan lisan oleh PIC.
+- SEC-41: log hanya mencakup 24 jam terakhir saat dites. Inspector ngrok tidak diperiksa.
+- **SEC-43 dan SEC-42 belum dites.** Izin ketua khusus SEC-43 (gateway nyala, akun tester saja) belum dikonfirmasi per pesan; PIC menyebut ketua sudah mengizinkan tes secara umum.
+- SEC-43 sisa: tolak, catatan, batal, alih hari, foto, mundur status, order wakil (Diproses dan Selesai sudah terbukti di WAG.07). SEC-42 butuh screenshot pesan di HP tester (data dummy, nomor ditutup).
+- WAG.06a (nomor asli staf, sebelum LNC.04) dan WAG.09 belum.
+- Status commit docs Handoff #1 sampai #12 belum dikonfirmasi (cek `git status`). Commit hanya docs/md boleh `[skip ci]`. Cek anti-nyasar sebelum push.
+- Pastikan dashboard Supabase sudah logout.
+
+**Saran giliran berikutnya:**
+
+- Nyalakan gateway (`./startwagw-ngrok.sh`), tes SEC-43 per kejadian dengan akun tester saja dan cek log `kedai wa:` tiap kejadian; sekalian ambil screenshot pesan WA untuk SEC-42. Sesudahnya Clear inspector ngrok dan matikan gateway (`./stopwagw-ngrok.sh`).
+- Lalu WAG.06a dan WAG.09.
+- Lampirkan `AGENTS.md`, `wa-notif.md` (dengan Handoff #1 sampai #12), `security.md`, dan `pemetaan-test.md`.

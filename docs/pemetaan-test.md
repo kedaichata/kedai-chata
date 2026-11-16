@@ -388,3 +388,15 @@ Sisa: SEC-19 (Android), non-SEC (O22, wizard Besok, jumlah menu, Segarkan, pilih
 **Belum teruji (catatan):** foto yang diproses jadwal ini (`foto_diproses` 1) belum diperiksa satu per satu; penyapuan berkas yatim lewat jadwal belum terbukti (`yatim_diproses` 0); jalur galat Storage dan `sapuan_terpotong`; FT-22 (penjaga kedua, opsional).
 
 **Sisa:** tidak ada tes foto yang tertunda. SEC-44 (sudah bisa dites), SEC-43, SEC-41, SEC-42 (butuh gateway menyala), WAG.06a, WAG.09. SEC-23 sebelum `LNC.01`; SEC-27 kapan saja (P1); SEC-30, SEC-31, SEC-04, dan SEC-03 menunggu BTN.
+
+### 2026-11-16 | (isi nama PIC): SEC-44, SEC-41 (gateway WA)
+
+**Baru terbukti** (tanpa bukti dan tanpa data pelanggan): hak fungsi dan tabel `wa_nomor_ambil` dan `staf`; balasan `kedai` akun tester dan owner tidak memuat nomor staf atau nomor orang lain; URL ngrok dan API key tidak ada di repo, riwayat commit, `public/config.js`, dan log `kedai`.
+
+**SEC yang lengkap dan diingatkan untuk dicentang di sheet:** SEC-44 dan SEC-41. (Tanggal centang oleh PIC: ...)
+
+**Keputusan ketua:** SEC-41 bagian chat diterima sebagai risiko tercatat (URL ngrok pernah tampil di chat, key tidak).
+
+**Tes tidak perlu diulang:** seluruh tes SEC-44 dan SEC-41 di atas, kecuali `kedai` atau gateway berubah.
+
+**Sisa:** SEC-43 dan SEC-42 (gateway nyala, akun tester saja). SEC-23 sebelum `LNC.01`; SEC-27 kapan saja (P1); SEC-30, SEC-31, SEC-04, dan SEC-03 menunggu BTN.
