@@ -1,5 +1,6 @@
 // public/pengenalan.js
 // PGN.02: layar Pengenalan Aplikasi (pengenalan.md PG1 sampai PG8, PG13).
+// PGN.05a: infografik di bagian paling atas layar (gambar sama dengan Bantuan: img/infografik.webp).
 // Dibuka dari tombol "Pengenalan Aplikasi" di layar Masuk (#ke-pengenalan), TANPA login.
 // Isi teks ada di pengenalan-isi.js (window.KedaiPengenalanIsi, hanya data); berkas ini hanya logika.
 // Dimuat SETELAH pengenalan-isi.js di index.html. Berdiri sendiri: tidak memakai akun.js, tidak ada
@@ -34,6 +35,10 @@
     // Elemen belum ada di index.html: tidak membuat apa-apa.
     return;
   }
+
+  // PGN.05a: gambar infografik. Path tetap (bukan dari server), sudah terdaftar di cache sw.js (BTN.04a).
+  var PATH_INFOGRAFIK = "img/infografik.webp";
+  var ALT_INFOGRAFIK = "Infografik alur memakai aplikasi Kedai ChATA";
 
   // Nama warna yang dikenal -> kelas di pengenalan.css (PG7).
   var WARNA = {
@@ -115,6 +120,21 @@
     return d;
   }
 
+  // PGN.05a: infografik di atas daftar topik. Gambar gagal dimuat: seluruh pembungkusnya disembunyikan,
+  // layar tetap rapi (pola sama dengan Bantuan).
+  function buatInfografik() {
+    var pembungkus = buat("div", "pgn-infografik");
+    var gambarInfo = document.createElement("img");
+    gambarInfo.className = "pgn-infografik__gambar";
+    gambarInfo.alt = ALT_INFOGRAFIK;
+    gambarInfo.addEventListener("error", function () {
+      pembungkus.hidden = true;
+    });
+    gambarInfo.src = PATH_INFOGRAFIK;
+    pembungkus.appendChild(gambarInfo);
+    return pembungkus;
+  }
+
   // Gambar daftar topik sekali saja (isinya statis).
   function gambar() {
     if (sudahDigambar) {
@@ -150,6 +170,8 @@
       );
       return; // tidak dianggap selesai, dicoba lagi saat dibuka berikutnya
     }
+    // PGN.05a: infografik paling atas, di atas daftar topik.
+    wadahIsi.appendChild(buatInfografik());
     wadahIsi.appendChild(kartu);
     sudahDigambar = true;
   }

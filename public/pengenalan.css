@@ -123,3 +123,20 @@
         transition: none;
     }
 }
+
+/* PGN.05a: infografik di atas daftar topik. Lebar penuh, tinggi mengikuti gambar.
+   Atribut hidden harus menang (dipasang pengenalan.js bila gambar gagal dimuat). */
+.pgn-infografik {
+    margin: 0 0 12px;
+}
+
+.pgn-infografik[hidden] {
+    display: none;
+}
+
+.pgn-infografik__gambar {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
