@@ -116,3 +116,28 @@ Tidak ada baris SEC baru: fitur tidak menyentuh server, data, atau akses. Pemeri
 > Tempel blok baru di bawah garis ini. Format: `### YYYY-MM-DD: topik` atau `### Handoff #N | tanggal | nama PIC`. Yang paling akhir menang.
 
 ---
+
+### Handoff #1 | 16 Nov 2026 | [RAC]
+
+**Tugas:** PGN.02 (layar dan gaya Pengenalan Aplikasi). Status: selesai, sudah di-push dan layarnya sudah dicek visual di browser. Penutupan handoff ini dibuat oleh PIC lain dari ringkasan lisan dan berkas, bukan dari sesi kode aslinya.
+
+**File yang diubah:**
+
+- `public/index.html`: hanya ditambah. Satu tombol `#ke-pengenalan` ("Pengenalan Aplikasi", di bawah "Lupa password?"), satu section `#layar-pengenalan`, satu tag `<link>` ke `pengenalan.css` (setelah `gelar.css`), dan dua tag `<script>` (`pengenalan-isi.js` lalu `pengenalan.js`, setelah `qris.js`). Kode lama layar Masuk tidak diubah.
+- `public/pengenalan.js` (baru): logika layar. Tanpa `innerHTML`, tanpa `localStorage`, tanpa panggilan jaringan, tanpa `#` alamat atau `pushState`. Layar Masuk hanya disembunyikan, jadi isian email dan password tidak hilang.
+- `public/pengenalan.css` (baru): kelas berawalan `pgn-`, akordeon `<details>`, palet marun/merah/hijau.
+- `public/pengenalan-isi.js` (baru): 10 topik, hanya data teks.
+  **Keputusan baru:**
+
+- Gaya bahasa isi direvisi 16 Nov 2026 atas masukan owner: istilah kaku diberi padanan (memasang/menginstal, tautan/link, dst.), menyebut "Play Store/App Store", sapaan "Anda", dan nama tombol/menu ditulis persis seperti di layar. Aturan lengkapnya ada di komentar kepala `pengenalan-isi.js`. Alasan di luar itu belum tercatat.
+  **Belum beres:**
+
+- **PGN.03 belum dikerjakan:** `sw.js` belum mendaftarkan `pengenalan-isi.js`, `pengenalan.js`, dan `pengenalan.css`, dan versi cache masih `chata-v28`. Akibatnya layar Pengenalan belum terbuka saat offline (PG3, PG12). Butuh "OK" ketua.
+- Persetujuan ketua khusus untuk perubahan `index.html` pada PGN.02 tidak tercatat di sesi ini (rancangan umumnya sudah disetujui 16 Nov 2026). Mohon ketua mengonfirmasi bila belum.
+- Bagian iPhone (topik 4, serta iPhone di topik 6, 7, dan 10) belum dites di perangkat nyata (PGN.05).
+- Belum ada tes Android (PGN.04).
+  **Saran giliran berikutnya:**
+
+1. PGN.03: tambah tiga berkas ke `DAFTAR_CACHE` di `sw.js` dan naikkan versi cache menjadi `chata-v29`, setelah "OK" ketua. Commit ini menyentuh kode, jadi tanpa `[skip ci]`.
+2. PGN.04: tes Android sesuai daftar di bagian 6 (termasuk offline dan link reset password tetap membuka layar Buat password baru).
+3. PGN.05 dan PGN.06 menyusul sebelum peluncuran (`LNC.04`).
