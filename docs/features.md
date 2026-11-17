@@ -155,3 +155,39 @@ Sumber: docs/pengenalan.md. Yang paling akhir menang.
 - **Layar per peran:** layar **Masuk** (sebelum login, semua orang) bertambah tombol **Pengenalan Aplikasi** yang membuka layar penjelasan 10 topik (dilipat per topik). Layar lain tidak berubah.
 - **Urutan versi 1:** fitur ini ditambahkan sebelum Peluncuran; kecil dan tanpa server, jadi tidak menambah panggilan ke kuota.
 - **Peluncuran (bagian 10):** sebelum LNC.04, isi sudah dicek ke satu pemakai iPhone dan satu customer (PGN.05). Tidak ada data uji yang perlu dibersihkan untuk fitur ini.
+
+### Handoff #1 | 2026-11-17 | (KETUA)
+
+**Tugas:** persiapan LNC.01 (bersihkan data uji). Sesi ini hanya diskusi, belum ada kode, SQL, atau query yang dijalankan. Yang dibahas: usulan owner soal email akun staf asli, dan rencana awal LNC.01.
+
+**File yang diubah:** tidak ada. Belum ada perubahan tabel, `kedai`, atau `sw.js`.
+
+**Keputusan baru (koordinasi owner, 17 Nov 2026; alasan selebihnya belum tercatat):**
+
+- **Dua kotak Gmail terpisah.** Kotak yang biasa dipakai tes tetap untuk akun uji. Kotak kedua (belum pernah dipakai tes, ada di HP ibu ketua) khusus akun staf asli. Alamat asli tidak ditulis di md, repo, atau chat (contoh dummy: `kedai+ab@contoh.com`).
+- **Owner:** alias `+[inisial]` per orang. Inisial harus unik; bila kembar, tambah angka atau huruf.
+- **Penjaga:** satu akun `+staf`, karena penjaga hanya satu orang mulai Desember 2026. Sampai peralihan, bila penjaga masih bergantian, riwayat status dan pengunggah foto tidak bisa membedakan orangnya, dan batas `push_maks_perangkat` (5) bisa terlewati. Risiko diterima.
+- **Nomor WA:** tiap akun memakai nomor orangnya sendiri (WAG.06), diketik ketua langsung di SQL Editor.
+- **Reset password:** link dari dashboard jatuh ke kotak kedua di HP ibu ketua, diteruskan lewat WA pribadi ke orangnya, lalu segera dipakai.
+- **Akun asli boleh dibuat sebelum LNC.01.** Email akun uji tidak dipakai ulang untuk akun asli.
+- **Rencana LNC.01 (belum disetujui ketua):** akun staf uji (dua akun owner yang dipakai ibu ketua) **dinonaktifkan, bukan dihapus**, supaya jejak `diubah_oleh` di tabel `menu` tidak hilang. Penonaktifan berdasarkan daftar yang disebut satu per satu, akun asli tidak boleh ada di daftar itu.
+- **Sheet:** LNC.01a (tes email ke alias +) dan LNC.01b (buat akun staf asli dan isi nomor WA staf, High-Risk, P0) sudah ditambah. Catatan LNC.03 menyebut bagian akun staf asli sudah dikerjakan di LNC.01b; butir LNC.03 sendiri tetap uji coba terbatas.
+
+**Pertentangan dengan catatan lama:** `features.md` bagian 10 dan sheet LNC.01 menyebut akun dummy "dihapus lewat dashboard". Untuk akun staf uji itu diganti menjadi dinonaktifkan (rencana, menunggu "OK" ketua).
+
+**Masalah yang belum beres:**
+
+- Blok catatan untuk `docs/akun.md` (versi terakhir, dengan baris "Desember 2026") **belum dipastikan sudah ditempel**. Berkas `akun.md` belum ada di project.
+- LNC.01a belum dikerjakan (email tes ke alias + belum dikirim).
+- Belum ada persetujuan "nonaktifkan" untuk dua akun owner uji, dan query baca-saja pendataan data uji belum dibuat.
+- Berkas yang belum ada di project dan dibutuhkan sebelum menulis SQL: migration (`20261105_akun.sql`, `20261108_order.sql`, `20261111_foto_bukti.sql`, `20261111_05_inbox.sql`, `20261114_gelar.sql`), serta `akun.md`, `inbox.md`, `foto-bukti.md`, `bantuan.md`.
+- Catatan temuan untuk LNC.01: urutan hapus harus tabel anak dulu, `order` terakhir (inbox, `order_item`, `riwayat_status`, `catatan_order`, `baca_catatan`, `foto_bukti` merujuk ke order; order wakil merujuk `pelanggan_luar`). Menu, grup pilihan, aturan gelar, dan `pengaturan` tidak disentuh. Isi uji Bantuan ditandai `aktif = tidak`. Foto uji di Storage dihapus lewat dashboard. Reset nomor order satu kali oleh ketua setelah tabel order bersih. **Ekspor CSV dulu** sebelum penghapusan (tugas adik ketua, simpan di luar repo). Cek apakah grup "Level pedas" asli atau sisa uji. Penghapusan data butuh penjelasan dampak dan "OK" ketua (`AGENTS.md` bagian 2 butir 5).
+
+**Masalah yang sudah beres:**
+
+- Blok catatan untuk `docs/akun.md` (versi terakhir, dengan baris "Desember 2026") sudah ditempel ketua.
+
+**Saran giliran berikutnya:**
+
+1. Kerjakan LNC.01a lalu LNC.01b (ketua, dashboard dan SQL Editor, profil browser terpisah).
+2. Sesi LNC.01: lampirkan `AGENTS.md`, `features.md`, `security.md`, `database.md`, `order.md`, `docs/menu.md`, dan migration di atas. Mulai dengan query **baca-saja** untuk mendata data uji, tempel hasilnya (data pribadi disamarkan), lalu penjelasan dampak per tabel dan "OK" ketua sebelum SQL penghapusan apa pun.

@@ -403,3 +403,17 @@ Melengkapi AK12; alurnya tidak berubah.
 - **Temuan dari ketua:** link reset yang diklik langsung dari email sering langsung tampil "Link sudah tidak berlaku", tetapi tidak selalu (kadang langsung berhasil). Link yang sama, bila **disalin lalu ditempel di tab baru**, selalu berhasil.
 - **Cara yang dipakai:** saat pengguna menerima link reset, mintalah ia **menyalin link dari email dan menempelkannya di tab baru** (address bar), jangan diklik langsung.
 - **Penyebab belum dipastikan.** Log Auth pernah menunjukkan link yang sama dibuka dua kali dalam satu detik, dan link hanya berlaku sekali pakai. Dugaan (belum dibuktikan): pemindai link di email membukanya lebih dulu.
+
+### 2026-11-17: Email akun staf asli: pola inisial, satu akun penjaga (menggantikan blok sebelumnya di hari yang sama)
+
+Keputusan koordinasi owner, disetujui. Alasan selebihnya belum tercatat.
+
+- **Dua kotak Gmail terpisah:** kotak yang biasa dipakai tes tetap untuk akun uji; kotak kedua (belum pernah dipakai tes, ada di HP ibu ketua) khusus akun staf asli. Alamat asli tidak ditulis di md, repo, atau chat (contoh dummy: `kedai+ab@contoh.com`).
+- **Owner:** alias `+[inisial]` per orang. Inisial harus unik; bila kembar, tambahkan angka atau huruf.
+- **Penjaga:** satu akun `+staf`, karena penjaga hanya satu orang mulai [Desember 2026, tahun perlu dikonfirmasi]. Sampai peralihan, bila penjaga masih bergantian, riwayat status dan pengunggah foto tidak bisa membedakan orangnya (diterima).
+- **Nomor WA:** tiap akun memakai nomor orangnya sendiri (WAG.06), diketik ketua langsung di SQL Editor.
+- **Reset password:** link dari dashboard jatuh ke kotak kedua di HP ibu ketua, lalu diteruskan lewat WA pribadi ke orang yang bersangkutan, dan segera dipakai.
+- **Menggantikan blok sebelumnya:** awalan `+asli-` dan alias `+owner1` sampai `+owner5` serta `+staf1`, `+staf2` tidak berlaku. Akun asli boleh dibuat sebelum LNC.01. Email akun uji tidak dipakai ulang.
+- **Saat LNC.01:** akun uji dinonaktifkan (bukan dihapus) berdasarkan daftar yang disebut satu per satu dan menunggu "OK" ketua. Akun asli tidak boleh ada di daftar itu.
+- **Diterima:** semua surat ke alias masuk ke satu kotak. Password Gmail dan app password SMTP tidak masuk chat, repo, atau md.
+- Tes email ke satu alias `+` dilakukan sebelum akun asli dibuat.
