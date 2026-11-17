@@ -1118,4 +1118,20 @@ Keputusan ketua (10 Nov 2026, setelah Handoff #25). Alasan ketua: nomor WA dan a
 **Data dummy baru** (tidak bisa dihapus, dibersihkan di LNC.01): order #54 (Menunggu, Makan di warung, Hari ini), #55 (order wakil, Besok 11 Nov, Disetujui, Tunai), #56 (satu catatan owner, dari tes pemakai), #59 (Menunggu, Diambil, Hari ini, catatan "Tes sec19"); nomor lain di antaranya dari tes pemakai nyokap.
 
 **Saran giliran berikutnya:** mulai rantai foto bukti **FTO.01** (gerbang SEC-19 sudah terbuka), lalu FTO, NTF, BTN. Lampirkan `AGENTS.md` + `foto-bukti.md` + `database.md` + `security.md` + berkas `kedai` yang relevan. Sebelum peluncuran: SEC-23 dan LNC.01 (pembersihan data uji dan reset nomor order, butuh "OK" ketua).
+
+### 2026-11-18: Batas 5 order per customer per hari
+
+Usulan owner, disetujui lewat WA. Persetujuan "OK" ketua untuk perubahan fungsi order: **belum tercatat**. Latar: sebelum ini tidak ada batas jumlah order per customer; yang dibatasi hanya isi satu order (jumlah item dan jumlah per item) dan panjang catatan.
+
+- **Batas: 5 order per customer per hari.**
+- **"Hari" = hari order dibuat**, kalender WIB dari jam server database (bukan hari antar, bukan jam HP).
+- **Semua status ikut dihitung** (Menunggu, Disetujui, Ditolak, Dibatalkan, dan seterusnya). Alasan: agar kirim lalu batalkan berulang tidak menghindari batas.
+- **Order wakil owner dan pelanggan tanpa akun tidak kena batas ini.**
+- **Angka 5 disimpan di tabel `pengaturan`**, bukan di kode. Nama kuncinya ditentukan saat dikerjakan, mengikuti pola di `docs/database.md`.
+- **Pesan saat kena batas:** ramah dan jelas, mengarahkan customer menghubungi lewat WA. Tidak ada galat mentah.
+- **Menyentuh fungsi `order_buat` dan `pengaturan` (bagian 2 butir 5 `AGENTS.md`):** butuh penjelasan dampak dan "OK" ketua. Migration baru disimpan di `supabase/migrations/`. Saat dikerjakan, tulis blok pendek di `docs/database.md` untuk kunci pengaturan barunya.
+- **Tes minimal:** order ke-5 lolos, ke-6 ditolak; order yang dibatalkan tetap terhitung; order wakil owner tidak terpengaruh; hari berganti tidak membawa sisa hitungan; ulangi tes ORD dan baris SEC yang terkait order.
+- **Waktu pengerjaan:** boleh setelah LNC.03 mulai, **wajib sebelum LNC.04**.
+- Tidak ada pertentangan dengan isi lama; ini menambah aturan.
+
 ---

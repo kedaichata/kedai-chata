@@ -191,3 +191,30 @@ Sumber: docs/pengenalan.md. Yang paling akhir menang.
 
 1. Kerjakan LNC.01a lalu LNC.01b (ketua, dashboard dan SQL Editor, profil browser terpisah).
 2. Sesi LNC.01: lampirkan `AGENTS.md`, `features.md`, `security.md`, `database.md`, `order.md`, `docs/menu.md`, dan migration di atas. Mulai dengan query **baca-saja** untuk mendata data uji, tempel hasilnya (data pribadi disamarkan), lalu penjelasan dampak per tabel dan "OK" ketua sebelum SQL penghapusan apa pun.
+
+### Handoff #2 | 2026-11-18 | [KETUA]
+
+**Tugas:** diskusi saran teman soal hosting (Cloudflare Pages vs GitHub Pages) dan bot. Sesi ini hanya diskusi, belum ada kode, SQL, atau pengaturan yang diubah.
+
+**File yang diubah:** tidak ada.
+
+**Keputusan baru:**
+
+- **Tetap di GitHub Pages.** Alasan pindah hanya karena proteksi bot dinilai kurang kuat; risiko bot ada di Supabase (daftar dan masuk), bukan di hosting statis. Pindah hosting berarti ganti origin (instalasi, push, SEC-33, Site URL Auth ikut berubah). Alasan lain untuk pindah (header keamanan `_headers`, ketentuan layanan GitHub Pages untuk usaha) disebut sekilas dan **belum diputuskan atau dicek**.
+- **Turnstile di Daftar dan Masuk:** lihat Blok A.
+- **Batas 5 order per customer per hari:** lihat Blok B.
+  **Masalah yang belum beres:**
+
+- "OK" ketua untuk Blok A dan B belum tercatat.
+- Belum jelas apakah **link reset password dari dashboard** dan **pembuatan akun staf oleh ketua** ikut kena CAPTCHA. Harus dites, jangan diasumsikan.
+- Belum dites di HP lama.
+- Batas order harian: pengecekan di `database.md` menunjukkan tidak ada batas per customer di `order_buat`; fungsi aslinya belum dibaca.
+- Jadwal rilis terbatas: Senin 23 Nov 2026. LNC.01, 01a, 01b juga masih menunggu.
+  **Saran giliran berikutnya:**
+
+1. Tempel Blok A, B, dan C, lalu dapatkan "OK" ketua.
+2. Sesi kode **Turnstile dulu**. Lampirkan: `AGENTS.md`, `features.md`, `security.md`, `akun.md`, `index.html`, `public/akun.js`, `sw.js`, `config.js`. Mulai dari widget di akun Cloudflare ketua, lalu kode, lalu tes dummy, lalu nyalakan tombol di dashboard terakhir.
+3. Cek reset password dan pembuatan akun staf **sebelum LNC.01b**.
+4. Sesi kode **batas order** terpisah (jangan digabung dengan Turnstile supaya penyebab masalah mudah dilacak). Lampirkan: `AGENTS.md`, `order.md`, `database.md`, `security.md`, `20261108_order.sql`, berkas `kedai` yang memuat `order_buat`.
+5. Handoff pengerjaan Turnstile ditempel di akhir `akun.md` (nomor berikutnya #15); handoff batas order di akhir `order.md`.
+6. Tambahkan butir baru ke sheet: "Turnstile di Daftar dan Masuk" dan "Batas 5 order per hari".

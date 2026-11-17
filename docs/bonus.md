@@ -224,4 +224,16 @@ Keputusan ketua (17 Nov 2026), saat sesi MNU.13 (Cari menu). Sumber: `docs/menu.
 - **Hal yang perlu diputuskan saat dikerjakan:** apakah owner membuat kategorinya sendiri atau daftar tetap, apakah satu menu boleh punya lebih dari satu kategori, urutan tampil kategori dan menu, dan apakah kategori punya nonaktif (sejalan MN3: tidak ada hapus).
 - **Urutan:** ditentukan setelah review pemakaian versi 1 (`LNC.05`). Bila kotak Cari ternyata sudah cukup bagi ibu-ibu, kandidat ini boleh tetap menunggu.
 
+### 2026-11-18: Diputuskan untuk versi 2: nonaktifkan customer bermasalah
+
+**Berkas tujuan:** `docs/bonus.md`, tempel PALING BAWAH bagian 4 (di bawah blok 2026-11-17 kategori menu). Append-only. Keputusan ketua (18 Nov 2026): dikerjakan di **versi 2, bukan versi 1**. Usulan muncul dari diskusi Turnstile dan batas order (blok 18 Nov di `AGENTS.md` dan `docs/order.md`). Alasan keputusan di luar yang tertulis belum tercatat.
+
+- **Yang diputuskan:** cara menonaktifkan customer bermasalah (akun sampah atau iseng) tanpa menghapus akunnya masuk **versi 2**. Nomor B diisi saat ditempel di daftar.
+- **Latar:** Turnstile dan batas 5 order per hari mengurangi masalah, tidak menghilangkannya. Sekarang customer bermasalah hanya bisa ditangani manual oleh ketua lewat dashboard Supabase. Belum ada prosedur atau tombol di aplikasi. Opsi yang tersedia di dashboard (misalnya blokir akun) **belum dicek**.
+- **Hubungan dengan butir lama:** B19 (kelola staf dari dalam aplikasi) hanya untuk staf; blok ini untuk customer. B21 (rate limit khusus) dan B28 (pengaturan dari aplikasi) bisa ikut menguntungkan. Butir lama dibiarkan.
+- **Pertentangan dengan catatan lama:** kepala `bonus.md` menyebut "belum ada yang diputuskan". Untuk butir ini, yang paling akhir menang: sudah diputuskan masuk versi 2. Butir lain tetap belum diputuskan.
+- **Perkiraan dampak (belum diputuskan):** kemungkinan menyentuh tabel profil, fungsi SQL, aksi `kedai`, dan layar owner. Itu perubahan berisiko (`AGENTS.md` bagian 2 butir 5): butuh penjelasan dampak dan "OK" ketua, dan sebaiknya lewat sesi strategi lalu dokumen fitur sendiri. Prinsip tanpa DELETE (bagian 7) tetap, jadi bentuknya nonaktif, bukan hapus.
+- **Versi 1 tidak berubah.** Penanganan tetap manual oleh ketua.
+- **Urutan di dalam versi 2:** belum ditentukan; ditentukan setelah review pemakaian versi 1 (`LNC.05`) bersama kandidat lain.
+
 ---

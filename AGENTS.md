@@ -349,3 +349,22 @@ Keputusan ketua (sesi strategi 16 Nov 2026, usulan owner). Sumber: docs/pengenal
 - **Layar Pengenalan tidak memakai bagian `#` alamat dan tidak mengubah alamat peramban**, karena `#` dipakai link reset password (`akun.md`, AKN.09).
 - **Revisi kata-kata** hanya di `public/pengenalan-isi.js` (satu berkas, push seperti biasa); bukan lewat Google Sheet atau SQL.
 - **Bagian 1, rencana versi:** fitur ini masuk versi 1, sebelum Peluncuran (bawaan; ketua boleh mengubah).
+
+### 2026-11-18: Turnstile (CAPTCHA) di Daftar dan Masuk, pengecualian "tanpa CDN"
+
+Keputusan owner (disetujui lewat WA). Asal usulan: saran umum dari teman di kantor IT (ia hanya melihat-lihat aplikasi, tidak membaca md; bukan temuan serangan). Persetujuan "OK" ketua untuk perubahan login: **belum tercatat**. Alasan lain belum tercatat.
+
+- **Tujuan:** mencegah pembuatan akun massal dan masuk otomatis (daftar terbuka, email tanpa verifikasi). Pendaftaran akun sampah juga bisa memicu order sampah.
+- **Cara:** CAPTCHA bawaan Supabase Auth dengan penyedia **Cloudflare Turnstile** (Supabase juga mendukung hCaptcha). Menurut dokumentasi resmi Supabase, ia berlaku untuk form daftar, masuk, dan lupa password. Pengaktifannya lewat dashboard Supabase (Auth, bagian proteksi bot, tombol Enable CAPTCHA). Cek ulang tampilan dashboard saat dikerjakan. Di aplikasi, "Lupa password?" hanya petunjuk tanpa form (AK12, `akun.md`), jadi widget cukup di layar **Daftar dan Masuk**.
+- **Pengecualian "tanpa CDN" (bagian 3):** hanya untuk **skrip widget Turnstile** dari domain Cloudflare, karena tidak bisa disalin ke `public/lib/`. Tidak berlaku untuk hal lain.
+- **Rahasia:** kunci rahasia Turnstile hanya di dashboard Supabase. Hanya **Sitekey** yang boleh ada di `public/config.js`. Hostname GitHub Pages didaftarkan di widget Turnstile.
+- **Akun Cloudflare milik ketua**, dibuka di profil browser terpisah di Mac bersama (bagian 8).
+- **Urutan aman:** pasang widget dan kirim token di kode, tes dengan akun dummy, **tombol Enable di dashboard dinyalakan paling akhir**. Menyalakannya lebih dulu diduga membuat daftar dan masuk ditolak untuk semua orang. Bisa dimatikan lagi bila bermasalah.
+- **Kategori login (bagian 7):** tiap berkas yang diubah tetap minta konfirmasi singkat. Bila skrip atau berkas baru perlu masuk cache `sw.js`, itu butuh "OK".
+- **Pesan galat bila widget gagal dimuat harus umum dan ramah** (tanpa galat mentah). Ibu-ibu tidak boleh terjebak di layar Masuk.
+- **Wajib dites:** HP lama, SEC-33 (login dan CORS dari alamat asli) diulang, link reset password dari dashboard, dan pembuatan akun staf oleh ketua di dashboard. Dua yang terakhir **belum diketahui** apakah ikut kena CAPTCHA.
+- **Peluncuran:** selesai dan lulus tes sebelum LNC.04. Tidak ada data uji tambahan untuk dibersihkan.
+
+### 2026-11-18: Persetujuan ketua untuk Turnstile dan batas order
+
+Ketua menyetujui pemasangan Turnstile di Daftar dan Masuk serta batas 5 order per customer per hari. Melengkapi dua blok 18 Nov (AGENTS.md dan order.md). Yang paling akhir menang.
