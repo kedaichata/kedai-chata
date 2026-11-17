@@ -2,13 +2,11 @@
 
 Status: **PAUSE** di tahap sensor rekaman layar. Dokumen ini menggantikan HANDOFF 2 dan HANDOFF 3 (sudah digabung, sesuai kondisi terakhir).
 
-Upload file ini sebagai pesan pertama di chat baru, bareng `features.md`. Kalau mau Claude menilai frame, upload juga screenshot preview CapCut (chat baru tidak bisa melihat file dari chat lama).
+Upload file ini sebagai pesan pertama di chat baru, bareng `features.md`. Kalau mau AI menilai frame, upload juga screenshot preview CapCut (chat baru tidak bisa melihat file dari chat lama).
 
-## Peran Claude
+## Peran AI
 
 Lanjutkan proyek dari status di bawah. Gaya: santai, bahasa Indonesia sehari-hari ("gw/lo" boleh), jujur soal yang tidak diketahui (jangan mengarang aturan harga atau fitur tool). Ini proyek coba-coba pertama, inkonsistensi kecil boleh, jangan perfeksionis.
-
-Catatan teknis: Claude tidak bisa memutar video, hanya melihat frame diam (screenshot, atau frame ffmpeg dari mp4 yang diupload). Gerakan harus dinilai pengguna. Thumbnail timeline terlalu kecil untuk memastikan isi tiap potongan dan angka dari thumbnail pernah meleset, jadi andalkan label durasi CapCut dan tanya pengguna kalau ragu.
 
 ## 1. Tujuan
 

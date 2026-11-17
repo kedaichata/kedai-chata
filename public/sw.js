@@ -26,7 +26,7 @@
 // GLR.06: var NAMA_CACHE = "chata-v26"; // VIS.03: naik dari chata-v25 karena stepper.js dan stepper.css masuk daftar cache
 // QRS.03: var NAMA_CACHE = "chata-v27"; // GLR.06: naik dari chata-v26 karena gelar.js dan gelar.css masuk daftar cache
 // PGN.03: var NAMA_CACHE = "chata-v28"; // QRS.03: naik dari chata-v27 karena qris.js dan img/qris.jpg masuk daftar cache
-var NAMA_CACHE = "chata-v29"; // PGN.03: naik dari chata-v28 karena pengenalan.css, pengenalan-isi.js, dan pengenalan.js masuk daftar cache
+var NAMA_CACHE = "chata-v30"; // KETUA : menu warung, memasukkan menu warung ke DAFTAR_CACHE
 
 // Semua path relatif (tanpa awalan /) supaya jalan di GitHub Pages.
 // Tiap berkas aplikasi baru (JS, style.css, pustaka, ikon) wajib ditambah di sini.
@@ -77,6 +77,35 @@ var DAFTAR_CACHE = [
   "img/esteh.jpg",
   "img/infografik.webp", // BTN.04a
   "img/qris.jpg", // QRS.03
+  "img/nasi_telur_dadar.jpg", //menu warung
+  "img/nutrisari_dingin.jpg", //menu warung
+  "img/mie_instant_special.jpg", //menu warung
+  "img/mie_instant_telur.jpg", //menu warung
+  "img/nasgor_cumi.jpg", //menu warung
+  "img/nasgor_sosis_bakso.jpg", //menu warung
+  "img/nasgor_telur_ceplok.jpg", //menu warung
+  "img/cireng.jpg", //menu warung
+  "img/minuman_coklat.jpg", //menu warung
+  "img/minuman_es_teh.jpg", //menu warung
+  "img/minuman_macha.jpg", //menu warung
+  "img/minuman_mineral.jpg", //menu warung
+  "img/bakso_bakar.jpg", //menu warung
+  "img/croffle.jpg", //menu warung
+  "img/kentang_goreng.jpg", //menu warung
+  "img/minuman_aneka_kopi.jpg", //menu warung
+  "img/minuman_milo.jpg", //menu warung
+  "img/minuman_teh_tarik.jpg", //menu warung
+  "img/roti_bakar_topping.jpg", //menu warung
+  "img/roti_bakar.jpg", //menu warung
+  "img/sosis_bakar.jpg", //menu warung
+  "img/onigiri_karage.jpg", //menu warung
+  "img/onigiri_katsu.jpg", //menu warung
+  "img/onigiri_teriyaki.jpg", //menu warung
+  "img/onigiri_sosis.jpg", //menu warung
+  "img/rb_cumi_cabe_ijo.jpg", //menu warung
+  "img/rb_karage.jpg", //menu warung
+  "img/rb_katsu.jpg", //menu warung
+  "img/rb_teriyaki.jpg", //menu warung
 ];
 
 // Saat dipasang: simpan salinan awal semua berkas aplikasi.
