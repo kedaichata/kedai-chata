@@ -390,3 +390,31 @@ Keputusan ketua (17 Nov 2026), permintaan owner saat mengisi 31 menu: menu banya
 - LNC.01 belum dikerjakan, belum ada yang dicentang di sheet. Menu tidak perlu dibersihkan lewat SQL lagi.
 
 **Saran giliran berikutnya:** sesi kode MNU.13. Lampirkan `AGENTS.md`, `docs/menu.md`, `public/menu.js`, `public/pesan.js`, `public/style.css` (dan `index.html` bila perlu). Kode baru di berkas terpisah (misalnya `cari.js`); `sw.js` naik ke `chata-v32` dengan penjelasan dampak dan "OK" ketua dulu. Sesudah itu lanjut LNC.01 (setelah SEC-27, butuh OK ketua).
+
+### Handoff #15 | 2026-11-17 | KETUA
+
+**Tugas:** MNU.13 selesai: kotak "Cari menu" untuk customer (tab Pesan) dan owner (tab Menu). Dites di Android sebagai owner dan customer, hasil sesuai harapan. Murni frontend, tanpa SQL, aksi `kedai`, atau panggilan server baru.
+
+**File yang diubah:**
+
+- `public/cari.js` (baru): membuat kotak cari dan tombol × lewat JS, menyediakan `window.KedaiCari.pasang`.
+- `public/menu.js`: kait kecil di `render()` (owner), `renderPelanggan()` (customer), `reset()`, dan pemasangan kotak di bagian bawah berkas. Satu-satunya baris lama yang berubah adalah ringkasan owner "N menu, N aktif" yang kini dibungkus `if`; teks aslinya tetap.
+- `public/index.html`: hanya menambah satu `<script src="cari.js">` sebelum `menu.js`.
+- `public/style.css`: blok kelas `cari-` di paling bawah.
+- `public/sw.js`: naik dari `chata-v31` ke `chata-v32`, `cari.js` masuk `DAFTAR_CACHE`. OK ketua sudah diberikan di sesi ini.
+  **Keputusan baru** (menjabarkan blok 17 Nov di atas; alasan selebihnya belum tercatat):
+
+- Kata yang diketik dicocokkan satu per satu: semua kata harus ada di nama, jadi "bakar bakso" tetap menemukan "Bakso Bakar". Yang dicari tetap nama saja, tanpa membedakan huruf besar kecil.
+- Tombol × ada di **samping** kotak (bukan di bawahnya, keputusan ketua setelah uji layar), tampil hanya saat kotak berisi.
+- Kotak cari **menempel di bawah bilah atas** saat daftar digulir (bawaan penulis, 31 menu membuat kotak yang ikut hilang kurang berguna).
+- Filter **bertahan** saat Segarkan dan pindah tab (Segarkan dan buka tab lewat jalur yang sama, jadi tidak bisa dibedakan); dikosongkan saat Keluar.
+- Saat pencarian aktif, ringkasan menjadi "N dari M menu." Hasil kosong menampilkan "Menu tidak ditemukan".
+- Keranjang dan tombol Tambah tidak terpengaruh: hanya tampilan yang disaring, data `daftar` dan `daftarPelanggan` tidak berubah.
+- Tidak ada pengecualian baru dari aturan `AGENTS.md` bagian 7. MN2 (tanpa kategori) tetap berlaku di versi 1.
+  **Masalah yang belum beres:**
+
+- iPhone belum dicek (tidak ada perangkat uji, `AGENTS.md` bagian 10 butir 7); keluhan dihitung di review pemakaian. Butir baru untuk sheet: "Cek tampilan Cari menu di iPhone" (P2).
+- Status commit dan push belum dikonfirmasi di catatan ini. Commit menyentuh `public/`, jadi tanpa `[skip ci]`.
+- Butir terbuka dari Handoff #14 tidak berubah: Onigiri Cumi Cabe Ijo menunggu foto, paket dan harga topping Seblak, `menu1.jpg` dan `esteh.jpg` sisa dummy di `DAFTAR_CACHE`, ketidaksamaan `qris.png` di `qris.md` dengan `qris.jpg` di `public/img/`.
+- Butir terbuka dari Handoff #13 tidak berubah: fungsi `menu_simpan` 6 argumen lama, target ukuran foto menu untuk zoom, deskripsi belum tampil di kartu Kelola Menu, `menu.js` kini sekitar 940 baris (kode baru di berkas terpisah tetap jadi pedoman).
+  **Saran giliran berikutnya:** LNC.01 (bersihkan data uji), menunggu penjelasan dampak dan "OK" ketua. SEC-23 dan SEC-27 sudah lulus. Lampirkan `AGENTS.md`, `features.md`, `security.md`, dan `docs/menu.md`. Cek dulu menu dummy yang tertinggal (Handoff #13) dan data uji lain sebelum mulai.

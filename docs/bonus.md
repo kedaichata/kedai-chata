@@ -212,4 +212,16 @@ Keputusan ketua (sesi tes SEC-27, 16 Nov 2026): pesan saat sesi login habis dini
 - **Hasil SEC-27 tidak berubah (lulus).** Tidak ada baris SEC baru; tes ulang lewat langkah token kedaluwarsa di SEC-27.
 - **Butir baru untuk sheet (aturan 8):** "Pesan sesi habis lebih jelas".
 
+### 2026-11-17: Kandidat versi 2: kategori menu
+
+Keputusan ketua (17 Nov 2026), saat sesi MNU.13 (Cari menu). Sumber: `docs/menu.md` MN2, Handoff #14 dan #15. Nomor B dan kolom Alasan diisi saat review pemakaian (`LNC.05`); alasan pemakaian belum tercatat.
+
+- **Kandidat:** menu dikelompokkan dalam kategori (misalnya Makanan, Minuman, Camilan) dan customer bisa menyaring atau melihat daftar per kategori.
+- **Latar:** menu asli kini 31 (nanti 32) dan daftar customer panjang. Fitur Cari menu (MNU.13) menjadi jalan keluar untuk versi 1; kategori ditaruh di versi 2.
+- **Hubungan dengan B9:** butir B9 ("Kategori menu dan urutan tampil") sudah ada di bagian 2. Blok ini menegaskan bahwa kategori adalah kandidat versi 2; B9 dibiarkan, dan yang paling akhir menang.
+- **Versi 1 tidak berubah:** MN2 (tanpa kategori) tetap berlaku. Keterangan menu tetap berupa daftar isi, bukan golongan (Handoff #14). Cari menu hanya mencari nama dan tidak diubah.
+- **Perkiraan dampak (belum diputuskan):** menyentuh tabel `menu` (kolom atau tabel baru), fungsi SQL, aksi `menu_simpan` dan `menu_daftar`, layar Kelola Menu owner, dan daftar customer. Itu perubahan berisiko (`AGENTS.md` bagian 2 butir 5): butuh penjelasan dampak dan "OK" ketua, dan sebaiknya lewat sesi strategi lalu dokumen fitur sendiri.
+- **Hal yang perlu diputuskan saat dikerjakan:** apakah owner membuat kategorinya sendiri atau daftar tetap, apakah satu menu boleh punya lebih dari satu kategori, urutan tampil kategori dan menu, dan apakah kategori punya nonaktif (sejalan MN3: tidak ada hapus).
+- **Urutan:** ditentukan setelah review pemakaian versi 1 (`LNC.05`). Bila kotak Cari ternyata sudah cukup bagi ibu-ibu, kandidat ini boleh tetap menunggu.
+
 ---

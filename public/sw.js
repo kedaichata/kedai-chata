@@ -29,7 +29,8 @@
 // KETUA: var NAMA_CACHE = "chata-v30"; // KETUA : menu warung, memasukkan menu warung ke DAFTAR_CACHE
 // MNU.13: var NAMA_CACHE = "chata-v32"; // KETUA : naik dari chata-v31 karena cari.js masuk daftar cache
 // var NAMA_CACHE = "chata-v31"; // KETUA : nama foto menu warung diganti dari garis bawah ke strip, mie-instan-sayur ditambah
-var NAMA_CACHE = "chata-v32"; // MNU.13: naik dari chata-v31 karena cari.js masuk daftar cache
+// var NAMA_CACHE = "chata-v32"; // MNU.13: naik dari chata-v31 karena cari.js masuk daftar cache
+var NAMA_CACHE = "chata-v33"; // KETUA: naik dari chata-v32 karena img/onigiri-cumi-cabe-ijo.jpg masuk daftar cache
 
 // Semua path relatif (tanpa awalan /) supaya jalan di GitHub Pages.
 // Tiap berkas aplikasi baru (JS, style.css, pustaka, ikon) wajib ditambah di sini.
@@ -107,6 +108,7 @@ var DAFTAR_CACHE = [
   "img/onigiri-katsu.jpg", //menu warung
   "img/onigiri-teriyaki.jpg", //menu warung
   "img/onigiri-sosis.jpg", //menu warung
+  "img/onigiri-cumi-cabe-ijo.jpg", //menu warung
   "img/rb-cumi-cabe-ijo.jpg", //menu warung
   "img/rb-karage.jpg", //menu warung
   "img/rb-katsu.jpg", //menu warung
