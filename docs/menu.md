@@ -451,3 +451,27 @@ Keputusan ketua (17 Nov 2026). Sumber: Handoff #14 dan sesi ini. Yang paling akh
 - **`qris.md`** menulis `qris.png`, yang benar `qris.jpg` (dikonfirmasi ketua). Blok koreksi untuk `docs/qris.md` sudah disiapkan.
 - Butir terbuka Handoff #13 dan #15 tidak berubah: fungsi `menu_simpan` 6 argumen lama, target ukuran foto menu untuk zoom, deskripsi belum tampil di kartu Kelola Menu, `menu.js` sekitar 940 baris, iPhone belum dicek (termasuk Cari menu).
   **Saran giliran berikutnya:** cek penerbitan dan cache `chata-v34`; ibu mengetik menu yang belum masuk; lalu LNC.01 (bersihkan data uji) dengan penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md`, `features.md`, `security.md`, dan `docs/menu.md`. Cek dulu menu dummy yang tertinggal (Handoff #13).
+
+### 2026-11-17: Topping Seblak = menu terpisah, Es Batu, dan kejadian `[skip ci]`
+
+Keputusan ketua (17 Nov 2026). Yang paling akhir menang.
+
+**Pertentangan dengan blok lama:** Handoff #16 menulis "paket dan harga topping Seblak belum diputuskan" dan menyebut total 31 menu. Keduanya tidak berlaku lagi: topping sudah diputuskan, dan layar Kelola Menu pada 17 Nov 2026 menampilkan **38 menu, 38 aktif**.
+
+**Topping Seblak**
+
+- Topping dibuat sebagai **menu terpisah** karena membawa **harga baru**, dan grup pilihan tidak membawa harga (sejalan blok 7 Nov dan Handoff #14).
+- Sudah diketik owner sebagai menu biasa, lengkap dengan foto: Seblak (Rp 10.000), Dumpling Ayam (Rp 2.000), Dumpling Keju (Rp 2.000), Cuanki Lidah (Rp 1.000), Kerupuk (Rp 2.000), Telur (Rp 5.000).
+- Konsekuensi yang sudah diterima di blok 7 Nov tetap: topping tidak terikat ke Seblak, jadi bisa dipesan tanpa Seblak.
+- Onigiri Cumi Cabe Ijo (Rp 19.000) juga sudah diketik dan fotonya tampil.
+  **Es Batu**
+
+- Menu **Es Batu** (Rp 2.000) ditambahkan adik ketua membantu owner, dengan foto `es-kristal.jpg` (sekitar 40 KB), commit `28073b9`. `sw.js` naik ke `chata-v35` atas "OK" ketua yang disampaikan ketua langsung di chat.
+- Terbukti di browser: cache `chata-v35` terbentuk dan memuat `es-kristal.jpg`.
+  **Kejadian `[skip ci]` (bahan belajar)**
+
+- **Apa yang terjadi:** commit `28073b9` menyentuh `public/` (foto dan `sw.js`) tetapi memakai `[skip ci]`, sehingga penerbitan otomatis Pages tidak jalan.
+- **Penyebab:** `[skip ci]` ditiru dari commit docs sebelumnya.
+- **Perbaikan:** ketua menjalankan workflow secara manual (run #137, hijau). Tidak ada commit tambahan.
+- **Pencegahan:** aturan `AGENTS.md` blok 12 Nov 2026. `[skip ci]` hanya untuk commit yang **seluruh isinya docs/md**. Commit yang menyentuh `public/`, `supabase/`, atau `.github/` tidak boleh memakainya.
+  **Masih terbuka:** `menu1.jpg` dan `esteh.jpg` sisa dummy di `DAFTAR_CACHE`; butir terbuka Handoff #13, #15, dan #16 lainnya tidak berubah. Selanjutnya LNC.01 dengan "OK" ketua.
