@@ -27,7 +27,9 @@
 // QRS.03: var NAMA_CACHE = "chata-v27"; // GLR.06: naik dari chata-v26 karena gelar.js dan gelar.css masuk daftar cache
 // PGN.03: var NAMA_CACHE = "chata-v28"; // QRS.03: naik dari chata-v27 karena qris.js dan img/qris.jpg masuk daftar cache
 // KETUA: var NAMA_CACHE = "chata-v30"; // KETUA : menu warung, memasukkan menu warung ke DAFTAR_CACHE
-var NAMA_CACHE = "chata-v31"; // KETUA : nama foto menu warung diganti dari garis bawah ke strip, mie-instan-sayur ditambah
+// MNU.13: var NAMA_CACHE = "chata-v32"; // KETUA : naik dari chata-v31 karena cari.js masuk daftar cache
+// var NAMA_CACHE = "chata-v31"; // KETUA : nama foto menu warung diganti dari garis bawah ke strip, mie-instan-sayur ditambah
+var NAMA_CACHE = "chata-v32"; // MNU.13: naik dari chata-v31 karena cari.js masuk daftar cache
 
 // Semua path relatif (tanpa awalan /) supaya jalan di GitHub Pages.
 // Tiap berkas aplikasi baru (JS, style.css, pustaka, ikon) wajib ditambah di sini.
@@ -49,6 +51,7 @@ var DAFTAR_CACHE = [
   "akunmenu.js",
   "menu-detail.js", // MNU.08
   "menu.js",
+  "cari.js", // MNU.13
   "grup.js", // MNU.10
   "pesan.js", // ORD.03
   "stepper.js", // VIS.03

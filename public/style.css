@@ -1858,3 +1858,38 @@ body.sheet-terbuka {
     font-weight: 700;
     overflow-wrap: anywhere;
 }
+
+/* ------------------------------------------------------------------
+   MNU.13: kotak Cari menu (menu.md blok 2026-11-17), kelas berawalan cari-
+   Dipasang cari.js di layar Pesan (customer) dan Kelola Menu (owner).
+   Menempel di bawah bilah atas (tinggi 56 px) saat daftar digulir. Tombol x di samping kotak.
+   Hanya tambahan; tidak mengubah aturan yang sudah ada.
+   ------------------------------------------------------------------ */
+.cari-kotak {
+    position: sticky;
+    top: 56px;
+    z-index: 9; /* di bawah bilah atas (10), di atas kartu menu */
+    /* Margin minus meniadakan padding 16px di body supaya latar krem menutup selebar layar */
+    margin: 0 -16px 8px;
+    padding: 8px 16px;
+    background: var(--krem);
+}
+
+.cari-baris {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cari-kolom {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.cari-hapus {
+    flex: 0 0 var(--tinggi-tombol);
+    width: var(--tinggi-tombol);
+    padding: 0;
+    font-size: 1.6rem;
+    line-height: 1;
+}
