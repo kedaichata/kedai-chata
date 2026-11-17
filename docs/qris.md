@@ -184,3 +184,13 @@ Sumber: `home.md` HOM.08. Menimpa QR3 (letak dan label). Yang paling akhir menan
 - Tombol QRIS kini salah satu dari **3 tombol sejajar** di Home (Gelar, QRIS, Bantuan), emoji 💳 di atas teks **"QRIS"**. Bukan lagi tombol penuh "Bayar dengan QRIS" tepat di atas Bantuan.
 - Urutan customer: sapaan, Aktifkan notifikasi, baris [Gelar, QRIS, Bantuan]. Owner dan penjaga: baris [QRIS, Bantuan].
 - Pop-up (QR4), kalimat petunjuk (QR5), dan Simpan gambar (QR6) tidak berubah. `id` tombol `home-qris` tetap, jadi `qris.js` tidak berubah.
+
+### 2026-11-17: Berkas gambar QRIS adalah `qris.jpg`, bukan `qris.png`
+
+Keputusan ketua (17 Nov 2026). Yang paling akhir menang.
+
+**Pertentangan dengan blok lama:** `docs/qris.md` menulis `public/img/qris.png`. Yang benar adalah **`public/img/qris.jpg`**, sesuai berkas di `public/img/` dan entri `img/qris.jpg` di `DAFTAR_CACHE` `sw.js`.
+
+- Semua rujukan `qris.png` di berkas ini dibaca sebagai `qris.jpg`, termasuk langkah mengganti QRIS (ganti berkas `qris.jpg` dengan nama sama lalu push).
+- Catatan di `docs/features.md` (blok 14 Nov 2026) juga menyebut `qris.png`; dibaca `qris.jpg` pula.
+- Tidak ada perubahan kode atau `sw.js`. Alasan perbedaan nama belum tercatat.

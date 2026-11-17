@@ -418,3 +418,36 @@ Keputusan ketua (17 Nov 2026), permintaan owner saat mengisi 31 menu: menu banya
 - Butir terbuka dari Handoff #14 tidak berubah: Onigiri Cumi Cabe Ijo menunggu foto, paket dan harga topping Seblak, `menu1.jpg` dan `esteh.jpg` sisa dummy di `DAFTAR_CACHE`, ketidaksamaan `qris.png` di `qris.md` dengan `qris.jpg` di `public/img/`.
 - Butir terbuka dari Handoff #13 tidak berubah: fungsi `menu_simpan` 6 argumen lama, target ukuran foto menu untuk zoom, deskripsi belum tampil di kartu Kelola Menu, `menu.js` kini sekitar 940 baris (kode baru di berkas terpisah tetap jadi pedoman).
   **Saran giliran berikutnya:** LNC.01 (bersihkan data uji), menunggu penjelasan dampak dan "OK" ketua. SEC-23 dan SEC-27 sudah lulus. Lampirkan `AGENTS.md`, `features.md`, `security.md`, dan `docs/menu.md`. Cek dulu menu dummy yang tertinggal (Handoff #13) dan data uji lain sebelum mulai.
+
+### 2026-11-17: Foto menu didaftarkan di cache `sw.js`, dan keputusan menu warung
+
+Keputusan ketua (17 Nov 2026). Sumber: Handoff #14 dan sesi ini. Yang paling akhir menang.
+
+**Pertentangan dengan blok lama:** blok 2026-11-07 menulis foto menu "dikecualikan dari daftar cache `sw.js`". Itu tidak berlaku lagi. Sejak Handoff #14 nama foto menu ada di `DAFTAR_CACHE`, dan foto menu baru **wajib ikut didaftarkan** di sana. Alasan belum tercatat.
+
+- **Tiap foto menu baru = ubah `sw.js`** (tambah satu entri `img/<nama>.jpg`, naikkan versi cache). Perubahan `sw.js` tetap butuh penjelasan dampak dan "OK" ketua (`AGENTS.md` bagian 7). Foto dan `sw.js` harus ikut di **commit yang sama**: bila ada berkas di daftar yang belum terbit, `cache.addAll` gagal dan seluruh cache tidak terbentuk. Bila beberapa foto datang berdekatan, gabungkan dalam satu perubahan `sw.js`.
+- **Nama foto:** huruf kecil, angka, dan strip, berakhiran `.jpg`. Ejaan dibenarkan sebelum commit (contoh: `sebak-...` menjadi `seblak-...`). Nama yang diketik di "Nama berkas foto" harus persis sama dengan nama berkas di `public/img/`.
+- **Tanpa kategori dan tanpa golongan** (MN2 tetap). Keterangan menu berupa daftar isi, bukan golongan.
+- **Topping yang mengubah harga = menu baru sendiri**; grup pilihan tidak membawa harga.
+- **Es Nutrisari** (Rp 5.000) adalah menu tambahan di luar papan, atas permintaan ibu ketua.
+- **Seblak:** paket dan harga topping belum diputuskan.
+- Tidak ada perubahan database, aksi `kedai`, atau fungsi SQL.
+
+### Handoff #16 | 2026-11-17 | KETUA
+
+**Tugas:** foto menu baru masuk repo dan cache `sw.js`. Dua commit sudah di-push ke `main` (tanpa `[skip ci]`, karena menyentuh `public/`):
+
+- `256f2ae`: `public/img/onigiri-cumi-cabe-ijo.jpg` (nama diganti dari garis bawah ke strip, sekitar 49,5 KB), `public/sw.js` cache naik `chata-v32` ke `chata-v33`, serta catatan Cari menu di `docs/menu.md` dan `docs/bonus.md`.
+- `21ad7af`: enam foto `kerupuk-bulat.jpg`, `olahan-telur.jpg`, `seblak-cuanki-lidah.jpg`, `seblak-dumpling-ayam.jpg`, `seblak-dumpling-keju.jpg`, `seblak-original.jpg` (sekitar 39 sampai 49 KB), dan `public/sw.js` cache naik `chata-v33` ke `chata-v34`. Empat dari enam nama berkas dibenarkan sebelum commit (garis bawah ke strip, `sebak` ke `seblak`).
+  OK ketua untuk perubahan `sw.js` diberikan langsung di chat untuk kedua commit. Cek penerbitan (Actions) dan cache `chata-v34` di browser **belum dikonfirmasi** di catatan ini.
+
+**Keputusan baru:** lihat blok 2026-11-17 di atas (foto menu wajib didaftarkan di `sw.js`).
+
+**Masalah yang belum beres:**
+
+- **Menu belum diketik di Kelola Menu** (nama berkas foto harus persis sama): Onigiri Cumi Cabe Ijo, serta menu untuk kerupuk bulat, olahan telur, dan empat seblak. Total menu sekarang 31 aktif; jumlah akhir ditentukan setelah diketik.
+- **Seblak:** paket dan harga topping belum diputuskan.
+- **`menu1.jpg` dan `esteh.jpg`** sisa dummy di `DAFTAR_CACHE`; membuangnya butuh "OK" ketua dan sebaiknya digabung dengan perubahan `sw.js` berikutnya.
+- **`qris.md`** menulis `qris.png`, yang benar `qris.jpg` (dikonfirmasi ketua). Blok koreksi untuk `docs/qris.md` sudah disiapkan.
+- Butir terbuka Handoff #13 dan #15 tidak berubah: fungsi `menu_simpan` 6 argumen lama, target ukuran foto menu untuk zoom, deskripsi belum tampil di kartu Kelola Menu, `menu.js` sekitar 940 baris, iPhone belum dicek (termasuk Cari menu).
+  **Saran giliran berikutnya:** cek penerbitan dan cache `chata-v34`; ibu mengetik menu yang belum masuk; lalu LNC.01 (bersihkan data uji) dengan penjelasan dampak dan "OK" ketua. Lampirkan `AGENTS.md`, `features.md`, `security.md`, dan `docs/menu.md`. Cek dulu menu dummy yang tertinggal (Handoff #13).
