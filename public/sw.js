@@ -31,7 +31,8 @@
 // var NAMA_CACHE = "chata-v31"; // KETUA : nama foto menu warung diganti dari garis bawah ke strip, mie-instan-sayur ditambah
 // var NAMA_CACHE = "chata-v32"; // MNU.13: naik dari chata-v31 karena cari.js masuk daftar cache
 // var NAMA_CACHE = "chata-v33"; // KETUA: naik dari chata-v32 karena img/onigiri-cumi-cabe-ijo.jpg masuk daftar cache
-var NAMA_CACHE = "chata-v34"; // KETUA: naik dari chata-v33 karena enam foto menu (seblak, kerupuk bulat, olahan telur) masuk daftar cache
+//var NAMA_CACHE = "chata-v34"; // KETUA: naik dari chata-v33 karena enam foto menu (seblak, kerupuk bulat, olahan telur) masuk daftar cache
+var NAMA_CACHE = "chata-v35"; // KETUA: naik dari chata-v34 karena 1 foto menu (es kristal) masuk daftar cache
 
 // Semua path relatif (tanpa awalan /) supaya jalan di GitHub Pages.
 // Tiap berkas aplikasi baru (JS, style.css, pustaka, ikon) wajib ditambah di sini.
@@ -120,6 +121,7 @@ var DAFTAR_CACHE = [
   "img/seblak-dumpling-ayam.jpg", //menu warung
   "img/seblak-dumpling-keju.jpg", //menu warung
   "img/seblak-original.jpg", //menu warung
+  "img/es-kristal.jpg", //menu warung
 ];
 
 // Saat dipasang: simpan salinan awal semua berkas aplikasi.
