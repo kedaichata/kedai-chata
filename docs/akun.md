@@ -417,3 +417,38 @@ Keputusan koordinasi owner, disetujui. Alasan selebihnya belum tercatat.
 - **Saat LNC.01:** akun uji dinonaktifkan (bukan dihapus) berdasarkan daftar yang disebut satu per satu dan menunggu "OK" ketua. Akun asli tidak boleh ada di daftar itu.
 - **Diterima:** semua surat ke alias masuk ke satu kotak. Password Gmail dan app password SMTP tidak masuk chat, repo, atau md.
 - Tes email ke satu alias `+` dilakukan sebelum akun asli dibuat.
+
+### Handoff #15 | 2026-11-18 | [ketua]
+
+**Tugas:** Turnstile (CAPTCHA Cloudflare) di layar Daftar dan Masuk. TRN.01 sampai TRN.03 dikerjakan. Konteks dan keputusan: `AGENTS.md` blok 2026-11-18 (Turnstile, dan Persetujuan ketua).
+
+**Berkas yang berubah (commit db930e3, Pages #138 hijau, tanpa `[skip ci]`):** `public/config.js` (tambah `TURNSTILE_SITEKEY`), `public/index.html` (wadah widget di form Masuk dan Daftar, satu tag skrip Cloudflare sebelum `akun.js`), `public/akun.js` (render widget, `captchaToken` ke `signInWithPassword` dan `signUp`, reset token setelah gagal, pesan galat umum, tombol Coba lagi). `sw.js` tidak diubah: skrip Cloudflare dari domain lain dan `sw.js` hanya menangani domain sendiri (TRN.04 tidak diperlukan).
+
+**Hasil:**
+
+- Widget Turnstile dibuat di akun Cloudflare ketua, hostname `kedaichata.github.io` (tanpa path repo), mode Managed, pre-clearance mati. Site Key ada di `config.js`. Secret Key hanya di password manager ketua dan belum dipasang di Supabase.
+- Tes layar Masuk di laptop lulus: widget tampil berbahasa Indonesia, tulisan "Ketuk kotak centang..." muncul, setelah diketuk menjadi "Berhasil!" dan tombol Masuk aktif.
+- **Enable CAPTCHA di dashboard Supabase masih MATI.** Selama mati, Supabase mengabaikan token, jadi daftar dan masuk tetap jalan.
+
+**Keputusan baru (ketua):**
+
+- Mode widget: Managed (Non-interactive dan Invisible ditolak: bila ragu, pengguna asli tidak punya jalan lolos).
+- Widget gagal dimuat atau token belum siap: tombol Masuk/Daftar nonaktif dengan tulisan "Memeriksa keamanan...", bila gagal muncul pesan ramah dan tombol Coba lagi (opsi 1).
+- Bila `TURNSTILE_SITEKEY` kosong, fitur dianggap mati (tombol berfungsi seperti dulu). Pilihan penulis (bawaan), belum ditanyakan satu per satu ke ketua.
+- Fitur ini tidak bisa dites di komputer lokal karena widget hanya jalan di hostname terdaftar; tes langsung di production.
+
+**Masalah yang belum beres:**
+
+- **Ganti password (AKN.08b) akan rusak setelah Enable CAPTCHA dinyalakan.** `gantiPassword()` di `akun.js` login ulang lewat `signInWithPassword` tanpa token, dan akan ditolak Supabase. Berlaku untuk semua peran. Belum diubah (hanya diberi catatan di kepala `akun.js`). Pilihan: (1) tambah widget di form Ganti password (menyentuh `index.html`, `akunmenu.js`, `akun.js`), rekomendasi penulis; (2) ganti password langsung lewat `updateUser` tanpa login ulang, yang membalik AK11 dan butuh keputusan ketua. **Wajib beres sebelum Enable dinyalakan.**
+- Belum dites: layar Daftar, login dummy sampai masuk beranda, pesan saat widget gagal dimuat (skrip diblokir), HP lama.
+- Belum diketahui apakah link reset password dari dashboard dan pembuatan akun staf (TRN.06) terhalang CAPTCHA; jangan diasumsikan.
+
+**Pelajaran:** hostname di Cloudflare hanya domain (`namaakun.github.io`), tanpa `https://` dan tanpa nama repo. Cloudflare sempat dibuka tanpa profil browser terpisah; sudah logout dan browser ditutup. Setelah tiap deploy, muat ulang keras (Cmd+Shift+R) sebelum tes.
+
+**Saran giliran berikutnya:**
+
+1. Tes layar Daftar dan login dummy sampai masuk beranda (Enable masih mati).
+2. Tes widget gagal dimuat dan HP lama (TRN.05, tanpa Enable).
+3. Putuskan penanganan Ganti password, lalu kerjakan.
+4. Baru nyalakan Enable CAPTCHA: pilih Cloudflare Turnstile di Supabase, ketik Secret Key langsung di dashboard (jangan ke chat). Tes ulang masuk dan daftar.
+5. TRN.06 (link reset dan akun staf) dan TRN.07 (ulang SEC-33), keduanya sebelum LNC.01b.
