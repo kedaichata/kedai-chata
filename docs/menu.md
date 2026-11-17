@@ -348,3 +348,45 @@ Keputusan ketua (tercatat di sheet pada MNU.05; alasan lain belum tercatat). Sum
 - **MN6 (foto menu lewat unggah, kompres, bucket terpisah, tanpa pembersihan) tidak berlaku.** Foto menu adalah berkas biasa di `public/img` yang diterbitkan bersama aplikasi.
 - **MNU.05 dibatalkan.** Tidak ada aksi unggah, tidak ada bucket, tidak ada kompres otomatis untuk foto menu.
 - **Belum diputuskan:** ukuran target foto menu (MNU.08 mencatat "target ukuran belum diputuskan"). Karena fotonya berkas aplikasi, ukuran dijaga saat berkas ditaruh di repo.
+
+### 2026-11-17: Kotak Cari menu (customer dan owner), murni di HP
+
+Keputusan ketua (17 Nov 2026), permintaan owner saat mengisi 31 menu: menu banyak dan sulit dicari. Yang paling akhir menang. Alasan lain belum tercatat.
+
+- **Kotak teks "Cari menu"** di atas daftar menu, di layar Pesan (customer) dan Kelola Menu (owner). Daftar tersaring sambil mengetik.
+- **Yang dicari: nama menu saja**, tanpa membedakan huruf besar kecil. Menu yang namanya memuat kata yang diketik ikut tampil (contoh: "bakso" menampilkan semua menu yang namanya mengandung kata bakso). Keterangan menu tidak ikut dicari. Dikonfirmasi owner.
+- **Murni frontend.** Memakai daftar dari `menu_daftar` yang sudah diambil (MN7). Tidak ada tabel, fungsi SQL, aksi `kedai`, tulis-database, atau panggilan server baru. Tidak ada pengecualian baru dari aturan `AGENTS.md` bagian 7.
+- **Tanpa kategori atau penggolongan.** MN2 tetap berlaku; B9 di `bonus.md` tidak berubah.
+- Teks yang diketik dan hasilnya lewat `textContent`, bukan `innerHTML`.
+- **Kode baru di berkas JS terpisah** (`menu.js` sudah sekitar 900 baris). Berkas baru wajib didaftarkan di cache `sw.js` (bagian 7, butuh "OK"; versi cache naik dari `chata-v31`). Gaya di `style.css`, kelas berawalan `cari-`.
+- **Urutan:** dikerjakan sebelum Peluncuran, atas permintaan owner.
+
+### Handoff #14 | 2026-11-17 | [KETUA]
+
+**Tugas:** pengisian menu asli menggantikan menu dummy, penggantian nama foto menu, dan persiapan fitur Cari menu. Belum ada kode fitur Cari yang ditulis.
+
+**File yang diubah (sudah di-push, commit 056a941):**
+
+- `public/img/`: 28 foto menu diganti dari garis bawah ke strip (mengikuti aturan nama foto, blok 2026-11-07 di berkas ini). Ejaan dibenarkan: `mie-instan-*` dan `minuman-matcha`.
+- `public/sw.js`: nama foto di `DAFTAR_CACHE` ikut diganti, `img/mie-instan-sayur.jpg` ditambah, cache naik ke `chata-v32`? Tidak: naik ke **`chata-v31`**. OK ketua sudah diberikan. Terbukti di browser: cache `chata-v31` terbentuk dan memuat nama foto dengan strip.
+
+**Keputusan baru:**
+
+- Menu diisi lewat layar Kelola Menu oleh owner (ibu ketua); lima menu dummy diubah jadi menu asli, tidak ada dummy tersisa. Per 17 Nov 2026 tampil **31 menu, 31 aktif**.
+- **Tanpa kategori dan tanpa golongan** (MN2 tetap). Keterangan menu berupa daftar isi, bukan golongan.
+- Semua minuman bisa diantar: gelas plastik; air mineral botol tanpa merek; kopi di gelas.
+- **Es Nutrisari** (Rp 5.000) adalah menu tambahan di luar papan, atas permintaan ibu ketua.
+- Topping yang mengubah harga = **menu baru sendiri**; grup pilihan tidak membawa harga.
+- **Fitur Cari menu** (customer dan owner, nama saja, murni frontend, berkas JS baru) disetujui ketua untuk dikerjakan **sebelum peluncuran**. Butir sheet: MNU.13 (P1).
+
+**Masalah yang belum beres:**
+
+- **Onigiri Cumi Cabe Ijo** belum diketik; menunggu fotonya (`onigiri-cumi-cabe-ijo.jpg`). Total nanti 32 menu.
+- **Seblak** (Rp 10.000, tanpa foto): paket dan harga topping belum diputuskan.
+- Foto Seblak menyusul. Foto baru: nama strip, `.jpg`, sekitar 30 sampai 50 KB, commit tanpa `[skip ci]`; `sw.js` tidak perlu diubah.
+- `menu1.jpg` dan `esteh.jpg` di `public/img/` sisa dummy, masih di `DAFTAR_CACHE`. Dibiarkan; membuangnya butuh OK ketua.
+- Cek `qris.js`: dokumen `qris.md` menulis `qris.png`, sedangkan berkas di `public/img/` adalah `qris.jpg`.
+- Blok Catatan Susulan untuk `docs/menu.md` (Cari menu) sudah dirumuskan di chat; **cek sudah ditempel atau belum**. Tiga keputusan di atas (tanpa kategori, `sw.js` memuat nama foto, Es Nutrisari) belum jadi blok sendiri.
+- LNC.01 belum dikerjakan, belum ada yang dicentang di sheet. Menu tidak perlu dibersihkan lewat SQL lagi.
+
+**Saran giliran berikutnya:** sesi kode MNU.13. Lampirkan `AGENTS.md`, `docs/menu.md`, `public/menu.js`, `public/pesan.js`, `public/style.css` (dan `index.html` bila perlu). Kode baru di berkas terpisah (misalnya `cari.js`); `sw.js` naik ke `chata-v32` dengan penjelasan dampak dan "OK" ketua dulu. Sesudah itu lanjut LNC.01 (setelah SEC-27, butuh OK ketua).
