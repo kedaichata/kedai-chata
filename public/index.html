@@ -78,6 +78,25 @@
                         />
                         <p class="isian__galat" hidden></p>
                     </div>
+                    <!-- TRN.03: widget Turnstile (CAPTCHA Cloudflare, mode Managed). Diisi akun.js; teks lewat textContent. -->
+                    <div class="isian" id="turnstile-masuk-bungkus">
+                        <div id="turnstile-masuk"></div>
+                        <p
+                            class="isian__bantuan"
+                            id="turnstile-masuk-ket"
+                            role="status"
+                        >
+                            Memeriksa keamanan...
+                        </p>
+                        <button
+                            type="button"
+                            class="tombol tombol--sekunder"
+                            id="turnstile-masuk-ulang"
+                            hidden
+                        >
+                            Coba lagi
+                        </button>
+                    </div>
                     <div class="isian" id="masuk-galat-bungkus" hidden>
                         <p
                             class="isian__galat"
@@ -206,6 +225,25 @@
                             Minimal 8 karakter, hanya huruf dan angka.
                         </p>
                         <p class="isian__galat" hidden></p>
+                    </div>
+                    <!-- TRN.03: widget Turnstile (CAPTCHA Cloudflare, mode Managed). Diisi akun.js; teks lewat textContent. -->
+                    <div class="isian" id="turnstile-daftar-bungkus">
+                        <div id="turnstile-daftar"></div>
+                        <p
+                            class="isian__bantuan"
+                            id="turnstile-daftar-ket"
+                            role="status"
+                        >
+                            Memeriksa keamanan...
+                        </p>
+                        <button
+                            type="button"
+                            class="tombol tombol--sekunder"
+                            id="turnstile-daftar-ulang"
+                            hidden
+                        >
+                            Coba lagi
+                        </button>
                     </div>
                     <div class="isian" id="daftar-galat-bungkus" hidden>
                         <p
@@ -2297,6 +2335,13 @@
                           ").";
             })();
         </script>
+        <!-- TRN.03: skrip widget Turnstile dari Cloudflare. Satu-satunya pengecualian "tanpa CDN" (AGENTS.md, 18 Nov 2026);
+             tidak bisa disalin ke lib/. Mode render=explicit: widget digambar akun.js. Bila gagal dimuat, akun.js menampilkan pesan ramah. -->
+        <script
+            src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+            async
+            defer
+        ></script>
         <!-- Logika layar Daftar, Masuk, Keluar (AKN.05) -->
         <script src="akun.js"></script>
         <!-- Layar Lengkapi profil (AKN.06); harus setelah akun.js karena memakai window.KedaiAkun -->

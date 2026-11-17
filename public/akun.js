@@ -20,6 +20,12 @@
 // AKN.06: layar Lengkapi profil ada di profil.js (dimuat setelah berkas ini). akun.js membuka layar itu
 // lewat window.KedaiProfil.tampil() dan membagikan pembantu lewat window.KedaiAkun.
 //
+// TRN.03: Turnstile (CAPTCHA Cloudflare, mode Managed) di layar Daftar dan Masuk. Token dikirim lewat
+// opsi captchaToken Supabase Auth. Tombol Masuk/Daftar nonaktif sampai token siap; widget gagal dimuat =
+// pesan ramah + tombol "Coba lagi". Bila TURNSTILE_SITEKEY kosong di config.js, fitur dianggap mati.
+// CATATAN: gantiPassword() (AKN.08b) memanggil signInWithPassword TANPA captchaToken. Setelah Enable CAPTCHA
+// dinyalakan di Supabase, panggilan itu akan ditolak. Harus ditangani sebelum Enable (lihat catatan sesi TRN.03).
+//
 // Aturan yang dijaga:
 // - Peran dan identitas tidak pernah dikirim aplikasi; server membacanya dari token login.
 // - Semua teks (nama dari server, pesan) dipasang lewat textContent, bukan innerHTML.
@@ -107,6 +113,8 @@
     for (var i = 0; i < LAYAR.length; i++) {
       el("layar-" + LAYAR[i]).hidden = LAYAR[i] !== nama;
     }
+    // TRN.03: widget Turnstile hanya hidup di layar Masuk dan Daftar.
+    tsKelola(nama);
     window.scrollTo(0, 0);
   }
 
@@ -165,6 +173,15 @@
     ) {
       return "Belum bisa terhubung. Periksa internet lalu coba lagi.";
     }
+    // TRN.03: token Turnstile ditolak Supabase. Dicek SEBELUM aturan status 400 di bawah.
+    if (
+      kode === "captcha_failed" ||
+      (error &&
+        typeof error.message === "string" &&
+        error.message.toLowerCase().indexOf("captcha") !== -1)
+    ) {
+      return PESAN_TS_DITOLAK;
+    }
     if (kode === "invalid_credentials") {
       return "Email atau password salah.";
     }
@@ -221,6 +238,172 @@
         );
       });
     });
+  }
+
+  // ------------------------------------------------------------
+  // TRN.03: Turnstile (CAPTCHA Cloudflare, mode Managed) di layar Daftar dan Masuk
+  // Skrip widget dimuat index.html (pengecualian "tanpa CDN"). Token hanya hidup di memori,
+  // sekali pakai, dan tidak pernah dicatat. Semua teks lewat textContent.
+  // ------------------------------------------------------------
+
+  var SITEKEY_TS = KONFIG.TURNSTILE_SITEKEY || "";
+  var BATAS_MUAT_TS = 10000; // paling lama menunggu skrip Cloudflare (milidetik)
+  var PESAN_TS_PERIKSA = "Memeriksa keamanan...";
+  var PESAN_TS_KETUK = "Ketuk kotak centang di atas untuk melanjutkan.";
+  var PESAN_TS_GAGAL =
+    "Pemeriksaan keamanan belum bisa dimuat. Periksa internet lalu coba lagi.";
+  var PESAN_TS_BELUM =
+    "Pemeriksaan keamanan belum selesai. Tunggu sebentar lalu coba lagi.";
+  var PESAN_TS_DITOLAK = "Pemeriksaan keamanan gagal. Coba lagi.";
+
+  var TS = {
+    masuk: { token: "", wid: null, timer: null },
+    daftar: { token: "", wid: null, timer: null },
+  };
+
+  // keadaan: "periksa" (tombol mati), "siap" (tombol hidup), "gagal" (tombol mati + Coba lagi), "mati" (fitur tidak dipakai).
+  function tsAtur(prefiks, keadaan, teks) {
+    var tombol = el("tombol-" + prefiks);
+    var ket = el("turnstile-" + prefiks + "-ket");
+    el("turnstile-" + prefiks + "-bungkus").hidden = keadaan === "mati";
+    // Jangan menyalakan tombol saat form sedang dikirim ("Memproses...").
+    if (keadaan === "siap" && tombol.textContent === "Memproses...") {
+      // dibiarkan; sibuk() yang mengatur setelah kiriman selesai
+    } else {
+      tombol.disabled = keadaan === "periksa" || keadaan === "gagal";
+    }
+    ket.textContent = teks || "";
+    ket.hidden = !teks;
+    el("turnstile-" + prefiks + "-ulang").hidden = keadaan !== "gagal";
+  }
+
+  function tsHentikan(prefiks) {
+    var s = TS[prefiks];
+    if (s.timer !== null) {
+      clearTimeout(s.timer);
+      s.timer = null;
+    }
+    if (s.wid !== null) {
+      try {
+        window.turnstile.remove(s.wid);
+      } catch (err) {
+        // Gagal membuang widget tidak boleh mengganggu alur.
+      }
+      s.wid = null;
+    }
+    s.token = "";
+  }
+
+  function tsGambar(prefiks) {
+    var s = TS[prefiks];
+    try {
+      s.wid = window.turnstile.render("#turnstile-" + prefiks, {
+        sitekey: SITEKEY_TS,
+        theme: "light",
+        language: "id",
+        callback: function (token) {
+          s.token = token;
+          tsAtur(prefiks, "siap", "");
+        },
+        "before-interactive-callback": function () {
+          tsAtur(prefiks, "periksa", PESAN_TS_KETUK);
+        },
+        "expired-callback": function () {
+          s.token = "";
+          tsAtur(prefiks, "periksa", PESAN_TS_PERIKSA);
+        },
+        "timeout-callback": function () {
+          s.token = "";
+          tsAtur(prefiks, "gagal", PESAN_TS_GAGAL);
+        },
+        "error-callback": function () {
+          s.token = "";
+          tsAtur(prefiks, "gagal", PESAN_TS_GAGAL);
+          return true;
+        },
+      });
+    } catch (err) {
+      s.wid = null;
+      tsAtur(prefiks, "gagal", PESAN_TS_GAGAL);
+    }
+  }
+
+  // Mulai (atau ulangi) widget untuk satu layar. Menunggu skrip Cloudflare paling lama BATAS_MUAT_TS.
+  function tsMulai(prefiks) {
+    tsHentikan(prefiks);
+    if (!SITEKEY_TS) {
+      tsAtur(prefiks, "mati", "");
+      return;
+    }
+    tsAtur(prefiks, "periksa", PESAN_TS_PERIKSA);
+    var s = TS[prefiks];
+    var awal = Date.now();
+    function coba() {
+      if (window.turnstile && typeof window.turnstile.render === "function") {
+        s.timer = null;
+        tsGambar(prefiks);
+        return;
+      }
+      if (Date.now() - awal > BATAS_MUAT_TS) {
+        s.timer = null;
+        tsAtur(prefiks, "gagal", PESAN_TS_GAGAL);
+        return;
+      }
+      s.timer = setTimeout(coba, 300);
+    }
+    coba();
+  }
+
+  // Dipanggil tampilkan(): hanya layar yang sedang tampil yang punya widget.
+  function tsKelola(nama) {
+    var daftar = ["masuk", "daftar"];
+    for (var i = 0; i < daftar.length; i++) {
+      if (nama === daftar[i]) {
+        tsMulai(daftar[i]);
+      } else {
+        tsHentikan(daftar[i]);
+      }
+    }
+  }
+
+  // Token sekali pakai: null = belum siap, "" = fitur mati (tanpa token), selain itu token.
+  function tsAmbilToken(prefiks) {
+    if (!SITEKEY_TS) return "";
+    return TS[prefiks].token || null;
+  }
+
+  // Setelah kiriman GAGAL: token sudah terpakai, minta yang baru.
+  function tsPakaiUlang(prefiks) {
+    if (!SITEKEY_TS) return;
+    var s = TS[prefiks];
+    s.token = "";
+    tsAtur(prefiks, "periksa", PESAN_TS_PERIKSA);
+    try {
+      if (s.wid !== null && window.turnstile) {
+        window.turnstile.reset(s.wid);
+      } else {
+        tsMulai(prefiks);
+      }
+    } catch (err) {
+      tsMulai(prefiks);
+    }
+  }
+
+  // Tombol "Coba lagi" saat widget gagal. Bila skrip Cloudflare tidak ada, muat sekali lagi.
+  function tsUlangMuat(prefiks) {
+    if (!(window.turnstile && typeof window.turnstile.render === "function")) {
+      var lama = document.getElementById("ts-skrip-ulang");
+      if (lama && lama.parentNode) {
+        lama.parentNode.removeChild(lama);
+      }
+      var sk = document.createElement("script");
+      sk.id = "ts-skrip-ulang";
+      sk.src =
+        "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+      sk.async = true;
+      document.head.appendChild(sk);
+    }
+    tsMulai(prefiks);
   }
 
   // Isi layar sementara dari balasan `status`.
@@ -335,14 +518,27 @@
     }
     if (!lengkap) return;
 
+    // TRN.03: token Turnstile wajib bila fitur aktif.
+    var tokenTs = tsAmbilToken("masuk");
+    if (tokenTs === null) {
+      galatForm("masuk", PESAN_TS_BELUM);
+      return;
+    }
+    var kredensial = { email: email, password: password };
+    if (tokenTs) {
+      kredensial.options = { captchaToken: tokenTs };
+    }
+
     var tombol = el("tombol-masuk");
     sibuk(tombol, true, "Masuk");
     klien.auth
-      .signInWithPassword({ email: email, password: password })
+      // TRN.03: .signInWithPassword({ email: email, password: password })
+      .signInWithPassword(kredensial)
       .then(function (h) {
         sibuk(tombol, false, "Masuk");
         if (h.error || !h.data || !h.data.session) {
           galatForm("masuk", pesanAuth(h.error, "masuk"));
+          tsPakaiUlang("masuk");
           return;
         }
         el("masuk-password").value = "";
@@ -351,6 +547,7 @@
       .catch(function () {
         sibuk(tombol, false, "Masuk");
         galatForm("masuk", "Gagal masuk. Coba lagi nanti.");
+        tsPakaiUlang("masuk");
       });
   }
 
@@ -374,14 +571,27 @@
     }
     if (!lengkap) return;
 
+    // TRN.03: token Turnstile wajib bila fitur aktif.
+    var tokenTs = tsAmbilToken("daftar");
+    if (tokenTs === null) {
+      galatForm("daftar", PESAN_TS_BELUM);
+      return;
+    }
+    var dataDaftar = { email: email, password: password };
+    if (tokenTs) {
+      dataDaftar.options = { captchaToken: tokenTs };
+    }
+
     var tombol = el("tombol-daftar");
     sibuk(tombol, true, "Daftar");
     klien.auth
-      .signUp({ email: email, password: password })
+      // TRN.03: .signUp({ email: email, password: password })
+      .signUp(dataDaftar)
       .then(function (h) {
         sibuk(tombol, false, "Daftar");
         if (h.error) {
           galatForm("daftar", pesanAuth(h.error, "daftar"));
+          tsPakaiUlang("daftar");
           return;
         }
         // Confirm email mati (AK2): pendaftaran langsung memberi sesi.
@@ -394,10 +604,12 @@
           "daftar",
           "Pendaftaran belum selesai. Coba masuk dengan email dan password tadi.",
         );
+        tsPakaiUlang("daftar");
       })
       .catch(function () {
         sibuk(tombol, false, "Daftar");
         galatForm("daftar", "Gagal mendaftar. Coba lagi nanti.");
+        tsPakaiUlang("daftar");
       });
   }
 
@@ -774,6 +986,13 @@
   el("galat-keluar").addEventListener("click", keluar);
   el("offline-ulang").addEventListener("click", ulangi);
   // AKN.09: Lupa password (petunjuk) dan layar Buat password baru.
+  // TRN.03: Coba lagi bila widget Turnstile gagal dimuat.
+  el("turnstile-masuk-ulang").addEventListener("click", function () {
+    tsUlangMuat("masuk");
+  });
+  el("turnstile-daftar-ulang").addEventListener("click", function () {
+    tsUlangMuat("daftar");
+  });
   el("ke-lupa").addEventListener("click", function () {
     var petunjuk = el("lupa-petunjuk");
     petunjuk.hidden = !petunjuk.hidden;

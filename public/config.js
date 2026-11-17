@@ -9,4 +9,6 @@ window.KEDAI_CONFIG = {
   // NTF.05: kunci PUBLIK VAPID (aman di repo public). Kunci privat TIDAK boleh ada di sini.
   VAPID_PUBLIC_KEY:
     "BKntJ9JrWBq2ZASkyPOeHTzzL1I55BH3vDxfKMZQ5OfGWri7pFZJfcnzIeUtzjUR25_o0IbMuDRogk8u9uj6zXk",
+  // TRN.03: Sitekey Turnstile (aman di repo public). Secret key TIDAK boleh ada di sini; hanya di dashboard Supabase.
+  TURNSTILE_SITEKEY: "0x4AAAAAAGF5wr_yEDNvtoaa",
 };
