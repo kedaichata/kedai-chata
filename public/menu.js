@@ -65,6 +65,34 @@
   var idSibuk = null; // id menu yang aksinya sedang diproses
   var sedangProses = false;
 
+  // MNU.13: pencarian nama menu (cari.js). Hanya menyaring tampilan dari daftar yang sudah diambil;
+  // tanpa panggilan server. Bila cari.js belum termuat, kedua kotak null dan daftar tampil penuh seperti sebelumnya.
+  var cariOwner = null;
+  var cariPelanggan = null;
+
+  function lolosCari(cari, nama) {
+    return !cari || cari.cocok(nama);
+  }
+
+  function filterAktif(cari) {
+    return !!cari && cari.aktif();
+  }
+
+  // Pesan saat pencarian tidak menemukan apa pun.
+  function buatTidakDitemukan() {
+    var kosong = buat("div", "keadaan");
+    kosong.setAttribute("role", "status");
+    kosong.appendChild(buat("p", "keadaan__judul", "Menu tidak ditemukan"));
+    kosong.appendChild(
+      buat(
+        "p",
+        "keadaan__ket",
+        "Coba kata lain, atau tekan \u00D7 untuk menghapus pencarian.",
+      ),
+    );
+    return kosong;
+  }
+
   // ------------------------------------------------------------
   // Pembantu
   // ------------------------------------------------------------
@@ -316,8 +344,15 @@
       wadah.removeChild(wadah.firstChild);
     }
 
+    // MNU.13: hanya tampilan yang disaring; data `daftar` tidak berubah.
+    var tampilOwner = 0;
     for (var i = 0; i < daftar.length; i++) {
+      if (!lolosCari(cariOwner, daftar[i].nama)) continue;
+      tampilOwner++;
       wadah.appendChild(buatKartu(daftar[i]));
+    }
+    if (termuat && daftar.length > 0 && tampilOwner === 0) {
+      wadah.appendChild(buatTidakDitemukan());
     }
 
     if (termuat && daftar.length === 0) {
@@ -342,7 +377,12 @@
       for (var j = 0; j < daftar.length; j++) {
         if (daftar[j].aktif) aktif++;
       }
-      ringkas.textContent = daftar.length + " menu, " + aktif + " aktif.";
+      // MNU.13: saat pencarian aktif, ringkasan menunjukkan jumlah hasil.
+      if (filterAktif(cariOwner)) {
+        ringkas.textContent = tampilOwner + " dari " + daftar.length + " menu.";
+      } else {
+        ringkas.textContent = daftar.length + " menu, " + aktif + " aktif.";
+      }
     }
 
     el("menu-tambah").disabled = !termuat || sedangProses;
@@ -811,10 +851,17 @@
       wadah.removeChild(wadah.firstChild);
     }
 
+    // MNU.13: hanya tampilan yang disaring; data `daftarPelanggan` tidak berubah.
     var adaHabis = false;
+    var tampilPel = 0;
     for (var i = 0; i < daftarPelanggan.length; i++) {
+      if (!lolosCari(cariPelanggan, daftarPelanggan[i].nama)) continue;
+      tampilPel++;
       if (!daftarPelanggan[i].tersedia) adaHabis = true;
       wadah.appendChild(buatKartuPelanggan(daftarPelanggan[i]));
+    }
+    if (termuatPelanggan && daftarPelanggan.length > 0 && tampilPel === 0) {
+      wadah.appendChild(buatTidakDitemukan());
     }
 
     if (termuatPelanggan && daftarPelanggan.length === 0) {
@@ -833,6 +880,14 @@
 
     if (sedangMuatPelanggan) {
       ringkas.textContent = "Memuat menu...";
+    } else if (termuatPelanggan && filterAktif(cariPelanggan)) {
+      // MNU.13: saat pencarian aktif, ringkasan menunjukkan jumlah hasil.
+      ringkas.textContent =
+        tampilPel +
+        " dari " +
+        daftarPelanggan.length +
+        " menu." +
+        (adaHabis ? " Menu yang abu-abu sedang habis." : "");
     } else if (adaHabis) {
       ringkas.textContent = "Menu yang abu-abu sedang habis.";
     } else {
@@ -890,6 +945,7 @@
     ) {
       window.KedaiMenuDetail.tutup(true);
     }
+    if (cariPelanggan) cariPelanggan.kosongkan(); // MNU.13
     nomorMuatPelanggan++;
     daftarPelanggan = [];
     termuatPelanggan = false;
@@ -928,8 +984,32 @@
     tampilPesan("");
     render();
     el("menu-ringkas").textContent = "";
+    if (cariOwner) cariOwner.kosongkan(); // MNU.13
     resetPelanggan(); // MNU.04
   }
+
+  // MNU.13: pasang kotak "Cari menu" di atas ringkasan daftar (owner dan customer). Bila cari.js tidak
+  // termuat, tidak ada yang dipasang dan layar berperilaku seperti sebelumnya.
+  (function pasangCari() {
+    var C = window.KedaiCari;
+    if (!C || typeof C.pasang !== "function") return;
+    cariOwner = C.pasang({
+      sebelum: el("menu-ringkas"),
+      id: "cari-menu-owner",
+      label: "Cari menu",
+      onUbah: function () {
+        if (termuat) render();
+      },
+    });
+    cariPelanggan = C.pasang({
+      sebelum: el("pelanggan-menu-ringkas"),
+      id: "cari-menu-pelanggan",
+      label: "Cari menu",
+      onUbah: function () {
+        renderPelanggan();
+      },
+    });
+  })();
 
   el("menu-tambah").addEventListener("click", function () {
     bukaForm(null);
