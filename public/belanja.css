@@ -416,3 +416,31 @@ body.blj-input-terbuka {
 .blj-draf__total-nilai {
     color: var(--marun, #6b1020);
 }
+
+/* ================= BLJ.05 giliran 2b: ubah barang, batalkan barang, ubah judul ================= */
+
+/* Dialog edit berdiri di atas layar Belanja dan layar input (z-index keduanya 950 dan 960) */
+.blj-edit-dialog {
+    position: fixed;
+    z-index: 980;
+}
+
+/* Barang yang punya tombol aksi: tombol turun ke baris sendiri di bawah nama dan harga */
+.blj-item--aksi {
+    flex-wrap: wrap;
+}
+
+.blj-item__aksi {
+    flex: 1 0 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.blj-item__aksi .tombol {
+    width: auto;
+    min-height: 44px;
+    margin: 0;
+    padding-left: 16px;
+    padding-right: 16px;
+}

@@ -13,6 +13,10 @@
 //   belanja_buat {judul?, item: [{nama, harga}]} -> {ok, belanja: {id, judul, jumlah_item}}
 //   Harga dikirim sebagai ANGKA JSON. Pesan galat dari server sudah ramah dan tanpa angka; layar tinggal menampilkannya.
 //
+// BLJ.05 giliran 2a: mode "tambah" (mencicil). buka({mode: "tambah", id: <id catatan>, judul: <judul>, onSimpan}) memakai layar yang sama
+//   tanpa kolom judul, dan memanggil `belanja_item_tambah` {id, item: [{nama, harga}]} -> {ok, belanja: {id, jumlah_item}}.
+//   Tanpa opsi mode, perilaku tetap seperti giliran 1 (catatan baru).
+//
 // Aturan yang dijaga:
 // - Aplikasi tidak pernah mengirim total, peran, atau penginput. Hanya judul dan daftar nama plus harga.
 //   "Total sementara" di layar hanya tampilan; total resmi dihitung server (BL4).
@@ -45,12 +49,18 @@
   var sedangSimpan = false;
   var terbuka = false;
   var onSimpan = null;
+  var mode = "baru"; // BLJ.05 giliran 2a: "baru" (catatan baru) atau "tambah" (tambah barang ke catatan sendiri)
+  var idTujuan = ""; // id catatan, hanya dipakai di mode "tambah"
+  var labelSimpan = "Simpan catatan"; // teks tombol Simpan mengikuti mode
 
   // Unsur layar (dibuat saat pertama dibuka).
   var layar = null;
   var elNama = null;
   var elHarga = null;
   var elJudul = null;
+  var bungkusJudul = null; // BLJ.05 giliran 2a: disembunyikan di mode "tambah"
+  var elHead = null; // judul layar
+  var elIntro = null; // kalimat pengantar
   var galatNama = null;
   var galatHarga = null;
   var elGalat = null;
@@ -179,8 +189,8 @@
     elTotalNilai.textContent = rupiah(jumlah);
     tombolSimpan.textContent =
       items.length > 0
-        ? "Simpan catatan (" + items.length + " barang)"
-        : "Simpan catatan";
+        ? labelSimpan + " (" + items.length + " barang)"
+        : labelSimpan;
   }
 
   // Masukkan isian nama dan harga ke daftar sementara. true bila berhasil.
@@ -254,11 +264,18 @@
       kirim.push({ nama: items[i].nama, harga: items[i].harga });
     }
     var data = { item: kirim };
-    var judul = rapikanNama(elJudul.value);
-    if (judul !== "") data.judul = judul;
+    var aksi = "belanja_buat";
+    if (mode === "tambah") {
+      // Mencicil: hanya id catatan dan barang. Penginput dan kunci diperiksa server (BL7, BL9).
+      aksi = "belanja_item_tambah";
+      data.id = idTujuan;
+    } else {
+      var judul = rapikanNama(elJudul.value);
+      if (judul !== "") data.judul = judul;
+    }
 
     aturSibuk(true);
-    A.panggilKedai("belanja_buat", data)
+    A.panggilKedai(aksi, data)
       .then(function (h) {
         if (h && h.status === 200 && h.data && h.data.ok === true) {
           var hasil =
@@ -369,14 +386,14 @@
     var badan = buat("div", "blj-badan");
     var judul = buat("h1", "blj-judul", "Catatan baru");
     judul.id = "blj-input-judul";
+    elHead = judul;
     badan.appendChild(judul);
-    badan.appendChild(
-      buat(
-        "p",
-        "isian__bantuan",
-        "Tulis barang yang dibeli satu per satu, seperti menulis di WA. Kalau sudah selesai, tekan Simpan catatan.",
-      ),
+    elIntro = buat(
+      "p",
+      "isian__bantuan",
+      "Tulis barang yang dibeli satu per satu, seperti menulis di WA. Kalau sudah selesai, tekan Simpan catatan.",
     );
+    badan.appendChild(elIntro);
 
     // Kartu tambah barang
     var kartu = buat("div", "kartu");
@@ -453,6 +470,7 @@
     elJudul.autocomplete = "off";
     elJudul.placeholder = "Kosongkan saja, nanti diisi tanggal dan namamu";
     isJudul.bungkus.appendChild(elJudul);
+    bungkusJudul = isJudul.bungkus;
     badan.appendChild(isJudul.bungkus);
 
     elGalat = buat("p", "isian__galat");
@@ -541,6 +559,35 @@
     buatLayar();
     onSimpan =
       opsi && typeof opsi.onSimpan === "function" ? opsi.onSimpan : null;
+    // BLJ.05 giliran 2a: mode tambah hanya sah bila ada id catatan; selain itu tetap catatan baru.
+    if (
+      opsi &&
+      opsi.mode === "tambah" &&
+      typeof opsi.id === "string" &&
+      opsi.id !== ""
+    ) {
+      mode = "tambah";
+      idTujuan = opsi.id;
+    } else {
+      mode = "baru";
+      idTujuan = "";
+    }
+    if (mode === "tambah") {
+      var namaCatatan =
+        typeof opsi.judul === "string" && opsi.judul ? opsi.judul : "";
+      elHead.textContent = "Tambah barang";
+      elIntro.textContent =
+        (namaCatatan ? "Untuk catatan: " + namaCatatan + ". " : "") +
+        "Tulis barang yang mau ditambahkan, lalu tekan Simpan barang. Barang yang sudah tersimpan tidak berubah.";
+      bungkusJudul.hidden = true;
+      labelSimpan = "Simpan barang";
+    } else {
+      elHead.textContent = "Catatan baru";
+      elIntro.textContent =
+        "Tulis barang yang dibeli satu per satu, seperti menulis di WA. Kalau sudah selesai, tekan Simpan catatan.";
+      bungkusJudul.hidden = false;
+      labelSimpan = "Simpan catatan";
+    }
     bersihkanSemua();
     sedangSimpan = false;
     tombolSimpan.disabled = false;

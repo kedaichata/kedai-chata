@@ -8,6 +8,14 @@
 // BLJ.05 giliran 1: tombol besar "+ Catatan baru" menempel di bawah layar; formnya ada di belanjainput.js
 // (window.KedaiBelanjaInput). Setelah tersimpan, daftar dimuat ulang, catatan baru terbuka, dan muncul "tersimpan".
 //
+// BLJ.05 giliran 2a: tombol "+ Tambah barang" di catatan milik sendiri yang belum terkunci (mencicil, BL2).
+// Layarnya adalah belanjainput.js dalam mode "tambah" (aksi belanja_item_tambah). Setelah tersimpan, daftar dimuat ulang,
+// catatan itu tetap terbuka dan tergulir ke layar dengan pesan "Barang ditambahkan".
+//
+// BLJ.05 giliran 2b: di catatan milik sendiri yang belum terkunci, tiap barang punya tombol Ubah dan Batalkan barang,
+// dan ada tombol Ubah judul. Dialognya ada di belanjaedit.js (window.KedaiBelanjaEdit; belanja_item_ubah,
+// belanja_item_batal, belanja_judul_ubah). Setelah berhasil, daftar dimuat ulang dan catatan itu tetap terbuka.
+//
 // Aksi `kedai` yang dipakai (Handoff #3):
 //   belanja_daftar {terkunci?: boolean} -> {ok, daftar: {rekap: {total, per_owner: [{nama, total}]},
 //     catatan: [{id, judul, nama_penginput, milik_saya, dibuat_pada, dikunci_pada, total,
@@ -435,10 +443,15 @@
     if (item.length === 0) {
       badan.appendChild(buat("p", "isian__bantuan", "Belum ada item."));
     } else {
+      // BLJ.05 giliran 2b: tombol Ubah dan Batalkan per barang hanya di catatan sendiri yang belum terkunci (server tetap yang memutuskan).
+      var bisaUbah =
+        c.milik_saya === true && !terkunci && !!id && !!window.KedaiBelanjaEdit;
       var ul = buat("ul", "blj-item-daftar");
       for (var j = 0; j < item.length; j++) {
         if (item[j] && typeof item[j] === "object") {
-          ul.appendChild(gambarItem(item[j]));
+          var liItem = gambarItem(item[j]);
+          if (bisaUbah) tambahAksiItem(liItem, item[j], id);
+          ul.appendChild(liItem);
         }
       }
       badan.appendChild(ul);
@@ -447,6 +460,33 @@
     // Tombol Kunci hanya di catatan milik sendiri yang belum terkunci (BL7, BL9). Server tetap yang memutuskan.
     if (c.milik_saya === true && !terkunci && id) {
       var baris = buat("div", "baris-tombol");
+      // BLJ.05 giliran 2a: tambah barang (hanya bila belanjainput.js termuat). Server tetap yang memeriksa penginput dan kunci.
+      if (
+        window.KedaiBelanjaInput &&
+        typeof window.KedaiBelanjaInput.buka === "function"
+      ) {
+        var tt = buat("button", "tombol tombol--utama", "+ Tambah barang");
+        tt.type = "button";
+        tt.addEventListener("click", function () {
+          bukaTambah(id, typeof c.judul === "string" ? c.judul : "");
+        });
+        baris.appendChild(tt);
+      }
+      // BLJ.05 giliran 2b: ubah judul (hanya bila belanjaedit.js termuat).
+      if (window.KedaiBelanjaEdit) {
+        var tj = buat("button", "tombol tombol--sekunder", "Ubah judul");
+        tj.type = "button";
+        tj.addEventListener("click", function () {
+          window.KedaiBelanjaEdit.ubahJudul({
+            id: id,
+            judul: typeof c.judul === "string" ? c.judul : "",
+            onSelesai: function () {
+              muatSetelahEdit(id, "Judul diubah \u2713");
+            },
+          });
+        });
+        baris.appendChild(tj);
+      }
       var tk = buat("button", "tombol tombol--sekunder", "Kunci catatan ini");
       tk.type = "button";
       tk.addEventListener("click", function () {
@@ -645,6 +685,72 @@
           idFokus = id;
         }
         pesanSukses = "Catatan tersimpan \u2713";
+        mulaiMuat(false); // penulisan: tidak ditahan jeda, posisi gulir dijaga
+      },
+    });
+  }
+
+  // BLJ.05 giliran 2b: muat ulang setelah ubah barang, batalkan barang, atau ubah judul. Catatan tetap terbuka dan tergulir ke layar.
+  function muatSetelahEdit(idCatatan, pesan) {
+    if (idCatatan) {
+      terbuka[idCatatan] = true;
+      idFokus = idCatatan;
+    }
+    pesanSukses = pesan;
+    mulaiMuat(false); // penulisan: tidak ditahan jeda, posisi gulir dijaga
+  }
+
+  // BLJ.05 giliran 2b: tombol Ubah dan Batalkan di satu baris barang
+  function tambahAksiItem(li, it, idCatatan) {
+    var E = window.KedaiBelanjaEdit;
+    if (!E || !it || it.dibatalkan === true) return;
+    if (typeof it.id !== "string" || !it.id) return;
+    var nama = typeof it.nama === "string" ? it.nama : "";
+    li.classList.add("blj-item--aksi");
+    var baris = buat("div", "blj-item__aksi");
+    var tUbah = buat("button", "tombol tombol--sekunder", "Ubah");
+    tUbah.type = "button";
+    tUbah.setAttribute("aria-label", "Ubah " + nama);
+    tUbah.addEventListener("click", function () {
+      E.ubahItem({
+        id: it.id,
+        nama: nama,
+        harga: it.harga,
+        onSelesai: function () {
+          muatSetelahEdit(idCatatan, "Barang diubah \u2713");
+        },
+      });
+    });
+    var tBatal = buat("button", "tombol tombol--sekunder", "Batalkan");
+    tBatal.type = "button";
+    tBatal.setAttribute("aria-label", "Batalkan " + nama);
+    tBatal.addEventListener("click", function () {
+      E.batalItem({
+        id: it.id,
+        nama: nama,
+        onSelesai: function () {
+          muatSetelahEdit(idCatatan, "Barang dibatalkan \u2713");
+        },
+      });
+    });
+    baris.appendChild(tUbah);
+    baris.appendChild(tBatal);
+    li.appendChild(baris);
+  }
+
+  // BLJ.05 giliran 2a: tambah barang ke catatan milik sendiri (mencicil)
+  function bukaTambah(idCatatan, judulCatatan) {
+    var I = window.KedaiBelanjaInput;
+    if (!I || typeof I.buka !== "function" || !idCatatan) return;
+    I.buka({
+      mode: "tambah",
+      id: idCatatan,
+      judul: judulCatatan,
+      onSimpan: function (hasil) {
+        var id = hasil && typeof hasil.id === "string" ? hasil.id : idCatatan;
+        terbuka[id] = true; // catatan tetap terbuka
+        idFokus = id;
+        pesanSukses = "Barang ditambahkan \u2713";
         mulaiMuat(false); // penulisan: tidak ditahan jeda, posisi gulir dijaga
       },
     });
