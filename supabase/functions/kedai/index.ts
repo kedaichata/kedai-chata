@@ -1031,6 +1031,12 @@ const PETA_GALAT_ORDER: Record<string, [number, string]> = {
   catatan_terlalu_panjang: [400, "Catatan terlalu panjang."],
   status_tidak_valid: [400, "Filter status tidak valid."],
   order_tidak_ditemukan: [404, "Pesanan tidak ditemukan."],
+  // BTO.03: batas order per customer per hari (order.md blok 18 Nov 2026). Dari fungsi SQL `order_buat`.
+  // Pesan tanpa angka (batasnya ada di pengaturan `order_maks_per_hari`) dan mengarahkan ke WhatsApp.
+  batas_order_harian: [
+    409,
+    "Batas pesanan untuk hari ini sudah tercapai. Untuk memesan lagi, silakan hubungi tim ChATA lewat WhatsApp.",
+  ],
 };
 
 // Pagar kasar jumlah baris item kiriman (batas sebenarnya dicek fungsi SQL dari pengaturan).

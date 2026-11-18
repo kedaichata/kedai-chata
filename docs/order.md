@@ -1134,4 +1134,17 @@ Usulan owner, disetujui lewat WA. Persetujuan "OK" ketua untuk perubahan fungsi 
 - **Waktu pengerjaan:** boleh setelah LNC.03 mulai, **wajib sebelum LNC.04**.
 - Tidak ada pertentangan dengan isi lama; ini menambah aturan.
 
+### 2026-11-18: Persetujuan ketua untuk perubahan fungsi order (BTO.01)
+
+Ketua menyetujui penjelasan dampak BTO.01 lewat chat. Melengkapi blok 18 Nov di atas.
+
+- **Yang disetujui:** `order_buat` ditambah pengecekan batas paling awal; satu kunci baru di `pengaturan` bernama `order_maks_per_hari` (nilai awal 5); penghitungan diserialkan dengan kunci per akun supaya dua kiriman bersamaan dari akun yang sama tidak sama-sama lolos.
+- **Tidak berubah:** tabel, hak akses, data order lama, dan `order_buat_wakil`.
+- **Bisa dibatalkan:** SQL pembatal ditulis dan disimpan di repo sebelum migration dijalankan.
+- **Mengganti angka kelak:** cukup `UPDATE` di SQL Editor, tanpa ubah kode atau deploy `kedai`; berlaku untuk order baru saja. Template di `supabase/templates/`.
+- **Nilai tidak valid** (bukan bilangan bulat atau kurang dari 1) ditolak fungsi dengan galat `pengaturan_rusak`, bukan diam-diam mematikan batas.
+- **Urutan deploy:** `kedai` (pemetaan kode galat baru) lebih dulu, baru SQL, supaya customer yang kena batas tidak melihat galat umum.
+- **Versi dasar `order_buat`:** `20261108_02_order_fungsi.sql`, kecuali ada catatan yang menggantinya; dikonfirmasi saat berkas ditempel di sesi kode.
+- Alasan ketua selain menyetujui belum tercatat.
+
 ---
