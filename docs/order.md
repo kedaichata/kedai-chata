@@ -1180,4 +1180,30 @@ Ketua menyetujui penjelasan dampak BTO.01 lewat chat. Melengkapi blok 18 Nov di 
 8. Ulangi tes order dasar: `order_buat` sah, isian palsu diabaikan (SEC-06), hari dari server (SEC-19).
    Lalu centang BTO.03 dan BTO.04. Data dummy baru tidak bisa dihapus; dibersihkan di LNC.01. Pekerjaan wajib selesai sebelum LNC.04.
 
+### Handoff #33 | 2026-11-18 | KETUA
+
+**Tugas:** BTO.04 (tes batas order harian) **selesai dan lulus**; BTO.03 (pesan ramah di layar customer) **selesai**; BTO.02a (template ganti batas) **teruji**. Ketiganya dicentang di sheet. Menggantikan "Masalah yang belum beres" dan "Saran giliran berikutnya" di Handoff #32; selebihnya #32 tetap berlaku. Tidak ada kode, SQL, migration, `kedai`, atau `sw.js` yang diubah, jadi tidak ada commit.
+
+**Terbukti** (konsol dan layar, akun customer dummy baru; bukti diperiksa di chat, tidak disimpan):
+
+- Order ke-5 lolos, ke-6 ditolak 409 dengan pesan "Batas pesanan untuk hari ini sudah tercapai. Untuk memesan lagi, silakan hubungi tim ChATA lewat WhatsApp." Nomor order tidak loncat (order berikutnya dari akun lain persis menyusul).
+- Order Dibatalkan tetap terhitung (4 order termasuk 1 Dibatalkan, ke-5 lolos, ke-6 ditolak).
+- Akun lain tidak ikut kena batas. Order wakil owner tidak kena batas (6 order wakil beruntun semuanya 200 Disetujui).
+- Dua kiriman serentak pada akun yang punya 4 order: tepat satu 200 dan satu 409.
+- Pergantian hari: akun lama yang punya banyak order di hari-hari sebelumnya lolos hari ini.
+- Template `20261118_order_batas_harian_ganti.sql`: diganti ke 6 (akun dengan 5 order lolos ke-6, ke-7 ditolak), dikembalikan ke 5 dan dikonfirmasi lewat SELECT terpisah. Nilai rusak (`abc`, lewat UPDATE sekali pakai di luar template, karena pagar template menolak nilai tidak valid): `order_buat` dibalas 500 pesan umum "Terjadi masalah di server. Coba lagi nanti." (`pengaturan_rusak` sengaja tidak dipetakan), lalu dikembalikan ke 5 dan dikonfirmasi lewat SELECT.
+- Layar customer menampilkan pesan batas berwarna merah di atas tombol Kirim, isian tidak hilang, tombol tetap aktif (desktop dan HP Android).
+- SEC-06: isian palsu (harga, total, status, peran, metode bayar) diabaikan, hasil Menunggu dan total dari server. SEC-19: hari antar tertulis sesuai tanggal server.
+
+**Keputusan baru:** tidak ada. "OK" ketua untuk mengubah nilai pengaturan sementara (6 dan nilai rusak) lalu mengembalikannya diberikan lewat chat di sesi ini.
+
+**Masalah yang belum beres:**
+
+- Logout dashboard Supabase untuk sesi ini belum dikonfirmasi.
+- `_batal.sql` migration batas harian belum pernah dicoba (sengaja, tidak dijalankan di production tanpa perlu).
+- Pengaturan `order_maks_per_hari` = 5 (terkonfirmasi). Mengganti angka kelak lewat template, tanpa deploy.
+- Data dummy baru (order #110 sampai #138, beberapa akun customer dummy baru, enam order wakil #120 sampai #125 untuk Dummy Kembar) tidak bisa dihapus; dibersihkan di LNC.01. Akun #131 punya 6 order hari ini dari tes batas 6.
+- Butir terbuka Handoff #11 sampai #32 yang tidak disebut di sini tidak berubah.
+
+**Saran giliran berikutnya:** TRN.08 dicentang. Lanjut rantai Peluncuran sebelum LNC.04: FTO, NTF, BTN, SEC-23, lalu LNC.01 (bersihkan data uji dan reset nomor order, butuh "OK" ketua). Lampirkan `AGENTS.md` + dokumen fitur terkait + `database.md` + `security.md` bila menyentuh tabel atau fungsi.
 ---
