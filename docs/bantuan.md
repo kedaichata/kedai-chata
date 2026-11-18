@@ -375,4 +375,40 @@ Keputusan ketua (sesi lanjutan Turnstile, 18 Nov 2026). Berkas tujuan: docs/bant
 - **Aturan tetap:** teks biasa (BT4), tanpa nomor WA atau data pribadi (BT11), tanpa angka mudah berubah. `kunci` baru, `urutan` kelipatan 10, `bagian` mengikuti isi lembar yang ada. Jangan memakai `urutan` 1.
 - **Cara:** tulis di lembar, impor lewat SQL Editor (BT7). Tanpa kode dan tanpa push. Dikerjakan bersama BTN.05.
 
+### Handoff #6 | 2026-11-18 | [FREN]
+
+**Tugas:** BTN.05 (isi awal Bantuan) **dikerjakan sebagai draf lengkap, belum final**. Isi baru juga mencakup BTN.07 (draf), GLR.10, dan QRS.05. Tidak ada berkas di repo, migration, atau deploy yang berubah. Isi ditulis di lembar `bantuan-isi` (Google Sheet, BT7), lalu diimpor lewat kolom H di SQL Editor akun ketua. SQL impor tidak disimpan di repo.
+
+**Isi yang ditambah (ringkas, sekitar 70 pertanyaan di 10 bagian):**
+
+- Draf dasar (29 pertanyaan): Memulai, Memesan, Status pesanan, Pembayaran, Notifikasi, Tugas owner, Tugas penjaga, Umum.
+- Tambahan 1 (17 baris): privasi dan keluar akun, menu Habis, rincian dan pilihan menu, menghubungi warung, riwayat pesanan, notifikasi tidak masuk, tugas owner (kelola menu, foto dan grup pilihan, foto bukti, akun staf), tugas penjaga (foto bukti, batasan penjaga), game, pembaruan aplikasi.
+- Tambahan 2 (11 baris): notifikasi per peran dan notif telat (`notif-03` sampai `notif-07`), bagian baru **Kotak masuk** (`inbox-01` sampai `inbox-06`). Terbukti tampil di layar.
+- Tambahan 3 (11 baris): QRIS di bagian Pembayaran (`qris-01` sampai `qris-05`) dan bagian baru **Gelar** (`gelar-01` sampai `gelar-06`). Terbukti tampil di layar.
+- Tambahan 4: `owner-11` (customer tidak bisa daftar atau masuk, BTN.07).
+- Tambahan 5: `memesan-10` dan `owner-12` (batas order harian), **`aktif = tidak`**.
+
+**Keputusan baru:**
+
+- Fokus sesi ini adalah **kelengkapan Q&A**; reword (konsistensi "Anda" vs "-mu", nama tombol) ditunda ke PIC.
+- Isi gelar tanpa angka ambang dan tanpa nama gelar tertentu (GL15, GL25). Batas order harian tanpa angka. `inbox-04` memakai kata "sekitar" karena batasnya ada di pengaturan.
+- `penjaga-07` digantikan `notif-06` (lebih lengkap). Dinonaktifkan saat pembersihan data, bukan sekarang.
+- Dua baris batas order dibiarkan `aktif = tidak` karena fiturnya belum live dan kodenya belum dibuat.
+- Alasan keputusan di luar yang disebut di atas: alasan belum tercatat.
+
+**Belum beres:**
+
+- **BTN.05 belum boleh dicentang** sampai reword selesai dan nama tombol, tab, dan menu dicocokkan ke layar asli (antara lain Pesanan Saya, Coba lagi, Chat WA, Simpan gambar, Unduh PNG, Bagikan, Pengaturan akun, Keluar, menu daftar Pelanggan tanpa akun).
+- `notif-01` masih memakai "pesananmu".
+- Baris yang bergantung fitur lain perlu dicek ulang saat fiturnya final: foto bukti (`status-06`, `owner-09`, `penjaga-05`) dan notifikasi.
+- Status impor `owner-11`, `memesan-10`, `owner-12`, dan tambahan 1 belum dikonfirmasi di chat.
+- Penyaringan peran untuk owner dan penjaga baru teramati di layar (Handoff #5); belum dari balasan server.
+- Pernyataan di `owner-11` ("tidak muncul di aplikasi customer") disimpulkan dari `gelar.md` GL6 dan belum dicocokkan dengan `order.md` dan layar owner.
+
+**Butir baru yang perlu ditambah ke sheet:**
+
+- "Nonaktifkan penjaga-07 dan baris uji bantuan" (saat pembersihan data).
+- "Aktifkan Bantuan batas order harian" (setelah batas live dan lulus tes, sebelum LNC.04; cocokkan kalimat dengan pesan di layar).
+
+**Saran giliran berikutnya:** reword dan cocokkan dengan layar asli (lampirkan screenshot), centang GLR.10 dan QRS.05 bila isinya sudah sesuai, lalu BTN.07 setelah `owner-11` terimpor. Setiap perubahan fitur dicatat sebagai butir "perbarui Bantuan".
 ---

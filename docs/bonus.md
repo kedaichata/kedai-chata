@@ -236,4 +236,13 @@ Keputusan ketua (17 Nov 2026), saat sesi MNU.13 (Cari menu). Sumber: `docs/menu.
 - **Versi 1 tidak berubah.** Penanganan tetap manual oleh ketua.
 - **Urutan di dalam versi 2:** belum ditentukan; ditentukan setelah review pemakaian versi 1 (`LNC.05`) bersama kandidat lain.
 
+### 2026-11-18: Pindah hosting ke Cloudflare Pages: bukan versi 1, dievaluasi nanti
+
+**Berkas tujuan:** `docs/bonus.md`, tempel PALING BAWAH bagian 4 (di bawah blok 2026-11-18 nonaktifkan customer bermasalah). Append-only. Ditulis ulang dari ingatan ketua; blok asli dari sesi lain (sekitar 17 Nov 2026) lupa ditempel. Bila blok asli ditemukan dan isinya beda, yang asli dipakai dan blok ini dikoreksi.
+
+- **Latar:** usulan pindah dari GitHub Pages ke Cloudflare Pages datang dari teman ketua di bidang IT. Sesi lain menyarankan tetap di GitHub Pages dan memasang Turnstile (sudah dikerjakan, lihat blok Turnstile 18 Nov di `AGENTS.md`).
+- **Keputusan ketua:** **tidak pindah di versi 1.** Hosting tetap GitHub Pages (`AGENTS.md` bagian 3). Pindah dievaluasi lagi sekitar 2 sampai 3 bulan, kecuali ada keadaan mendesak.
+- **Belum tercatat:** patokan "2 sampai 3 bulan" dihitung sejak kapan, apa yang dimaksud keadaan mendesak, dan alasan lain di luar yang tertulis.
+- **Tidak ada perubahan kode, pengaturan, atau hosting** dari catatan ini.
+
 ---

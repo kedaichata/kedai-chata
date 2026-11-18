@@ -607,3 +607,41 @@ Keputusan ketua (sesi lanjutan TRN.03). Berkas tujuan: docs/akun.md bagian 9. Me
 1. TRN.05: HP dengan browser paling tertinggal yang bisa ditemukan (catat nomor versi Chrome), buka link dari WA, throttling Slow 3G di laptop. Lulus bila layar Masuk terbuka dan widget berhasil, atau gagal dengan pesan ramah tanpa layar kosong.
 2. Nyalakan Enable CAPTCHA paling akhir di dashboard Supabase ketua (profil browser terpisah, logout setelah selesai). Pilih Cloudflare Turnstile, Secret Key diketik langsung di dashboard, bukan di chat. Lalu tes ulang Daftar, Masuk, dan Ganti password. Bisa dimatikan lagi bila banyak customer terhalang.
 3. TRN.06 dan TRN.07, keduanya sebelum LNC.01b.
+
+### Handoff #19 | 2026-11-18 | [ketua]
+
+**Tugas:** TRN.05 (tes HP lama, lalu Enable CAPTCHA di dashboard Supabase). Selesai. Tidak ada berkas yang diubah, tidak ada deploy. **Enable CAPTCHA di dashboard Supabase kini AKTIF** (penyedia: Turnstile by Cloudflare).
+
+**Hasil (akun dummy, bukti di chat, tidak disimpan):**
+
+- iPhone 7 Plus, iOS 15.8.7, dibuka lewat Safari dan Chrome iOS (Chrome iOS memakai mesin Safari, jadi dihitung satu bukti): widget "Berhasil!".
+- Chrome laptop, throttling 3G (nama baru dari "Slow 3G"): widget gagal dengan pesan ramah, Coba lagi memulihkan widget (terbukti dari layar, sebelumnya hanya dibaca dari kode), gagal kedua memunculkan pesan jalan keluar WhatsApp warung di layar Masuk (terbukti dari layar). Tanpa layar kosong.
+- Setelah Enable aktif: Masuk lulus di tiga peran (owner, customer, penjaga), Ganti password lulus (lalu masuk dengan password baru lulus), Daftar lulus (akun baru, profil dilengkapi, sampai Home).
+- Buka aplikasi dari link WA (browser mini WA): widget "Berhasil!" di dua HP Android (Oppo dan Poco, otomatis tanpa ketukan) dan di iPhone 7 Plus iOS 15.8.7 (perangkat yang sama dengan tes sebelumnya; perlu satu ketukan manual di kotak centang, lalu berhasil). Menutup catatan P2 sebelumnya. Versi Chrome/Android tidak dicatat.
+- **TRN.05 sudah selesai, silakan dicentang di sheet.**
+
+**Keputusan baru:**
+
+- **Ketua (18 Nov 2026):** "OK" menyalakan Enable CAPTCHA. Ini mengisi "persetujuan ketua untuk perubahan login" yang sebelumnya belum tercatat di blok Turnstile `AGENTS.md`.
+- **Koreksi blok Turnstile `AGENTS.md`:** baris "Tidak ada data uji tambahan untuk dibersihkan" tidak berlaku lagi. Tes Daftar membuat satu akun dummy (`test06@example.com`) yang **harus dihapus lewat dashboard (Authentication, Users) sebelum LNC.04**. Penghapusan butuh "OK" ketua saat dikerjakan. Yang paling akhir menang.
+
+**Bahan belajar (bukan kerusakan):**
+
+- Saat toggle Enable dinyalakan, penyedia **default-nya hCaptcha**, bukan Turnstile. Kalau di-Save begitu, semua login ditolak. Pencegahan: ganti penyedia ke Turnstile **sebelum** Save, lalu tempel Secret Key (bukan Site Key) langsung di dashboard.
+- Widget mode Managed kadang lolos sendiri, kadang minta satu ketukan di kotak centang. Pesan "Ketuk kotak centang di atas untuk melanjutkan." sudah menjelaskannya untuk customer.
+- `window.turnstile = undefined` di Console tidak dipakai lagi sebagai cara tes; throttling 3G di DevTools terbukti memicu jalur gagal dengan benar.
+
+**Masalah yang belum beres:**
+
+- Link reset password dari dashboard dan pembuatan akun staf oleh ketua **belum dites setelah Enable aktif** (TRN.06, P0). Belum diketahui apakah terhalang CAPTCHA.
+- SEC-33 (login dan CORS dari alamat asli) **belum diulang** (TRN.07, P0).
+- Pesan gagal pertama tetap menyebut "Periksa internet" (P2). Email dummy terisi setelah Keluar (P2, belum diselidiki).
+- Akun dummy `test06@example.com` belum dihapus (lihat keputusan di atas).
+- Bila banyak customer terhalang, Enable bisa dimatikan lagi (toggle di Authentication, Attack Protection, lalu Save); customer yang terhalang dilayani lewat order wakil.
+
+**Saran giliran berikutnya:**
+
+1. Baca blok ini dulu; jangan ulang tes TRN.05 (Masuk, Ganti password, Daftar, HP lama, 3G).
+2. TRN.06: coba link reset password dari dashboard dan buat akun staf di dashboard (akun staf dummy). Catat apakah ditolak CAPTCHA. Sebelum LNC.01b.
+3. TRN.07: ulang SEC-33 setelah Enable aktif; lampirkan `security.md` dan `pemetaan-test.md`.
+4. Logout dan tutup profil browser terpisah untuk dashboard Supabase setelah selesai.
