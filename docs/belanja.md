@@ -362,4 +362,40 @@ Keputusan ketua (18 Nov 2026), setelah penjelasan di sesi BLJ.03. Alasan ketua s
 4. BLJ.08: entri Bantuan owner dan pembersihan data uji.
 5. Sebelum push selalu tempel `pwd`, `git remote -v`, dan email commit terakhir, dan baca `git status` serta `git diff --stat` sebelum commit.
 
+### Handoff #7 | 2026-11-18 | [RAC]
+
+**Tugas:** tes BLJ.05 giliran 2 (7 butir) dan BLJ.06 (daftar cache `sw.js`). Keduanya selesai dan sudah dicentang di sheet (18 Nov).
+
+**File yang diubah (commit `a63b232`, tanpa `[skip ci]`, sudah di-push ke `main`, `b06f39e..a63b232`):**
+
+- Diubah: `public/sw.js` (6 baris bertambah, 1 berubah). Versi cache `chata-v35` naik ke `chata-v36`; baris v35 lama tidak dihapus, hanya diberi `//` (pola riwayat yang sudah ada). Empat berkas masuk `DAFTAR_CACHE`: `belanja.css`, `belanja.js`, `belanjainput.js`, `belanjaedit.js`.
+- Tidak ada perubahan `kedai`, SQL, tabel, pengaturan, atau berkas lain di `public/`.
+
+**Keputusan baru:**
+
+- "OK" ketua untuk BLJ.06 diberikan lewat WA (PIC bukan ketua; ringkasan dampak diteruskan sesuai aturan 12). Alasan ketua di luar yang tertulis: belum tercatat.
+- Hasil tes: `belanja_judul_ubah` dengan judul dikosongkan **mengisi otomatis** tanggal dan nama owner (bukan menolak). Menjawab butir "belum diketahui" di Handoff #6.
+- Tidak ada pertentangan dengan blok lama.
+
+**Terbukti:**
+
+- Tes BLJ.05 giliran 2, 7 butir **sesuai semua** (tambah, ubah, ubah dengan harga kosong atau 0, batalkan, ubah judul termasuk dikosongkan, tombol tidak ada di catatan terkunci dan milik owner lain, Esc dan ketuk area gelap hanya menutup dialog). Dites di HP dan laptop; owner uji kedua dari laptop. Laporan lisan PIC (low-risk, aturan 10 butir 1), bukan balasan server.
+- Screenshot daftar: total Rp 116.000 = Rp 30.000 + Rp 86.000, cocok dengan dua catatan; label "Total belum terkunci" dan saklar terkunci tampil sesuai rancangan.
+- Cache Storage DevTools: `chata-v36` ada dan memuat keempat berkas `belanja*` (dilihat di chat, tidak disimpan). Di HP, mode pesawat menampilkan "Tidak ada internet", dan Coba lagi memulihkan tampilan (laporan lisan).
+- Dengan ini ketujuh aksi `kedai` Belanja sudah terpakai dari layar, tetapi hanya jalur sah. **Penolakan oleh server belum dibuktikan** (BLJ.07).
+
+**Masalah yang belum beres:**
+
+- **BLJ.07 (P0) belum dimulai.** Belum ada bukti balasan server untuk: customer dan penjaga ditolak (403), tanpa token (401), owner B ke catatan owner A ditolak, harga tidak valid ditolak, catatan terkunci tidak bisa diubah, total dan peran dari aplikasi diabaikan. Baris SEC baru Belanja belum ada di `security.md`; di berkas yang dipegang nomor terakhir SEC-45, **cocokkan penomoran dengan sheet dulu**. Akun penjaga dummy belum dipastikan ada.
+- Belum dites: sesi habis (401) saat Simpan, dua tab bersamaan (kunci dan tambah item), jalur `akun_nonaktif`, batas 50 item, iPhone, layar sangat sempit. `_batal.sql` BLJ belum pernah dicoba.
+- `belanja.js` sekitar 893 baris dan `belanjainput.js` sekitar 642 baris, di atas patokan sekitar 500. Belum ada keputusan memecah (butuh penjelasan dampak dan "OK" ketua).
+- **Data uji dummy menumpuk** (jumlah pastinya tidak dicek; sebagian terkunci). Dibersihkan ketua di BLJ.08 dan LNC.01 dengan "OK".
+- Masih berlaku: belum diputuskan apakah rilis terbatas Senin 23 Nov 2026 jalan tanpa Belanja bila belum selesai (dibahas tim Sabtu 21 Nov); persetujuan ketua atas rancangan layar BLJ.04 belum tercatat.
+
+**Saran giliran berikutnya:**
+
+1. Sesi BLJ.07. Lampirkan `AGENTS.md`, `belanja.md`, `security.md`, dan `pemetaan-test.md`. Awali dengan mencocokkan status SEC dan penomoran dengan screenshot sheet.
+2. Siapkan akun dummy: owner A, owner B, satu customer, satu penjaga. Pemanggilan `kedai` langsung dipandu satu langkah per giliran; token tidak boleh ditempel ke chat.
+3. Setelah BLJ.07: BLJ.08 (entri Bantuan owner dan pembersihan data uji, butuh "OK" ketua).
+
 ---
