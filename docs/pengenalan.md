@@ -194,3 +194,15 @@ Tidak ada baris SEC baru: fitur tidak menyentuh server, data, atau akses. Pemeri
 - Gambar `infografik.webp` dipakai bersama oleh Bantuan dan Pengenalan. Bila diganti dengan **nama berkas lain**, ubah `PATH_INFOGRAFIK` di `pengenalan.js` dan daftarkan berkas baru di `sw.js` (butuh "OK" ketua). Bila nama sama, cukup ganti berkasnya.
 
 **Saran giliran berikutnya:** PGN.06 menjelang peluncuran. Isi Pengenalan hanya direvisi di `public/pengenalan-isi.js`, push biasa tanpa `[skip ci]`.
+
+### 2026-11-18: Topik ke-11 "Bagaimana kalau tidak bisa daftar atau masuk?"
+
+Keputusan ketua (sesi lanjutan Turnstile, 18 Nov 2026). Berkas tujuan: docs/pengenalan.md bagian 8. Bertentangan dengan PG4 dan bagian 3 ("10 topik, urutan tetap"); yang paling akhir menang, jadi daftar topik menjadi 11.
+
+- **Alasan:** Turnstile dipasang di Daftar dan Masuk (blok Turnstile 18 Nov di AGENTS.md). Customer ber-HP atau browser lama bisa terhalang. Ketua memutuskan tidak membuat jalur pengecualian Turnstile; customer yang terhalang dilayani lewat order wakil (Pelanggan tanpa akun) oleh owner. Pengenalan terbuka tanpa login dari layar Masuk, jadi cocok sebagai tempat arahan untuk customer yang belum pernah berhasil masuk (Bantuan butuh login, B35 ditunda).
+- **Isi (inti pesan):** bila tetap gagal daftar atau masuk, biasanya karena HP atau browser sudah lama; customer tetap bisa memesan dengan menghubungi warung lewat WhatsApp seperti biasa dan pesanannya dibantu dicatatkan; memperbarui Chrome kadang membantu. Tanpa nomor WA, tanpa angka mudah berubah, kata "biasanya" untuk hal yang tergantung HP (PG9, PG10). Kata-kata final ditulis di `public/pengenalan-isi.js`, mengikuti aturan gaya di komentar kepala berkas itu.
+- **Topik ke-11, ditaruh paling akhir.** Urutan topik 1 sampai 10 tidak berubah.
+- **Cara kerja:** revisi hanya di `public/pengenalan-isi.js`, push biasa **tanpa `[skip ci]`**. `sw.js` tidak berubah karena daftar berkas cache tidak berubah. Tanpa Google Sheet atau SQL.
+- **Konsisten dengan:** pesan widget gagal di TRN.03a (akun.md Handoff #16) dan entri Bantuan owner (bantuan.md blok 18 Nov 2026). Inti kalimatnya sama: pesan lewat WhatsApp warung seperti biasa, kami bantu catatkan.
+- **Butir sheet:** PGN.07 "Topik ke-11 Pengenalan, arahan bila tidak bisa masuk" (Low-Risk, P1; cek ID PGN terakhir di sheet).
+- **Belum dikerjakan.** Bukti tes: layar dibuka di Android, topik ke-11 muncul paling akhir, akordeon tetap bekerja, offline tetap terbuka.

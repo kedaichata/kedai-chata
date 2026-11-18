@@ -363,4 +363,16 @@ Sumber: `docs/pengenalan.md` PG7 dan bagian 1. Hanya penjelasan; tidak ada perub
 **Saran giliran berikutnya:** SEC-04 dan SEC-03 untuk semua tabel (bantuan, inbox, gelar, staf, dan lainnya), High-Risk. Lampirkan `AGENTS.md`, `security.md`, `database.md`, dan `pemetaan-test.md`. SEC-32 bagian JWT `anon` lama bisa dites bila dashboard masih menampilkan kunci lama.
 
 **Butir baru yang perlu ditambah ke sheet:** tidak ada.
+
+### 2026-11-18: Isi Bantuan owner: customer tidak bisa daftar atau masuk
+
+Keputusan ketua (sesi lanjutan Turnstile, 18 Nov 2026). Berkas tujuan: docs/bantuan.md bagian 9. Melengkapi BTN.05 (isi awal); bukan butir sheet baru. Yang paling akhir menang.
+
+- **Alasan:** setelah Turnstile aktif, sebagian customer (HP atau browser lama) bisa terhalang daftar atau masuk. Jalan keluarnya adalah order wakil lewat Pelanggan tanpa akun oleh owner, jadi owner perlu tahu caranya.
+- **Satu entri di lembar Bantuan, peran `owner` saja.** Customer yang terhalang tidak bisa membuka Bantuan (butuh login; B35 ditunda), jadi arahan untuk customer ada di Pengenalan (pengenalan.md blok 18 Nov 2026).
+- **Inti isi (draf bahan):** penyebab biasanya HP atau browser customer lama sehingga pemeriksaan keamanan tidak selesai; jangan minta customer mencoba berulang-ulang; catat pesanan lewat menu Pelanggan tanpa akun, lalu koordinasi lewat WhatsApp seperti biasa; pesanan lewat jalur ini tidak muncul di aplikasi customer, jadi kabar status juga lewat WhatsApp.
+- **Cek sebelum menulis:** nama menu dan tombol harus persis seperti di layar owner (dicek ke aplikasi), dan pernyataan soal status ke customer dicocokkan dengan `order.md`.
+- **Aturan tetap:** teks biasa (BT4), tanpa nomor WA atau data pribadi (BT11), tanpa angka mudah berubah. `kunci` baru, `urutan` kelipatan 10, `bagian` mengikuti isi lembar yang ada. Jangan memakai `urutan` 1.
+- **Cara:** tulis di lembar, impor lewat SQL Editor (BT7). Tanpa kode dan tanpa push. Dikerjakan bersama BTN.05.
+
 ---

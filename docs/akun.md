@@ -452,3 +452,85 @@ Keputusan koordinasi owner, disetujui. Alasan selebihnya belum tercatat.
 3. Putuskan penanganan Ganti password, lalu kerjakan.
 4. Baru nyalakan Enable CAPTCHA: pilih Cloudflare Turnstile di Supabase, ketik Secret Key langsung di dashboard (jangan ke chat). Tes ulang masuk dan daftar.
 5. TRN.06 (link reset dan akun staf) dan TRN.07 (ulang SEC-33), keduanya sebelum LNC.01b.
+
+### Handoff #16 | 2026-11-18 | [ketua]
+
+**Tugas:** lanjutan Turnstile. TRN.03 (pasang widget dan kirim token di layar Daftar dan Masuk, pesan galat umum bila widget gagal dimuat) selesai dites. Tidak ada berkas yang diubah, tidak ada deploy. Enable CAPTCHA di dashboard Supabase tetap MATI.
+
+**Yang terbukti (akun dummy, bukti di chat, tidak disimpan):**
+
+- Daftar: tombol mati sampai widget "Berhasil!", lalu daftar, Lengkapi profil, dan sampai Home customer.
+- Masuk: setelah Keluar (sesi lama hilang), masuk lewat layar Masuk dengan widget sampai Home. Keluar kembali ke layar Masuk dan widget mulai ulang dengan tombol mati.
+- Widget gagal dimuat (disimulasikan lewat Console `window.turnstile = undefined`): pesan ramah dan tombol Coba lagi tampil, tombol Daftar tetap mati, tanpa galat mentah.
+- **Tidak terbukti dari layar:** pemulihan lewat Coba lagi. Tes Console memicu peringatan "Turnstile already has been loaded", jadi widget tidak pulih. Ini efek trik tes, bukan kerusakan aplikasi. Alur pemulihannya hanya dibaca dari kode `akun.js` (`tsUlangMuat`). Pemblokiran domain lewat DevTools (Request conditions) tidak mengenai permintaan skrip (0 affected), jadi cara itu ditinggalkan.
+
+**Keputusan baru (ketua, lewat chat):**
+
+- **Ganti password: widget Turnstile ditambah di form Ganti password (opsi 1). Alur AK11 tidak berubah:** login ulang dengan password lama tetap dipakai, hanya sekarang membawa token Turnstile. Ini mengisi pilihan yang terbuka di "Masalah yang belum beres" Handoff #15. Opsi 2 (ganti password tanpa login ulang, membalik AK11) tidak dipilih.
+- Rencana TRN.03a: `akun.js` (`gantiPassword` menerima token dan meneruskannya sebagai `captchaToken`; widget ketiga di kelompok Masuk dan Daftar, aktif mengikuti layar Akun; pembantu token dibagikan lewat `window.KedaiAkun`), `akunmenu.js` (tombol Simpan password menunggu token siap, widget direset setelah tiap percobaan), dan `index.html` (satu wadah widget di kartu Ganti password). Tanpa server, migration, atau `sw.js`. Kode lama tidak dihapus; catatan di kepala `akun.js` hanya ditambah satu baris.
+- **OK ketua untuk mengubah ketiga berkas login itu belum diberikan** (aturan konfirmasi per berkas, `AGENTS.md` bagian 7); minta di awal sesi kode.
+
+**Masalah yang belum beres:**
+
+- **TRN.03a belum dikerjakan.** Selama belum beres, **Enable CAPTCHA tidak boleh dinyalakan**: `gantiPassword()` login ulang tanpa token dan akan ditolak Supabase untuk semua peran.
+- Belum dites: HP lama (TRN.05). Belum diketahui apakah link reset password dari dashboard dan pembuatan akun staf terhalang CAPTCHA (TRN.06); ulang SEC-33 setelah Enable aktif (TRN.07).
+- Pesan widget gagal selalu menyebut "Periksa internet". Untuk browser lama yang tidak didukung Cloudflare, pesan itu kurang tepat dan pengguna tidak punya jalan masuk lain (P2, konsekuensi keputusan Handoff #15). Belum diputuskan.
+- Di layar Masuk, email dummy masih terisi setelah Keluar (P2; dugaan isian otomatis browser, belum dipastikan).
+- Peringatan Console dari bingkai Cloudflare (CSP `data:`, `postMessage`, `OTS parsing`) dianggap bunyi bawaan widget; belum dibandingkan dengan muat normal.
+- Akun dummy `test05` (domain example.com) dibuat; dibersihkan di LNC.01.
+
+**Saran giliran berikutnya:**
+
+1. TRN.03a: kirim berkas utuh satu per giliran (`akun.js`, lalu `akunmenu.js`, lalu `index.html`). Tes dummy: ganti password dengan widget (berhasil, password lama salah, widget gagal dimuat), tombol tidak aktif sebelum "Berhasil!".
+2. TRN.05: tes HP lama, lalu nyalakan Enable CAPTCHA di dashboard Supabase paling akhir (pilih Cloudflare Turnstile, Secret Key diketik langsung di dashboard, bukan di chat). Tes ulang Daftar, Masuk, dan Ganti password.
+3. TRN.06 dan TRN.07, keduanya sebelum LNC.01b.
+
+### 2026-11-18: Ganti password dengan Turnstile, tanpa jalur pengecualian, pesan widget gagal
+
+Keputusan ketua (sesi lanjutan TRN.03). Berkas tujuan: docs/akun.md bagian 9. Melengkapi blok Turnstile 18 Nov di AGENTS.md dan "Masalah yang belum beres" di Handoff #15.
+
+- **Ganti password (AK11):** widget Turnstile ditambah di form Ganti password. Alur login ulang dengan password lama **tidak berubah**. Pilihan "ganti password tanpa login ulang" tidak dipilih (akan membalik AK11).
+- **Tidak ada jalur pengecualian Turnstile untuk browser lama.** Alasan ketua: customer yang terhalang bisa dilayani lewat order wakil (Pelanggan tanpa akun), jadi Turnstile tidak perlu dikorbankan. Pertimbangan dari sesi: CAPTCHA diperiksa di server Supabase, jadi jalur khusus berarti login lewat Edge Function sendiri (mengubah AK1) dan membuka celah bagi bot yang mengaku browser lama.
+- **Pesan widget gagal ditingkatkan dan digabung ke TRN.03a.** Alasan ketua: ibu-ibu ber-HP lama harus punya jalan keluar, tidak berputar di tombol Coba lagi.
+- **Rancangan (usulan penulis, belum dikonfirmasi ketua, terutama ambang dua kali):**
+  - Gagal pertama: pesan dan tombol Coba lagi seperti sekarang.
+  - Gagal kedua berturut-turut: tombol Coba lagi disembunyikan, pesan berganti jadi jalan keluar: pesan lewat WhatsApp warung seperti biasa, akan dibantu dicatatkan. Tanpa nomor di kode.
+  - Browser terdeteksi tidak didukung (callback `unsupported-callback`; nama persisnya dicek ke dokumentasi Cloudflare saat dikerjakan): langsung ke pesan jalan keluar.
+  - Layar Ganti password: pesan jalan keluar berbeda (hubungi warung lewat WhatsApp untuk atur ulang password, sesuai AK12).
+  - Penghitung gagal hanya di memori, tidak disimpan.
+- **OK ketua untuk mengubah `akun.js`, `akunmenu.js`, `index.html` belum diberikan secara eksplisit.**
+
+### Handoff #16 (diperbarui) | 2026-11-18 | [ketua]
+
+**Tugas:** lanjutan Turnstile. TRN.03 (widget dan token di layar Daftar dan Masuk, pesan galat bila widget gagal dimuat) selesai dites. Tidak ada berkas yang diubah, tidak ada deploy. Enable CAPTCHA di dashboard Supabase tetap MATI. TRN.03a (Ganti password vs CAPTCHA, kini ditambah pesan widget gagal) sudah diputuskan tetapi belum dikerjakan.
+
+**Yang terbukti (akun dummy, bukti di chat, tidak disimpan):**
+
+- Daftar: tombol mati sampai widget "Berhasil!", lalu daftar, Lengkapi profil, dan sampai Home customer.
+- Masuk: setelah Keluar (sesi lama hilang), masuk lewat layar Masuk dengan widget sampai Home. Keluar kembali ke layar Masuk dan widget mulai ulang dengan tombol mati.
+- Widget gagal dimuat (disimulasikan lewat Console `window.turnstile = undefined`): pesan ramah dan tombol Coba lagi tampil, tombol Daftar tetap mati, tanpa galat mentah.
+- **Tidak terbukti dari layar:** pemulihan lewat Coba lagi. Tes Console memicu peringatan "Turnstile already has been loaded", jadi widget tidak pulih; itu efek trik tes, bukan kerusakan aplikasi. Alurnya hanya dibaca dari kode (`tsUlangMuat`). Pemblokiran domain lewat DevTools (Request conditions) tidak mengenai permintaan skrip (0 affected), jadi cara itu ditinggalkan.
+
+**Keputusan baru (ketua):** lihat blok "2026-11-18: Ganti password dengan Turnstile, tanpa jalur pengecualian, pesan widget gagal" tepat di atas. Ringkasnya: widget juga di Ganti password (AK11 tidak berubah), tanpa jalur pengecualian Turnstile (customer terhalang dilayani lewat order wakil), pesan widget gagal ditingkatkan dan digabung ke TRN.03a.
+
+**Rencana TRN.03a (tiga berkas, tanpa server, migration, atau `sw.js`; kode lama tidak dihapus):**
+
+- `public/akun.js`: `gantiPassword(lama, baru)` menerima token dan meneruskannya sebagai `captchaToken` ke `signInWithPassword`; widget ketiga di kelompok Masuk dan Daftar, aktif mengikuti layar Akun; pembantu token dibagikan lewat `window.KedaiAkun`; logika pesan gagal kedua dan browser tidak didukung; catatan di kepala berkas hanya ditambah satu baris.
+- `public/akunmenu.js`: tombol Simpan password menunggu token siap, widget direset setelah tiap percobaan (token sekali pakai).
+- `public/index.html`: satu wadah widget di kartu Ganti password.
+
+**Masalah yang belum beres:**
+
+- **Enable CAPTCHA tidak boleh dinyalakan sebelum TRN.03a selesai**: `gantiPassword()` login ulang tanpa token dan akan ditolak Supabase untuk semua peran.
+- **OK ketua untuk tiga berkas login belum diberikan.** Bila yang melanjutkan bukan ketua, AI membuat ringkasan untuk diteruskan lewat WA (`AGENTS.md` aturan 12) dan menunggu kabar.
+- Ambang "dua kali gagal" belum dikonfirmasi ketua.
+- Belum dites: HP lama (TRN.05). Belum diketahui apakah link reset password dari dashboard dan pembuatan akun staf terhalang CAPTCHA (TRN.06); ulang SEC-33 setelah Enable aktif (TRN.07).
+- Peringatan Console dari bingkai Cloudflare (CSP `data:`, `postMessage`, `OTS parsing`) dianggap bunyi bawaan widget; belum dibandingkan dengan muat normal.
+- Di layar Masuk, email dummy masih terisi setelah Keluar (P2; dugaan isian otomatis browser, belum dipastikan).
+- Akun dummy `test05` (domain example.com) dibuat; dibersihkan di LNC.01.
+
+**Saran giliran berikutnya:**
+
+1. Minta OK ketua (lewat WA) untuk tiga berkas, lalu TRN.03a: berkas utuh satu per giliran (`akun.js`, `akunmenu.js`, `index.html`). Tes dummy: ganti password dengan widget (berhasil, password lama salah), tombol tidak aktif sebelum "Berhasil!", gagal kedua lewat trik Console dua kali berturut-turut (jalan keluar muncul, Coba lagi hilang).
+2. TRN.05: uji HP dengan **browser paling tertinggal yang bisa ditemukan**, catat nomor versi Chrome-nya (Chrome, titik tiga, Setelan, Tentang Chrome). Uji juga membuka link dari WA, dan throttling Slow 3G di laptop untuk jalur waktu tunggu 10 detik. Lulus bila layar Masuk terbuka dan widget berhasil, atau gagal dengan pesan ramah tanpa layar kosong. Lalu nyalakan Enable CAPTCHA paling akhir (pilih Cloudflare Turnstile, Secret Key diketik langsung di dashboard, bukan di chat). Enable bisa dimatikan lagi bila banyak customer terhalang.
+3. TRN.06 dan TRN.07, keduanya sebelum LNC.01b.
