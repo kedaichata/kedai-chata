@@ -368,3 +368,15 @@ Keputusan owner (disetujui lewat WA). Asal usulan: saran umum dari teman di kant
 ### 2026-11-18: Persetujuan ketua untuk Turnstile dan batas order
 
 Ketua menyetujui pemasangan Turnstile di Daftar dan Masuk serta batas 5 order per customer per hari. Melengkapi dua blok 18 Nov (AGENTS.md dan order.md). Yang paling akhir menang.
+
+### 2026-11-18: Dokumen `belanja.md` (prefix BLJ)
+
+Keputusan ketua (sesi strategi 18 Nov 2026). Fitur diminta ibu ketua di awal proyek tetapi tidak sempat masuk md (hanya di kertas ketua). Sumber: docs/belanja.md. "OK" ketua untuk rancangan: belum tercatat.
+
+- **Peta Dokumentasi (bagian 5):** tambah baris `docs/belanja.md`, isi: "Belanja Warung: catatan belanja dan rekap per owner, khusus owner, bukan keuangan", prefix sheet **BLJ**.
+- **Fitur tulis-database biasa lewat fungsi SQL atomik.** Tidak ada pengecualian baru dari aturan bagian 7. Tanpa DELETE (item salah ditandai Dibatalkan). Kunci catatan satu arah; membukanya hanya oleh ketua di SQL Editor dengan "OK".
+- **Kode baru `kedai`:** `belanja.ts` (mengikuti blok 9 Nov 2026).
+- **Pengecualian CSS (bagian 3 dan 6):** gaya di `public/belanja.css` (kelas berawalan `blj-`), dimuat setelah `style.css`, mengikuti pola `game.css`. Usulan, menunggu "OK" ketua. `belanja.css` dan `belanja.js` wajib didaftarkan di cache `sw.js` (bagian 7, butuh "OK").
+- **Pengecualian "angka di database" (bagian 1):** tidak ada; batas harga, panjang, jumlah item, dan jumlah terkunci tampil ada di `pengaturan`.
+- **Versi rilis:** menunggu ketua dan owner (V1 sebelum Peluncuran atau sebelum LNC.04). Kecenderungan: V1; jadwal rilis terbatas Senin 23 Nov 2026 bisa mundur. Belum final.
+- **Bagian 4:** cek kuota 18 Nov 2026 sangat rendah (Edge Function sekitar 5.300 panggilan, database 27,85 MB); fitur ini bukan penentu upgrade.

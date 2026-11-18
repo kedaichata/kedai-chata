@@ -1180,7 +1180,7 @@ Ketua menyetujui penjelasan dampak BTO.01 lewat chat. Melengkapi blok 18 Nov di 
 8. Ulangi tes order dasar: `order_buat` sah, isian palsu diabaikan (SEC-06), hari dari server (SEC-19).
    Lalu centang BTO.03 dan BTO.04. Data dummy baru tidak bisa dihapus; dibersihkan di LNC.01. Pekerjaan wajib selesai sebelum LNC.04.
 
-### Handoff #33 | 2026-11-18 | KETUA
+### Handoff #33 | 2026-11-18 | RAC
 
 **Tugas:** BTO.04 (tes batas order harian) **selesai dan lulus**; BTO.03 (pesan ramah di layar customer) **selesai**; BTO.02a (template ganti batas) **teruji**. Ketiganya dicentang di sheet. Menggantikan "Masalah yang belum beres" dan "Saran giliran berikutnya" di Handoff #32; selebihnya #32 tetap berlaku. Tidak ada kode, SQL, migration, `kedai`, atau `sw.js` yang diubah, jadi tidak ada commit.
 
@@ -1199,11 +1199,10 @@ Ketua menyetujui penjelasan dampak BTO.01 lewat chat. Melengkapi blok 18 Nov di 
 
 **Masalah yang belum beres:**
 
-- Logout dashboard Supabase untuk sesi ini belum dikonfirmasi.
 - `_batal.sql` migration batas harian belum pernah dicoba (sengaja, tidak dijalankan di production tanpa perlu).
 - Pengaturan `order_maks_per_hari` = 5 (terkonfirmasi). Mengganti angka kelak lewat template, tanpa deploy.
 - Data dummy baru (order #110 sampai #138, beberapa akun customer dummy baru, enam order wakil #120 sampai #125 untuk Dummy Kembar) tidak bisa dihapus; dibersihkan di LNC.01. Akun #131 punya 6 order hari ini dari tes batas 6.
 - Butir terbuka Handoff #11 sampai #32 yang tidak disebut di sini tidak berubah.
 
-**Saran giliran berikutnya:** TRN.08 dicentang. Lanjut rantai Peluncuran sebelum LNC.04: FTO, NTF, BTN, SEC-23, lalu LNC.01 (bersihkan data uji dan reset nomor order, butuh "OK" ketua). Lampirkan `AGENTS.md` + dokumen fitur terkait + `database.md` + `security.md` bila menyentuh tabel atau fungsi.
+**Saran giliran berikutnya:** Lanjut rantai Peluncuran sebelum LNC.04: FTO, NTF, BTN, SEC-23, lalu LNC.01 (bersihkan data uji dan reset nomor order, butuh "OK" ketua). Lampirkan `AGENTS.md` + dokumen fitur terkait + `database.md` + `security.md` bila menyentuh tabel atau fungsi.
 ---

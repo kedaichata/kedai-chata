@@ -218,3 +218,11 @@ Sumber: docs/pengenalan.md. Yang paling akhir menang.
 4. Sesi kode **batas order** terpisah (jangan digabung dengan Turnstile supaya penyebab masalah mudah dilacak). Lampirkan: `AGENTS.md`, `order.md`, `database.md`, `security.md`, `20261108_order.sql`, berkas `kedai` yang memuat `order_buat`.
 5. Handoff pengerjaan Turnstile ditempel di akhir `akun.md` (nomor berikutnya #15); handoff batas order di akhir `order.md`.
 6. Tambahkan butir baru ke sheet: "Turnstile di Daftar dan Masuk" dan "Batas 5 order per hari".
+
+### 2026-11-18: Fitur Belanja Warung (khusus owner)
+
+Sumber: docs/belanja.md. Yang paling akhir menang.
+
+- **Layar per peran:** owner bertambah layar **Belanja Warung**, dibuka dari item baru di **menu hamburger** (di bawah Kotak masuk, hanya tampil untuk owner; bukan di Lainnya): akordeon catatan belanja (judul, penginput, total), rekap total per owner, input item dengan tombol Simpan, tombol Kunci. Customer dan penjaga tidak berubah.
+- **Versi:** menunggu ketua dan owner (V1 sebelum Peluncuran atau sebelum LNC.04). Belum final.
+- **Peluncuran (bagian 10):** LNC.01 mencakup data uji belanja; LNC.02 mencakup kuota; Bantuan owner ditambah entri Belanja Warung.

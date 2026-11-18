@@ -245,4 +245,13 @@ Keputusan ketua (17 Nov 2026), saat sesi MNU.13 (Cari menu). Sumber: `docs/menu.
 - **Belum tercatat:** patokan "2 sampai 3 bulan" dihitung sejak kapan, apa yang dimaksud keadaan mendesak, dan alasan lain di luar yang tertulis.
 - **Tidak ada perubahan kode, pengaturan, atau hosting** dari catatan ini.
 
+### 2026-11-18: Kandidat versi 2 dari Belanja Warung
+
+Keputusan ketua (sesi strategi 18 Nov 2026). Sumber: docs/belanja.md bagian 8. Nomor B dan kolom Alasan diisi saat review pemakaian (`LNC.05`); alasan pemakaian belum tercatat.
+
+- **Status "sudah diganti"** per owner (utang atau lunas). Tidak masuk V1 karena catatan ibu ketua tidak memintanya; baru bila owner memang membutuhkannya.
+- **Tombol "Kunci semua"** untuk owner mana pun saat ngumpul.
+- Filter tanggal, ekspor atau cetak rekap, kategori belanja, jumlah dan harga satuan terpisah, draft tersimpan otomatis di HP.
+- Foto struk **tidak** dikerjakan (struk bercampur belanja pribadi).
+
 ---
