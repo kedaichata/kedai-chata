@@ -189,4 +189,56 @@ Keputusan ketua (18 Nov 2026), setelah penjelasan di sesi BLJ.03. Alasan ketua s
 - Menutup butir "persetujuan ketua atas tafsir rekap" di Handoff #2.
 - **Persetujuan ketua atas pilihan penulis BLJ.02** (disampaikan ketua di sesi BLJ.03, 18 Nov 2026; ia menyetujuinya di sesi sebelumnya): item Dibatalkan tidak bisa diaktifkan lagi dan tidak bisa diedit; batas 50 item dihitung termasuk yang Dibatalkan; catatan tanpa item ditolak; judul kosong diisi "DD-MM-YYYY Nama penginput". Alasan ketua selain itu belum tercatat. Menutup butir "persetujuan ketua belum tercatat jelas" di Handoff #2.
 
+### Handoff #3 | 2026-11-18 | (KETUA)
+
+**Tugas:** BLJ.03 (aksi `kedai` Belanja Warung). Selesai, sudah di-deploy dan di-push. Sudah dicentang di sheet.
+
+**File yang diubah (commit 3f3d759, tanpa `[skip ci]`, sudah di-push ke `main`):**
+
+- Baru: `supabase/functions/kedai/belanja.ts`.
+- Diubah: `supabase/functions/kedai/index.ts` (hanya ditambah: catatan header, satu import, satu blok sambungan, tujuh `case`; tidak ada baris lama yang berubah, terbukti diff 0 baris hilang).
+- Diubah: `docs/belanja.md` (blok catatan sesi ini).
+- Tidak ada perubahan SQL, tabel, pengaturan, `sw.js`, atau `public/`.
+- `kedai` sudah dideploy sesuai urutan aman bagian 8 (tanpa `--no-verify-jwt`, token ketua dibersihkan, logout dashboard dilakukan).
+
+**Keputusan baru (ketua, 18 Nov 2026):**
+
+- **Tafsir rekap: pilihan A, SQL tidak diubah.** Rekap (total dan per owner) selalu hanya menjumlah catatan belum terkunci, juga saat saklar "tampilkan yang terkunci" menyala. Catatan terkunci yang tampil membawa totalnya sendiri. BL11 dan aturan 6 bagian 5 dibaca hanya untuk saklar mati.
+- **Kewajiban layar (BLJ.04):** rekap diberi label jelas ("Total belum terkunci" atau sejenisnya); catatan terkunci tampil terpisah dengan tanda terkunci dan total sendiri.
+- Ketua menyatakan empat pilihan penulis BLJ.02 sudah ia setujui di sesi sebelumnya (item Dibatalkan tidak bisa diaktifkan lagi, batas 50 item termasuk yang Dibatalkan, catatan tanpa item ditolak, judul kosong diisi tanggal dan nama). Alasan ketua selain itu belum tercatat.
+
+**Kontrak aksi `kedai` (untuk BLJ.04 dan BLJ.05; semua owner saja, akun dari token):**
+
+- `belanja_daftar` {terkunci?: boolean} membalas `{ok, daftar: {rekap: {total, per_owner: [{nama, total}]}, catatan: [{id, judul, nama_penginput, milik_saya, dibuat_pada, dikunci_pada, total, item: [{id, nama, harga, dibatalkan, ditambah_pada}]}], terkunci_tampil_maks}}`.
+- `belanja_buat` {judul?, item: [{nama, harga}]} membalas `{ok, belanja: {id, judul, jumlah_item}}`.
+- `belanja_item_tambah` {id, item: [{nama, harga}]} membalas `{ok, belanja: {id, jumlah_item}}`.
+- `belanja_item_ubah` {id (item), nama, harga} membalas `{ok, item: {id, nama, harga}}`.
+- `belanja_item_batal` {id (item)} membalas `{ok, item: {id}}`.
+- `belanja_judul_ubah` {id, judul} membalas `{ok, belanja: {id, judul}}`.
+- `belanja_kunci` {id} membalas `{ok, belanja: {id, dikunci_pada}}`.
+- Harga dikirim sebagai **angka JSON** (bukan teks). Pesan galat dari server sudah ramah dan tanpa angka; layar tinggal menampilkannya. Hanya `item_kosong`, `item_tidak_valid`, dan sejenisnya yang pesannya umum.
+- Di `belanja.ts`, `nama_item_tidak_valid` sengaja ditaruh sebelum `item_tidak_valid` di peta galat, karena `galatDariDb` memakai `includes` dan kunci pertama yang cocok. Jangan diubah urutannya.
+
+**Terbukti (diperiksa di chat, tidak disimpan):**
+
+- Deploy `kedai` berhasil di project yang benar; `belanja.ts` ikut terunggah; tanpa galat.
+- Diff `index.ts`: 0 baris lama hilang, 46 baris tambahan, 7 `case` baru.
+
+**Masalah yang belum beres:**
+
+- **Ketujuh aksi belum pernah dipanggil sungguhan.** Deploy sukses belum membuktikan perilakunya; pembuktian di BLJ.04, BLJ.05, dan BLJ.07. Butir sheet sudah tercakup di BLJ.07, tidak perlu butir baru.
+- Blok BLJ.00 di `AGENTS.md`, `belanja.md`, dan `features.md` sudah dikonfirmasi ada oleh ketua (18 Nov 2026). Blok `database.md` untuk fungsi BLJ.02 sudah ditempel.
+- **Data uji dummy masih di database:** 3 catatan, 56 item, 2 catatan terkunci. Layar BLJ.04 akan menampilkannya. Pembersihan di BLJ.08 dan LNC.01 dengan penjelasan dampak dan "OK" ketua, sebelum layar dipakai owner.
+- Belum terbukti: dua kiriman bersamaan (kunci dan tambah item, uji dua tab), jalur `akun_nonaktif`, dan ketiga `_batal.sql` BLJ (belum pernah dicoba).
+- Baris SEC baru untuk Belanja belum ada di `security.md` (BLJ.07).
+- Belum diputuskan: bila Belanja Warung belum selesai saat Senin 23 Nov 2026, apakah rilis terbatas tetap jalan tanpa fitur ini atau mundur. Dibahas tim Sabtu 21 Nov 2026.
+- Persetujuan ketua atas rancangan layar (BLJ.04, BLJ.05) belum ada; penjelasan dampak dan "OK" diminta saat dikerjakan.
+
+**Saran giliran berikutnya:**
+
+1. Sesi BLJ.04. Lampirkan `AGENTS.md`, `belanja.md`, `docs/desain.md`, berkas JS hamburger, `index.html`, satu layar owner sebagai contoh pola (`ringkasan.js` dan `ringkasan.css`), dan `docs/gim.md` bila rincian hamburger ada di sana. Bila nama berkas hamburger belum jelas, minta daftar isi `public/`.
+2. BLJ.04: item "Belanja Warung" di hamburger di bawah Kotak masuk, hanya digambar untuk owner, tanpa titik merah, kode hamburger lama hanya ditambah (BL16). Kode baru `public/belanja.js` (di bawah ~500 baris) dan `public/belanja.css` (kelas `blj-`, sudah disetujui ketua). Semua teks lewat `textContent`.
+3. BLJ.05 (layar input dan edit, peringatan "ada item belum disimpan"), lalu BLJ.06 (`sw.js`, butuh penjelasan dampak dan "OK" ketua), lalu BLJ.07 (SEC baru), lalu BLJ.08.
+4. Commit yang menyentuh `public/` dan `supabase/` jangan memakai `[skip ci]`. Sebelum push, tempel cek anti-nyasar (folder aktif, `git remote -v`, email commit terakhir). Bila yang bertugas bukan ketua, kirim ringkasan perubahan berisiko ke ketua lewat WA dan tunggu "OK" (aturan 12).
+
 ---

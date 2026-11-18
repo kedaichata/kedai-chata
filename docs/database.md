@@ -491,4 +491,39 @@ Keputusan ketua (16 Nov 2026, sesi tes SEC-04 dan SEC-03). Yang paling akhir men
 - **Pembatalan:** `20261118_order_batas_harian_batal.sql` mengembalikan `order_buat` ke versi 8 Nov persis dan menghapus baris pengaturan. Aman dijalankan kapan pun; tidak menyentuh order atau tabel lain.
 - **Pilihan penulis** (nama kunci dan kode galat, status 409, kunci per akun, bentuk pembacaan nilai): nama kunci dan kunci per akun disetujui ketua 18 Nov 2026; alasan ketua selain itu belum tercatat.
 
+### 2026-11-18: Tabel `belanja`, `belanja_item`, pengaturan Belanja, dan fungsi SQL (BLJ.01, BLJ.02, BLJ.03)
+
+**Berkas tujuan:** `docs/database.md` bagian 9. Rujukan: `docs/belanja.md` bagian 9, Handoff #1, #2, dan #3. Yang paling akhir menang.
+
+- **Berkas SQL:** `supabase/migrations/20261118_02_belanja.sql` dan `20261118_03_belanja_fungsi.sql` (masing-masing dengan `_batal`), `supabase/templates/20261118_02_belanja_cek.sql`, `20261118_03_belanja_fungsi_cek.sql`, dan `20261118_03_belanja_fungsi_uji.sql` (berkas uji di repo berisi id nol). Dijalankan dan dicek 18 Nov 2026 dengan "OK" ketua. Tabel lama dan data lama tidak diubah.
+- **Bagian 2 (tabel baru):**
+  - `belanja` (satu catatan): `id` (uuid), `judul`, `penginput` (id akun), `nama_penginput` (salinan nama tampilan), `dibuat_pada`, `dikunci_pada` (kosong bila belum dikunci).
+  - `belanja_item` (satu item): `id` (uuid), `belanja_id`, `nama`, `harga` (bilangan bulat rupiah), `dibatalkan` (boolean, satu arah), `ditambah_pada`.
+  - Nama kolom diambil dari fungsi SQL dan Handoff #1; cocokkan dengan `20261118_02_belanja.sql` bila ada selisih. Tabel Belanja adalah data internal owner, bukan data pelanggan.
+- **Bagian 3 (hak):** RLS aktif tanpa policy di kedua tabel. `service_role` hanya `INSERT, SELECT, UPDATE` (tanpa DELETE); `anon` dan `authenticated` nol. Terbukti lewat query cek 18 Nov 2026.
+- **Bagian 4 (pengaturan baru):** `belanja_harga_maks` 5000000, `belanja_nama_maks` 60, `belanja_judul_maks` 60, `belanja_item_maks` 50, `belanja_terkunci_tampil` 10. Harus bilangan bulat 1 sampai 9 digit; selain itu fungsi melempar `pengaturan_rusak` (galat umum 500).
+- **Bagian 5 (fungsi SQL, `SECURITY DEFINER`, `search_path` kosong, `public.` eksplisit, `EXECUTE` hanya `service_role`; hanya `postgres` dan `service_role` yang punya hak, terbukti):**
+  - Pembantu baca-saja: `belanja_angka(kunci)`, `belanja_owner(akun)` (owner aktif, mengembalikan nama), `belanja_item_periksa(item)` (merapikan dan memeriksa daftar `{nama, harga}`).
+  - `belanja_buat(akun, judul, item)` mengembalikan `{id, judul, jumlah_item}`.
+  - `belanja_item_tambah(akun, belanja_id, item)` mengembalikan `{id, jumlah_item}`.
+  - `belanja_item_ubah(akun, item_id, item)` mengembalikan `{id, nama, harga}`.
+  - `belanja_item_batal(akun, item_id)` mengembalikan `{id}`.
+  - `belanja_judul_ubah(akun, belanja_id, judul)` mengembalikan `{id, judul}`.
+  - `belanja_kunci(akun, belanja_id)` mengembalikan `{id, dikunci_pada}`.
+  - `belanja_daftar(akun, terkunci)` mengembalikan `{rekap: {total, per_owner}, catatan, terkunci_tampil_maks}`; baca-saja.
+- **Perilaku penting:**
+  - Hanya owner aktif; hanya penginput yang boleh tambah, ubah, batal, ubah judul, dan kunci. Tanpa DELETE: item salah ditandai Dibatalkan, satu arah, dan tidak bisa diedit lagi.
+  - Batas `belanja_item_maks` dihitung termasuk item Dibatalkan. Catatan tanpa item ditolak. Kunci satu arah; membukanya hanya oleh ketua di SQL Editor.
+  - Harga harus angka JSON bulat 1 sampai `belanja_harga_maks`; teks, desimal, dan minus ditolak. Total selalu dihitung server.
+  - Baris catatan dikunci `FOR UPDATE` selama transaksi, jadi tambah dan kunci bersamaan diurutkan (satu menang).
+  - **Rekap hanya menjumlah catatan belum terkunci**, juga saat saklar terkunci menyala (keputusan ketua 18 Nov 2026, `belanja.md` bagian 9). Catatan terkunci tampil dengan totalnya sendiri, maksimal `belanja_terkunci_tampil` terbaru.
+  - Judul kosong diisi "DD-MM-YYYY Nama penginput" (kalender WIB, jam server). Balasan daftar tidak membawa id akun, hanya `milik_saya`.
+- **Kode galat:** baru di fitur ini: `belanja_tidak_ditemukan`, `item_tidak_ditemukan`, `bukan_penginput`, `belanja_terkunci`, `item_sudah_batal`, `judul_tidak_valid`, `nama_item_tidak_valid`, `harga_tidak_valid`, `harga_terlalu_besar`. Dipakai ulang: `id_kosong`, `peran_tidak_boleh`, `akun_nonaktif`, `item_kosong`, `item_tidak_valid`, `item_terlalu_banyak`, `pengaturan_rusak`. Pemetaan ke status HTTP ada di `supabase/functions/kedai/belanja.ts`.
+- **Bagian 5 (aksi `kedai`, owner saja):** `belanja_daftar`, `belanja_buat`, `belanja_item_tambah`, `belanja_item_ubah`, `belanja_item_batal`, `belanja_judul_ubah`, `belanja_kunci`. Sudah dideploy (commit 3f3d759). Kontrak isian dan balasan ada di `belanja.md` Handoff #3. Tanpa inbox dan tanpa push (BL15). **Tidak ada pengecualian tulis-database baru.**
+- **Terbukti (18 Nov 2026, dibaca bersama di chat, tidak disimpan):** cek A sampai E (10 fungsi ada, hak `EXECUTE`, lima pengaturan utuh, hak tabel tanpa DELETE); berkas uji dummy 104 dari 104 lulus. Dua baris pengaturan sempat diubah sementara oleh berkas uji lalu dikembalikan (terbukti).
+- **Belum terbukti:** dua kiriman bersamaan (kunci dan tambah item), jalur `akun_nonaktif`, jalur token `kedai` dan ketujuh aksi dari layar (BLJ.07), dan ketiga `_batal.sql` (belum pernah dicoba).
+- **Data uji dummy masih di database:** 3 catatan, 56 item, 2 catatan terkunci. Dibersihkan ketua di BLJ.08 dan LNC.01 dengan penjelasan dampak dan "OK", sebelum layar dipakai owner.
+- **Pembatalan:** buang fungsi dulu (`20261118_03_belanja_fungsi_batal.sql`), baru tabel (`20261118_02_belanja_batal.sql`). Bila aksi di `kedai` sudah dideploy, deploy `kedai` versi sebelumnya dulu. Tabel dan data ikut hilang bila tabel dibuang.
+- **Pilihan penulis** (pembantu baca-saja, urutan item lewat `clock_timestamp()`, rekap hanya belum terkunci, nama kolom): alasan belum tercatat. Empat pilihan penulis BLJ.02 disetujui ketua (lihat `belanja.md` bagian 9).
+
 ---
