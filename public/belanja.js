@@ -5,6 +5,8 @@
 //
 // Cakupan BLJ.04: daftar akordeon, rekap "Total belum terkunci", saklar "tampilkan juga yang terkunci",
 // tombol Kunci (hanya di catatan milik sendiri). Form input dan edit item adalah BLJ.05 (belum ada di sini).
+// BLJ.05 giliran 1: tombol besar "+ Catatan baru" menempel di bawah layar; formnya ada di belanjainput.js
+// (window.KedaiBelanjaInput). Setelah tersimpan, daftar dimuat ulang, catatan baru terbuka, dan muncul "tersimpan".
 //
 // Aksi `kedai` yang dipakai (Handoff #3):
 //   belanja_daftar {terkunci?: boolean} -> {ok, daftar: {rekap: {total, per_owner: [{nama, total}]},
@@ -81,6 +83,9 @@
   var jedaSampai = 0; // performance.now() akhir jeda (hanya batas Segarkan, bukan waktu belanja)
   var timerJeda = null; // satu penghitung waktu tombol, bukan polling
   var elCek = null; // kotak centang saklar yang sedang tampil
+  var elBawah = null; // BLJ.05: bilah bawah berisi tombol "+ Catatan baru"
+  var pesanSukses = ""; // BLJ.05: pesan "tersimpan" di atas daftar, hilang saat Segarkan atau saklar
+  var idFokus = null; // BLJ.05: id catatan baru yang digulir ke layar setelah digambar
 
   // Unsur layar (dibuat saat pertama dibuka).
   var layar = null;
@@ -177,6 +182,23 @@
 
     layar.appendChild(bilah);
     layar.appendChild(isi);
+    // BLJ.05: tombol besar di bawah layar, hanya bila belanjainput.js termuat. Tampil setelah daftar berhasil dimuat.
+    if (
+      window.KedaiBelanjaInput &&
+      typeof window.KedaiBelanjaInput.buka === "function"
+    ) {
+      elBawah = buat("div", "blj-bawah");
+      elBawah.hidden = true;
+      var tBaru = buat(
+        "button",
+        "tombol tombol--utama blj-bawah__tombol",
+        "+ Catatan baru",
+      );
+      tBaru.type = "button";
+      tBaru.addEventListener("click", bukaInput);
+      elBawah.appendChild(tBaru);
+      layar.appendChild(elBawah);
+    }
     layar.appendChild(buatDialog());
     document.body.appendChild(layar);
 
@@ -259,7 +281,12 @@
     return k;
   }
 
+  function aturBawah(tampil) {
+    if (elBawah) elBawah.hidden = !tampil;
+  }
+
   function tampilMemuat() {
+    aturBawah(false);
     kosongkan(elIsi);
     var k = buat("div", "keadaan");
     k.setAttribute("role", "status");
@@ -271,6 +298,7 @@
   }
 
   function tampilKeadaan(judul, ket, denganUlang, galat) {
+    aturBawah(false);
     kosongkan(elIsi);
     elIsi.appendChild(keadaan(judul, ket, denganUlang, galat));
   }
@@ -323,6 +351,7 @@
     bungkus.appendChild(teks);
     cek.addEventListener("change", function () {
       tampilTerkunci = cek.checked;
+      pesanSukses = "";
       muat();
     });
     return bungkus;
@@ -355,6 +384,7 @@
       "div",
       "kartu blj-catatan" + (terkunci ? " blj-catatan--kunci" : ""),
     );
+    kartu.setAttribute("data-blj-id", id); // BLJ.05: untuk menggulir ke catatan baru
 
     var kepala = buat("button", "blj-kepala");
     kepala.type = "button";
@@ -458,6 +488,12 @@
   function gambar(d) {
     var gulir = layar.scrollTop;
     kosongkan(elIsi);
+    aturBawah(true);
+    if (pesanSukses) {
+      var ps = buat("div", "kartu blj-sukses", pesanSukses);
+      ps.setAttribute("role", "status");
+      elIsi.appendChild(ps);
+    }
 
     var semua = Array.isArray(d.catatan) ? d.catatan : [];
     var belum = [];
@@ -488,6 +524,16 @@
       );
     }
     layar.scrollTop = gulir;
+    if (idFokus) {
+      var kk = elIsi.querySelectorAll(".blj-catatan");
+      for (var q = 0; q < kk.length; q++) {
+        if (kk[q].getAttribute("data-blj-id") === idFokus) {
+          layar.scrollTop = Math.max(0, kk[q].offsetTop - 80);
+          break;
+        }
+      }
+      idFokus = null;
+    }
   }
 
   // ------------------------------------------------------------
@@ -580,7 +626,28 @@
   function muatBila() {
     if (sedangMuat) return;
     if (data && dalamJeda()) return; // di dalam jeda: tidak memanggil server
+    pesanSukses = "";
     mulaiMuat(!data);
+  }
+
+  // ------------------------------------------------------------
+  // BLJ.05: catatan baru
+  // ------------------------------------------------------------
+
+  function bukaInput() {
+    var I = window.KedaiBelanjaInput;
+    if (!I || typeof I.buka !== "function") return;
+    I.buka({
+      onSimpan: function (hasil) {
+        var id = hasil && typeof hasil.id === "string" ? hasil.id : "";
+        if (id) {
+          terbuka[id] = true; // catatan baru langsung terbuka
+          idFokus = id;
+        }
+        pesanSukses = "Catatan tersimpan \u2713";
+        mulaiMuat(false); // penulisan: tidak ditahan jeda, posisi gulir dijaga
+      },
+    });
   }
 
   // ------------------------------------------------------------
@@ -666,6 +733,9 @@
     tampilTerkunci = false;
     terbuka = {};
     idKunci = null;
+    pesanSukses = "";
+    idFokus = null;
+    aturBawah(false);
     if (layar) {
       layar.hidden = true;
       dlg.hidden = true;
@@ -679,6 +749,7 @@
 
   document.addEventListener("keydown", function (e) {
     if (e.key !== "Escape" || !layar || layar.hidden) return;
+    if (document.body.classList.contains("blj-input-terbuka")) return; // BLJ.05: Esc dipegang layar input
     if (!dlg.hidden) {
       tutupDialog();
     } else {
