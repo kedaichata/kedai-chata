@@ -283,3 +283,14 @@ Sumber: docs/ringkasan.md RK1 dan RK15. Prefix sheet SEC.
 - SEC-01, SEC-02, SEC-32 masih menunggu dicocokkan dengan teks barisnya di sheet.
 
 **Saran giliran berikutnya:** lampirkan `AGENTS.md`, `security.md`, `pemetaan-test.md`; cocokkan status SEC dengan screenshot sheet dulu.
+
+### 2026-11-18: Keamanan Belanja Warung (SEC-46 sampai SEC-49)
+
+Fitur susulan setelah tes SEC-01 sampai SEC-45 selesai; baris SEC-01 sampai SEC-45 tidak dibuka ulang. Sumber: docs/belanja.md (BL1, BL4, BL7 sampai BL9). Alasan lain belum tercatat. Berlaku untuk tujuh aksi `kedai` Belanja: `belanja_daftar`, `belanja_buat`, `belanja_item_tambah`, `belanja_item_ubah`, `belanja_item_batal`, `belanja_judul_ubah`, `belanja_kunci`. Menegakkan aturan 2, 4, 5, 8, 12, 15, 19. Dites dengan data dummy.
+
+- **SEC-46 (P0):** panggil ketujuh aksi tanpa token dibalas 401; customer dan penjaga dibalas 403 (termasuk `belanja_daftar`). Bukti: balasan server.
+- **SEC-47 (P0):** owner B memakai ID catatan owner A pada aksi tambah, ubah, batalkan, ubah judul, dan kunci: ditolak; owner B tetap bisa membaca lewat `belanja_daftar`. Bukti: balasan server.
+- **SEC-48 (P0):** harga 0, minus, desimal, huruf, kosong, dan melewati `belanja_harga_maks` ditolak; nama dan judul melewati batas ditolak; item melewati `belanja_item_maks` ditolak; `total`, `peran`, dan `penginput` yang dikirim di isi permintaan diabaikan (server memakai nilainya sendiri). Bukti: balasan server.
+- **SEC-49 (P0):** catatan terkunci tidak bisa ditambah, diubah, dibatalkan, atau diubah judulnya; item Dibatalkan tidak bisa diubah; tidak ada aksi hapus; hak `service_role` pada `belanja` dan `belanja_item` tanpa DELETE dan `EXECUTE` fungsi Belanja hanya untuk `service_role`; nama item dan judul berisi tag HTML tampil sebagai teks biasa. Bukti: balasan server, query baca-saja hak tabel dan fungsi, screenshot (dummy).
+
+**Dampak pada sheet:** empat baris baru SEC-46 sampai SEC-49; BLJ.07 dicentang setelah keempatnya lulus. SEC-03 dan SEC-04 (16 Nov) belum mencakup tabel dan fungsi Belanja; ceknya masuk SEC-49.

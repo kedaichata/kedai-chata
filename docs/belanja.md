@@ -398,4 +398,44 @@ Keputusan ketua (18 Nov 2026), setelah penjelasan di sesi BLJ.03. Alasan ketua s
 2. Siapkan akun dummy: owner A, owner B, satu customer, satu penjaga. Pemanggilan `kedai` langsung dipandu satu langkah per giliran; token tidak boleh ditempel ke chat.
 3. Setelah BLJ.07: BLJ.08 (entri Bantuan owner dan pembersihan data uji, butuh "OK" ketua).
 
+### Handoff #8 | 2026-11-19 | [KETUA]
+
+**Tugas:** tes BLJ.07 (keamanan Belanja Warung). Selesai: SEC-46 sampai SEC-49 lulus semua, dicentang di sheet (SEC-46, 47, 48 tanggal 18 Nov; SEC-49 dan BLJ.07 tanggal 19 Nov).
+
+**File yang diubah (belum di-commit saat catatan ini ditulis):**
+
+- `docs/security.md`: blok baru "2026-11-18: Keamanan Belanja Warung (SEC-46 sampai SEC-49)" di bagian 7 (11 baris bertambah).
+- `docs/belanja.md`: handoff ini.
+- Tidak ada perubahan `kedai`, SQL, tabel, pengaturan, atau berkas di `public/`.
+
+**Keputusan baru:**
+
+- Fitur susulan setelah tes SEC-01 sampai SEC-45 selesai dicatat sebagai baris SEC baru, bukan membuka ulang baris lama. BLJ.07 jadi payung yang dicentang setelah keempat SEC Belanja lulus. Nomor SEC berikutnya: **SEC-50**. Ketua menyetujui keempat butir (SEC-46 sampai SEC-49) dan menambahkannya sendiri di sheet. Alasan lain di luar yang tertulis: belum tercatat.
+- Cara tes yang dipakai (untuk sesi berikutnya): Console browser di aplikasi yang sedang login, lewat `KedaiAkun.panggilKedai(aksi, data)` dari `akun.js`. Token dari sesi login, tidak pernah ditampilkan atau ditempel ke chat. Tes tanpa token memakai `fetch` manual ke alamat `kedai`, karena helper itu membalas 401 sendiri bila tidak ada sesi. Dites di Brave (jendela privat) dengan akun dummy: owner A, owner B, customer, penjaga.
+- Tidak ada pertentangan dengan blok lama.
+
+**Terbukti (balasan server, kecuali disebut lain):**
+
+- **SEC-46:** customer dan penjaga: ketujuh aksi 403 "Aksi ini hanya untuk owner." Tanpa token: 401 `UNAUTHORIZED_NO_AUTH_HEADER`. Token palsu: 401 `UNAUTHORIZED_INVALID_JWT_FORMAT` (dibalas platform, boleh menurut aturan 3).
+- **SEC-47:** owner B membaca catatan owner A (200, `milik_saya: false`), tetapi tambah item, ubah item, batalkan item, ubah judul, dan kunci pada catatan A semuanya 403 "Catatan ini milik owner lain. Kamu hanya bisa melihatnya."
+- **SEC-48:** 19 isian salah ditolak: harga 0, minus, desimal, 1 triliun, huruf, nama kosong atau spasi atau 61 huruf, judul 61 huruf, 51 item, tanpa item (17 kali 400 dan 2 kali 409 untuk batas jumlah item). Harga 5.000.001: 400 "Harga melebihi batas." Total, `dibatalkan`, `dikunci_pada`, `penginput`, dan `akun` palsu dalam isi permintaan diabaikan; total dihitung server (2000, 3000, 4000), penginput tetap nama dari token. Jumlah catatan tidak bertambah dari isian yang ditolak.
+- **SEC-49:** catatan terkunci menolak tambah, ubah item, batal item, ubah judul, dan kunci ulang (409), isinya tidak berubah. Item Dibatalkan menolak ubah dan batal ulang (409). Tiga nama aksi hapus (`belanja_hapus`, `belanja_item_hapus`, `belanja_delete`): 400 "Aksi tidak dikenal." Judul dan nama item berisi tag HTML (termasuk `<img onerror>`) tampil sebagai teks mentah di daftar, isi catatan, dialog Ubah barang, dan dialog Ubah judul, tanpa popup (screenshot, dilihat di chat, tidak disimpan).
+- **SQL Editor (akun ketua, baca-saja):** sepuluh fungsi `belanja_*` semuanya SECURITY DEFINER dengan `search_path` kosong; EXECUTE hanya untuk `postgres` dan `service_role`; hak tabel `belanja` dan `belanja_item` untuk `service_role` hanya INSERT, SELECT, UPDATE (tanpa DELETE), tanpa baris untuk `anon` dan `authenticated`; RLS aktif di kedua tabel dan tidak ada policy. Query lain di kedua berkas cek sengaja tidak dijalankan ulang (sudah terbukti di BLJ.01 dan BLJ.02, atau isinya "kosong" yang kini tidak berlaku karena sudah ada data uji).
+- Tidak ada temuan keamanan baru.
+
+**Masalah yang belum beres:**
+
+- Harga 1 triliun dibalas pesan umum "Harga harus angka bulat...", bukan "Harga melebihi batas." Tetap ditolak, jadi bukan celah. Penyebabnya tidak diselidiki. Batas 5.000.000 terbukti tepat lewat angka 5.000.001.
+- **BLJ.08 (P2) belum dimulai:** entri Bantuan owner dan pembersihan data uji. Butuh "OK" ketua.
+- **Data uji dummy menumpuk,** untuk dibersihkan di BLJ.08 dan LNC.01 dengan "OK": tiga catatan milik "Bu Owner 2" (satu "Uji SEC48" dan dua "Uji SEC48b"; salah satu "Uji SEC48b" sudah terkunci, satu lagi memuat item Dibatalkan), satu catatan berjudul `<i>judul miring</i>`, dan catatan milik "Owner Uji". Skrip tes SEC-48 bagian 2 terjalankan dua kali, itulah sebab dua "Uji SEC48b".
+- Belum dites: sesi habis (401) saat Simpan di layar, dua tab bersamaan (kunci dan tambah item), jalur `akun_nonaktif`, iPhone, layar sangat sempit. `_batal.sql` BLJ belum pernah dicoba.
+- `belanja.js` sekitar 893 baris dan `belanjainput.js` sekitar 642 baris, di atas patokan sekitar 500. Belum ada keputusan memecah (butuh penjelasan dampak dan "OK" ketua).
+- Masih berlaku dari Handoff #7: belum diputuskan apakah rilis terbatas Senin 23 Nov 2026 jalan tanpa Belanja bila belum selesai (dibahas tim Sabtu 21 Nov); persetujuan ketua atas rancangan layar BLJ.04 belum tercatat.
+
+**Saran giliran berikutnya:**
+
+1. Commit dan push `docs/security.md` dan `docs/belanja.md` (hanya docs, boleh `[skip ci]`), setelah cek anti-nyasar (bagian 8).
+2. BLJ.08: entri Bantuan owner dan pembersihan data uji (butuh "OK" ketua). Lampirkan `AGENTS.md`, `belanja.md`, `features.md`, dan `bantuan.md`.
+3. Tes sisa yang belum terjamah: `akun_nonaktif`, sesi habis saat Simpan, dua tab bersamaan.
+
 ---
