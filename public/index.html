@@ -21,6 +21,8 @@
         <link rel="stylesheet" href="gelar.css" />
         <!-- PGN.02: gaya layar Pengenalan Aplikasi (kelas pgn-), dimuat SETELAH style.css supaya memakai variabel warna :root -->
         <link rel="stylesheet" href="pengenalan.css" />
+        <!-- BLJ.04: gaya layar Belanja Warung (kelas blj-), dimuat SETELAH style.css dan game.css supaya memakai variabel warna :root -->
+        <link rel="stylesheet" href="belanja.css" />
     </head>
     <body>
         <!-- AKN.05: layar akun. Satu layar tampil dalam satu waktu; akun.js yang mengatur mana yang tampil.
@@ -864,6 +866,18 @@
                         >
                             <span aria-hidden="true">&#128236;</span>
                             <span>Kotak masuk</span>
+                        </button>
+                        <!-- BLJ.04: item Belanja Warung, tepat di bawah Kotak masuk (belanja.md BL16). Hanya tampil untuk owner
+                             (diatur belanja.js; server tetap yang menolak non-owner). Tanpa titik merah. -->
+                        <button
+                            type="button"
+                            class="gim-menu__item"
+                            id="gim-menu-belanja"
+                            role="menuitem"
+                            hidden
+                        >
+                            <span aria-hidden="true">&#128722;</span>
+                            <span>Belanja Warung</span>
                         </button>
                     </div>
                     <div class="bilah-atas__judul" id="kerangka-judul">
@@ -2410,6 +2424,8 @@
         <script src="gimmenu.js"></script>
         <!-- INB.05: layar Kotak masuk dan titik merah (inbox.md). Setelah akun.js (memakai window.KedaiAkun) dan gimmenu.js. Tidak menyentuh kerangka.js. -->
         <script src="inbox.js"></script>
+        <!-- BLJ.04: layar Belanja Warung owner (belanja.md). Setelah akun.js (memakai window.KedaiAkun) dan inbox.js. Tidak menyentuh kerangka.js. -->
+        <script src="belanja.js"></script>
         <!-- NTF.05: tombol Aktifkan notifikasi (notifikasi.md NT6). Setelah akun.js (memakai window.KedaiAkun) dan inbox.js. -->
         <script src="notif.js"></script>
         <!-- QRS.02: pop-up QRIS (qris.md QR12). Berdiri sendiri, tanpa server. Tidak menyentuh kerangka.js (tutup saat Keluar lewat pengamat #layar-sementara). -->
