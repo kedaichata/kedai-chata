@@ -241,4 +241,47 @@ Keputusan ketua (18 Nov 2026), setelah penjelasan di sesi BLJ.03. Alasan ketua s
 3. BLJ.05 (layar input dan edit, peringatan "ada item belum disimpan"), lalu BLJ.06 (`sw.js`, butuh penjelasan dampak dan "OK" ketua), lalu BLJ.07 (SEC baru), lalu BLJ.08.
 4. Commit yang menyentuh `public/` dan `supabase/` jangan memakai `[skip ci]`. Sebelum push, tempel cek anti-nyasar (folder aktif, `git remote -v`, email commit terakhir). Bila yang bertugas bukan ketua, kirim ringkasan perubahan berisiko ke ketua lewat WA dan tunggu "OK" (aturan 12).
 
+### Handoff #4 | 2026-11-18 | [KETUA]
+
+**Tugas:** BLJ.04 (layar Belanja Warung owner: item hamburger, daftar akordeon, rekap, saklar terkunci, tombol Kunci). Selesai, sudah di-push dan dites di production dengan akun owner dummy. Siap dicentang di sheet.
+
+**File yang diubah (tanpa `[skip ci]`, sudah di-push ke `main`):**
+
+- Baru: `public/belanja.js` (712 baris), `public/belanja.css` (319 baris).
+- Diubah: `public/index.html` (hanya ditambah: satu `<link>`, satu item hamburger `gim-menu-belanja`, satu `<script>`; 0 baris lama hilang).
+- Commit: `efba821` (layar awal), `a2d3e8f` (perbaikan bilah atas, tombol Segarkan terpotong), `45d5123` (jeda 5 detik).
+- Tidak ada perubahan `kerangka.js`, `gimmenu.js`, `inbox.js`, `sw.js`, `kedai`, SQL, atau pengaturan.
+
+**Keputusan baru:**
+
+- Layar berupa layar penuh sendiri (pola `inbox.js`), bukan tab di `kerangka.js`. Item hamburger hanya tampil untuk owner, ditentukan dari `#nav-owner` (tampilan saja; server tetap menolak non-owner, BL16).
+- **Jeda 5 detik** pada Segarkan, Coba lagi, dan saklar (permintaan PIC, pola `ringkasan.js`, alasan: hemat kuota free tier). Selama jeda layar digambar dari memori, tanpa panggilan server. Kunci tidak ditahan jeda. Menutup layar tidak membatalkan balasan yang masih di jalan. Angka 5 detik di kode (bawaan), bukan di `pengaturan`.
+- Rekap memakai label "Total belum terkunci"; catatan terkunci tampil terpisah dengan tulisan "Terkunci, tidak ikut dijumlah di atas" dan total sendiri (menjalankan tafsir rekap 18 Nov).
+- Dialog Kunci memuat arti tombol (BL10): "sudah dibahas bareng, jangan dihitung lagi". Batal = tombol utama, Ya, kunci = berpinggir merah.
+- `belanja.css` memuat satu aturan umum `.gim-menu__item[hidden] { display: none }` supaya item hamburger bertanda `hidden` benar-benar tersembunyi.
+- Persetujuan ketua atas rancangan layar BLJ.04: belum tercatat (Handoff #3 menyebutnya diminta saat dikerjakan). Teruskan ringkasan ke ketua lewat WA (aturan 12).
+
+**Terbukti (layar, akun owner dummy, 18 Nov 2026; tidak disimpan):**
+
+- Item hamburger muncul di bawah Kotak masuk; daftar, rekap per owner, akordeon, item Dibatalkan dicoret dan tidak ikut total (hitungan cocok dengan Rp 335.000).
+- Saklar terkunci: catatan terkunci tampil terpisah dengan tanda dan total sendiri, tanpa tombol Kunci.
+- Tombol Kunci: dialog tampil, "Ya, kunci" berhasil, layar dimuat ulang, rekap jadi Rp 0.
+- Jeda 5 detik jalan (tombol "Tunggu sebentar"). Mode pesawat: muncul "Tidak ada internet" dan "Coba lagi".
+- Dengan ini ketujuh aksi `kedai` belum semuanya terpakai: yang terbukti lewat layar hanya `belanja_daftar` dan `belanja_kunci`.
+
+**Masalah yang belum beres:**
+
+- Belum dicek: "Total belum terkunci" tetap Rp 0 saat saklar menyala; posisi gulir setelah Kunci di catatan yang letaknya jauh di bawah; jalur sesi habis (401); kunci dan tambah item bersamaan (dua tab).
+- Belum dites: item hamburger di akun customer dan penjaga (harus tidak ada), dan di mode pesawat bagi non-owner (bergantung `belanja.css` termuat; `belanja.js` dan `belanja.css` belum ada di cache `sw.js`, BLJ.06).
+- **`belanja.js` sudah 712 baris**, melewati patokan sekitar 500 baris (`AGENTS.md` bagian 6). BLJ.05 sebaiknya ditaruh di berkas baru (misalnya `belanjainput.js`), bukan ditambahkan ke `belanja.js`; berkas baru itu juga wajib didaftarkan di `sw.js` (BLJ.06, butuh "OK").
+- Data uji dummy masih di database: sebagian catatan kini terkunci (setidaknya satu dikunci dari layar); jumlah pastinya tidak dicek. Dibersihkan di BLJ.08 dan LNC.01 dengan "OK" ketua. Karena kunci satu arah, tes BLJ.05 memakai catatan baru.
+- Tulisan "Tunggu sebentar" turun dua baris di layar sempit; hanya tampilan, dibiarkan.
+- Masih berlaku dari Handoff #3: belum diputuskan apakah rilis terbatas Senin 23 Nov jalan tanpa Belanja bila belum selesai (dibahas tim Sabtu 21 Nov); baris SEC baru Belanja belum ada di `security.md` (BLJ.07).
+
+**Saran giliran berikutnya:**
+
+1. Sesi BLJ.05 (layar input dan edit). Lampirkan `AGENTS.md`, `belanja.md`, `belanja.js`, `belanja.css`, `index.html`, `menu.js` (pola validasi harga dan pesan galat di tempat), dan `inbox.js` bila perlu. Rencana: tombol besar "Catatan baru", daftar item sementara di layar, satu tombol Simpan semua (`belanja_buat` dan `belanja_item_tambah`), peringatan "ada item belum disimpan", edit dan batalkan item di catatan milik sendiri (`belanja_item_ubah`, `belanja_item_batal`, `belanja_judul_ubah`). Kode galat ada di Handoff #2.
+2. Lalu BLJ.06 (`sw.js`, butuh "OK" ketua; daftarkan semua berkas Belanja sekaligus), BLJ.07 (SEC baru), BLJ.08.
+3. Commit yang menyentuh `public/` tanpa `[skip ci]`. Sebelum push, cek folder, `git remote -v`, dan email commit terakhir.
+
 ---
