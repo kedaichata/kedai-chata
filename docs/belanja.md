@@ -178,4 +178,15 @@ Keputusan ketua (18 Nov 2026), setelah berdiskusi dengan ibu ketua. Alasan keput
 2. Sesi BLJ.03 (aksi `kedai` di `belanja.ts`). Lampirkan `AGENTS.md`, `belanja.md`, `database.md`, `security.md`, `20261118_03_belanja_fungsi.sql`, `supabase/functions/kedai/index.ts`, serta satu berkas kelompok aksi sebagai contoh pola (`ringkasan.ts` untuk aksi khusus owner, dan `order_status.ts` untuk `buatAksi...(alat)`). Awali dengan keputusan ketua soal tafsir rekap, lalu kode ditulis.
 3. Deploy `kedai` sesuai urutan aman bagian 8 (tanpa `--no-verify-jwt`, token ketua, satu langkah per giliran). Setelah itu BLJ.04 dan BLJ.05 (layar), BLJ.06 (`sw.js`, butuh "OK"), dan BLJ.07 (tes keamanan).
 
+### 2026-11-18: Tafsir rekap saat saklar "tampilkan yang terkunci" menyala
+
+Keputusan ketua (18 Nov 2026), setelah penjelasan di sesi BLJ.03. Alasan ketua selain yang tertulis di bawah: alasan belum tercatat.
+
+- **Rekap (total keseluruhan dan total per owner) selalu hanya menjumlah catatan belum terkunci**, juga saat saklar "tampilkan juga yang terkunci" menyala. Ini sesuai perilaku `belanja_daftar` yang sudah jalan. **Tidak ada perubahan SQL** dan tidak ada migration baru.
+- Catatan terkunci yang ikut tampil membawa totalnya sendiri dan tidak masuk rekap.
+- **Pertentangan dengan teks lama:** BL11 ("yang tampil di daftar sama persis dengan yang dijumlah") dan aturan 6 bagian 5 dibaca hanya untuk **kondisi saklar mati**. Untuk saklar menyala, blok ini yang menang.
+- **Kewajiban layar (BLJ.04):** rekap diberi label jelas bahwa ia hanya menghitung catatan belum terkunci (contoh: "Total belum terkunci"). Catatan terkunci ditampilkan terpisah dan tampak berbeda (ada tanda terkunci dan totalnya sendiri), supaya tidak disangka ikut dijumlah.
+- Menutup butir "persetujuan ketua atas tafsir rekap" di Handoff #2.
+- **Persetujuan ketua atas pilihan penulis BLJ.02** (disampaikan ketua di sesi BLJ.03, 18 Nov 2026; ia menyetujuinya di sesi sebelumnya): item Dibatalkan tidak bisa diaktifkan lagi dan tidak bisa diedit; batas 50 item dihitung termasuk yang Dibatalkan; catatan tanpa item ditolak; judul kosong diisi "DD-MM-YYYY Nama penginput". Alasan ketua selain itu belum tercatat. Menutup butir "persetujuan ketua belum tercatat jelas" di Handoff #2.
+
 ---

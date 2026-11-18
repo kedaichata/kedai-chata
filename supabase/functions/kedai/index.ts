@@ -84,6 +84,12 @@
 //         diabaikan, akun dari token, SEC-06, SEC-38). Kodenya ada di BERKAS BARU `gelar.ts` (folder yang sama),
 //         diimpor di bawah; kode lama tidak dipindah. Fungsi SQL: 20261114_02_gelar_saya.sql (sudah dijalankan
 //         dan lulus cek SEBELUM berkas ini dideploy).
+// BLJ.03: ditambah tujuh aksi Belanja Warung (belanja.md BL1 sampai BL15; owner saja): `belanja_daftar`, `belanja_buat`,
+//         `belanja_item_tambah`, `belanja_item_ubah`, `belanja_item_batal`, `belanja_judul_ubah`, `belanja_kunci`.
+//         Akun selalu dari token; isian dari aplikasi dibangun ulang (hanya id, judul, nama, harga; SEC-06). Total dan
+//         semua aturan dihitung dan dicek fungsi SQL. Kodenya ada di BERKAS BARU `belanja.ts` (folder yang sama),
+//         diimpor di bawah; kode lama tidak dipindah. Fungsi SQL: 20261118_03_belanja_fungsi.sql (sudah dijalankan
+//         dan lulus cek SEBELUM berkas ini dideploy). Tanpa inbox dan tanpa push (BL15).
 //
 // Deploy (urutan aman AGENTS.md bagian 8), TANPA --no-verify-jwt:
 //   supabase functions deploy kedai --use-api --project-ref "$PROJECT_REF"
@@ -113,6 +119,8 @@ import { buatAksiPush } from "./push.ts";
 import { buatAksiRingkasan } from "./ringkasan.ts";
 // GLR.03: aksi gelar_saya ada di berkas terpisah.
 import { buatAksiGelar } from "./gelar.ts";
+// BLJ.03: tujuh aksi belanja_* ada di berkas terpisah.
+import { buatAksiBelanja } from "./belanja.ts";
 
 // ------------------------------------------------------------
 // Pengaturan dasar
@@ -1568,6 +1576,30 @@ const { aksiGelarSaya } = buatAksiGelar({
 });
 
 // ------------------------------------------------------------
+// BLJ.03: sambungan ke berkas belanja.ts, dengan alat bantu yang sama seperti di atas
+// (klien, bacaPeran, balas, galat, galatDariDb, regexUuid, batasTeks). Tanpa tulisInbox (BL15).
+// ------------------------------------------------------------
+
+const {
+  aksiBelanjaDaftar,
+  aksiBelanjaBuat,
+  aksiBelanjaItemTambah,
+  aksiBelanjaItemUbah,
+  aksiBelanjaItemBatal,
+  aksiBelanjaJudulUbah,
+  aksiBelanjaKunci,
+} = buatAksiBelanja({
+  // deno-lint-ignore no-explicit-any
+  klien: admin as any,
+  bacaPeran,
+  balas,
+  galat,
+  galatDariDb,
+  regexUuid: REGEX_UUID,
+  batasTeks: BATAS_TEKS,
+});
+
+// ------------------------------------------------------------
 // Pintu masuk
 // ------------------------------------------------------------
 
@@ -1688,6 +1720,20 @@ Deno.serve(async (req: Request): Promise<Response> => {
         return await aksiRingkasan7Hari(req, pengguna, isi);
       case "gelar_saya":
         return await aksiGelarSaya(req, pengguna, isi);
+      case "belanja_daftar":
+        return await aksiBelanjaDaftar(req, pengguna, isi);
+      case "belanja_buat":
+        return await aksiBelanjaBuat(req, pengguna, isi);
+      case "belanja_item_tambah":
+        return await aksiBelanjaItemTambah(req, pengguna, isi);
+      case "belanja_item_ubah":
+        return await aksiBelanjaItemUbah(req, pengguna, isi);
+      case "belanja_item_batal":
+        return await aksiBelanjaItemBatal(req, pengguna, isi);
+      case "belanja_judul_ubah":
+        return await aksiBelanjaJudulUbah(req, pengguna, isi);
+      case "belanja_kunci":
+        return await aksiBelanjaKunci(req, pengguna, isi);
       default:
         return galat(req, 400, "Aksi tidak dikenal.");
     }
