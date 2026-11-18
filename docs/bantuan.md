@@ -411,4 +411,16 @@ Keputusan ketua (sesi lanjutan Turnstile, 18 Nov 2026). Berkas tujuan: docs/bant
 - "Aktifkan Bantuan batas order harian" (setelah batas live dan lulus tes, sebelum LNC.04; cocokkan kalimat dengan pesan di layar).
 
 **Saran giliran berikutnya:** reword dan cocokkan dengan layar asli (lampirkan screenshot), centang GLR.10 dan QRS.05 bila isinya sudah sesuai, lalu BTN.07 setelah `owner-11` terimpor. Setiap perubahan fitur dicatat sebagai butir "perbarui Bantuan".
+
+### 2026-11-19: Isi Bantuan Belanja Warung, bagian khusus "Belanja Owner"
+
+Keputusan ketua (sesi BLJ.08, 19 Nov 2026). Sumber: docs/belanja.md. Melengkapi BTN.05 (isi awal); bukan butir sheet baru. Yang paling akhir menang.
+
+- **Empat entri baru di lembar `bantuan-isi`**, bagian **`Belanja Owner`**, peran `owner`, `aktif = ya`: `belanja-01` (apa itu dan cara membuka, `urutan` 850), `belanja-02` (mencatat dan mencicil, 860), `belanja-03` (salah input: Ubah dan Batalkan, 870), `belanja-04` (arti Kunci dan efeknya ke total, 880).
+- **Bagian khusus, bukan di "Tugas owner".** Alasan ketua: bagian yang hanya dilihat owner. Alasan lain belum tercatat. Penyaringan peran tetap dilakukan server (BT5).
+- **Aturan isi tetap:** teks biasa (BT4), tanpa angka batas (harga, panjang, jumlah barang, jumlah catatan terkunci yang tampil ada di `pengaturan`), tanpa data pribadi (BT11), `urutan` bukan 1.
+- **Bergantung pada layar Belanja Warung.** Nama tombol (+ Catatan baru, Tambah, Simpan, Tambah barang, Ubah, Batalkan, Ubah judul, Kunci) sudah dicocokkan ketua dengan layar asli pada 19 Nov 2026. Bila layar berubah, catat butir baru "perbarui Bantuan" (bagian 6, aturan yang paling sering terlanggar).
+- **Sudah diimpor dan tampil** di layar Bantuan akun owner (screenshot ketua, 19 Nov). Seperti isi lain, SQL impor tidak disimpan di repo (BT7); lembar adalah sumber dan cadangannya. Belum dicek dari akun customer dan penjaga bahwa bagian ini tidak tampil.
+- **Tidak ada perubahan skema, kode, atau deploy.**
+
 ---

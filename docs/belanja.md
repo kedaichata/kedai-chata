@@ -438,4 +438,37 @@ Keputusan ketua (18 Nov 2026), setelah penjelasan di sesi BLJ.03. Alasan ketua s
 2. BLJ.08: entri Bantuan owner dan pembersihan data uji (butuh "OK" ketua). Lampirkan `AGENTS.md`, `belanja.md`, `features.md`, dan `bantuan.md`.
 3. Tes sisa yang belum terjamah: `akun_nonaktif`, sesi habis saat Simpan, dua tab bersamaan.
 
+### Handoff #9 | 2026-11-19 | [KETUA]
+
+**Tugas:** BLJ.08 (entri Bantuan owner untuk Belanja Warung). Selesai dan sudah dicentang di sheet (19 Nov). Bagian "pembersihan data uji belanja" yang masih tertulis di baris sheet BLJ.08 **tidak dikerjakan di sini**: dipegang LNC.01 (lihat keputusan baru).
+
+**File yang diubah:**
+
+- Tidak ada berkas di repo. Tidak ada perubahan `public/`, `kedai`, SQL, tabel, pengaturan, atau `sw.js`, dan tidak ada deploy.
+- Lembar `bantuan-isi` (Google Sheet, BT7): empat baris baru `belanja-01` sampai `belanja-04`, bagian `Belanja Owner`, `urutan` 850, 860, 870, 880, peran `owner`, `aktif = ya`. Diimpor lewat SQL Editor; SQL impor tidak disimpan di repo.
+- Docs: `docs/belanja.md` (handoff ini) dan `docs/bantuan.md` (blok catatan 19 Nov). **Status commit belum dikonfirmasi.** Handoff #8 (`docs/security.md` dan `docs/belanja.md`) juga belum dipastikan sudah di-commit.
+  **Keputusan baru:**
+
+- **Bagian khusus "Belanja Owner"** untuk entri Bantuan Belanja, bukan di "Tugas owner" (ketua, 19 Nov: bagian yang hanya dilihat owner). Alasan lain belum tercatat.
+- **Pembersihan data uji belanja digabung ke LNC.01**, seperti fitur lain (ketua, 19 Nov). Ketua sudah menambah catatan di baris LNC.01 sheet: data belanja dihapus sebelum akun uji disentuh, urutan `belanja_item` dulu baru `belanja`. Alasan lain belum tercatat.
+- **Pertentangan dengan catatan lama:** bagian 7 (baris BLJ.08) dan Handoff #8 menyebut pembersihan di BLJ.08 dan LNC.01. Kini pembersihan hanya di LNC.01. Yang paling akhir menang.
+- Pilihan penulis (alasan belum tercatat): empat entri, bukan lima; topik rekap digabung ke entri 1 dan 4. Isi tanpa angka batas dan tanpa data pribadi. Nama tombol diambil dari handoff, lalu **dicocokkan ketua dengan layar asli (lisan, 19 Nov)**.
+  **Terbukti:** layar Bantuan akun owner menampilkan bagian Belanja Owner dengan empat pertanyaan, dan akordeon terbuka (screenshot ketua, dilihat di chat, tidak disimpan).
+
+**Masalah yang belum beres:**
+
+- **Pembersihan data uji belanja belum dikerjakan** (LNC.01, High-Risk, butuh penjelasan dampak dan "OK" ketua). Daftar data uji ada di Handoff #8; jumlah pastinya belum dicek. Ekspor CSV dulu (adik ketua).
+- Belum dicek dari akun customer dan penjaga bahwa bagian Belanja Owner tidak tampil untuk keduanya (khusus empat baris ini).
+- Teks Bantuan memuat nama tombol dan perilaku layar. Bila layar Belanja berubah, catat sebagai butir "perbarui Bantuan".
+- Masih berlaku dari Handoff #8: belum dites `akun_nonaktif`, sesi habis saat Simpan, dua tab bersamaan (kunci dan tambah item), iPhone, layar sangat sempit; `_batal.sql` BLJ belum pernah dicoba; harga 1 triliun dibalas pesan umum (tidak diselidiki); `belanja.js` sekitar 893 baris dan `belanjainput.js` sekitar 642 baris, di atas patokan sekitar 500 (butuh penjelasan dampak dan "OK" bila mau dipecah); persetujuan ketua atas rancangan layar BLJ.04 belum tercatat.
+- Semua butir BLJ.00 sampai BLJ.08 kini dicentang, jadi pertanyaan "rilis Senin 23 Nov jalan tanpa Belanja" tidak lagi menyangkut fitur ini.
+  **Butir baru yang perlu ditambah ke sheet:** tidak ada.
+
+**Saran giliran berikutnya:**
+
+1. Commit dan push docs (`docs/security.md`, `docs/belanja.md`, `docs/bantuan.md`) setelah cek anti-nyasar (`pwd`, `git remote -v`, email commit terakhir). Seluruh isinya docs, jadi `[skip ci]` boleh dipakai; bila ada berkas lain ikut, jangan.
+2. Pastikan salinan terbaru lembar `bantuan-isi` dipegang adik ketua (BT7).
+3. Sesi LNC.01: lampirkan `AGENTS.md`, `features.md`, `security.md`, `database.md`, `order.md`, `docs/menu.md`, dan migration, termasuk `20261118_02_belanja.sql` (untuk memastikan kunci asing dan urutan hapus, jangan menebak). Mulai dengan query baca-saja, lalu penjelasan dampak dan "OK" ketua.
+4. Tes sisa Belanja yang belum terjamah (daftar di atas) bila waktunya ada.
+
 ---
