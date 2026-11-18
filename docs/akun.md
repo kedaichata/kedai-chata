@@ -576,7 +576,7 @@ Keputusan ketua (sesi lanjutan TRN.03). Berkas tujuan: docs/akun.md bagian 9. Me
 
 **Saran giliran berikutnya:** baca blok ini dulu; jangan ulang tes 1 sampai 6. Kerjakan tes 7, lalu **minta PIC mengingatkan centang TRN.03a** bila tes 7 lulus. TRN.05 butuh HP lama dan akses dashboard Supabase ketua (profil browser terpisah, logout setelah selesai).
 
-### Handoff #18 | 2026-11-18 | [nama PIC]
+### Handoff #18 | 2026-11-18 | [RAC]
 
 **Tugas:** TRN.03a, tes 7 (pesan jalan keluar di layar Daftar dan Masuk). Selesai. Tidak ada berkas yang diubah, tidak ada deploy. Enable CAPTCHA di dashboard Supabase tetap MATI.
 

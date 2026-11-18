@@ -207,7 +207,7 @@ Keputusan ketua (sesi lanjutan Turnstile, 18 Nov 2026). Berkas tujuan: docs/peng
 - **Butir sheet:** PGN.07 "Topik ke-11 Pengenalan, arahan bila tidak bisa masuk" (Low-Risk, P1; cek ID PGN terakhir di sheet).
 - **Belum dikerjakan.** Bukti tes: layar dibuka di Android, topik ke-11 muncul paling akhir, akordeon tetap bekerja, offline tetap terbuka.
 
-### Handoff #4 | 2026-11-18 | [nama PIC]
+### Handoff #4 | 2026-11-18 | [RAC]
 
 **Tugas:** PGN.07 (topik ke-11 "Bagaimana kalau tidak bisa daftar atau masuk?", sesuai catatan susulan 18 Nov 2026). Selesai.
 
