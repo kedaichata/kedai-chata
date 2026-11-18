@@ -206,3 +206,23 @@ Keputusan ketua (sesi lanjutan Turnstile, 18 Nov 2026). Berkas tujuan: docs/peng
 - **Konsisten dengan:** pesan widget gagal di TRN.03a (akun.md Handoff #16) dan entri Bantuan owner (bantuan.md blok 18 Nov 2026). Inti kalimatnya sama: pesan lewat WhatsApp warung seperti biasa, kami bantu catatkan.
 - **Butir sheet:** PGN.07 "Topik ke-11 Pengenalan, arahan bila tidak bisa masuk" (Low-Risk, P1; cek ID PGN terakhir di sheet).
 - **Belum dikerjakan.** Bukti tes: layar dibuka di Android, topik ke-11 muncul paling akhir, akordeon tetap bekerja, offline tetap terbuka.
+
+### Handoff #4 | 2026-11-18 | [nama PIC]
+
+**Tugas:** PGN.07 (topik ke-11 "Bagaimana kalau tidak bisa daftar atau masuk?", sesuai catatan susulan 18 Nov 2026). Selesai.
+
+**File yang diubah:** hanya `public/pengenalan-isi.js`. Topik ke-11 ditambah paling akhir; topik 1 sampai 10 tidak diubah; komentar kepala berkas hanya ditambah satu catatan PGN.07. `sw.js` tidak berubah (daftar berkas cache sama). Commit tanpa `[skip ci]` (hash: [isi]).
+
+**Hasil:** topik ke-11 terbaca di HP dan di laptop (dikonfirmasi PIC di chat). **PGN.07 sudah selesai, silakan dicentang di sheet.**
+
+**Isi topik ke-11 (inti):** penjelasan singkat kotak centang Turnstile; penyebab yang paling mungkin ("biasanya" HP atau browser lama, bukan kesalahan pengguna); saran periksa internet atau perbarui Chrome ("kadang membantu"); jalan keluar pesan lewat WhatsApp warung dan dibantu dicatatkan (sama dengan pesan widget TRN.03a); pengingat tombol Lupa password. Tanpa nomor WA dan tanpa angka yang mudah berubah (PG10).
+
+**Keputusan baru:** tidak ada.
+
+**Belum beres:**
+
+- Akordeon dan tampilan offline untuk topik ke-11 tidak dikonfirmasi eksplisit di chat. Risikonya kecil karena hanya teks yang berubah.
+- PGN.06: sebelum peluncuran (`LNC.04`), pastikan isi final sudah dicek.
+- Bagian iPhone tetap berstatus draf (Handoff #3).
+
+**Saran giliran berikutnya:** PGN.06 menjelang peluncuran. Revisi isi hanya di `public/pengenalan-isi.js`, push biasa tanpa `[skip ci]`.

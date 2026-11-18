@@ -575,3 +575,35 @@ Keputusan ketua (sesi lanjutan TRN.03). Berkas tujuan: docs/akun.md bagian 9. Me
 **Kejadian di lapangan (bahan belajar):** `git commit` melaporkan "59 deletions" padahal kode lama tidak dihapus. Penyebab: editor merapikan format berkas saat disimpan (baris dipenggal ulang, kurung ditambah), jadi git menghitung baris yang cuma pindah sebagai hapus-dan-tambah (dugaan kuat, didukung hasil di bawah). Pencegahan: bandingkan isi lewat sidik jari yang mengabaikan format (`tr -d ' \n\t\r,;()' < public/<berkas> | shasum`) sebelum push; cocok dengan hasil sesi, jadi isi identik. Jangan menilai dari angka deletions saja.
 
 **Saran giliran berikutnya:** baca blok ini dulu; jangan ulang tes 1 sampai 6. Kerjakan tes 7, lalu **minta PIC mengingatkan centang TRN.03a** bila tes 7 lulus. TRN.05 butuh HP lama dan akses dashboard Supabase ketua (profil browser terpisah, logout setelah selesai).
+
+### Handoff #18 | 2026-11-18 | [nama PIC]
+
+**Tugas:** TRN.03a, tes 7 (pesan jalan keluar di layar Daftar dan Masuk). Selesai. Tidak ada berkas yang diubah, tidak ada deploy. Enable CAPTCHA di dashboard Supabase tetap MATI.
+
+**Hasil (akun dummy, bukti di chat, tidak disimpan):**
+
+- Layar Daftar: gagal kedua terbukti dari layar. Tombol Coba lagi hilang, muncul pesan jalan keluar ("...pesan lewat WhatsApp warung seperti biasa, nanti kami bantu catatkan"), tombol Daftar tetap mati.
+- Layar Masuk: **dibaca dari kode saja**, tidak dites dari layar. Keputusan ketua (via PIC, 18 Nov 2026): cukup, karena kodenya sama dengan Daftar dan tes di laptop memang tidak menggantikan tes di HP asli.
+- **TRN.03a sudah selesai, silakan dicentang di sheet.**
+
+**Keputusan baru:** "Masuk dibaca dari kode" (ketua, di atas). Tidak ada yang lain.
+
+**Cara memicu tes ini (bahan belajar):**
+
+- `window.turnstile = undefined` di Console **tidak mengenai widget yang sudah tampil**; kotak "Berhasil!" tetap ada. Pemicunya baru jalan saat widget digambar ulang lewat pindah layar (`tampilkan` memanggil `tsMulai`), lalu tunggu sekitar 10 detik (`BATAS_MUAT_TS`) sampai `tsGagal` terpanggil.
+- Kotak "Berhasil!" lama tetap terlihat sesudahnya karena `tsHentikan` gagal membuangnya diam-diam saat `turnstile` kosong. Itu sisa trik, bukan kerusakan.
+- Hitungan gagal tidak dikosongkan saat pindah layar (hanya saat widget berhasil), jadi giliran pertama di layar Daftar langsung bisa menghasilkan pesan jalan keluar (dugaan dari kode, tidak dilihat langsung). Gagal pertama dengan Coba lagi sudah terbukti di Handoff #16.
+- Setelah trik Console, muat ulang keras (Cmd+Shift+R).
+
+**Masalah yang belum beres:**
+
+- Pemulihan widget lewat tombol Coba lagi belum terbukti dari layar (hanya dibaca dari kode `tsUlangMuat`). Pembuktiannya lewat TRN.05 di HP lama.
+- Pesan gagal pertama tetap menyebut "Periksa internet" (P2).
+- Email dummy terisi setelah Keluar (P2, belum diselidiki).
+- Belum diketahui apakah link reset password dan pembuatan akun staf terhalang CAPTCHA (TRN.06).
+
+**Saran giliran berikutnya:**
+
+1. TRN.05: HP dengan browser paling tertinggal yang bisa ditemukan (catat nomor versi Chrome), buka link dari WA, throttling Slow 3G di laptop. Lulus bila layar Masuk terbuka dan widget berhasil, atau gagal dengan pesan ramah tanpa layar kosong.
+2. Nyalakan Enable CAPTCHA paling akhir di dashboard Supabase ketua (profil browser terpisah, logout setelah selesai). Pilih Cloudflare Turnstile, Secret Key diketik langsung di dashboard, bukan di chat. Lalu tes ulang Daftar, Masuk, dan Ganti password. Bisa dimatikan lagi bila banyak customer terhalang.
+3. TRN.06 dan TRN.07, keduanya sebelum LNC.01b.
