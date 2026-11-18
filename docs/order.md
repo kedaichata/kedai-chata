@@ -1147,4 +1147,37 @@ Ketua menyetujui penjelasan dampak BTO.01 lewat chat. Melengkapi blok 18 Nov di 
 - **Versi dasar `order_buat`:** `20261108_02_order_fungsi.sql`, kecuali ada catatan yang menggantinya; dikonfirmasi saat berkas ditempel di sesi kode.
 - Alasan ketua selain menyetujui belum tercatat.
 
+### Handoff #32 | 2026-11-18 | KETUA
+
+**Tugas:** BTO.01, BTO.02, dan BTO.05 selesai; BTO.03 sisi `kedai` selesai dan live, tampilan layar belum terbukti. **BTO.04 (tes) belum dikerjakan.** Commit `ba2b25a` sudah di-push (pagar `AGENTS.md` bagian 8 lolos: folder CHATA, remote `kedaichata/kedai-chata`, email noreply milik ketua). Token CLI sudah dibersihkan (`[]`) dan dashboard Supabase sudah logout. Tidak ada perubahan di `public/`.
+
+**Berkas:** `supabase/migrations/20261118_order_batas_harian.sql` (+ `_batal.sql`), `supabase/templates/20261118_order_batas_harian_cek.sql`, dan `supabase/functions/kedai/index.ts` (tambahan saja: 6 baris, 0 dihapus; satu entri `batas_order_harian` di `PETA_GALAT_ORDER`). `docs/order.md` bertambah 13 baris (blok persetujuan), 0 dihapus. Urutan kerja: `kedai` di-deploy dulu (13 berkas terunggah), aplikasi dicek normal, baru SQL dijalankan di SQL Editor.
+
+**Perilaku:** batas `order_maks_per_hari` = 5 order per customer per hari. "Hari" = hari order dibuat (WIB, jam server); semua status ikut dihitung; order wakil tidak kena. Bila sudah mencapai batas, `order_buat` ditolak 409 `batas_order_harian` tanpa memakai nomor order. Pesan: "Batas pesanan untuk hari ini sudah tercapai. Untuk memesan lagi, silakan hubungi tim ChATA lewat WhatsApp." Kunci per akun mencegah dua kiriman bersamaan sama-sama lolos. Nilai pengaturan yang rusak menjadi `pengaturan_rusak`. Rincian di blok `database.md` bertanggal sama.
+
+**Keputusan baru:** tidak ada keputusan baru dari ketua selain OK yang sudah dicatat. Pilihan penulis (alasan belum tercatat): status 409 (mengikuti batas lain seperti `item_terlalu_banyak`); pesan tanpa angka; nilai pengaturan dibaca terpisah dari empat kunci lama.
+
+**Terbukti** (bukti diperiksa di chat, tidak disimpan): cek SQL 1 sampai 6 lulus (hak, `search_path`, pengaturan 5, empat pengaturan lama tidak berubah, tipe waktu, isi fungsi); deploy `kedai` sukses; Semua Order dan detail order owner normal sesudah deploy.
+
+**Masalah yang belum beres:**
+
+- **BTO.04 belum dikerjakan.** Perilaku batas belum teruji; ini P0.
+- **BTO.03 jangan dicentang dulu:** apakah `pesan.js` menampilkan pesan batas dengan benar belum terbukti. Menurut Handoff #4 pesan server ditampilkan apa adanya dan layar tidak diubah.
+- Satu akun dummy pernah membuat 15 order dalam satu hari (cek SQL nomor 7). Itu tidak apa-apa, tetapi akun itu langsung kena batas bila memesan lagi di hari yang sama.
+- Butir baru untuk sheet: "Template SQL ganti batas order harian".
+- `_batal.sql` belum pernah dicoba.
+- Butir terbuka Handoff #11 sampai #31 yang tidak disebut di sini tidak berubah.
+
+**Saran giliran berikutnya (BTO.04):** lampirkan `AGENTS.md` + `order.md` + `security.md` + `pemetaan-test.md` + `order-test.md`. Tes lewat konsol dengan customer dummy yang hari itu belum punya order (bukti diperiksa di chat, tidak disimpan):
+
+1. Order ke-5 lolos, ke-6 ditolak 409 dengan pesan ramah, dan nomor order tidak loncat.
+2. Order yang dibatalkan tetap terhitung (buat, batalkan, lalu hitung).
+3. Order wakil owner tidak terpengaruh (banyak order wakil tidak menyentuh batas), dan customer lain tidak ikut kena.
+4. Pergantian hari: customer dummy yang punya banyak order di hari lalu tetap bisa memesan hari ini.
+5. Dua kiriman bersamaan pada akun yang sudah punya 4 order: tepat satu lolos.
+6. Nilai pengaturan rusak (misalnya teks) lewat SQL Editor menjadi `pengaturan_rusak`, lalu kembalikan ke 5.
+7. Layar customer menampilkan pesan batas dengan benar (HP).
+8. Ulangi tes order dasar: `order_buat` sah, isian palsu diabaikan (SEC-06), hari dari server (SEC-19).
+   Lalu centang BTO.03 dan BTO.04. Data dummy baru tidak bisa dihapus; dibersihkan di LNC.01. Pekerjaan wajib selesai sebelum LNC.04.
+
 ---

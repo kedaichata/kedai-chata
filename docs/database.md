@@ -475,4 +475,20 @@ Keputusan ketua (16 Nov 2026, sesi tes SEC-04 dan SEC-03). Yang paling akhir men
 - **Bagian 3 tidak berubah.** 47 fungsi buatan kita lainnya terbukti: `anon` dan `authenticated` tanpa `EXECUTE`, `SECURITY DEFINER`, `search_path` kosong.
 - **Cek ulang** bila ada pembaruan platform Supabase atau fungsi baru: `supabase/templates/20261116_sec03_hak_fungsi_cek.sql`.
 
+### 2026-11-18: Pengaturan `order_maks_per_hari` dan perubahan `order_buat` (BTO.02)
+
+**Berkas tujuan:** `docs/database.md` bagian 9. Rujukan: `docs/order.md` bagian 9, blok 18 Nov 2026 dan Handoff #32. Yang paling akhir menang.
+
+- **Berkas SQL:** `supabase/migrations/20261118_order_batas_harian.sql` (dan `_batal`), `supabase/templates/20261118_order_batas_harian_cek.sql`. Dijalankan dan dicek 18 Nov 2026 dengan "OK" ketua. Tabel, hak tabel, dan data lama **tidak diubah**.
+- **Bagian 4 (pengaturan):** kunci baru `order_maks_per_hari` = 5 (batas order per customer per hari, dasarnya `order.md` blok 18 Nov). Diganti kelak lewat UPDATE di SQL Editor; berlaku untuk order baru saja.
+- **Bagian 4 (nilai tidak valid):** nilai harus bilangan bulat 1 atau lebih (maksimal 6 digit); selain itu `order_buat` melempar `pengaturan_rusak` (galat umum 500). Kunci ini dibaca terpisah dari empat pengaturan order lama, karena pola lama (`nilai::integer`) melempar galat konversi mentah bila nilainya teks.
+- **Bagian 5 (`order_buat` diganti dengan CREATE OR REPLACE):** nama, parameter, tipe kembalian, dan hak `EXECUTE` (hanya `service_role`) sama. Isi sama persis dengan `20261108_02_order_fungsi.sql` ditambah satu blok tepat setelah cek profil: kunci per akun (`pg_advisory_xact_lock`), hitung order akun itu yang **dibuat** hari ini (kalender WIB, jam server, semua status ikut), tolak bila jumlahnya sudah mencapai batas.
+- **Versi aktif `order_buat` kini `20261118_order_batas_harian.sql`.** Perubahan berikutnya harus berangkat dari berkas itu, bukan dari `20261108_02_order_fungsi.sql`, supaya blok batas tidak hilang.
+- **Kode galat baru:** `batas_order_harian` (409), dipetakan di `PETA_GALAT_ORDER` (`supabase/functions/kedai/index.ts`) dengan pesan ramah tanpa angka. Pemetaan yang sama dipakai `order_buat_wakil`, tetapi kode ini tidak pernah muncul dari fungsi wakil.
+- **Order wakil owner tidak kena batas:** `order_buat_wakil` tidak diubah, dan order wakil tidak terhitung karena pemesannya kosong.
+- **Terbukti 18 Nov 2026 (query baca-saja):** fungsi satu baris, `SECURITY DEFINER`, `search_path` kosong; `anon` dan `authenticated` tanpa `EXECUTE`; nilai 5 terbaca; empat pengaturan lama tetap 10, 10, 200, 10; `dibuat_pada` bertipe `timestamp with time zone`; badan fungsi memuat blok batas.
+- **Belum terbukti:** perilaku batas (order ke-5 lolos, ke-6 ditolak, dibatalkan tetap terhitung, pergantian hari, dua kiriman bersamaan, nilai rusak). Dikerjakan di BTO.04. `_batal.sql` belum pernah dicoba.
+- **Pembatalan:** `20261118_order_batas_harian_batal.sql` mengembalikan `order_buat` ke versi 8 Nov persis dan menghapus baris pengaturan. Aman dijalankan kapan pun; tidak menyentuh order atau tabel lain.
+- **Pilihan penulis** (nama kunci dan kode galat, status 409, kunci per akun, bentuk pembacaan nilai): nama kunci dan kunci per akun disetujui ketua 18 Nov 2026; alasan ketua selain itu belum tercatat.
+
 ---
