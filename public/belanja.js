@@ -19,6 +19,9 @@
 // - Rekap hanya menjumlah catatan belum terkunci, juga saat saklar menyala (keputusan 18 Nov 2026).
 //   Catatan terkunci tampil terpisah, bertanda "Terkunci", dengan total sendiri.
 // - Tanpa polling. Data diambil saat layar dibuka, lewat Segarkan, dan setelah Kunci (BL15).
+// - Jeda pemuatan (permintaan ketua 18 Nov 2026, pola ringkasan.js): setelah satu pemuatan, Segarkan dan saklar
+//   mati sekitar 5 detik ("Tunggu sebentar"), dan selama jeda layar hanya menggambar hasil terakhir dari MEMORI,
+//   tanpa memanggil server. Kunci tidak ditahan jeda (itu penulisan). Angka 5 detik di kode ini (bawaan), bukan di `pengaturan`.
 // - Isi tidak disimpan di localStorage atau tempat lain; hanya di memori, dibuang saat Keluar.
 // - Semua teks dari server lewat textContent. Galat mentah tidak ditampilkan.
 // - Layar yang digambar ulang menjaga posisi gulir dan akordeon yang terbuka.
@@ -74,6 +77,10 @@
   var sedangMuat = false;
   var idKunci = null; // catatan yang sedang akan dikunci
   var sedangKunci = false;
+  var JEDA_MS = 5000;
+  var jedaSampai = 0; // performance.now() akhir jeda (hanya batas Segarkan, bukan waktu belanja)
+  var timerJeda = null; // satu penghitung waktu tombol, bukan polling
+  var elCek = null; // kotak centang saklar yang sedang tampil
 
   // Unsur layar (dibuat saat pertama dibuka).
   var layar = null;
@@ -304,6 +311,8 @@
     var cek = buat("input", "blj-saklar__cek");
     cek.type = "checkbox";
     cek.checked = tampilTerkunci;
+    cek.disabled = dalamJeda();
+    elCek = cek;
     var teks = buat(
       "span",
       "blj-saklar__teks",
@@ -485,6 +494,38 @@
   // Pemuatan
   // ------------------------------------------------------------
 
+  function dalamJeda() {
+    return performance.now() < jedaSampai;
+  }
+
+  function aturKunciJeda(mati) {
+    if (elSegar) {
+      elSegar.disabled = mati;
+      elSegar.textContent = mati ? "Tunggu sebentar" : "Segarkan";
+    }
+    if (elCek) elCek.disabled = mati;
+  }
+
+  function selesaiJeda() {
+    if (timerJeda) {
+      clearTimeout(timerJeda);
+      timerJeda = null;
+    }
+    jedaSampai = 0;
+    aturKunciJeda(false);
+  }
+
+  function mulaiJeda() {
+    if (timerJeda) clearTimeout(timerJeda);
+    jedaSampai = performance.now() + JEDA_MS;
+    aturKunciJeda(true);
+    timerJeda = setTimeout(function () {
+      timerJeda = null;
+      jedaSampai = 0;
+      aturKunciJeda(false);
+    }, JEDA_MS);
+  }
+
   function mulaiMuat(denganLayarMemuat) {
     var nomor = ++nomorMuat;
     if (!navigator.onLine) {
@@ -494,6 +535,7 @@
     }
     sedangMuat = true;
     if (denganLayarMemuat) tampilMemuat();
+    mulaiJeda();
     A.panggilKedai("belanja_daftar", { terkunci: tampilTerkunci })
       .then(function (h) {
         if (nomor !== nomorMuat) return; // sudah Keluar atau ada permintaan lebih baru
@@ -510,6 +552,7 @@
           gambar(data);
           return;
         }
+        selesaiJeda(); // gagal: jeda dibatalkan supaya Coba lagi bisa langsung dipakai
         if (h && h.status === 401) {
           tampilKeadaan("Ada masalah", PESAN_SESI, false, true);
           return;
@@ -519,6 +562,7 @@
       .catch(function () {
         if (nomor !== nomorMuat) return;
         sedangMuat = false;
+        selesaiJeda();
         if (!navigator.onLine) {
           tampilKeadaan("Tidak ada internet", PESAN_OFFLINE, true, false);
         } else {
@@ -535,6 +579,7 @@
   // Segarkan dan Coba lagi: tidak menumpuk permintaan.
   function muatBila() {
     if (sedangMuat) return;
+    if (data && dalamJeda()) return; // di dalam jeda: tidak memanggil server
     mulaiMuat(!data);
   }
 
@@ -593,13 +638,17 @@
     layar.hidden = false;
     layar.scrollTop = 0;
     document.body.classList.add("blj-terbuka");
+    if (sedangMuat) return; // permintaan sebelumnya masih di jalan; hasilnya digambar saat tiba
+    if (data && dalamJeda()) {
+      gambar(data); // di dalam jeda: gambar ulang dari memori, tanpa panggilan server
+      return;
+    }
     muat();
   }
 
   function tutup() {
     if (!layar || layar.hidden) return;
-    nomorMuat++; // balasan yang masih di jalan diabaikan
-    sedangMuat = false;
+    // Balasan yang masih di jalan tetap diterima ke memori (buka-tutup cepat tidak menggandakan panggilan).
     layar.hidden = true;
     dlg.hidden = true;
     idKunci = null;
@@ -612,6 +661,7 @@
     nomorMuat++;
     sedangMuat = false;
     sedangKunci = false;
+    selesaiJeda();
     data = null;
     tampilTerkunci = false;
     terbuka = {};
