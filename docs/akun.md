@@ -534,3 +534,44 @@ Keputusan ketua (sesi lanjutan TRN.03). Berkas tujuan: docs/akun.md bagian 9. Me
 1. Minta OK ketua (lewat WA) untuk tiga berkas, lalu TRN.03a: berkas utuh satu per giliran (`akun.js`, `akunmenu.js`, `index.html`). Tes dummy: ganti password dengan widget (berhasil, password lama salah), tombol tidak aktif sebelum "Berhasil!", gagal kedua lewat trik Console dua kali berturut-turut (jalan keluar muncul, Coba lagi hilang).
 2. TRN.05: uji HP dengan **browser paling tertinggal yang bisa ditemukan**, catat nomor versi Chrome-nya (Chrome, titik tiga, Setelan, Tentang Chrome). Uji juga membuka link dari WA, dan throttling Slow 3G di laptop untuk jalur waktu tunggu 10 detik. Lulus bila layar Masuk terbuka dan widget berhasil, atau gagal dengan pesan ramah tanpa layar kosong. Lalu nyalakan Enable CAPTCHA paling akhir (pilih Cloudflare Turnstile, Secret Key diketik langsung di dashboard, bukan di chat). Enable bisa dimatikan lagi bila banyak customer terhalang.
 3. TRN.06 dan TRN.07, keduanya sebelum LNC.01b.
+
+### Handoff #17 | 2026-11-18 | [FREN]
+
+**Tugas:** TRN.03a (Ganti password vs CAPTCHA dan pesan widget gagal). Kode selesai, di-push, dan sebagian besar tes lulus. **TRN.03a belum boleh dicentang di sheet**: tes 7 belum dikerjakan. Enable CAPTCHA di dashboard Supabase tetap MATI.
+
+**Berkas yang berubah (commit 830053a, Pages #139 hijau, tanpa `[skip ci]`):** `public/akun.js`, `public/akunmenu.js`, `public/index.html`. Tanpa server, migration, atau `sw.js`. Kode lama tidak dihapus; 10 baris lama yang digantikan tersimpan sebagai komentar berawalan `TRN.03a:`.
+
+**Yang dibuat:**
+
+- Widget Turnstile ketiga ("ganti") di kartu Ganti password. Tombol Simpan password mati sampai widget "Berhasil!". Token dikirim sebagai `captchaToken` pada login ulang di `gantiPassword(lama, baru, tokenTs)`. AK11 tidak berubah.
+- Widget direset setelah tiap percobaan (berhasil maupun gagal), karena token sekali pakai.
+- Galat captcha ditolak dicek sebelum aturan status 400, supaya tidak salah tampil "Password lama salah".
+- Gagal pertama: pesan + Coba lagi. Gagal kedua berturut-turut, atau browser tidak didukung (`unsupported-callback`, nama dicek ke dokumentasi Cloudflare): tombol Coba lagi hilang, muncul pesan jalan keluar WA warung (versi Masuk/Daftar dan versi Ganti password berbeda). Tanpa nomor di kode.
+
+**Keputusan baru:**
+
+- **Ketua (via WA ke PIC, 18 Nov 2026):** OK mengubah tiga berkas login di atas, dengan pesan agar tidak ada penghapusan kode kecuali tak terhindarkan dan seizin PIC.
+- **Ketua:** ambang "gagal 2 kali" **disetujui**. Ini mengisi "belum dikonfirmasi ketua" di blok "Ganti password dengan Turnstile..." (18 Nov); yang paling akhir menang, tidak ada pertentangan isi.
+- **Pilihan penulis (bawaan), belum ditanyakan ke ketua:** gagal berulang dari satu widget yang sama (beberapa callback sekaligus) hanya dihitung sekali. Hitungan gagal hanya di memori dan kembali nol saat widget berhasil. Layar Akun memulai widget lewat `tampilkan("akun")` (terbukti jalan, `kerangka.js` tidak perlu diubah).
+
+**Tes yang SUDAH lulus (akun dummy, bukti di chat, tidak disimpan; JANGAN DIULANG):**
+
+1. Widget tampil di kartu Ganti password; Simpan password mati sampai "Berhasil!".
+2. Ganti password dengan benar: berhasil, kolom kosong, widget mulai ulang (password akun dummy customer sudah berganti; dipegang PIC).
+3. Password lama salah: pesan "Password lama salah.", widget mulai ulang.
+4. Gagal pertama dan gagal kedua (trik Console `window.turnstile = undefined`) di Ganti password: pesan ramah + Coba lagi, lalu Coba lagi hilang dan pesan jalan keluar versi Ganti password.
+5. Layar Masuk (masuk dengan password baru sampai Home) dan layar Daftar (widget tampil, tombol mati sampai "Berhasil!") tidak berubah perilakunya. Daftar tidak benar-benar dilakukan, tidak ada akun baru.
+6. Layar Akun owner uji dan penjaga uji punya widget, Simpan password hanya nyala setelah "Berhasil!" (Simpan tidak ditekan).
+
+**Tes yang BELUM dikerjakan (urut):** 7. **Pesan jalan keluar versi Masuk/Daftar** lewat trik Console: layar Daftar (gagal pertama, Coba lagi, gagal kedua: Coba lagi hilang, pesan "...pesan lewat WhatsApp warung..."). Opsional ulangi di layar Masuk. Muat ulang keras sesudahnya. 8. **TRN.05:** uji HP dengan browser paling tertinggal yang bisa ditemukan (catat nomor versi Chrome), buka link dari WA, throttling Slow 3G di laptop untuk jalur 10 detik. Lalu nyalakan Enable CAPTCHA paling akhir (Cloudflare Turnstile, Secret Key diketik langsung di dashboard, bukan di chat) dan tes ulang Daftar, Masuk, Ganti password. Enable bisa dimatikan lagi. 9. **TRN.06 dan TRN.07**, keduanya sebelum LNC.01b.
+
+**Masalah yang belum beres:**
+
+- Pemulihan widget lewat tombol Coba lagi **belum terbukti dari layar** (trik Console memicu peringatan "Turnstile already has been loaded" dan menyisakan kotak lama). Alurnya hanya dibaca dari kode (`tsUlangMuat`); pembuktian sebenarnya lewat TRN.05 di HP lama.
+- Pesan gagal pertama tetap menyebut "Periksa internet"; kurang tepat untuk browser lama, tetapi gagal kedua sudah memberi jalan keluar.
+- Email dummy terisi setelah Keluar (P2, dugaan isian otomatis browser) belum diselidiki.
+- Belum diketahui apakah link reset password dan pembuatan akun staf terhalang CAPTCHA (TRN.06).
+
+**Kejadian di lapangan (bahan belajar):** `git commit` melaporkan "59 deletions" padahal kode lama tidak dihapus. Penyebab: editor merapikan format berkas saat disimpan (baris dipenggal ulang, kurung ditambah), jadi git menghitung baris yang cuma pindah sebagai hapus-dan-tambah (dugaan kuat, didukung hasil di bawah). Pencegahan: bandingkan isi lewat sidik jari yang mengabaikan format (`tr -d ' \n\t\r,;()' < public/<berkas> | shasum`) sebelum push; cocok dengan hasil sesi, jadi isi identik. Jangan menilai dari angka deletions saja.
+
+**Saran giliran berikutnya:** baca blok ini dulu; jangan ulang tes 1 sampai 6. Kerjakan tes 7, lalu **minta PIC mengingatkan centang TRN.03a** bila tes 7 lulus. TRN.05 butuh HP lama dan akses dashboard Supabase ketua (profil browser terpisah, logout setelah selesai).
