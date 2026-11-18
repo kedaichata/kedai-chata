@@ -645,3 +645,37 @@ Keputusan ketua (sesi lanjutan TRN.03). Berkas tujuan: docs/akun.md bagian 9. Me
 2. TRN.06: coba link reset password dari dashboard dan buat akun staf di dashboard (akun staf dummy). Catat apakah ditolak CAPTCHA. Sebelum LNC.01b.
 3. TRN.07: ulang SEC-33 setelah Enable aktif; lampirkan `security.md` dan `pemetaan-test.md`.
 4. Logout dan tutup profil browser terpisah untuk dashboard Supabase setelah selesai.
+
+### Handoff #20 | 2026-11-18 | FREN
+
+**Tugas:** TRN.06 (link reset password dari dashboard dan pembuatan akun staf di dashboard, setelah Enable CAPTCHA aktif). Selesai. Tidak ada berkas yang diubah, tidak ada deploy. Enable CAPTCHA di dashboard Supabase tetap AKTIF.
+
+**Hasil (akun dummy, alias `+trn06` di kotak Gmail tes, bukti di chat, tidak disimpan):**
+
+- Add user di dashboard (Authentication, Users): berhasil, tanpa galat CAPTCHA.
+- Send password recovery: notifikasi dashboard tampil sebagai sukses terkirim ke alamat dummy (screenshot notifikasi terpotong, tidak ada tulisan galat). Email sampai.
+- Link dibuka dengan cara **salin lalu tempel di tab baru** (sesuai AK12): layar Buat password baru terbuka.
+- Simpan password baru: pesan sukses, kembali ke layar Masuk dengan widget "Berhasil!".
+- Masuk dengan password baru: lolos, aplikasi membawa akun ke Lengkapi profil (akun belum ada di tabel `staf`, jadi alur customer baru). Profil tidak dilengkapi.
+- **Kesimpulan: link reset dari dashboard dan Add user tidak terhalang CAPTCHA.** Ini menjawab "belum diketahui" di Handoff #19.
+- **TRN.06 sudah selesai, silakan dicentang di sheet.**
+
+**Keputusan baru:** tidak ada.
+
+**Tidak diuji (diterima):**
+
+- Klik link reset langsung dari email (tidak lewat salin-tempel). Cara salin-tempel tetap yang dipakai (AK12).
+- SQL template "tambah staf" (langkah 3 prosedur AKN.10) tidak dijalankan: lewat SQL Editor, tidak melewati Auth.
+
+**Masalah yang belum beres:**
+
+- Akun dummy `+trn06` ada di Authentication, Users (tidak ada di tabel `staf`). **Harus dibersihkan sebelum LNC.04** lewat dashboard, butuh "OK" ketua. Butir baru untuk sheet: "Bersihkan akun dummy TRN.06 sebelum LNC.04".
+- Akun dummy `test06@example.com` (Handoff #19) juga masih menunggu dibersihkan.
+- SEC-33 belum diulang (TRN.07, P0).
+- P2 dari Handoff #19 tetap terbuka (pesan gagal pertama menyebut "Periksa internet", email dummy terisi setelah Keluar). Layar Masuk setelah reset tampil dengan kolom email kosong.
+
+**Saran giliran berikutnya:**
+
+1. Keluar dari akun dummy di aplikasi, lalu logout dan tutup profil browser terpisah untuk dashboard Supabase.
+2. TRN.07: ulang SEC-33 (login dan CORS dari alamat asli, `kedai` aksi `status` dibalas 200 tanpa 401 platform dan tanpa galat CORS). Lampirkan `AGENTS.md`, `akun.md`, `security.md`, dan `pemetaan-test.md`. Baca dulu baris SEC-33 dan statusnya di `pemetaan-test.md` supaya tidak mengulang yang sudah terbukti.
+3. TRN.07 dikerjakan sebelum LNC.01b.
