@@ -138,7 +138,7 @@ Keputusan ketua (18 Nov 2026), setelah berdiskusi dengan ibu ketua. Alasan keput
 2. Sesi BLJ.02: lampirkan `AGENTS.md`, `belanja.md`, `database.md`, `security.md`, `20261105_akun.sql`, `20261108_order.sql`, `20261118_order_batas_harian.sql`, dan `20261118_02_belanja.sql`. Awali dengan jawaban ketua atas tiga pilihan penulis di atas, lalu SQL ditulis.
 3. Sesudah BLJ.02, urutan berikutnya BLJ.03 (aksi `kedai` di `belanja.ts`; deploy sesuai urutan aman), lalu BLJ.04 dan BLJ.05 (layar), BLJ.06 (`sw.js`, butuh "OK"), dan BLJ.07 (tes keamanan SEC baru).
 
-### Handoff #2 | 2026-11-18 | (isi nama PIC)
+### Handoff #2 | 2026-11-18 | (RAC)
 
 **Tugas:** BLJ.02 (fungsi SQL Belanja Warung). Selesai, terbukti, dan sudah dicentang di sheet.
 
