@@ -25,6 +25,7 @@
 // pesan ramah + tombol "Coba lagi". Bila TURNSTILE_SITEKEY kosong di config.js, fitur dianggap mati.
 // CATATAN: gantiPassword() (AKN.08b) memanggil signInWithPassword TANPA captchaToken. Setelah Enable CAPTCHA
 // dinyalakan di Supabase, panggilan itu akan ditolak. Harus ditangani sebelum Enable (lihat catatan sesi TRN.03).
+// TRN.03a: catatan di atas sudah ditangani: gantiPassword() kini menerima token Turnstile (widget ketiga di layar Akun), dan gagal dua kali / browser tidak didukung = pesan jalan keluar.
 //
 // Aturan yang dijaga:
 // - Peran dan identitas tidak pernah dikirim aplikasi; server membacanya dari token login.
@@ -114,6 +115,7 @@
       el("layar-" + LAYAR[i]).hidden = LAYAR[i] !== nama;
     }
     // TRN.03: widget Turnstile hanya hidup di layar Masuk dan Daftar.
+    // TRN.03a: dan di layar Akun (form Ganti password).
     tsKelola(nama);
     window.scrollTo(0, 0);
   }
@@ -244,10 +246,14 @@
   // TRN.03: Turnstile (CAPTCHA Cloudflare, mode Managed) di layar Daftar dan Masuk
   // Skrip widget dimuat index.html (pengecualian "tanpa CDN"). Token hanya hidup di memori,
   // sekali pakai, dan tidak pernah dicatat. Semua teks lewat textContent.
+  // TRN.03a: widget ketiga ("ganti") di form Ganti password (layar Akun), dan penanganan gagal berulang.
   // ------------------------------------------------------------
 
   var SITEKEY_TS = KONFIG.TURNSTILE_SITEKEY || "";
   var BATAS_MUAT_TS = 10000; // paling lama menunggu skrip Cloudflare (milidetik)
+  // TRN.03a: gagal berturut-turut sebanyak ini = tombol Coba lagi hilang, muncul pesan jalan keluar.
+  // Ambang 2 disetujui ketua (18 Nov 2026, lewat PIC). Hanya di memori, tidak disimpan.
+  var BATAS_GAGAL_TS = 2;
   var PESAN_TS_PERIKSA = "Memeriksa keamanan...";
   var PESAN_TS_KETUK = "Ketuk kotak centang di atas untuk melanjutkan.";
   var PESAN_TS_GAGAL =
@@ -255,26 +261,65 @@
   var PESAN_TS_BELUM =
     "Pemeriksaan keamanan belum selesai. Tunggu sebentar lalu coba lagi.";
   var PESAN_TS_DITOLAK = "Pemeriksaan keamanan gagal. Coba lagi.";
+  // TRN.03a: pesan jalan keluar. Tanpa nomor atau alamat di kode (aturan data pribadi).
+  var PESAN_TS_KELUAR =
+    "Pemeriksaan keamanan belum bisa berjalan di HP ini. Silakan pesan lewat WhatsApp warung seperti biasa, nanti kami bantu catatkan.";
+  var PESAN_TS_KELUAR_GANTI =
+    "Pemeriksaan keamanan belum bisa berjalan di HP ini. Untuk mengganti password, hubungi warung lewat WhatsApp, nanti kami bantu atur ulang.";
 
   var TS = {
-    masuk: { token: "", wid: null, timer: null },
-    daftar: { token: "", wid: null, timer: null },
+    // TRN.03a: gagal = hitungan gagal berturut-turut; ditandai = gagal widget yang sama hanya dihitung sekali.
+    masuk: { token: "", wid: null, timer: null, gagal: 0, ditandai: false },
+    daftar: { token: "", wid: null, timer: null, gagal: 0, ditandai: false },
+    ganti: { token: "", wid: null, timer: null, gagal: 0, ditandai: false },
+  };
+
+  // TRN.03a: id tombol kirim per layar (layar Akun memakai tombol-akun-pw, bukan "tombol-ganti").
+  var TS_TOMBOL = {
+    masuk: "tombol-masuk",
+    daftar: "tombol-daftar",
+    ganti: "tombol-akun-pw",
   };
 
   // keadaan: "periksa" (tombol mati), "siap" (tombol hidup), "gagal" (tombol mati + Coba lagi), "mati" (fitur tidak dipakai).
+  // TRN.03a: "buntu" (tombol mati, tanpa Coba lagi, pesan jalan keluar).
   function tsAtur(prefiks, keadaan, teks) {
-    var tombol = el("tombol-" + prefiks);
+    // TRN.03a: var tombol = el("tombol-" + prefiks);
+    var tombol = el(TS_TOMBOL[prefiks]);
     var ket = el("turnstile-" + prefiks + "-ket");
     el("turnstile-" + prefiks + "-bungkus").hidden = keadaan === "mati";
     // Jangan menyalakan tombol saat form sedang dikirim ("Memproses...").
     if (keadaan === "siap" && tombol.textContent === "Memproses...") {
       // dibiarkan; sibuk() yang mengatur setelah kiriman selesai
     } else {
-      tombol.disabled = keadaan === "periksa" || keadaan === "gagal";
+      // TRN.03a: tombol.disabled = keadaan === "periksa" || keadaan === "gagal";
+      tombol.disabled =
+        keadaan === "periksa" || keadaan === "gagal" || keadaan === "buntu";
     }
     ket.textContent = teks || "";
     ket.hidden = !teks;
     el("turnstile-" + prefiks + "-ulang").hidden = keadaan !== "gagal";
+  }
+
+  // TRN.03a: dipanggil tiap widget gagal (timeout, galat, skrip tidak termuat, render gagal) atau browser tidak didukung.
+  // Gagal pertama: pesan + Coba lagi. Gagal kedua berturut-turut (BATAS_GAGAL_TS), atau browser tidak didukung:
+  // pesan jalan keluar tanpa Coba lagi. Satu widget yang memicu beberapa callback hanya dihitung sekali.
+  function tsGagal(prefiks, tidakDidukung) {
+    var s = TS[prefiks];
+    if (s.ditandai && !tidakDidukung) {
+      return;
+    }
+    s.ditandai = true;
+    s.gagal += 1;
+    if (tidakDidukung || s.gagal >= BATAS_GAGAL_TS) {
+      tsAtur(
+        prefiks,
+        "buntu",
+        prefiks === "ganti" ? PESAN_TS_KELUAR_GANTI : PESAN_TS_KELUAR,
+      );
+      return;
+    }
+    tsAtur(prefiks, "gagal", PESAN_TS_GAGAL);
   }
 
   function tsHentikan(prefiks) {
@@ -292,6 +337,8 @@
       s.wid = null;
     }
     s.token = "";
+    // TRN.03a: widget baru boleh dihitung gagal lagi; hitungan berturut-turut (s.gagal) sengaja tidak dikosongkan di sini.
+    s.ditandai = false;
   }
 
   function tsGambar(prefiks) {
@@ -303,6 +350,9 @@
         language: "id",
         callback: function (token) {
           s.token = token;
+          // TRN.03a: berhasil = hitungan gagal berturut-turut dimulai dari nol lagi.
+          s.gagal = 0;
+          s.ditandai = false;
           tsAtur(prefiks, "siap", "");
         },
         "before-interactive-callback": function () {
@@ -314,17 +364,25 @@
         },
         "timeout-callback": function () {
           s.token = "";
-          tsAtur(prefiks, "gagal", PESAN_TS_GAGAL);
+          // TRN.03a: tsAtur(prefiks, "gagal", PESAN_TS_GAGAL);
+          tsGagal(prefiks, false);
         },
         "error-callback": function () {
           s.token = "";
-          tsAtur(prefiks, "gagal", PESAN_TS_GAGAL);
+          // TRN.03a: tsAtur(prefiks, "gagal", PESAN_TS_GAGAL);
+          tsGagal(prefiks, false);
           return true;
+        },
+        // TRN.03a: browser tidak didukung Cloudflare = langsung pesan jalan keluar.
+        "unsupported-callback": function () {
+          s.token = "";
+          tsGagal(prefiks, true);
         },
       });
     } catch (err) {
       s.wid = null;
-      tsAtur(prefiks, "gagal", PESAN_TS_GAGAL);
+      // TRN.03a: tsAtur(prefiks, "gagal", PESAN_TS_GAGAL);
+      tsGagal(prefiks, false);
     }
   }
 
@@ -346,7 +404,8 @@
       }
       if (Date.now() - awal > BATAS_MUAT_TS) {
         s.timer = null;
-        tsAtur(prefiks, "gagal", PESAN_TS_GAGAL);
+        // TRN.03a: tsAtur(prefiks, "gagal", PESAN_TS_GAGAL);
+        tsGagal(prefiks, false);
         return;
       }
       s.timer = setTimeout(coba, 300);
@@ -356,6 +415,7 @@
 
   // Dipanggil tampilkan(): hanya layar yang sedang tampil yang punya widget.
   function tsKelola(nama) {
+    // TRN.03a: var daftar = ["masuk", "daftar"];
     var daftar = ["masuk", "daftar"];
     for (var i = 0; i < daftar.length; i++) {
       if (nama === daftar[i]) {
@@ -363,6 +423,12 @@
       } else {
         tsHentikan(daftar[i]);
       }
+    }
+    // TRN.03a: widget form Ganti password hidup selama layar Akun tampil.
+    if (nama === "akun") {
+      tsMulai("ganti");
+    } else {
+      tsHentikan("ganti");
     }
   }
 
@@ -693,7 +759,9 @@
   // memicu verifikasi email), baru mengganti lewat Supabase Auth. Email dibaca dari sesi login di
   // peramban dan tidak disimpan di mana pun. Mengembalikan Promise berisi { ok: true } atau
   // { ok: false, pesan: "..." } (pesan aman Bahasa Indonesia, tanpa galat mentah).
-  function gantiPassword(lama, baru) {
+  // TRN.03a: parameter ketiga tokenTs (token Turnstile dari widget form Ganti password, boleh kosong
+  // bila fitur mati) dikirim sebagai captchaToken pada login ulang.
+  function gantiPassword(lama, baru, tokenTs) {
     var PESAN_UMUM_PW = "Password belum bisa diganti. Coba lagi nanti.";
     var PESAN_SESI_PW = "Sesi sudah berakhir. Silakan keluar lalu masuk lagi.";
 
@@ -718,56 +786,76 @@
         if (!email) {
           return { ok: false, pesan: PESAN_SESI_PW };
         }
-        return klien.auth
-          .signInWithPassword({ email: email, password: lama })
-          .then(function (m) {
-            if (m.error || !m.data || !m.data.session) {
-              var e1 = m.error || null;
-              if (putusJaringan(e1)) {
-                return { ok: false, pesan: PESAN_OFFLINE };
+        // TRN.03a: kredensial login ulang kini membawa captchaToken bila ada.
+        var kredensialUlang = { email: email, password: lama };
+        if (tokenTs) {
+          kredensialUlang.options = { captchaToken: tokenTs };
+        }
+        return (
+          klien.auth
+            // TRN.03a: .signInWithPassword({ email: email, password: lama })
+            .signInWithPassword(kredensialUlang)
+            .then(function (m) {
+              if (m.error || !m.data || !m.data.session) {
+                var e1 = m.error || null;
+                if (putusJaringan(e1)) {
+                  return { ok: false, pesan: PESAN_OFFLINE };
+                }
+                // TRN.03a: token Turnstile ditolak dicek SEBELUM aturan status 400 (bukan "password lama salah").
+                if (
+                  e1 &&
+                  (e1.code === "captcha_failed" ||
+                    (typeof e1.message === "string" &&
+                      e1.message.toLowerCase().indexOf("captcha") !== -1))
+                ) {
+                  return { ok: false, pesan: PESAN_TS_DITOLAK };
+                }
+                var k1 = e1 && e1.code ? e1.code : "";
+                if (k1 === "invalid_credentials" || (e1 && e1.status === 400)) {
+                  return { ok: false, pesan: "Password lama salah." };
+                }
+                if (
+                  k1 === "over_request_rate_limit" ||
+                  k1 === "over_email_send_rate_limit"
+                ) {
+                  return { ok: false, pesan: PESAN_TERLALU_SERING };
+                }
+                return { ok: false, pesan: PESAN_UMUM_PW };
               }
-              var k1 = e1 && e1.code ? e1.code : "";
-              if (k1 === "invalid_credentials" || (e1 && e1.status === 400)) {
-                return { ok: false, pesan: "Password lama salah." };
-              }
-              if (
-                k1 === "over_request_rate_limit" ||
-                k1 === "over_email_send_rate_limit"
-              ) {
-                return { ok: false, pesan: PESAN_TERLALU_SERING };
-              }
-              return { ok: false, pesan: PESAN_UMUM_PW };
-            }
-            return klien.auth.updateUser({ password: baru }).then(function (u) {
-              if (!u.error) {
-                return { ok: true };
-              }
-              var e2 = u.error;
-              if (putusJaringan(e2)) {
-                return { ok: false, pesan: PESAN_OFFLINE };
-              }
-              var k2 = e2.code ? e2.code : "";
-              if (k2 === "same_password") {
-                return {
-                  ok: false,
-                  pesan: "Password baru harus berbeda dari password lama.",
-                };
-              }
-              if (k2 === "weak_password") {
-                return {
-                  ok: false,
-                  pesan: "Password minimal 8 karakter, hanya huruf dan angka.",
-                };
-              }
-              if (
-                k2 === "over_request_rate_limit" ||
-                k2 === "over_email_send_rate_limit"
-              ) {
-                return { ok: false, pesan: PESAN_TERLALU_SERING };
-              }
-              return { ok: false, pesan: PESAN_UMUM_PW };
-            });
-          });
+              return klien.auth
+                .updateUser({ password: baru })
+                .then(function (u) {
+                  if (!u.error) {
+                    return { ok: true };
+                  }
+                  var e2 = u.error;
+                  if (putusJaringan(e2)) {
+                    return { ok: false, pesan: PESAN_OFFLINE };
+                  }
+                  var k2 = e2.code ? e2.code : "";
+                  if (k2 === "same_password") {
+                    return {
+                      ok: false,
+                      pesan: "Password baru harus berbeda dari password lama.",
+                    };
+                  }
+                  if (k2 === "weak_password") {
+                    return {
+                      ok: false,
+                      pesan:
+                        "Password minimal 8 karakter, hanya huruf dan angka.",
+                    };
+                  }
+                  if (
+                    k2 === "over_request_rate_limit" ||
+                    k2 === "over_email_send_rate_limit"
+                  ) {
+                    return { ok: false, pesan: PESAN_TERLALU_SERING };
+                  }
+                  return { ok: false, pesan: PESAN_UMUM_PW };
+                });
+            })
+        );
       })
       .catch(function () {
         return {
@@ -950,6 +1038,13 @@
     muatStatus: muatStatus,
     keluar: keluar,
     gantiPassword: gantiPassword,
+    // TRN.03a: pembantu token Turnstile form Ganti password (dipakai akunmenu.js). Selalu untuk widget "ganti".
+    tokenGanti: function () {
+      return tsAmbilToken("ganti");
+    },
+    pakaiUlangGanti: function () {
+      tsPakaiUlang("ganti");
+    },
   });
 
   // ------------------------------------------------------------
@@ -992,6 +1087,10 @@
   });
   el("turnstile-daftar-ulang").addEventListener("click", function () {
     tsUlangMuat("daftar");
+  });
+  // TRN.03a: Coba lagi untuk widget di form Ganti password.
+  el("turnstile-ganti-ulang").addEventListener("click", function () {
+    tsUlangMuat("ganti");
   });
   el("ke-lupa").addEventListener("click", function () {
     var petunjuk = el("lupa-petunjuk");

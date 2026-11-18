@@ -4,6 +4,7 @@
 // Layar dibuka dari tombol "Akun" di layar sementara (id tombol-akun); nanti tombolnya dipindah
 // ke menu Akun saat layar utama dibuat.
 // AKN.08b: ganti password (AK11) ditambah di berkas ini; pembantu A.gantiPassword ada di akun.js.
+// TRN.03a: form Ganti password memakai widget Turnstile (token dari akun.js lewat A.tokenGanti, dikirim ke A.gantiPassword).
 //
 // Aturan yang dijaga:
 // - Yang dikirim hanya aksi dan nilai baru (nama atau wa). ID pemilik dari token di server.
@@ -38,6 +39,9 @@
   var PESAN_MUAT = "Data akun belum bisa dimuat. Coba lagi sebentar lagi.";
   var PESAN_OFFLINE = "Belum bisa terhubung. Periksa internet lalu coba lagi.";
   var PESAN_SESI = "Sesi sudah berakhir. Silakan keluar lalu masuk lagi.";
+  // TRN.03a: token Turnstile belum siap saat Simpan password ditekan.
+  var PESAN_TS_BELUM =
+    "Pemeriksaan keamanan belum selesai. Tunggu sebentar lalu coba lagi.";
 
   var sedangProses = false;
 
@@ -222,7 +226,16 @@
   // ------------------------------------------------------------
   // Ganti password (AKN.08b, AK11)
   // Login ulang dengan password lama dilakukan oleh A.gantiPassword (akun.js), baru password diganti.
+  // TRN.03a: login ulang itu membawa token Turnstile dari widget di form ini. Token sekali pakai,
+  // jadi widget direset setelah tiap percobaan (berhasil maupun gagal).
   // ------------------------------------------------------------
+
+  // TRN.03a: minta widget form Ganti password mengeluarkan token baru. Aman dipanggil bila akun.js lama.
+  function tokenBaruGanti() {
+    if (typeof A.pakaiUlangGanti === "function") {
+      A.pakaiUlangGanti();
+    }
+  }
 
   function kirimPw(e) {
     e.preventDefault();
@@ -246,14 +259,24 @@
     }
     if (!lengkap) return;
 
+    // TRN.03a: token Turnstile wajib bila fitur aktif. null = belum siap, "" = fitur mati.
+    var tokenTs = typeof A.tokenGanti === "function" ? A.tokenGanti() : "";
+    if (tokenTs === null) {
+      A.galatForm("akunpw", PESAN_TS_BELUM);
+      return;
+    }
+
     var tombol = el("tombol-akun-pw");
     sedangProses = true;
     A.sibuk(tombol, true, TEKS_PW);
 
-    A.gantiPassword(lama, baru)
+    // TRN.03a: A.gantiPassword(lama, baru)
+    A.gantiPassword(lama, baru, tokenTs)
       .then(function (h) {
         sedangProses = false;
         A.sibuk(tombol, false, TEKS_PW);
+        // TRN.03a: token sudah terpakai, minta yang baru (tombol kembali mati sampai widget siap).
+        tokenBaruGanti();
 
         if (h && h.ok === true) {
           el("akun-pwlama").value = "";
@@ -270,6 +293,7 @@
       .catch(function () {
         sedangProses = false;
         A.sibuk(tombol, false, TEKS_PW);
+        tokenBaruGanti();
         A.galatForm("akunpw", navigator.onLine ? PESAN_UMUM : PESAN_OFFLINE);
       });
   }
