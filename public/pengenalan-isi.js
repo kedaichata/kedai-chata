@@ -33,6 +33,9 @@
  *   - Topik 4 (iPhone) dan bagian iPhone di topik 6, 7, dan 10 BELUM dites di perangkat nyata.
  *     Perlu dicek ke pemakai iPhone (PGN.05) sebelum diandalkan.
  *   - Nama menu browser (Chrome, Safari) bisa berubah antar versi; cek ulang saat PGN.04 dan PGN.05.
+ *
+ * PGN.07 (18 Nov 2026): topik ke-11 "Bagaimana kalau tidak bisa daftar atau masuk?" ditambah paling akhir
+ *   (keputusan ketua, docs/pengenalan.md Catatan Susulan 18 Nov 2026). Urutan topik 1 sampai 10 tidak berubah.
  */
 window.KedaiPengenalanIsi = [
   {
@@ -133,6 +136,17 @@ window.KedaiPengenalanIsi = [
       "**iPhone:** tekan lama/tahan ikon ChATA, lalu pilih **Hapus App** (atau **Hapus dari Layar Utama**).",
       "{hijau|Data pesanan Anda tidak ikut hilang,} karena tersimpan di server ChATA, bukan di HP. Anda bisa memasang/menginstal dan masuk/login lagi kapan saja dengan email dan password yang sama.",
       "Bila ingin aplikasi tidak mengingat Anda di HP itu, tekan **Keluar**/logout dulu sebelum menghapus.",
+    ],
+  },
+  {
+    kunci: "tidak-bisa-masuk",
+    judul: "Bagaimana kalau tidak bisa daftar atau masuk?",
+    isi: [
+      "Saat daftar atau masuk, aplikasi meminta Anda mengetuk/klik kotak centang **Verifikasi bahwa Anda adalah manusia**. Ini pemeriksaan keamanan supaya akun tidak dibuat atau dimasuki oleh program otomatis.",
+      "Bila kotak centang itu tidak muncul, atau Anda tetap gagal daftar/masuk setelah mencoba lagi, biasanya penyebabnya HP atau browser Anda sudah lama dan belum cocok dengan pemeriksaan itu. Ini bukan kesalahan Anda.",
+      "Hal yang bisa dicoba: periksa internet, tutup aplikasi lalu buka lagi, atau perbarui/update **Chrome** di Play Store bila tersedia. Cara ini kadang membantu, tidak selalu.",
+      "{hijau|Anda tetap bisa memesan.} Pesan lewat WhatsApp warung seperti biasa, nanti perwakilan ChATA membantu mencatatkan pesanan Anda.",
+      "Bila lupa password, gunakan tombol **Lupa password?** di layar Masuk.",
     ],
   },
 ];
