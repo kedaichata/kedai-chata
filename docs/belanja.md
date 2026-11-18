@@ -138,4 +138,44 @@ Keputusan ketua (18 Nov 2026), setelah berdiskusi dengan ibu ketua. Alasan keput
 2. Sesi BLJ.02: lampirkan `AGENTS.md`, `belanja.md`, `database.md`, `security.md`, `20261105_akun.sql`, `20261108_order.sql`, `20261118_order_batas_harian.sql`, dan `20261118_02_belanja.sql`. Awali dengan jawaban ketua atas tiga pilihan penulis di atas, lalu SQL ditulis.
 3. Sesudah BLJ.02, urutan berikutnya BLJ.03 (aksi `kedai` di `belanja.ts`; deploy sesuai urutan aman), lalu BLJ.04 dan BLJ.05 (layar), BLJ.06 (`sw.js`, butuh "OK"), dan BLJ.07 (tes keamanan SEC baru).
 
+### Handoff #2 | 2026-11-18 | (isi nama PIC)
+
+**Tugas:** BLJ.02 (fungsi SQL Belanja Warung). Selesai, terbukti, dan sudah dicentang di sheet.
+
+**File yang diubah:**
+
+- Baru di `supabase/migrations/`: `20261118_03_belanja_fungsi.sql` dan `20261118_03_belanja_fungsi_batal.sql`.
+- Baru di `supabase/templates/`: `20261118_03_belanja_fungsi_cek.sql` dan `20261118_03_belanja_fungsi_uji.sql`. Berkas uji di repo berisi id nol; salinan di SQL Editor yang berisi id akun dummy **tidak boleh disimpan ke repo**.
+- Migration sudah dijalankan di SQL Editor. **Status commit dan push belum dikonfirmasi** (git status terakhir: keempat berkas masih untracked). Commit menyentuh `supabase/`, jadi tanpa `[skip ci]` sesuai aturan 12 Nov; keputusan memakainya tetap di ketua.
+- Tidak ada perubahan `kedai`, `sw.js`, `public/`, tabel, hak tabel, atau pengaturan (dua baris pengaturan diubah sementara oleh berkas uji, lalu dikembalikan; terbukti).
+
+**Keputusan baru:**
+
+- Empat pilihan penulis disetujui lewat "gas" PIC (18 Nov 2026): item Dibatalkan tidak bisa diaktifkan lagi dan tidak bisa diedit; batas 50 item dihitung termasuk yang Dibatalkan; catatan tanpa item ditolak; berkas uji dummy dibuat.
+- Pilihan penulis tambahan (alasan belum tercatat dari ketua): **rekap hanya menjumlah catatan belum terkunci, juga saat saklar "tampilkan yang terkunci" menyala** (menafsirkan BL11; tiap catatan membawa totalnya sendiri); ubah item mengirim nama dan harga sekaligus; batal dua kali atau mengedit item Dibatalkan = `item_sudah_batal`; judul kosong diisi "DD-MM-YYYY Nama penginput"; daftar tidak membawa id akun, hanya `milik_saya`; urutan item satu kiriman dijaga lewat `clock_timestamp()`; tiga fungsi pembantu baca-saja (`belanja_angka`, `belanja_owner`, `belanja_item_periksa`).
+- Tidak ada pertentangan dengan blok lama.
+
+**Terbukti (18 Nov 2026, dibaca bersama di chat, tidak disimpan):**
+
+- Cek A sampai E: 10 fungsi ada, `SECURITY DEFINER`, `search_path` kosong; `EXECUTE` hanya `postgres` dan `service_role`; lima pengaturan utuh; hak tabel `INSERT, SELECT, UPDATE` tanpa DELETE; tabel kosong sebelum uji.
+- Berkas uji dummy: **104 dari 104 lulus** (peran, kepemilikan, validasi harga dan nama, batas 50 item, kunci satu arah, rekap, `pengaturan_rusak`, balasan tanpa id akun).
+
+**Kode galat untuk BLJ.03 (dipetakan ke status HTTP dan pesan ramah, tanpa angka):** baru di fitur ini: `belanja_tidak_ditemukan`, `item_tidak_ditemukan`, `bukan_penginput`, `belanja_terkunci`, `item_sudah_batal`, `judul_tidak_valid`, `nama_item_tidak_valid`, `harga_tidak_valid`, `harga_terlalu_besar`. Dipakai ulang: `id_kosong`, `peran_tidak_boleh`, `akun_nonaktif`, `item_kosong`, `item_tidak_valid`, `item_terlalu_banyak`. `pengaturan_rusak` tidak dipetakan (galat umum 500).
+
+**Masalah yang belum beres:**
+
+- **Persetujuan ketua** atas rancangan BLJ.02 (termasuk tafsir rekap di atas) belum tercatat jelas; "gas" datang dari PIC. Teruskan ringkasan ke ketua lewat WA (aturan 12).
+- Blok catatan `docs/database.md` bagian 9 (fungsi baru dan kode galatnya) **belum ditulis**.
+- **Data uji dummy masih di database:** 3 catatan, 56 item, 2 catatan terkunci. Dibersihkan ketua di BLJ.08 dan LNC.01 dengan penjelasan dampak dan "OK", sebelum layar Belanja dipakai owner.
+- Belum terbukti: dua kiriman bersamaan (kunci dan tambah item); jalur `akun_nonaktif`; jalur token `kedai` (BLJ.07); `_batal.sql` belum pernah dicoba.
+- Butir baru yang perlu ditambah ke sheet: "Uji tangan kunci dan tambah item bersamaan (dua tab)".
+- Baris SEC baru untuk Belanja belum ada di `security.md` (BLJ.07).
+- Dari Handoff #1, masih berlaku: belum diputuskan apakah rilis terbatas Senin 23 Nov tetap jalan bila Belanja belum selesai (dibahas tim Sabtu 21 Nov).
+
+**Saran giliran berikutnya:**
+
+1. Commit dan push keempat berkas dengan cek anti-nyasar (folder aktif, `git remote -v`, email commit terakhir, semuanya ditempel ke chat).
+2. Sesi BLJ.03 (aksi `kedai` di `belanja.ts`). Lampirkan `AGENTS.md`, `belanja.md`, `database.md`, `security.md`, `20261118_03_belanja_fungsi.sql`, `supabase/functions/kedai/index.ts`, serta satu berkas kelompok aksi sebagai contoh pola (`ringkasan.ts` untuk aksi khusus owner, dan `order_status.ts` untuk `buatAksi...(alat)`). Awali dengan keputusan ketua soal tafsir rekap, lalu kode ditulis.
+3. Deploy `kedai` sesuai urutan aman bagian 8 (tanpa `--no-verify-jwt`, token ketua, satu langkah per giliran). Setelah itu BLJ.04 dan BLJ.05 (layar), BLJ.06 (`sw.js`, butuh "OK"), dan BLJ.07 (tes keamanan).
+
 ---
