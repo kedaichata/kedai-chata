@@ -473,3 +473,15 @@ Sisa: SEC-19 (Android), non-SEC (O22, wizard Besok, jumlah menu, Segarkan, pilih
 **Belum teruji (catatan):** galat di form order dan form lain di luar Masuk dan Daftar; pesan sesi habis kurang definitif (dijadwalkan versi 2).
 
 **Sisa:** LNC.01 menunggu OK ketua. SEC-01, SEC-02, SEC-32 menunggu dicocokkan dengan teks barisnya di sheet.
+
+### 2026-11-18 | (isi nama PIC): TRN.07 (ulang SEC-33 setelah Enable CAPTCHA)
+
+**Baru terbukti** (tanpa bukti dan tanpa data pelanggan): dari alamat GitHub Pages asli, setelah Keluar dan Masuk dengan akun dummy customer, `kedai` dibalas 200 untuk aksi `status` dan `gelar_saya`; preflight CORS 204; tanpa 401 dari platform dan tanpa galat CORS. Console hanya memuat peringatan bawaan widget Cloudflare; tidak ada galat login baru.
+
+**SEC yang dicentang di sheet:** tidak ada baris SEC baru (SEC-33 sudah lulus 6 Nov, hari ini diulang sesuai catatan Turnstile). **TRN.07 dicentang.**
+
+**Tes tidak perlu diulang:** seluruh tes di atas, kecuali Enable CAPTCHA dimatikan lalu dinyalakan lagi, atau `kedai` di-deploy ulang.
+
+**Belum teruji (catatan):** baris 400 pada `auth/v1/token` yang sempat terlihat sebelum Console dibersihkan tidak diselidiki asalnya (dugaan: percobaan login lama); perangkat selain Chrome laptop tidak diulang (HP sudah di TRN.05).
+
+**Sisa:** pembersihan akun dummy (`test05`, `test06`, `+trn06`) sebelum LNC.04, butuh "OK" ketua. LNC.01 menunggu OK ketua. SEC-01, SEC-02, SEC-32 menunggu dicocokkan dengan teks barisnya di sheet.

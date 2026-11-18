@@ -679,3 +679,29 @@ Keputusan ketua (sesi lanjutan TRN.03). Berkas tujuan: docs/akun.md bagian 9. Me
 1. Keluar dari akun dummy di aplikasi, lalu logout dan tutup profil browser terpisah untuk dashboard Supabase.
 2. TRN.07: ulang SEC-33 (login dan CORS dari alamat asli, `kedai` aksi `status` dibalas 200 tanpa 401 platform dan tanpa galat CORS). Lampirkan `AGENTS.md`, `akun.md`, `security.md`, dan `pemetaan-test.md`. Baca dulu baris SEC-33 dan statusnya di `pemetaan-test.md` supaya tidak mengulang yang sudah terbukti.
 3. TRN.07 dikerjakan sebelum LNC.01b.
+
+### Handoff #21 | 2026-11-18 | (RAC)
+
+**Tugas:** TRN.07 (ulang SEC-33 setelah Enable CAPTCHA aktif). Selesai. Tidak ada berkas yang diubah, tidak ada deploy. Enable CAPTCHA di dashboard Supabase tetap AKTIF.
+
+**Hasil (akun dummy customer, bukti di chat, tidak disimpan):**
+
+- Dari alamat GitHub Pages asli, setelah Keluar lalu Masuk (widget Turnstile "Berhasil!"): `kedai` aksi `status` dibalas 200 dan `gelar_saya` dibalas 200. Preflight CORS dibalas 204 untuk keduanya.
+- Tidak ada 401 dari platform dan tidak ada galat CORS. `kedai` tetap tanpa `--no-verify-jwt`; rencana mundur di `security.md` aturan 3 tidak dipakai.
+- Console hanya memuat peringatan bawaan widget Cloudflare (CSP `data:`, `OTS parsing`, `No available adapters`, `postMessage`). Setelah Console dibersihkan lalu Keluar dan Masuk lagi, tidak ada galat login baru.
+- **TRN.07 sudah dicentang di sheet.** Dengan ini rantai Turnstile (TRN.01 sampai TRN.07) tuntas.
+
+**Keputusan baru:** tidak ada.
+
+**Masalah yang belum beres:**
+
+- Satu baris 400 pada `auth/v1/token?grant_type=password` sempat terlihat di Console sebelum dibersihkan. Asalnya tidak diselidiki (dugaan: percobaan login lama yang tersimpan oleh Keep log). Tidak muncul lagi pada login baru.
+- Akun dummy `test05`, `test06@example.com`, dan alias `+trn06` masih ada di Authentication, Users. **Harus dibersihkan sebelum LNC.04**, butuh "OK" ketua.
+- P2 tetap terbuka: pesan gagal pertama menyebut "Periksa internet"; email dummy terisi setelah Keluar.
+- LNC.01 menunggu "OK" ketua. WAG.06a sebelum LNC.04. SEC-01, SEC-02, SEC-32 menunggu dicocokkan dengan teks barisnya di sheet.
+
+**Saran giliran berikutnya:**
+
+1. BTO.01: penjelasan dampak ke ketua (ubah `order_buat` dan tambah kunci pengaturan batas order harian). Lampirkan `AGENTS.md`, `order.md` (blok 18 Nov), dan `database.md`. Ringkasan untuk ketua dibuat lewat WA (aturan 12).
+2. Butir baru untuk sheet (judul pendek): "Bersihkan akun dummy test05, test06, trn06 sebelum LNC.04".
+3. Logout dan tutup profil browser terpisah bila dashboard Supabase atau Cloudflare sempat dibuka.
