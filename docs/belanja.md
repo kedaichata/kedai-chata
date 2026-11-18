@@ -324,4 +324,42 @@ Keputusan ketua (18 Nov 2026), setelah penjelasan di sesi BLJ.03. Alasan ketua s
 3. Setelah giliran 2 lulus tes: centang BLJ.05 di sheet, lalu BLJ.06 (`sw.js`, "OK" ketua), BLJ.07 (SEC baru), BLJ.08.
 4. Commit yang menyentuh `public/` tanpa `[skip ci]`. Sebelum push, tempel cek anti-nyasar (`pwd`, `git remote -v`, email commit terakhir). Sebelum commit, baca `git status` dan `git diff --stat`.
 
+### Handoff #6 | 2026-11-18 | [KETUA]
+
+**Tugas:** BLJ.05 giliran 2 (tambah barang, ubah barang, batalkan barang, ubah judul). Kode selesai dan sudah di-push. **Belum dites. BLJ.05 belum boleh dicentang di sheet**, tunggu tes lulus.
+
+**File yang diubah (commit `97ef21d`, tanpa `[skip ci]`, sudah di-push ke `main`; 5 berkas, 657 baris bertambah, 12 dihapus):**
+
+- Baru: `public/belanjaedit.js` (dialog ubah barang, batalkan barang, ubah judul; `window.KedaiBelanjaEdit`).
+- Diubah: `public/belanja.js` (kini sekitar 893 baris; tombol Tambah barang, Ubah judul, serta Ubah dan Batalkan per barang). **Satu baris lama diganti:** `ul.appendChild(gambarItem(item[j]));` menjadi tiga baris (buat item, tambah tombol bila boleh, masukkan). Hasil sama untuk catatan yang bukan milik sendiri atau sudah terkunci.
+- Diubah: `public/belanjainput.js` (kini sekitar 642 baris; mode "tambah" lewat `buka({mode: "tambah", id, judul, onSimpan})`). **11 baris lama dimodifikasi:** teks tombol Simpan lewat `labelSimpan`, aksi lewat variabel `aksi` (bawaan tetap `belanja_buat`), judul layar dan kalimat pengantar disimpan di variabel. Perilaku mode catatan baru tidak berubah.
+- Diubah: `public/belanja.css` (hanya ditambah 28 baris), `public/index.html` (hanya ditambah satu `<script src="belanjaedit.js">` sebelum `belanja.js`).
+- Tidak ada perubahan `sw.js`, `kedai`, SQL, tabel, atau pengaturan. **`belanjaedit.js` belum ada di cache `sw.js`** (BLJ.06).
+
+**Keputusan baru (ketua, 18 Nov 2026):**
+
+- **Satu kali push dan satu kali tes untuk giliran 2a dan 2b**, bukan per giliran. Alasan ketua: belum ada pengguna sungguhan, semua data dummy, dan sedang buru-buru. Karena `belanja.js` memuat 2a dan 2b sekaligus, hasilnya satu commit.
+- Rancangan giliran 2 disetujui lewat "gas" ketua. Pilihan penulis (alasan ketua selain itu belum tercatat): barang dibatalkan memakai konfirmasi yang menjelaskan bahwa tidak bisa dihidupkan atau diubah lagi; Ubah judul memakai dialog; tombol hanya di catatan milik sendiri yang belum terkunci (server tetap yang memutuskan); kolom judul disembunyikan di mode tambah.
+- Tidak ada pertentangan dengan blok lama.
+
+**Terbukti:** hanya pemeriksaan sintaks (`node --check`), `git diff --stat`, dan cek anti-nyasar sebelum push (folder, remote, dan email commit milik ketua, kunci SSH khusus ChATA). Tidak ada bukti dari layar atau balasan server.
+
+**Masalah yang belum beres:**
+
+- **Keempat aksi belum pernah dipanggil dari layar:** `belanja_item_tambah`, `belanja_item_ubah`, `belanja_item_batal`, `belanja_judul_ubah`. Tes di HP (7 butir) belum dijalankan: tambah barang, ubah barang, harga kosong atau 0, batalkan barang, ubah judul (termasuk dikosongkan), tombol tidak ada di catatan terkunci atau milik owner lain, Esc dan ketuk area gelap hanya menutup dialog.
+- **Belum diketahui:** perilaku server saat judul dikosongkan di `belanja_judul_ubah` (ditolak atau diisi otomatis). Layar hanya menampilkan jawaban server.
+- Belum dites: sesi habis (401) saat menyimpan, dua tab bersamaan, iPhone, layar sangat sempit, jumlah barang melewati batas 50.
+- **`belanja.js` sekitar 893 baris dan `belanjainput.js` sekitar 642 baris**, di atas patokan sekitar 500 baris (`AGENTS.md` bagian 6). Belum ada keputusan memecah. Memecah kode lama butuh penjelasan dampak dan "OK" ketua.
+- **BLJ.06 harus mendaftarkan empat berkas** ke cache `sw.js` sekaligus: `belanja.js`, `belanja.css`, `belanjainput.js`, `belanjaedit.js` (versi cache naik dari `chata-v35`; butuh penjelasan dampak dan "OK" ketua).
+- **Data uji dummy bertambah** (tiap tes membuat catatan baru; jumlah pastinya tidak dicek). Dibersihkan ketua di BLJ.08 dan LNC.01 dengan "OK".
+- Masih berlaku dari handoff sebelumnya: belum diputuskan apakah rilis terbatas Senin 23 Nov 2026 jalan tanpa Belanja bila belum selesai (dibahas tim Sabtu 21 Nov); persetujuan ketua atas rancangan layar BLJ.04 belum tercatat; baris SEC baru Belanja belum ada di `security.md` (BLJ.07); belum diuji kunci dan tambah item bersamaan (dua tab); `_batal.sql` BLJ belum pernah dicoba.
+
+**Saran giliran berikutnya:**
+
+1. Tes 7 butir di atas di HP dengan akun owner dummy (catatan baru, karena kunci satu arah). Bila ada yang gagal, perbaiki dulu. Bila semua lulus, centang BLJ.05 di sheet.
+2. BLJ.06: daftarkan keempat berkas ke `sw.js` (lampirkan `sw.js` terbaru; penjelasan dampak dan "OK" ketua; commit tanpa `[skip ci]`).
+3. BLJ.07: tes keamanan dan baris SEC baru (lampirkan `AGENTS.md`, `belanja.md`, `security.md`). Aksi baru ikut dibuktikan lewat BLJ.07.
+4. BLJ.08: entri Bantuan owner dan pembersihan data uji.
+5. Sebelum push selalu tempel `pwd`, `git remote -v`, dan email commit terakhir, dan baca `git status` serta `git diff --stat` sebelum commit.
+
 ---
