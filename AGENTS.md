@@ -380,3 +380,11 @@ Keputusan ketua (sesi strategi 18 Nov 2026). Fitur diminta ibu ketua di awal pro
 - **Pengecualian "angka di database" (bagian 1):** tidak ada; batas harga, panjang, jumlah item, dan jumlah terkunci tampil ada di `pengaturan`.
 - **Versi rilis:** menunggu ketua dan owner (V1 sebelum Peluncuran atau sebelum LNC.04). Kecenderungan: V1; jadwal rilis terbatas Senin 23 Nov 2026 bisa mundur. Belum final.
 - **Bagian 4:** cek kuota 18 Nov 2026 sangat rendah (Edge Function sekitar 5.300 panggilan, database 27,85 MB); fitur ini bukan penentu upgrade.
+
+### 2026-11-18: Persetujuan ketua untuk Belanja Warung (versi rilis dan belanja.css)
+
+Keputusan ketua (18 Nov 2026). Melengkapi blok "Dokumen belanja.md" 18 Nov. Yang paling akhir menang.
+
+- **Versi rilis:** V1 sebelum Peluncuran (Opsi A); target rilis terbatas tetap Senin 23 Nov 2026. Keputusan ini mengganti "menunggu ketua dan owner" di blok sebelumnya.
+- **`public/belanja.css` disetujui** ketua sebagai pengecualian CSS (bagian 3 dan 6). Status "usulan, menunggu OK" di blok sebelumnya tidak berlaku lagi.
+- Rancangan tabel, fungsi SQL, dan pendaftaran `sw.js` tetap butuh "OK" ketua saat dikerjakan (BLJ.01, BLJ.06).

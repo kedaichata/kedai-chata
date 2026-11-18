@@ -90,4 +90,52 @@ Memindahkan kebiasaan 5 owner menulis daftar belanja warung dan menghitungnya ma
 
 > Tempel blok baru di bawah garis ini. Format: `### YYYY-MM-DD: topik`. Yang paling akhir menang.
 
+### 2026-11-18: Versi rilis diputuskan (BLJ.00)
+
+Keputusan ketua (18 Nov 2026), setelah berdiskusi dengan ibu ketua. Alasan keputusan di luar yang tertulis belum tercatat.
+
+- **Versi rilis: Opsi A.** Belanja Warung dikerjakan sebagai V1 **sebelum Peluncuran**, bukan Opsi C. Preferensi ketua: dikerjakan sekarang, bukan saat data nyata sudah masuk. Tim dinilai bisa mengejar (Turnstile dan batas order selesai cepat).
+- **Jadwal:** ibu ketua meminta rilis terbatas tetap **Senin 23 Nov 2026**; target itu dipertahankan, tetapi tidak dijamin.
+- **Belum diputuskan:** bila fitur belum selesai saat Senin, apakah rilis tetap jalan tanpa fitur ini atau mundur. Strategi uji coba terbatas dibahas tim **Sabtu 21 Nov 2026**.
+- **`belanja.css` disetujui** (pengecualian CSS mengikuti pola `game.css`). Pendaftaran `belanja.css` dan `belanja.js` di cache `sw.js` tetap butuh "OK" terpisah (BLJ.06).
+- **Pertentangan dengan catatan lama:** bagian 6 ("kecenderungan, belum final") dan Opsi C diganti oleh blok ini.
+
+### Handoff #1 | 2026-11-18 | (KETUA)
+
+**Tugas:** BLJ.00 (keputusan versi rilis dan `belanja.css`) dan BLJ.01 (migration tabel `belanja`, `belanja_item`, dan lima baris pengaturan). BLJ.00 selesai. BLJ.01 selesai dan terbukti. BLJ.02 baru dijelaskan dampaknya, belum ada SQL-nya.
+
+**File yang diubah:**
+
+- Baru di `supabase/migrations/`: `20261118_02_belanja.sql` dan `20261118_02_belanja_batal.sql`.
+- Baru di `supabase/templates/`: `20261118_02_belanja_cek.sql`.
+- Ketiganya sudah disimpan di repo dan migration sudah dijalankan di SQL Editor. **Status commit dan push belum dikonfirmasi.** Jangan pakai `[skip ci]` karena commit menyentuh `supabase/`.
+- Tidak ada perubahan `kedai`, `sw.js`, atau `public/`.
+
+**Keputusan baru (ketua, 18 Nov 2026):**
+
+- **Versi rilis: Opsi A.** Belanja Warung dikerjakan sebagai V1 sebelum Peluncuran. Preferensi ketua: dikerjakan sekarang, bukan saat data nyata sudah masuk.
+- Target rilis terbatas tetap **Senin 23 Nov 2026**, atas permintaan ibu ketua.
+- **`belanja.css` disetujui.**
+- **BLJ.01:** rancangan tabel disetujui ("OK" ketua). Pilihan penulis yang ikut disetujui: nama penginput disalin ke `belanja`, tanda dibatalkan satu boolean tanpa siapa dan kapan, id memakai uuid.
+- Alasan ketua di luar yang tertulis: alasan belum tercatat.
+
+**Terbukti (query cek A sampai G, 18 Nov 2026, dibaca bersama di chat):**
+
+- RLS aktif di kedua tabel, tanpa policy.
+- `service_role` hanya `INSERT, SELECT, UPDATE` (tanpa DELETE); `anon` dan `authenticated` nol.
+- Lima pagar dan dua kunci asing terpasang. Lima pengaturan bernilai 5000000, 60, 60, 50, 10. Kedua tabel kosong.
+
+**Masalah yang belum beres:**
+
+- **Belum diputuskan:** bila Belanja Warung belum selesai saat Senin 23 Nov, apakah rilis terbatas tetap jalan tanpa fitur ini atau mundur lagi. Dibahas tim Sabtu 21 Nov 2026.
+- Tiga blok catatan (`belanja.md` bagian 9, `AGENTS.md` bagian 12, `features.md` bagian 11) tentang BLJ.00 **belum dipastikan sudah ditempel**.
+- `20261118_02_belanja_batal.sql` belum pernah dicoba.
+- BLJ.02 menunggu "OK" ketua atas rancangannya. Tiga pilihan penulis yang masih bisa diubah: item Dibatalkan tidak bisa diaktifkan lagi, batas 50 item dihitung termasuk yang dibatalkan, catatan tanpa item tidak boleh dibuat. Belum diputuskan juga apakah berkas uji SQL dummy ikut dibuat.
+
+**Saran giliran berikutnya:**
+
+1. Pastikan tiga blok BLJ.00 sudah ditempel, centang BLJ.00 dan BLJ.01 di sheet, lalu commit dan push dengan pengecekan anti-nyasar.
+2. Sesi BLJ.02: lampirkan `AGENTS.md`, `belanja.md`, `database.md`, `security.md`, `20261105_akun.sql`, `20261108_order.sql`, `20261118_order_batas_harian.sql`, dan `20261118_02_belanja.sql`. Awali dengan jawaban ketua atas tiga pilihan penulis di atas, lalu SQL ditulis.
+3. Sesudah BLJ.02, urutan berikutnya BLJ.03 (aksi `kedai` di `belanja.ts`; deploy sesuai urutan aman), lalu BLJ.04 dan BLJ.05 (layar), BLJ.06 (`sw.js`, butuh "OK"), dan BLJ.07 (tes keamanan SEC baru).
+
 ---

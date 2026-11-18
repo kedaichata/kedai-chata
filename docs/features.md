@@ -226,3 +226,10 @@ Sumber: docs/belanja.md. Yang paling akhir menang.
 - **Layar per peran:** owner bertambah layar **Belanja Warung**, dibuka dari item baru di **menu hamburger** (di bawah Kotak masuk, hanya tampil untuk owner; bukan di Lainnya): akordeon catatan belanja (judul, penginput, total), rekap total per owner, input item dengan tombol Simpan, tombol Kunci. Customer dan penjaga tidak berubah.
 - **Versi:** menunggu ketua dan owner (V1 sebelum Peluncuran atau sebelum LNC.04). Belum final.
 - **Peluncuran (bagian 10):** LNC.01 mencakup data uji belanja; LNC.02 mencakup kuota; Bantuan owner ditambah entri Belanja Warung.
+
+### 2026-11-18: Versi rilis Belanja Warung diputuskan
+
+Sumber: docs/belanja.md. Keputusan ketua. Yang paling akhir menang.
+
+- Belanja Warung masuk **V1 sebelum Peluncuran** (bukan sebelum LNC.04). Target rilis terbatas tetap Senin 23 Nov 2026; strategi uji coba terbatas dibahas Sabtu 21 Nov 2026.
+- **Peluncuran (bagian 10):** LNC.01 harus mencakup data uji belanja yang dibuat saat pengerjaan. Karena fitur dikerjakan sekarang, data uji dibuat dummy dan dibersihkan di LNC.01.
