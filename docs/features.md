@@ -359,3 +359,32 @@ Sumber: sesi LNC.01c. Keputusan ketua soal pembagian sesi; alasan selebihnya bel
 4. **Reset nomor order satu kali oleh ketua di SQL Editor**, setelah tabel `order` kosong, dengan penjelasan dampak dan "OK" (blok 8 Nov 2026). Setelah itu order sungguhan mulai dari #1.
 5. Lalu `LNC.01f` (akun), dengan penonaktifan akun staf uji seperti di atas.
 6. Sebelum push: tempel `pwd`, `git remote -v`, dan email commit terakhir, baca `git status` dan `git diff --stat` sebelum commit. Commit yang memuat `supabase/` jangan pakai `[skip ci]`.
+
+### Handoff #6 | 2026-11-19 | (KETUA)
+
+**Tugas:** LNC.01e (hapus data uji order dan reset nomor order) **baru dimulai, belum selesai**. Sesi ini hanya persiapan: belum ada SQL yang dijalankan, belum ada data yang dihapus, tidak ada perubahan `public/`, `kedai`, `sw.js`, tabel, hak tabel, pengaturan, atau fungsi. Baris `LNC.01e` di sheet tetap **Belum**.
+
+**File yang diubah:** satu berkas baru, **belum di-commit**: `supabase/templates/20261119_order_data_uji_cek.sql` (blok A sampai H, semuanya `SELECT`, tanpa data nyata). Commit-nya menyentuh `supabase/`, jadi **tanpa `[skip ci]`** (`AGENTS.md` blok 12 Nov 2026). Handoff ini sendiri masuk commit yang sama.
+
+**Keputusan baru:** tidak ada. Klarifikasi yang dibahas (dari `gelar.md` GL8): **tabel `gelar` tidak perlu dihapus atau disentuh di LNC.01e.** Isinya aturan (ambang, nama, `menu_id`), bukan hasil, dan tidak merujuk ke `order` maupun akun. Gelar customer dihitung server tiap diminta dari order Selesai milik akun, jadi begitu order uji terhapus, gelar akun dummy otomatis nol. Selaras dengan Handoff #1 (aturan gelar tidak disentuh di LNC.01).
+
+**Rencana LNC.01e (belum disetujui ketua; butuh penjelasan dampak dan "OK"):**
+
+1. Jalankan blok A sampai H di SQL Editor (akun ketua, profil browser terpisah), satu blok per kali, tempel hasilnya ke chat.
+2. Bila semua terbukti data uji (blok G semuanya 0, tidak ada akun customer berprofil sejak 19 Nov), AI menjelaskan dampak per tabel, lalu "OK" ketua.
+3. Hapus dalam satu transaksi dengan pengaman jumlah (pola `20261119_inbox_foto_data_uji_hapus.sql`). Urutan: tabel anak dulu (`baca_catatan`, `catatan_order`, `riwayat_status`, `order_item`), lalu `order`, lalu `pelanggan_luar` uji. Urutan final mengikuti hasil blok B (kunci asing).
+4. **Reset nomor order satu kali oleh ketua**, setelah `order` kosong, dengan "OK" tersendiri (blok 8 Nov 2026). Setelah itu order sungguhan mulai dari #1.
+   **Masalah yang belum beres:**
+
+- **Blok A sampai H belum dijalankan.** Blok D memakai kolom `profil.dibuat_pada` yang belum dicek di migration; bila galat "column does not exist", berhenti dan laporkan, jangan diubah sendiri.
+- **Belum diputuskan: tes gelar yang tersisa (GLR.07)** dikerjakan dulu sebelum order dihapus atau tidak. Sisanya: status Diantar, Ditolak, Dibatalkan satu per satu, dan PNG unduhan dengan nama panjang (`gelar.md` Handoff #5). Sesudah order terhapus, tes itu butuh order dummy baru yang harus dibersihkan lagi. Pilihan penulis: kerjakan sekarang bila mau, tetapi **ketua yang memutuskan** (tidak ada keputusan tercatat).
+- **Cek baca-saja yang masih disarankan:** (1) gelar menu `menu-karage` dan `menu-katsu` masih terhubung ke menu aktif yang benar (menu dummy sudah diubah jadi menu asli lewat edit, Handoff #14 `menu.md`; cek memastikan tidak ada menu baru yang menggantikan); (2) ambang `gelar` masih angka asli (1, 10, 25, 50, 100 dan 20) sesudah GLR.09.
+- **Sisa di tabel `gelar`:** dua baris uji nonaktif (`tingkat-uji-enam`, `tingkat-uji-tujuh`). Tidak memengaruhi hitungan dan tidak terkait order; bukan bagian 01e. Merapikannya butuh "OK" tersendiri.
+- **LNC.01f (akun)** belum dimulai. Rencana (belum disetujui): tiga akun staf uji dinonaktifkan, bukan dihapus, disebut satu per satu; akun asli tidak boleh ada di daftar. Akun dummy di Auth (`test05`, `test06@example.com`, `+trn06`, dan akun customer dummy lain) dihapus lewat dashboard setelah data yang merujuk hilang; wajib sebelum LNC.04.
+- Data uji lain yang masih ada (Handoff #5): `langganan_push` uji, `profil` dan `alamat` customer dummy, isi uji Bantuan (BTN.04, SEC-30), dan akun dummy demo gelar.
+- Butir terbuka dari Handoff #1 sampai #5 yang tidak disebut di sini tidak berubah (antara lain kecocokan akun Auth dengan nama tampilan, Send password recovery enam akun asli, logout Supabase dan GitHub di profil browser ketua).
+  **Saran giliran berikutnya:**
+
+1. Commit berkas template baru dan handoff ini (tanpa `[skip ci]`). Sebelum push, tempel `pwd`, `git remote -v`, dan email commit terakhir; baca `git status` dan `git diff --stat` dulu.
+2. Sesi baru LNC.01e. Lampirkan `AGENTS.md`, `features.md` (dengan Handoff #6), `security.md`, `database.md`, `order.md`, `menu.md`, `gelar.md`, `pemetaan-test.md`, `20261108_order.sql`, `20261108_02_order_fungsi.sql`, dan dua template LNC.01d (`..._inbox_foto_data_uji_cek.sql`, `..._hapus.sql`). Minta AI menyebut berkas lain yang kurang di awal sesi.
+3. Mulai dari blok A sampai H, lalu putuskan soal tes gelar tersisa, lalu penjelasan dampak dan "OK".
