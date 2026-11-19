@@ -515,3 +515,56 @@ Sumber: sesi LNC.01c. Keputusan ketua soal pembagian sesi; alasan selebihnya bel
 1. Sesi baru `LNC.02` (cek kuota dan backup), lalu `LNC.03` (uji coba terbatas, jadwal Senin 23 Nov 2026). Lampirkan `AGENTS.md`, `features.md` (dengan Handoff #9), `security.md`, dan `database.md`.
 2. Sebelum `LNC.03`: kirim recovery ke lima akun asli yang belum pernah login dan pastikan masing-masing bisa masuk.
 3. Sebelum push: tempel `pwd`, `git remote -v`, dan email commit terakhir; baca `git status` dan `git diff --stat` dulu. Commit yang memuat `supabase/` jangan pakai `[skip ci]`.
+
+### Handoff #10 | 2026-11-19 | (KETUA)
+
+**Berkas tujuan:** `docs/features.md`, tempel paling bawah (setelah Handoff #9). Kalau versi lama Handoff #10 sudah ditempel, **ganti** dengan ini (bukan tambah #11). Yang paling akhir menang.
+
+**Tugas:** `LNC.02` **dicentang ketua 19 Nov 2026.** Cek kuota selesai (dasarnya data tes). Backup: ekspor 8 tabel berisi terbukti, 13 tabel kosong tercatat, panduan dan jadwal ada. **Uji restore belum dilakukan** (lihat "Masalah yang belum beres"); sesuai keputusan ketua, itu **tidak dimasukkan ke sheet** dan dicatat di sini saja.
+
+**File yang diubah:** tidak ada di repo (`public/`, `kedai`, `sw.js`, migration, tabel, fungsi SQL tidak tersentuh; tidak ada commit atau deploy). Hanya blok ini ke `docs/features.md`. Di luar repo: folder `backup-CHATA` (sejajar `CHATA`), subfolder `20261119`, berisi 8 berkas CSV. Panduan: `Panduan_Ekspor_Data_Rutin.md` (draf v2, menunggu review ketua).
+
+**Keputusan baru (ketua):**
+
+- Semua tabel harus diekspor dan dicatat dengan format lembar (Tgl, No, Nama Tabel, Jml Row di Tabel, Nama File, Catatan). Tabel 0 baris tidak bisa diekspor (dashboard menolak), cukup dicatat.
+- Lembar catatan: Google Drive ketua, file **chata**, tab **BackupChata**, dibagikan hanya ke yang mengerjakan ekspor.
+- Ekspor data dan cek pemakaian (termasuk Log Query) **seminggu sekali, hari Sabtu**, bersamaan.
+- Cara akses login dan siapa yang mengerjakan diatur ketua dan **tidak ditulis di md**.
+- Uji beberapa HP bersamaan dipindah ke LNC.03 (diukur dari pemakaian pengguna sendiri lewat halaman usage; tidak memakai password owner). Cek panggilan Kotak masuk juga dipindah ke LNC.03.
+- Restore tidak dimasukkan ke sheet (ketua: butir sheet bertambah terus dan bukan blocking; tempat restore belum ada).
+
+**Hasil cek kuota (dashboard, 19 Nov 2026, siklus 5 Nov sampai 5 Des, Free Plan):**
+
+- Edge Function 5.616 / 500.000, database 0,029 / 0,5 GB, egress 0,035 / 5 GB, storage 0 / 1 GB, pengguna aktif 16 / 50.000, Realtime 0.
+- **Log Query 165,74 / 100 GB (166%).** Dashboard menyatakan kuota Free Plan belum terlampaui dan batas log belum diberlakukan; jadwal penerapan belum jelas. Lonjakan sekitar 11 sampai 16 Nov (puncak sekitar 56 GB di 13 Nov, perkiraan dari grafik); penyebab belum diketahui. Reset 5 Des. Menghapus log tidak menurunkan angkanya.
+- Kesimpulan: cukup di free plan, **berdasarkan data tes dan asumsi** (sekitar 3.000 panggilan per hari, sekitar 18% dari batas; foto sekitar 63 MB dari asumsi 30 foto per hari), bukan data transaksi nyata. Cek ulang setelah LNC.03.
+- Project Overview: "Last backup: No backups", sesuai `AGENTS.md` bagian 4.
+
+**Hasil ekspor (19 Nov 2026):**
+
+- Cara: ⋮ pada baris tabel di daftar kiri Table Editor, lalu Export data, lalu Export table as CSV. Satu tabel per ekspor. Nama berkas `<tabel>_rows.csv`. "Delete table" tepat di bawah Export data; "Import data from CSV" ada di menu Insert (jangan disentuh). Via CLI tidak dipakai (`AGENTS.md` bagian 3 dan 8).
+- **8 tabel lulus** (jumlah baris cocok dengan "N records"): `pengaturan` 22, `staf` 6, `menu` 38, `menu_grup` 20, `grup_pilihan` 7, `opsi_pilihan` 23, `bantuan` 80, `gelar` 9. `menu` dan `bantuan` perlu hitungan CSV (python `csv`) karena teks berbaris banyak membuat `wc -l` lebih besar dari N.
+- **13 tabel kosong, tidak diekspor:** `order`, `order_item`, `riwayat_status`, `catatan_order`, `baca_catatan`, `belanja`, `belanja_item`, `profil`, `alamat`, `pelanggan_luar`, `foto_bukti`, `inbox`, `langganan_push`.
+- Cek ini membuktikan jumlah baris, **bukan isi tiap sel**.
+- Authentication, Users: 6 akun (5 owner dan 1 penjaga), cocok dengan `staf` = 6. Toolbar halaman itu tidak menampilkan tombol ekspor; email akun hanya hidup di Authentication. Dicatat sebagai risiko, ditinjau lagi setelah customer asli terdaftar.
+
+**Masalah yang belum beres:**
+
+- **Restore backup belum pernah diuji.** Ekspor terbukti utuh, **bisa tidaknya dipulihkan belum terbukti.** Syarat dan risiko (perkiraan, belum diuji):
+  - Harus di **project kosong terpisah**, tidak pernah di `kedaichata` (impor CSV ke production berisiko menimpa atau menambah data). Tempat itu **belum ada**. `AGENTS.md` bagian 4 mencatat batas 2 project aktif per organisasi; apakah membuat project kedua boleh belum dibahas di dokumen mana pun, jadi perlu keputusan ketua.
+  - CSV hanya isi tabel; project kosong harus diberi skema dari `supabase/` dulu. Prosedur menerapkannya belum ditemukan di dokumen.
+  - `staf` merujuk ke ID akun di Authentication; akun baru di project lain bisa punya ID berbeda, sehingga data `staf` hasil impor bisa tidak nyambung.
+  - Kesetiaan tipe kolom (tanggal, ID, teks panjang) setelah impor dari CSV belum terbukti.
+  - **Usulan** (bukan aturan): uji restore sebelum LNC.04 (buka untuk semua), karena di LNC.03 data masih sedikit dan WA masih jadi cadangan. Keputusan waktunya di ketua.
+- Pengingat kalender Sabtu: ketua menyatakan sudah dipasang. Template hapus inbox (INB.06 tahap 2) masih tercatat terbuka di Handoff #9; belum ada kabar beres.
+- Blok catatan susulan `AGENTS.md` bagian 4 (hasil cek kuota dan Log Query) **belum dibuat**; butir sheet "Pantau kuota Log Query" **tidak ditambahkan** (pengecekannya sudah masuk jadwal Sabtu di panduan). Menunggu ketua bila blok catatan mau dibuat.
+- Status `Panduan_Ekspor_Data_Rutin.md` di Peta Dokumentasi (dokumen resmi atau berkas kerja) belum diputuskan.
+- Logout Supabase dan penutupan profil browser terpisah sudah diingatkan; belum dikonfirmasi.
+- Butir terbuka Handoff #1 sampai #9 yang tidak disebut di sini tidak berubah (antara lain recovery lima akun asli yang belum pernah login).
+
+**Saran giliran berikutnya:**
+
+1. LNC.03 (Senin 23 Nov): setelah pemakaian nyata beberapa hari, cek halaman usage (Edge Function per hari terhadap sekitar 16.600 per hari, dan panggilan Kotak masuk) dan perbarui kesimpulan kuota dengan data nyata.
+2. Sabtu pertama: ekspor rutin sesuai panduan; isi lembar BackupChata; cek tabel yang mulai terisi (bandingkan N records dengan hasil cek).
+3. Sebelum LNC.04: rancang uji restore di project kosong (keputusan project kedua, skema dari `supabase/`, pemetaan ID akun staf), dan catat hasilnya sebagai handoff.
+4. Cek anti-nyasar sebelum push (`pwd`, `git remote -v`, email commit terakhir), bila ada commit.
