@@ -705,3 +705,13 @@ Keputusan ketua (sesi lanjutan TRN.03). Berkas tujuan: docs/akun.md bagian 9. Me
 1. BTO.01: penjelasan dampak ke ketua (ubah `order_buat` dan tambah kunci pengaturan batas order harian). Lampirkan `AGENTS.md`, `order.md` (blok 18 Nov), dan `database.md`. Ringkasan untuk ketua dibuat lewat WA (aturan 12).
 2. Butir baru untuk sheet (judul pendek): "Bersihkan akun dummy test05, test06, trn06 sebelum LNC.04".
 3. Logout dan tutup profil browser terpisah bila dashboard Supabase atau Cloudflare sempat dibuka.
+
+### 2026-11-19: Akun staf asli dibuat, owner pertama jadi tes email
+
+Keputusan ketua (19 Nov 2026). Alasan yang tercatat: mengurangi akun dummy yang harus dibersihkan. Alasan lain belum tercatat. Melengkapi blok 17 Nov; yang paling akhir menang.
+
+- **LNC.01a:** tes email recovery ke alias `+` dilakukan lewat **akun owner asli pertama**, bukan alias uji. Hasil: Inbox, bukan Spam; link salin-tempel membuka layar Buat password baru.
+- **Pola akun asli tetap** seperti blok 17 Nov (alias `+inisial` per owner, satu akun penjaga). Template tambah staf dan template nomor WA (`20261115_03_staf_nomor_wa_isi.sql`) dipakai dengan isian di SQL Editor saja.
+- **Daftar `VALUES` di template nomor WA** berisi nama akun uji. Untuk akun asli, ganti isinya di editor dan jangan simpan balik ke repo.
+- **Akun uji (3 baris di `staf`)** dinonaktifkan di LNC.01 berdasarkan daftar yang disebut satu per satu. Akun asli tidak boleh ada di daftar itu.
+- **Recovery** dikirim saat orangnya siap, bukan sekaligus, karena link sekali pakai.

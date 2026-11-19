@@ -233,3 +233,34 @@ Sumber: docs/belanja.md. Keputusan ketua. Yang paling akhir menang.
 
 - Belanja Warung masuk **V1 sebelum Peluncuran** (bukan sebelum LNC.04). Target rilis terbatas tetap Senin 23 Nov 2026; strategi uji coba terbatas dibahas Sabtu 21 Nov 2026.
 - **Peluncuran (bagian 10):** LNC.01 harus mencakup data uji belanja yang dibuat saat pengerjaan. Karena fitur dikerjakan sekarang, data uji dibuat dummy dan dibersihkan di LNC.01.
+
+### Handoff #3 | 2026-11-19 | ketua
+
+**Tugas:** LNC.01a (tes email ke alias +) dan LNC.01b (akun staf asli dan nomor WA). Keduanya selesai. Tidak ada berkas aplikasi, migration, atau fungsi yang diubah, tidak ada deploy.
+
+**File yang diubah:** tidak ada. Berkas yang dipakai apa adanya: `supabase/templates/20261106_staf_tambah.sql`, `20261106_staf_cek.sql`, `20261115_03_staf_nomor_wa_isi.sql`. Isian (ID, nama, nomor) hanya diisi di SQL Editor dan tidak disimpan ke repo.
+
+**Yang terbukti (bukti di chat, tidak disimpan):**
+
+- **LNC.01a:** tes dilakukan lewat akun owner asli pertama (bukan akun `+tes`). Email recovery dari Supabase ke alias `+` masuk **Inbox** (bukan Spam), sekitar 3 menit setelah akun dibuat. Link disalin ke tab baru, layar Buat password baru terbuka. Password tidak disimpan, link dianggap habis (sekali pakai).
+- **LNC.01b:** template tambah staf berhasil tanpa galat. Tabel `staf` kini berisi **5 owner asli dan 1 penjaga asli**, ditambah 3 akun uji. Semua `aktif = true` dan `bernomor = true` (hasil template nomor WA). Query cek staf: tidak ada staf yang punya profil customer, RLS aktif tanpa policy, `service_role` hanya SELECT, `anon` dan `authenticated` tanpa hak.
+- **`push_maks_perangkat` = 5 per akun** (notifikasi.md NT5, Handoff #3): dikonfirmasi tidak berebut antar akun. Tidak ada perubahan pengaturan.
+
+**Keputusan baru (ketua, lewat chat 19 Nov 2026):**
+
+- Akun owner asli pertama dipakai sebagai tes LNC.01a, supaya tidak menambah akun dummy yang harus dibersihkan. Menyimpang dari keputusan 17 Nov (tes dengan alias uji dulu, baru akun asli).
+- Empat owner lain dibuat sekaligus (Add user empat kali, lalu template tambah staf dan template nomor WA).
+- Penjaga asli satu akun, sesuai keputusan 17 Nov.
+
+**Pertentangan dengan catatan lama:** bagian "tes dulu, baru akun asli" di Handoff #1 (17 Nov) tidak berlaku untuk akun pertama. Yang paling akhir menang.
+
+**Masalah yang belum beres:**
+
+- **Send password recovery untuk keenam akun asli belum dikirim.** Dikirim satu per satu saat orangnya siap membuka email (cek Spam, salin link ke tab baru). Link tes LNC.01a sudah habis, jadi akun pertama juga perlu recovery baru.
+- `bernomor = true` hanya membuktikan kolom terisi, bukan nomor itu benar. Kebenarannya dibuktikan lewat WAG.06a.
+- Kecocokan tiap akun Auth dengan nama tampilan belum tercatat dicek.
+- Akun dummy di Authentication (`test05`, `test06@example.com`, `+trn06`) belum dibersihkan; wajib sebelum LNC.04, butuh "OK" ketua.
+- **LNC.01 (P0)** belum dimulai.
+- Risiko diterima: satu penjaga berarti riwayat status dan pengunggah foto tidak membedakan orang bila ada pengganti.
+
+**Saran giliran berikutnya:** LNC.01. Ekspor CSV dulu (adik ketua, di luar repo). Mulai dengan query baca-saja untuk mendata data uji. Daftar akun uji yang dinonaktifkan hanya tiga, disebut satu per satu, dan akun asli tidak boleh ada di daftar. Lampirkan `AGENTS.md`, `features.md`, `security.md`, `database.md`, `order.md`, `menu.md`, `belanja.md`, `pemetaan-test.md`, dan semua migration. Penghapusan data butuh penjelasan dampak dan "OK" ketua.
