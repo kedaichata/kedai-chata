@@ -273,3 +273,42 @@ Sumber: sesi LNC.01c. Keputusan ketua soal pembagian sesi; alasan selebihnya bel
 - **LNC.01c selesai 19 Nov 2026:** seluruh data uji Belanja (10 catatan, 69 item) dihapus satu kali oleh ketua; tabel kini kosong. Rincian ada di blok `docs/belanja.md` bertanggal sama.
 - **Ekspor CSV dilewati untuk Belanja** untuk data Belanja karena isinya data uji yang memang tidak dipakai lagi. Ini menyimpang dari saran Handoff #9 dan catatan baris LNC.01 di sheet (“ekspor dulu”); untuk Belanja, blok ini yang menang.
 - **Sisa LNC.01:** `LNC.01d`, `LNC.01e`, `LNC.01f`. Akun uji (tiga akun staf uji dan akun dummy di Auth) baru disentuh di `LNC.01f`, setelah data yang merujuk ke mereka hilang.
+
+### Handoff #4 | 2026-11-19 | (KETUA)
+
+**Tugas:** LNC.01c (hapus data uji Belanja). Selesai, terbukti, sudah di-push, dan sudah dicentang di sheet (19 Nov 2026). Baris induk `LNC.01` tetap Belum.
+
+**File yang diubah (commit `7cfb66e`, tanpa `[skip ci]`, sudah di-push ke `main`, `a144d2f..7cfb66e`):**
+
+- Baru di `supabase/templates/`: `20261119_belanja_data_uji_cek.sql` (empat query baca-saja) dan `20261119_belanja_data_uji_hapus.sql` (satu transaksi dengan pengaman jumlah dan penginput). Isi uji sudah terhapus, jadi pengamannya tidak lolos bila dijalankan ulang.
+- Diubah (hanya ditambah, 0 baris lama berubah): `AGENTS.md` (blok data uji tanpa ekspor CSV), `docs/belanja.md` (blok pembersihan data uji Belanja), `docs/features.md` (blok pembagian LNC.01).
+- Tidak ada perubahan `public/`, `kedai`, `sw.js`, tabel, hak tabel, pengaturan, atau fungsi SQL. Cek anti-nyasar lolos (folder, remote, email noreply, kunci SSH khusus proyek).
+
+**Keputusan baru (ketua, 19 Nov 2026):**
+
+- **Data uji murni tidak diekspor CSV sebelum dihapus** (alasan ketua: data uji dibuat untuk dibuang, tidak ada gunanya disimpan). Berlaku umum, dengan syarat isinya terbukti data uji lewat query baca-saja. AI tidak mengungkit CSV lagi untuk data uji. Rincian di blok `AGENTS.md` bertanggal sama. Menimpa saran Handoff #9 (`belanja.md`) dan catatan baris `LNC.01` di sheet.
+- **LNC.01 dipecah di sheet** (ID dirapikan setelah koreksi bentrok dengan `LNC.01a` dan `LNC.01b` yang sudah Selesai): `LNC.01c` Belanja, `LNC.01d` inbox dan foto, `LNC.01e` order dan reset nomor order, `LNC.01f` akun. Urutan mengikuti kunci asing; jangan ditukar.
+- Ketua mengonfirmasi "Bu Owner 2" dan "Owner Uji" adalah akun uji dan memberi "OK" penghapusan.
+- Tidak ada pertentangan lain dengan blok lama.
+
+**Terbukti (diperiksa di chat, tidak disimpan):**
+
+- Sebelum hapus: `belanja` 10 dan `belanja_item` 69 (angka cocok antar query), hanya dua penginput uji, semua dibuat 18 Nov 15.49 sampai 19 Nov 04.25 WIB.
+- Sesudah hapus: kedua tabel 0 (screenshot ketua). Hapus berjalan dalam satu transaksi dan tersimpan (query cek jalan sesudah `COMMIT`).
+
+**Masalah yang belum beres:**
+
+- **`LNC.01d`, `LNC.01e`, `LNC.01f` belum dimulai** (semua P0, High-Risk, butuh penjelasan dampak dan "OK" ketua). Baris induk `LNC.01` dicentang setelah ketiganya selesai.
+- **Data uji lain masih ada:** isi `inbox`, baris `foto_bukti` dan berkas di bucket `foto-bukti`, `order` beserta `order_item`, `riwayat_status`, `catatan_order`, `baca_catatan`, `pelanggan_luar` uji, `langganan_push` uji, `profil` dan `alamat` customer dummy, isi uji Bantuan (BTN.04, SEC-30), akun dummy demo gelar. Nomor order belum direset.
+- **Akun uji belum disentuh.** Rencana (belum disetujui ketua): tiga akun staf uji dinonaktifkan, bukan dihapus; daftar disebut satu per satu dan akun asli tidak boleh ada di dalamnya. Akun dummy di Auth (`test05`, `test06@example.com`, `+trn06`) dihapus lewat dashboard setelah data yang merujuk hilang; wajib sebelum LNC.04.
+- Sebelum menghapus akun di Auth, cek dulu tabel yang merujuk ke akun itu (misalnya `inbox.penerima`, `langganan_push.akun`, `belanja.penginput`, `foto_bukti.diunggah_oleh`).
+- **Mulai LNC.01d, cek dulu apakah ada data asli yang tercampur** (akun asli dibuat 19 Nov; tes dengan orang sungguhan, misalnya uji coba sebelumnya). Ragu: anggap data asli dan tanyakan ke ketua.
+- Belum terbukti dari fitur Belanja: `_batal.sql` BLJ, dua tab bersamaan, `akun_nonaktif`, sesi habis saat Simpan, iPhone, layar sangat sempit. Tes berikutnya memakai catatan baru karena tabel kini kosong.
+- Blok `belanja.md` dan `features.md` bertanggal 19 Nov masih memuat kalimat "alasan belum tercatat" soal CSV; blok `AGENTS.md` yang paling akhir menang. Tidak perlu dirapikan.
+
+**Saran giliran berikutnya:**
+
+1. Sesi `LNC.01d`. Lampirkan `AGENTS.md`, `features.md`, `security.md`, `database.md`, `inbox.md`, `foto-bukti.md`, `20261111_05_inbox.sql`, `20261111_foto_bukti.sql`, dan template pembersih inbox INB.06 bila ada di `supabase/templates/`.
+2. Mulai dengan query baca-saja untuk mendata `inbox` dan `foto_bukti` (jumlah, pemilik, tanggal), lalu penjelasan dampak dan "OK". Tabel anak dulu: `inbox` dan `foto_bukti` sebelum `order`. Berkas foto di Storage dihapus lewat dashboard setelah barisnya beres, atau dibiarkan disapu `bersihkan` bila lewat 14 hari (keputusan ketua).
+3. Lalu `LNC.01e` (order dan reset nomor order, satu kali oleh ketua), lalu `LNC.01f` (akun).
+4. Commit yang memuat berkas `supabase/` jangan pakai `[skip ci]`; commit yang hanya docs boleh. Sebelum push, tempel `pwd`, `git remote -v`, dan email commit terakhir, dan baca `git status` serta `git diff --stat` sebelum commit.
