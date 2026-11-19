@@ -423,4 +423,12 @@ Keputusan ketua (sesi BLJ.08, 19 Nov 2026). Sumber: docs/belanja.md. Melengkapi 
 - **Sudah diimpor dan tampil** di layar Bantuan akun owner (screenshot ketua, 19 Nov). Seperti isi lain, SQL impor tidak disimpan di repo (BT7); lembar adalah sumber dan cadangannya. Belum dicek dari akun customer dan penjaga bahwa bagian ini tidak tampil.
 - **Tidak ada perubahan skema, kode, atau deploy.**
 
+### 2026-11-19: `penjaga-07` dibiarkan aktif, baris uji Bantuan terbukti nonaktif
+
+Keputusan ketua (19 Nov 2026, sesi penutupan LNC.01). Alasan ketua: tidak dipermasalahkan, dan tidak mau menambah butir baru di sheet. Alasan selebihnya belum tercatat. Yang paling akhir menang.
+
+- **`penjaga-07` dibiarkan `aktif = ya`**, berdampingan dengan `notif-06`. Ini **menimpa** Handoff #6 (18 Nov 2026) yang menulis `penjaga-07` "dinonaktifkan saat pembersihan data" dan butir sheet "Nonaktifkan penjaga-07 dan baris uji bantuan". Bagian `penjaga-07` dari butir itu **tidak dikerjakan dan tidak dijadikan butir sheet**. Isi `notif-06` belum dibandingkan dengan `penjaga-07`, jadi belum diketahui apakah ada isi yang tumpang tindih atau usang.
+- **Baris uji Bantuan terbukti nonaktif** lewat query baca-saja (19 Nov 2026): `uji-baris`, `uji-html`, `uji-kutip`, dan `uji-nonaktif` semuanya `aktif = false`, dan tidak ada baris aktif lain yang mirip uji. Bagian butir Handoff #6 tentang baris uji ini sudah terpenuhi. Bukti diperiksa di chat dan tidak disimpan (`AGENTS.md` bagian 10).
+- Tidak ada perubahan skema, kode, data, atau deploy. Lembar `bantuan-isi` tidak diubah.
+
 ---

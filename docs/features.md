@@ -479,3 +479,39 @@ Sumber: sesi LNC.01c. Keputusan ketua soal pembagian sesi; alasan selebihnya bel
 2. Kirim recovery ke lima akun asli yang belum pernah login; pastikan masing-masing bisa masuk dengan email dan password.
 3. Lanjut `LNC.02` (cek kuota dan backup), lalu `LNC.03` (uji coba terbatas, jadwal Senin 23 Nov 2026). Lampirkan `AGENTS.md`, `features.md` (dengan Handoff #8), `security.md`, dan `database.md`.
 4. Sebelum push: tempel `pwd`, `git remote -v`, dan email commit terakhir; baca `git status` dan `git diff --stat` sebelum commit. Commit yang memuat `supabase/` jangan pakai `[skip ci]`.
+
+### Handoff #9 | 2026-11-19 | (KETUA)
+
+**Berkas tujuan:** `docs/features.md`, tempel paling bawah (setelah Handoff #8). Yang paling akhir menang.
+
+**Tugas:** penutupan `LNC.01` (cek isi uji Bantuan, sisa dari Handoff #8). **Selesai dan terbukti** (19 Nov 2026). Baris induk `LNC.01` **dicentang ketua di sheet** (Selesai, 19 Nov 2026), bersama `LNC.01c` sampai `LNC.01f`. Pelurusan: Handoff #8 menulis baris induk "sudah dicentang"; faktanya sempat dilepas sampai isi uji Bantuan terbukti, lalu dicentang ulang hari ini. Kondisi akhir: Selesai.
+
+**File yang diubah (semua hanya ditambah, 0 baris lama berubah):**
+
+- Baru: `supabase/templates/20261119_bantuan_data_uji_cek.sql` (satu query baca-saja, kolom `isi` tidak ditampilkan).
+- Diubah: `docs/bantuan.md` (satu blok catatan susulan, 8 baris), `docs/features.md` (blok ini).
+- Satu commit, **tanpa `[skip ci]`** karena menyentuh `supabase/` (`AGENTS.md` blok 12 Nov 2026). Saat blok ini ditulis commit belum dibuat.
+- Tidak ada perubahan `public/`, `kedai`, `sw.js`, migration, tabel, hak tabel, pengaturan, atau fungsi SQL. Tidak ada deploy. Lembar `bantuan-isi` tidak diubah. Cek anti-nyasar sebelum push lolos (folder `CHATA`, remote `kedaichata/kedai-chata`, email noreply akun proyek).
+
+**Keputusan baru (ketua, 19 Nov 2026):**
+
+- **`penjaga-07` (Bantuan) dibiarkan `aktif = ya`**, berdampingan dengan `notif-06`. Ini **menimpa** Handoff #6 di `docs/bantuan.md` ("dinonaktifkan saat pembersihan data") dan **tidak dijadikan butir sheet**. Alasan ketua: tidak dipermasalahkan dan tidak mau menambah butir di sheet. Alasan selebihnya belum tercatat. Isi `notif-06` belum dibandingkan dengan `penjaga-07`. Rincian di blok `docs/bantuan.md` bertanggal sama.
+
+**Terbukti (bukti diperiksa di chat, tidak disimpan):**
+
+- Tabel `bantuan`: total 80 baris, aktif 74, nonaktif 6. Empat baris uji (`uji-baris`, `uji-html`, `uji-kutip`, `uji-nonaktif`) semuanya `aktif = false`. Tidak ada baris aktif lain yang mirip uji (nama, judul, atau isi). `notif-06` aktif, `penjaga-07` aktif (sesuai keputusan di atas).
+- Enam baris nonaktif cocok dengan hitungan: empat baris uji ditambah `memesan-10` dan `owner-12` (batas order harian, nonaktif sengaja, `bantuan.md` Handoff #6). Dua baris terakhir tidak ditampilkan satu per satu oleh query.
+- Syarat `LNC.01` lain sudah terbukti di Handoff #4, #5, #7, dan #8 (Belanja, inbox dan foto, order dan reset nomor, akun uji).
+
+**Masalah yang belum beres (tidak berubah dari Handoff #8, kecuali yang disebut):**
+
+- Butir "isi uji Bantuan belum dibuktikan" di Handoff #8 **terjawab dan tidak lagi terbuka**.
+- Dua baris uji nonaktif di tabel `gelar` (`tingkat-uji-enam`, `tingkat-uji-tujuh`): tidak memengaruhi hitungan; merapikannya butuh "OK" tersendiri.
+- Akun asli: empat owner dan satu penjaga belum pernah login; kirim recovery satu per satu saat orangnya siap membuka email (cek Spam, salin link ke tab baru). Hanya akun ibu ketua yang terbukti bisa login.
+- Butir terbuka Handoff #1 sampai #8 yang tidak disebut di sini tidak berubah (antara lain template hapus inbox INB.06 tahap 2, berkas foto di Storage, blok catatan opsional di `menu.md` dan `database.md`, logout Supabase dan GitHub di profil browser ketua).
+
+**Saran giliran berikutnya:**
+
+1. Sesi baru `LNC.02` (cek kuota dan backup), lalu `LNC.03` (uji coba terbatas, jadwal Senin 23 Nov 2026). Lampirkan `AGENTS.md`, `features.md` (dengan Handoff #9), `security.md`, dan `database.md`.
+2. Sebelum `LNC.03`: kirim recovery ke lima akun asli yang belum pernah login dan pastikan masing-masing bisa masuk.
+3. Sebelum push: tempel `pwd`, `git remote -v`, dan email commit terakhir; baca `git status` dan `git diff --stat` dulu. Commit yang memuat `supabase/` jangan pakai `[skip ci]`.
