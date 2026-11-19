@@ -427,3 +427,55 @@ Sumber: sesi LNC.01c. Keputusan ketua soal pembagian sesi; alasan selebihnya bel
 2. Mulai dengan query **baca-saja**: semua tabel yang merujuk ke akun (kunci asing ke `profil` dan `staf`), daftar akun uji dan akun asli (ID awal saja), lalu penjelasan dampak dan "OK" ketua.
 3. Urutan: data customer dummy dulu (`langganan_push`, `alamat`, `profil`), penonaktifan tiga akun staf uji, baru penghapusan akun dummy di Auth lewat dashboard. Wajib selesai sebelum LNC.04.
 4. Sebelum push: tempel `pwd`, `git remote -v`, dan email commit terakhir; baca `git status` dan `git diff --stat` sebelum commit. Commit yang memuat `supabase/` jangan pakai `[skip ci]`.
+
+### Handoff #8 | 2026-11-19 | (KETUA)
+
+**Berkas tujuan:** `docs/features.md`, tempel paling bawah (setelah Handoff #7). Yang paling akhir menang.
+
+**Tugas:** LNC.01f (hapus data uji akun). **Selesai dan terbukti** (19 Nov 2026), dicentang di sheet bersama LNC.01c sampai LNC.01e. Baris induk `LNC.01` sudah dicentang ketua di sheet, **tetapi isi uji Bantuan (BTN.04, SEC-30) belum dibuktikan lewat query di sesi ini** (lihat "Belum beres"). Tidak ada perubahan `public/`, `kedai`, `sw.js`, migration, tabel, hak tabel, pengaturan, atau fungsi SQL. Tidak ada deploy.
+
+**File yang diubah (semua baru, tidak ada yang lama disentuh):**
+
+- `supabase/templates/20261119_akun_data_uji_cek.sql` (blok A sampai F, baca-saja; hasil hanya memuat 8 karakter awal ID, nama staf hanya untuk akun sebelum 19 Nov).
+- `supabase/templates/20261119_akun_data_uji_hapus.sql` (Langkah 1 hapus `langganan_push`, `alamat`, `profil`; Langkah 2 nonaktifkan tiga staf uji; Langkah 3 daftar akun Auth untuk dihapus manual; cek akhir). Memuat ID awal tiga akun uji yang kini sudah dihapus; tidak ada ID akun asli.
+- `supabase/templates/20261119_menu_pindah_pencatat.sql` (pindah `diubah_oleh` ke satu akun owner asli). **Versi di repo tetap berisi `GANTI_8_KARAKTER_AWAL`**; ID akun asli hanya diketik di SQL Editor dan tidak disimpan.
+- `supabase/templates/20261119_staf_uji_hapus.sql` (hapus tuntas tiga baris `staf` uji, dengan pengaman 12 tabel).
+- `docs/features.md`: blok ini.
+- Status commit: belum untuk keempat template dan blok ini. Semuanya masuk satu commit, **tanpa `[skip ci]`** karena menyentuh `supabase/` (`AGENTS.md` blok 12 Nov 2026).
+
+**Keputusan baru (ketua, 19 Nov 2026; alasan selebihnya belum tercatat):**
+
+- **Pencatat menu dipindah ke akun asli ibu ketua.** `diubah_oleh` di `menu` (38 baris), `grup_pilihan` (7), dan `menu_grup` (20) dipindah dari dua akun owner uji ke satu akun owner asli, karena input menu memang dikerjakan ibu ketua, hanya lewat akun uji. Hanya kolom `diubah_oleh` yang berubah; `diubah_pada` dan isi menu tidak disentuh (tanpa trigger).
+- **Tiga akun staf uji dihapus tuntas, bukan dinonaktifkan.** Ini **menimpa** rencana "dinonaktifkan, bukan dihapus" di blok 17 Nov dan Handoff #1, #3, #7. Alasan rencana lama (menjaga jejak `diubah_oleh`) gugur setelah pencatat dipindah dan tidak ada lagi baris yang merujuk ke ketiganya. Urutan wajib: baris `staf` dihapus lebih dulu lewat SQL Editor, baru akun Auth lewat dashboard (Auth menolak selama `staf_id_fkey` masih merujuk).
+- Pilihan penulis: tiga `langganan_push` milik staf uji (semuanya nonaktif) ikut dihapus bersama tujuh milik customer dummy.
+- Langkah menonaktifkan staf uji dijalankan hanya setelah akun asli ibu ketua terbukti bisa login, supaya pengelolaan menu tidak terputus.
+- Mengikuti blok `AGENTS.md` 19 Nov 2026: data uji tidak diekspor CSV; syarat satu-satunya terbukti data uji lewat query baca-saja. Empat akun gmail non-staf dikonfirmasi ketua sebagai kotak uji tim sebelum dihapus. Ketua juga menyatakan belum ada customer asli dan belum ada transaksi asli.
+
+**Terbukti (bukti diperiksa di chat, tidak disimpan):**
+
+- **Sebelum:** `auth.users` 20 (9 staf, 9 profil, 2 tanpa baris), `staf` 9 (3 dibuat sebelum 19 Nov, 6 sejak 19 Nov: 5 owner dan 1 penjaga, semua aktif), `profil` 9, `alamat` 16, `langganan_push` 10 (semuanya nonaktif; 7 milik profil, 3 milik staf uji). Order, inbox, belanja, `pelanggan_luar`, `foto_bukti`, dan tabel turunan order semuanya 0. Tidak ada akun non-staf dibuat atau login sejak 19 Nov. Tidak ada staf asli yang merujuk data lain (semua 0).
+- **Jejak menu:** semua `diubah_oleh` hanya dari dua akun owner uji (menu 11 dan 27, `grup_pilihan` 3 dan 4, `menu_grup` 4 dan 16), semuanya staf, tidak ada customer. Peta kunci asing: `menu` dan lima tabel lain merujuk `staf`/`profil`/`auth.users` tanpa `ON DELETE`, sehingga penghapusan akun diblokir selama masih dirujuk. `grup_pilihan.diubah_oleh` dan `menu_grup.diubah_oleh` **tidak punya kunci asing**.
+- **Setelah Langkah 1 dan 2:** `profil` 0, `alamat` 0, `langganan_push` 0, `staf` 9 (aktif 6, nonaktif 3), `menu` 38, `grup_pilihan` 7, `menu_grup` 20.
+- **Setelah Langkah 3 (11 akun Auth dihapus: 7 berdomain `example.com`, 4 gmail) dan pemindahan pencatat:** ketiga akun uji 0 di tiga tabel, satu akun asli memegang 38, 7, dan 20.
+- **Akhir (sesudah hapus tuntas staf uji dan tiga akun Auth):** `auth.users` 6, non-staf 0, `staf` 6 (aktif 6, nonaktif 0), `profil`, `alamat`, `langganan_push` 0, `menu` 38, `grup_pilihan` 7, `menu_grup` 20, dan satu akun asli memegang 38 menu.
+
+**Bahan belajar:**
+
+- Template pindah pencatat versi pertama memuat sintaks `IS DISTINCT FROM ALL (...)` yang tidak valid di Postgres. Galat muncul saat SQL dibaca, sebelum berjalan, jadi tidak ada data yang berubah; diperbaiki menjadi `IS NULL OR NOT IN`. Pelajaran: template SQL baru dicoba dulu sebagai blok yang tidak merusak, dan galat sintaks aman karena tidak menjalankan apa pun.
+- Hasil query tanpa nama kolom dan email penuh (hanya ID awal, domain, dan penanda `+`) cukup untuk mencocokkan akun uji dan asli tanpa data pribadi di chat.
+
+**Belum beres:**
+
+- **Isi uji Bantuan (BTN.04, SEC-30):** belum dibuktikan sudah `aktif = tidak` (catatan baris `LNC.01` di sheet). Perlu query baca-saja (cek nama kolom tabel `bantuan` di migration BTN.01 dulu). Baris induk `LNC.01` sudah dicentang; bila ternyata masih aktif, bereskan sebelum LNC.04.
+- **Dua baris uji nonaktif di tabel `gelar`** (`tingkat-uji-enam`, `tingkat-uji-tujuh`): tidak memengaruhi hitungan; merapikannya butuh "OK" tersendiri.
+- **Akun asli:** empat owner dan satu penjaga belum pernah login; kirim recovery satu per satu saat orangnya siap membuka email (cek Spam, salin link ke tab baru). Hanya akun ibu ketua yang terbukti bisa login.
+- Teks catatan baris `LNC.01` di sheet masih menulis "akun staf uji dinonaktifkan, bukan dihapus" dan "akun dummy di Auth dihapus lewat dashboard"; teks sheet tidak diubah, blok ini yang menang.
+- Blok catatan pendek di `docs/menu.md` dan `docs/database.md` (pencatat menu kini akun asli; staf uji sudah dihapus) belum ditulis. Opsional; bila tidak ditulis, blok ini cukup sebagai rujukan.
+- Butir terbuka Handoff #1 sampai #7 yang tidak disebut di sini tidak berubah (antara lain template hapus inbox INB.06 tahap 2, berkas foto di Storage, logout Supabase dan GitHub di profil browser ketua).
+
+**Saran giliran berikutnya:**
+
+1. Cek isi uji Bantuan (query baca-saja) lalu tandai `aktif = tidak` bila perlu, dengan "OK" ketua.
+2. Kirim recovery ke lima akun asli yang belum pernah login; pastikan masing-masing bisa masuk dengan email dan password.
+3. Lanjut `LNC.02` (cek kuota dan backup), lalu `LNC.03` (uji coba terbatas, jadwal Senin 23 Nov 2026). Lampirkan `AGENTS.md`, `features.md` (dengan Handoff #8), `security.md`, dan `database.md`.
+4. Sebelum push: tempel `pwd`, `git remote -v`, dan email commit terakhir; baca `git status` dan `git diff --stat` sebelum commit. Commit yang memuat `supabase/` jangan pakai `[skip ci]`.
