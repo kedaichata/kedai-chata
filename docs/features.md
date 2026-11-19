@@ -388,3 +388,42 @@ Sumber: sesi LNC.01c. Keputusan ketua soal pembagian sesi; alasan selebihnya bel
 1. Commit berkas template baru dan handoff ini (tanpa `[skip ci]`). Sebelum push, tempel `pwd`, `git remote -v`, dan email commit terakhir; baca `git status` dan `git diff --stat` dulu.
 2. Sesi baru LNC.01e. Lampirkan `AGENTS.md`, `features.md` (dengan Handoff #6), `security.md`, `database.md`, `order.md`, `menu.md`, `gelar.md`, `pemetaan-test.md`, `20261108_order.sql`, `20261108_02_order_fungsi.sql`, dan dua template LNC.01d (`..._inbox_foto_data_uji_cek.sql`, `..._hapus.sql`). Minta AI menyebut berkas lain yang kurang di awal sesi.
 3. Mulai dari blok A sampai H, lalu putuskan soal tes gelar tersisa, lalu penjelasan dampak dan "OK".
+
+### Handoff #7 | 2026-11-19 | (KETUA)
+
+**Berkas tujuan:** `docs/features.md`, tempel paling bawah (setelah Handoff #6). Yang paling akhir menang.
+
+**Tugas:** LNC.01e (hapus data uji order dan reset nomor order). **Selesai dan terbukti** (19 Nov 2026). Silakan dicentang di sheet. Baris induk `LNC.01` tetap **Belum**; `LNC.01f` belum dimulai.
+
+**File yang diubah (semua baru, tidak ada yang lama disentuh):**
+
+- `supabase/templates/20261119_order_data_uji_cek.sql` (blok A sampai H, baca-saja; sudah ter-push, commit `a509136`).
+- `supabase/templates/20261119_order_data_uji_hapus.sql` (satu blok `DO` dengan pengaman jumlah, tanpa ID akun).
+- `supabase/templates/20261119_order_reset_nomor.sql` (reset `order_nomor_seq`, dengan pengaman tabel kosong).
+- `docs/features.md`: blok ini.
+- Tidak ada perubahan `public/`, `kedai`, `sw.js`, tabel, hak tabel, pengaturan, atau fungsi SQL. Tidak ada deploy.
+- Status commit: belum untuk dua berkas hapus dan reset serta blok ini. Ketiganya masuk satu commit, **tanpa `[skip ci]`** karena menyentuh `supabase/` (`AGENTS.md` blok 12 Nov 2026).
+
+**Keputusan baru:** tidak ada. "OK" ketua diberikan di chat untuk penghapusan dan, terpisah, untuk reset nomor (blok 8 Nov 2026). Mengikuti blok `AGENTS.md` 19 Nov 2026: data uji tidak diekspor CSV; syarat satu-satunya terbukti data uji lewat query baca-saja. Pilihan penulis (alasan belum tercatat dari ketua): nomor urut internal `catatan_order`, `riwayat_status`, dan `inbox` tidak direset (tidak pernah tampil ke pemakai, sama seperti keputusan inbox di Handoff #5). Tes gelar tidak dikerjakan sebelum order dihapus; GLR.07 sudah Selesai di sheet.
+
+**Terbukti (bukti diperiksa di chat, tidak disimpan):**
+
+- Sebelum hapus: `order` 138 (nomor 1 sampai 138, dibuat 8 sampai 18 Nov, **0 sejak 19 Nov**), `order_item` 166, `riwayat_status` 360, `catatan_order` 61, `baca_catatan` 42, `pelanggan_luar` 11, `inbox` 0, `foto_bukti` 0. Lima akun pemesan semuanya customer biasa (bukan staf), profil dibuat 6 dan 18 Nov. Order wakil 23 (cocok antar blok E dan F), dibuat dua owner uji (staf dibuat 6 dan 12 Nov). Blok G (jejak staf asli dan aktivitas sejak 19 Nov): semua 0. Kunci asing (blok B) tidak memuat tabel tak terduga; urutan hapus mengikutinya.
+- Selisih dengan Handoff #5: di sana 8 order wakil (hanya yang terkait inbox dan foto); totalnya 23. Tidak bertentangan.
+- Sesudah hapus: delapan tabel (`order`, `order_item`, `riwayat_status`, `catatan_order`, `baca_catatan`, `pelanggan_luar`, `inbox`, `foto_bukti`) semuanya 0.
+- Sesudah reset: `order_nomor_seq` `last_value = 1`, `is_called = false`. Order sungguhan pertama bernomor **#1**.
+
+**Belum beres:**
+
+- **`LNC.01f` (akun)** belum dimulai (P0, High-Risk, butuh penjelasan dampak dan "OK" ketua). Baris induk `LNC.01` dicentang setelah selesai.
+- **Data uji yang masih ada:** `langganan_push` uji; `profil` dan `alamat` customer dummy (lima akun pemesan tadi); isi uji Bantuan (BTN.04, SEC-30); dua baris uji nonaktif di tabel `gelar` (`tingkat-uji-enam`, `tingkat-uji-tujuh`, tidak memengaruhi hitungan, merapikannya butuh "OK" tersendiri); akun dummy di Authentication.
+- Tiga akun staf uji rencananya **dinonaktifkan, bukan dihapus**, disebut satu per satu; akun asli tidak boleh ada di daftar (Handoff #1 dan #3, menunggu "OK" ketua). Sebelum menghapus akun di Auth, cek tabel yang merujuk ke akun itu (misalnya `langganan_push.akun`, `foto_bukti.diunggah_oleh`, `belanja.penginput`, `menu.diubah_oleh`).
+- Berkas foto di Storage (Handoff #5) dan template hapus inbox INB.06 tahap 2 (belum pernah dijalankan; baru bisa diuji dengan baris asli berumur lebih dari 14 hari) tidak berubah.
+- Butir terbuka dari Handoff #1 sampai #6 yang tidak disebut di sini tidak berubah (antara lain Send password recovery enam akun asli, logout Supabase dan GitHub di profil browser ketua).
+
+**Saran giliran berikutnya (LNC.01f):**
+
+1. Sesi baru. Lampirkan `AGENTS.md`, `features.md` (dengan Handoff #7), `security.md`, `database.md`, `akun.md`, `menu.md`, dan migration yang menyentuh `staf`, `profil`, `alamat`, `langganan_push`. AI menyebut berkas lain yang kurang di awal sesi.
+2. Mulai dengan query **baca-saja**: semua tabel yang merujuk ke akun (kunci asing ke `profil` dan `staf`), daftar akun uji dan akun asli (ID awal saja), lalu penjelasan dampak dan "OK" ketua.
+3. Urutan: data customer dummy dulu (`langganan_push`, `alamat`, `profil`), penonaktifan tiga akun staf uji, baru penghapusan akun dummy di Auth lewat dashboard. Wajib selesai sebelum LNC.04.
+4. Sebelum push: tempel `pwd`, `git remote -v`, dan email commit terakhir; baca `git status` dan `git diff --stat` sebelum commit. Commit yang memuat `supabase/` jangan pakai `[skip ci]`.
