@@ -1,4 +1,4 @@
-# Panduan Ekspor Data Rutin (DRAF v2)
+# Panduan Ekspor Data Rutin (FINAL)
 
 > Status: **draf, menunggu review ketua.** Langkah klik, daftar tabel, nama berkas, dan cara cek diisi dari layar asli dashboard dan hasil ekspor percobaan 19 Nov 2026. Keputusan ketua (semua tabel dicatat, lembar catatan, jadwal Sabtu) sudah dimasukkan.
 > Panduan ini tidak memuat data pelanggan, rahasia, atau alamat nyata. Tampilan dashboard bisa berubah; kalau yang di layar beda dari panduan, **berhenti dan tanya ketua**, jangan menebak.
