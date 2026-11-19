@@ -264,3 +264,12 @@ Sumber: docs/belanja.md. Keputusan ketua. Yang paling akhir menang.
 - Risiko diterima: satu penjaga berarti riwayat status dan pengunggah foto tidak membedakan orang bila ada pengganti.
 
 **Saran giliran berikutnya:** LNC.01. Ekspor CSV dulu (adik ketua, di luar repo). Mulai dengan query baca-saja untuk mendata data uji. Daftar akun uji yang dinonaktifkan hanya tiga, disebut satu per satu, dan akun asli tidak boleh ada di daftar. Lampirkan `AGENTS.md`, `features.md`, `security.md`, `database.md`, `order.md`, `menu.md`, `belanja.md`, `pemetaan-test.md`, dan semua migration. Penghapusan data butuh penjelasan dampak dan "OK" ketua.
+
+### 2026-11-19: LNC.01 dipecah per kelompok data, data uji Belanja selesai
+
+Sumber: sesi LNC.01c. Keputusan ketua soal pembagian sesi; alasan selebihnya belum tercatat. Yang paling akhir menang.
+
+- **LNC.01 dikerjakan bertahap di sheet**, urutan mengikuti kunci asing (anak dulu, induk terakhir): `LNC.01c` data dummy Belanja, `LNC.01d` inbox dan foto, `LNC.01e` order dan reset nomor order, `LNC.01f` akun. Pembagian ini menambah, tidak menggantikan, daftar bagian 10 dan blok 8 Nov (reset nomor order) dan 17 Nov (akun staf uji dinonaktifkan, bukan dihapus).
+- **LNC.01c selesai 19 Nov 2026:** seluruh data uji Belanja (10 catatan, 69 item) dihapus satu kali oleh ketua; tabel kini kosong. Rincian ada di blok `docs/belanja.md` bertanggal sama.
+- **Ekspor CSV dilewati untuk Belanja** untuk data Belanja karena isinya data uji yang memang tidak dipakai lagi. Ini menyimpang dari saran Handoff #9 dan catatan baris LNC.01 di sheet (“ekspor dulu”); untuk Belanja, blok ini yang menang.
+- **Sisa LNC.01:** `LNC.01d`, `LNC.01e`, `LNC.01f`. Akun uji (tiga akun staf uji dan akun dummy di Auth) baru disentuh di `LNC.01f`, setelah data yang merujuk ke mereka hilang.

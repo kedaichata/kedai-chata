@@ -471,4 +471,17 @@ Keputusan ketua (18 Nov 2026), setelah penjelasan di sesi BLJ.03. Alasan ketua s
 3. Sesi LNC.01: lampirkan `AGENTS.md`, `features.md`, `security.md`, `database.md`, `order.md`, `docs/menu.md`, dan migration, termasuk `20261118_02_belanja.sql` (untuk memastikan kunci asing dan urutan hapus, jangan menebak). Mulai dengan query baca-saja, lalu penjelasan dampak dan "OK" ketua.
 4. Tes sisa Belanja yang belum terjamah (daftar di atas) bila waktunya ada.
 
+### 2026-11-19: Data uji Belanja dihapus (LNC.01c)
+
+Keputusan ketua (19 Nov 2026), dikerjakan di sesi LNC.01c. Alasan ketua melewati ekspor CSV: data uji dibuat untuk dibuang, jadi tidak ada gunanya disimpan. Alasan lain belum tercatat.
+
+- **Dihapus satu kali oleh ketua di SQL Editor:** seluruh isi `belanja_item` (69 baris, 3 di antaranya Dibatalkan) lalu `belanja` (10 catatan, 5 di antaranya terkunci). Semua milik dua akun uji ("Bu Owner 2" dan "Owner Uji"); ketua mengonfirmasi keduanya akun uji. Tidak ada penginput lain di data itu.
+- **Pengecualian tanpa-DELETE** yang dipakai: `security.md` aturan 12 (pembersihan data uji LNC.01). Tidak ada hak DELETE baru. Tabel, hak tabel, pengaturan, dan fungsi Belanja tidak disentuh; akun uji tidak disentuh (urusan LNC.01f).
+- **Cara:** satu transaksi dengan pengaman yang membatalkan semuanya bila jumlah bukan 10 dan 69, ada penginput selain dua akun uji, atau jumlah terhapus tidak cocok. Urutan: `belanja_item` dulu, baru `belanja`.
+- **Ekspor CSV dilewati** untuk data Belanja. Ini menyimpang dari saran Handoff #9 dan catatan baris LNC.01 di sheet ("ekspor dulu"); untuk Belanja, blok ini yang menang. Penghapusan tidak bisa dipulihkan (paket gratis tanpa backup).
+- **Berkas SQL di repo:** `supabase/templates/20261119_belanja_data_uji_cek.sql` (empat query baca-saja) dan `supabase/templates/20261119_belanja_data_uji_hapus.sql` (isi uji sudah terhapus, jadi pengamannya tidak akan lolos bila dijalankan ulang). Tanpa data nyata.
+- **Terbukti (19 Nov 2026, dibaca bersama di chat, tidak disimpan):** sebelum hapus, query A sampai D cocok (10 dan 69, hanya dua akun uji, dibuat 18 sampai 19 Nov 2026). Sesudah hapus, `belanja` = 0 dan `belanja_item` = 0 (screenshot ketua).
+- **Menutup** butir "data uji dummy menumpuk" di Handoff #8 dan #9 untuk tabel Belanja. Layar Belanja kini tampil kosong sampai owner asli mulai memakainya.
+- **Belum terbukti:** `_batal.sql` BLJ tetap belum pernah dicoba; tes sisa (dua tab bersamaan, `akun_nonaktif`, sesi habis, iPhone, layar sangat sempit) tidak berubah dan kini harus memakai catatan baru.
+
 ---

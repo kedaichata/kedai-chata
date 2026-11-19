@@ -388,3 +388,13 @@ Keputusan ketua (18 Nov 2026). Melengkapi blok "Dokumen belanja.md" 18 Nov. Yang
 - **Versi rilis:** V1 sebelum Peluncuran (Opsi A); target rilis terbatas tetap Senin 23 Nov 2026. Keputusan ini mengganti "menunggu ketua dan owner" di blok sebelumnya.
 - **`public/belanja.css` disetujui** ketua sebagai pengecualian CSS (bagian 3 dan 6). Status "usulan, menunggu OK" di blok sebelumnya tidak berlaku lagi.
 - Rancangan tabel, fungsi SQL, dan pendaftaran `sw.js` tetap butuh "OK" ketua saat dikerjakan (BLJ.01, BLJ.06).
+
+### 2026-11-19: Data uji tidak diekspor CSV sebelum dihapus
+
+Keputusan ketua (19 Nov 2026, sesi LNC.01c). Alasan ketua: data uji dibuat untuk dibuang, jadi tidak ada gunanya disimpan. Alasan lain belum tercatat.
+
+- **Data uji murni tidak diekspor CSV sebelum dihapus** (LNC.01 dan pembersihan data uji lain). Ekspor CSV adalah cadangan **data** yang mungkin dibutuhkan lagi; data uji tidak termasuk. Cadangan **skema** tetap SQL di `supabase/` (bagian 4).
+- **AI tidak mengungkit atau menanyakan ekspor CSV** untuk penghapusan data uji. Tidak perlu jadi butir di rencana sesi dan tidak perlu ditanyakan lagi tiap sesi.
+- **Syarat satu-satunya:** isi yang akan dihapus harus **terbukti data uji** lewat query baca-saja yang hasilnya diperiksa bersama di chat (penginput atau pemilik hanya akun uji, tanggal dibuat sesuai masa pengerjaan). Ragu menyangkut data asli: anggap data asli, hentikan, dan tanyakan ke ketua (bagian 10 butir 3).
+- **Tidak berubah:** ekspor data **rutin** (data asli) tetap tugas adik ketua dan hasilnya tidak masuk repo (bagian 4); pengingat dan jadwalnya tetap di `LNC.02`.
+- **Pertentangan dengan catatan lama:** teks baris `LNC.01` di sheet ("ekspor dulu"), saran Handoff #9 di `belanja.md`, dan baris pembukaan `features.md` bagian 10 yang menyiratkan ekspor sebelum hapus tidak berlaku untuk data uji. Yang paling akhir menang.
