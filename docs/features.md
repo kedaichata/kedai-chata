@@ -568,3 +568,13 @@ Sumber: sesi LNC.01c. Keputusan ketua soal pembagian sesi; alasan selebihnya bel
 2. Sabtu pertama: ekspor rutin sesuai panduan; isi lembar BackupChata; cek tabel yang mulai terisi (bandingkan N records dengan hasil cek).
 3. Sebelum LNC.04: rancang uji restore di project kosong (keputusan project kedua, skema dari `supabase/`, pemetaan ID akun staf), dan catat hasilnya sebagai handoff.
 4. Cek anti-nyasar sebelum push (`pwd`, `git remote -v`, email commit terakhir), bila ada commit.
+
+### 2026-11-20: Analitik Umami fase 1 masuk versi 1
+
+Keputusan ketua (20 Nov 2026). Sumber: docs/analitik.md. Alasan ketua selain yang tertulis belum tercatat.
+
+- **Urutan versi 1:** fitur ini dikerjakan sebelum LNC.03 bila memungkinkan; tidak menunda LNC.03 (bawaan).
+- **Layar per peran:** tidak ada layar atau tombol baru. Layar Masuk, Daftar, Pengenalan, Bantuan, dan Belanja menambah penanda anonim tak terlihat.
+- **Kuota:** tidak menambah panggilan Edge Function, database, egress, atau Log Query Supabase (panggilan ke Umami, bukan ke Supabase). Kesimpulan kuota Handoff #10 tidak berubah.
+- **Jadwal:** dikejar Jumat sampai Minggu 20 sampai 22 Nov 2026 agar lulus sebelum LNC.03 (Senin 23 Nov); bersaing dengan sisa persiapan LNC.03 di Handoff #9 dan #10 (recovery lima akun asli). Bila tes belum lulus, ditunda dan LNC.03 jalan tanpa fitur ini.
+- **LNC.05 (review pemakaian):** tambah bahan: angka kunjungan dan OS dari Umami (termasuk jumlah pengguna iPhone, bahan butir iPhone di `AGENTS.md` bagian 10), dibandingkan jumlah akun customer baru dari Supabase (ANL.08).

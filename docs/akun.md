@@ -715,3 +715,13 @@ Keputusan ketua (19 Nov 2026). Alasan yang tercatat: mengurangi akun dummy yang 
 - **Daftar `VALUES` di template nomor WA** berisi nama akun uji. Untuk akun asli, ganti isinya di editor dan jangan simpan balik ke repo.
 - **Akun uji (3 baris di `staf`)** dinonaktifkan di LNC.01 berdasarkan daftar yang disebut satu per satu. Akun asli tidak boleh ada di daftar itu.
 - **Recovery** dikirim saat orangnya siap, bukan sekaligus, karena link sekali pakai.
+
+### 2026-11-20: Layar Masuk dan Daftar memuat script analitik
+
+Keputusan ketua (20 Nov 2026). Sumber: docs/analitik.md (AN3, AN5, AN7, AN8). Tidak mengubah AKN.05 maupun rantai Turnstile.
+
+- `index.html` ditambah satu tag script analitik (hanya tambahan, kategori login), **di urutan yang dicek di sesi kode terhadap `akun.js`** (lihat butir reset password). Kode login, daftar, reset password, ganti password, dan widget Turnstile **tidak diubah**. Pola yang sama dengan tag skrip Turnstile yang sudah ada.
+- Layar Masuk tercatat otomatis sebagai kunjungan. Layar Daftar (dua layar terpisah, AK6) mengirim satu event `buka-daftar`, dipasang lewat pengamat di `analitik.js`; `akun.js` disentuh hanya bila pengamat tidak memungkinkan (konfirmasi singkat).
+- **Link reset password (AKN.09, AK12):** `akun.js` membaca bagian `#` alamat lalu membersihkannya. Script analitik tidak boleh ikut mengirim bagian itu: script dipasang dengan `data-exclude-hash` dan `data-exclude-search`. Apakah script sempat membaca alamat sebelum dibersihkan belum diketahui; dites di SEC-50 dengan cara salin-tempel (AK12).
+- Pesan galat dan alur ibu-ibu tidak berubah; kegagalan analitik tidak pernah tampil di layar. Customer lama dan baru, serta staf, tidak melihat perbedaan apa pun.
+- Setelah dipasang, cukup satu cek singkat Keluar dan Masuk dengan widget Turnstile (ANL.06). SEC-33 tidak diulang karena tidak ada perubahan ke Supabase atau CORS; bila ternyata login terganggu, laporkan ke ketua.

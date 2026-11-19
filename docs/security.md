@@ -294,3 +294,11 @@ Fitur susulan setelah tes SEC-01 sampai SEC-45 selesai; baris SEC-01 sampai SEC-
 - **SEC-49 (P0):** catatan terkunci tidak bisa ditambah, diubah, dibatalkan, atau diubah judulnya; item Dibatalkan tidak bisa diubah; tidak ada aksi hapus; hak `service_role` pada `belanja` dan `belanja_item` tanpa DELETE dan `EXECUTE` fungsi Belanja hanya untuk `service_role`; nama item dan judul berisi tag HTML tampil sebagai teks biasa. Bukti: balasan server, query baca-saja hak tabel dan fungsi, screenshot (dummy).
 
 **Dampak pada sheet:** empat baris baru SEC-46 sampai SEC-49; BLJ.07 dicentang setelah keempatnya lulus. SEC-03 dan SEC-04 (16 Nov) belum mencakup tabel dan fungsi Belanja; ceknya masuk SEC-49.
+
+### 2026-11-20: Keamanan Analitik (SEC-50 dan SEC-51)
+
+Fitur susulan setelah SEC-49; baris SEC lama tidak dibuka ulang. Sumber: docs/analitik.md (AN4, AN5, AN7, AN9). Alasan lain belum tercatat. Menegakkan aturan 7, 9, 11, 14. Dites dengan akun dan link dummy. Salinan script Umami di `public/lib/` termasuk pustaka pihak ketiga (aturan 14): versi dan tanggal salinan dicatat.
+
+- **SEC-50 (P0):** link reset password dummy dibuka (cara salin-tempel di tab baru, `akun.md` AK12) dengan script analitik aktif; yang tercatat di Umami **tidak memuat bagian `#` maupun `?`** dari alamat. Karena `akun.js` membersihkan alamat setelah membaca token, urutan muat script diuji juga. Bukti: tampilan kunjungan di dashboard Umami atau tampilan permintaan jaringan. Diperiksa di chat, tidak disimpan. Akun dummy baru untuk tes ini harus dibersihkan sebelum LNC.04 (butuh "OK").
+- **SEC-51 (P1):** event hanya berupa nama layar, tanpa id akun, nama, nomor WA, nama item, nominal, atau isi pertanyaan; `umami.identify` tidak dipanggil di kode mana pun; `sw.js` tidak mencegat atau menyimpan panggilan ke Umami (aturan 11); script diblokir atau mode pesawat tidak memunculkan galat di layar (aturan 9); uji dari alamat selain hostname GitHub Pages tidak terhitung. Bukti: pencarian di kode, dashboard, screenshot (dummy).
+  **Dampak pada sheet:** dua baris baru SEC-50 dan SEC-51; ANL.06 dicentang setelah keduanya lulus. Hak tabel dan fungsi tidak berubah.

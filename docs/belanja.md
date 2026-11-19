@@ -484,4 +484,11 @@ Keputusan ketua (19 Nov 2026), dikerjakan di sesi LNC.01c. Alasan ketua melewati
 - **Menutup** butir "data uji dummy menumpuk" di Handoff #8 dan #9 untuk tabel Belanja. Layar Belanja kini tampil kosong sampai owner asli mulai memakainya.
 - **Belum terbukti:** `_batal.sql` BLJ tetap belum pernah dicoba; tes sisa (dua tab bersamaan, `akun_nonaktif`, sesi habis, iPhone, layar sangat sempit) tidak berubah dan kini harus memakai catatan baru.
 
+### 2026-11-20: Layar Belanja mengirim satu event anonim
+
+Sumber: docs/analitik.md (AN3, AN4). Tidak ada pengecualian baru dari aturan bagian 7 `AGENTS.md`.
+
+- Saat layar Belanja dibuka oleh owner, satu event `buka-belanja` dikirim lewat `analitik.js`. **Judul catatan, nama item, harga, total, dan penginput tidak dikirim.**
+- Tabel, fungsi SQL, dan aksi `kedai` Belanja tidak berubah.
+
 ---

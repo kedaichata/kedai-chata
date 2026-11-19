@@ -431,4 +431,11 @@ Keputusan ketua (19 Nov 2026, sesi penutupan LNC.01). Alasan ketua: tidak diperm
 - **Baris uji Bantuan terbukti nonaktif** lewat query baca-saja (19 Nov 2026): `uji-baris`, `uji-html`, `uji-kutip`, dan `uji-nonaktif` semuanya `aktif = false`, dan tidak ada baris aktif lain yang mirip uji. Bagian butir Handoff #6 tentang baris uji ini sudah terpenuhi. Bukti diperiksa di chat dan tidak disimpan (`AGENTS.md` bagian 10).
 - Tidak ada perubahan skema, kode, data, atau deploy. Lembar `bantuan-isi` tidak diubah.
 
+### 2026-11-20: Layar Bantuan mengirim satu event anonim
+
+Sumber: docs/analitik.md (AN3, AN4).
+
+- Saat layar Bantuan dibuka, satu event `buka-bantuan` dikirim lewat `analitik.js`. **Pertanyaan yang dibuka atau dicari tidak dikirim.**
+- Isi Bantuan, lembar Google Sheet bantuan, dan SQL impor tidak berubah.
+
 ---

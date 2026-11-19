@@ -254,4 +254,12 @@ Keputusan ketua (sesi strategi 18 Nov 2026). Sumber: docs/belanja.md bagian 8. N
 - Filter tanggal, ekspor atau cetak rekap, kategori belanja, jumlah dan harga satuan terpisah, draft tersimpan otomatis di HP.
 - Foto struk **tidak** dikerjakan (struk bercampur belanja pribadi).
 
+### 2026-11-20: Kandidat versi 2 dari Analitik (fase 2)
+
+Keputusan ketua (20 Nov 2026). Sumber: docs/analitik.md bagian 8. Nomor B dan kolom Alasan diisi saat review pemakaian (`LNC.05`); alasan pemakaian belum tercatat.
+
+- **Fase 2 analitik:** Home, langkah di alur order, dan layar lain; corong lebih rinci; perbandingan sumber kunjungan lewat tautan bertanda.
+- **Kebijakan bila kuota 100 ribu event mendekati batas** (kurangi event, bukan paket berbayar).
+- **Hubungan dengan butir lama:** B24 (domain sendiri), B26 (pemantauan otomatis), dan blok 18 Nov "Pindah hosting ke Cloudflare Pages": angka kunjungan hanya **bahan pertimbangan**, bukan penentu. Butir lama dibiarkan.
+
 ---

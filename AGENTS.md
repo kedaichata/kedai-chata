@@ -398,3 +398,15 @@ Keputusan ketua (19 Nov 2026, sesi LNC.01c). Alasan ketua: data uji dibuat untuk
 - **Syarat satu-satunya:** isi yang akan dihapus harus **terbukti data uji** lewat query baca-saja yang hasilnya diperiksa bersama di chat (penginput atau pemilik hanya akun uji, tanggal dibuat sesuai masa pengerjaan). Ragu menyangkut data asli: anggap data asli, hentikan, dan tanyakan ke ketua (bagian 10 butir 3).
 - **Tidak berubah:** ekspor data **rutin** (data asli) tetap tugas adik ketua dan hasilnya tidak masuk repo (bagian 4); pengingat dan jadwalnya tetap di `LNC.02`.
 - **Pertentangan dengan catatan lama:** teks baris `LNC.01` di sheet ("ekspor dulu"), saran Handoff #9 di `belanja.md`, dan baris pembukaan `features.md` bagian 10 yang menyiratkan ekspor sebelum hapus tidak berlaku untuk data uji. Yang paling akhir menang.
+
+### 2026-11-20: Dokumen `analitik.md` (prefix ANL), Umami Cloud fase 1
+
+Keputusan ketua (sesi strategi 20 Nov 2026). Sumber: docs/analitik.md. Asal usul: saran teman ketua di bidang IT (Cloudflare Web Analytics); Umami dipilih karena aplikasi satu `index.html` tanpa ubah alamat. "OK" ketua untuk perubahan `index.html` dan `sw.js`: belum tercatat, tetap diminta saat berkas diubah. Alasan lain belum tercatat.
+
+- **Peta Dokumentasi (bagian 5):** tambah baris `docs/analitik.md`, isi: "Analitik kunjungan Umami Cloud: layar Masuk, Pengenalan, Bantuan, Belanja", prefix sheet **ANL**.
+- **Tidak ada tabel, fungsi SQL, aksi `kedai`, atau tulis-database baru.** Hanya penanda anonim "layar ini dibuka" dari HP ke Umami. **Dilarang** mengirim data pribadi, isian layar, atau memakai `umami.identify()` (bagian 2 butir 11).
+- **Pihak ketiga:** script Umami **disalin ke `public/lib/` dengan versi dipatok** (bagian 3), sehingga tidak ada pengecualian "tanpa CDN" baru. **Bila salinan lokal gagal** (belum dicek, uji di ANL.02), memuat dari domain Umami butuh keputusan baru dan pengecualian khusus script itu saja, dicatat di blok terpisah.
+- **Kode baru:** `public/analitik.js` dan salinan script. Keduanya wajib didaftarkan di cache `sw.js` (bagian 7, butuh "OK"; versi cache naik dari versi terakhir). Tag script di `index.html` termasuk kategori login (bagian 7): konfirmasi singkat.
+- **Pertentangan dengan catatan lama:** blok Pengenalan 16 Nov 2026 menulis "tanpa panggilan jaringan". Layar Pengenalan kini mengirim satu event anonim ke Umami. Yang paling akhir menang.
+- **Bagian 1, rencana versi:** fitur ini masuk versi 1, dikejar sebelum LNC.03 (Senin 23 Nov 2026). Bila belum lulus tes, ditunda; LNC.03 tidak menunggu (bawaan, ketua boleh mengubah).
+- **Bagian 4 (free tier):** Umami Cloud Hobby (screenshot ketua, 20 Nov 2026): 100 ribu event per bulan, 1 website, riwayat 6 bulan. Perilaku bila melewati batas belum dicek. Tetap gratis; bila mendekati batas, kurangi event. Akun Umami milik ketua, dibuka di profil browser terpisah (bagian 8).

@@ -226,3 +226,10 @@ Keputusan ketua (sesi lanjutan Turnstile, 18 Nov 2026). Berkas tujuan: docs/peng
 - Bagian iPhone tetap berstatus draf (Handoff #3).
 
 **Saran giliran berikutnya:** PGN.06 menjelang peluncuran. Revisi isi hanya di `public/pengenalan-isi.js`, push biasa tanpa `[skip ci]`.
+
+### 2026-11-20: Layar Pengenalan mengirim satu event anonim
+
+Sumber: docs/analitik.md (AN3, AN4). Menimpa catatan "tanpa panggilan jaringan" di dokumen ini dan di blok `AGENTS.md` 16 Nov 2026. Yang paling akhir menang.
+
+- Saat layar dibuka, `pengenalan.js` memanggil `analitik.js` untuk satu event `buka-pengenalan`, **tanpa data tambahan**. Bila script analitik tidak ada, layar berjalan normal.
+- Hanya satu baris tambahan di `pengenalan.js`. `pengenalan-isi.js` dan `pengenalan.css` tidak berubah.
