@@ -312,3 +312,50 @@ Sumber: sesi LNC.01c. Keputusan ketua soal pembagian sesi; alasan selebihnya bel
 2. Mulai dengan query baca-saja untuk mendata `inbox` dan `foto_bukti` (jumlah, pemilik, tanggal), lalu penjelasan dampak dan "OK". Tabel anak dulu: `inbox` dan `foto_bukti` sebelum `order`. Berkas foto di Storage dihapus lewat dashboard setelah barisnya beres, atau dibiarkan disapu `bersihkan` bila lewat 14 hari (keputusan ketua).
 3. Lalu `LNC.01e` (order dan reset nomor order, satu kali oleh ketua), lalu `LNC.01f` (akun).
 4. Commit yang memuat berkas `supabase/` jangan pakai `[skip ci]`; commit yang hanya docs boleh. Sebelum push, tempel `pwd`, `git remote -v`, dan email commit terakhir, dan baca `git status` serta `git diff --stat` sebelum commit.
+
+### Handoff #5 | 2026-11-19 | (KETUA)
+
+**Berkas tujuan:** `docs/features.md`, tempel paling bawah (setelah Handoff #4). Yang paling akhir menang.
+
+**Tugas:** LNC.01d (hapus data uji inbox dan foto). Selesai, terbukti, dan sudah dicentang di sheet (19 Nov 2026). Baris induk `LNC.01` tetap Belum; `LNC.01e` dan `LNC.01f` belum dimulai.
+
+**File yang diubah (semua baru, tidak ada yang lama disentuh):**
+
+- `supabase/templates/20261119_inbox_foto_data_uji_cek.sql` (enam query baca-saja, A sampai F).
+- `supabase/templates/20261119_inbox_foto_data_uji_hapus.sql` (satu transaksi dengan pengaman, tanpa ID akun).
+- `docs/features.md`: blok ini.
+- Tidak ada perubahan `public/`, `kedai`, `sw.js`, tabel, hak tabel, pengaturan, atau fungsi SQL. Tidak ada deploy.
+- Status commit: belum. Kedua template dan blok ini masuk satu commit, **tanpa `[skip ci]`** karena menyentuh `supabase/` (AGENTS.md blok 12 Nov 2026).
+
+**Keputusan baru (ketua, 19 Nov 2026):**
+
+- Ketua mengonfirmasi tiga akun staf di data inbox dan foto (dua owner, satu penjaga) adalah akun uji, dan **semua customer di data itu dummy; belum ada customer sungguhan yang masuk.** Ini menjadi dasar "OK" penghapusan.
+- Pengaman SQL hapus memakai **batas tanggal 19 Nov 2026 (waktu akun asli dibuat) dan jumlah akun berbeda**, bukan daftar ID akun, jadi berkas aman masuk repo. Alasan ketua selain itu belum tercatat (pilihan penulis).
+- **Nomor urut `id` inbox tidak direset.** Penanda titik merah di HP memakai nomor itu, dan resetnya tidak perlu. Pilihan penulis, alasan belum tercatat.
+- Berkas foto di Storage dihapus lewat dashboard (hapus lima folder per order di bucket `foto-bukti`; bucket tidak dihapus), setelah barisnya hilang dari tabel.
+- Mengikuti blok `AGENTS.md` 19 Nov 2026: data uji tidak diekspor CSV; syarat satu-satunya terbukti data uji lewat query baca-saja.
+- Tidak ada pertentangan dengan blok lama. Peringatan Handoff #4 ("cek dulu apakah ada data asli yang tercampur") terjawab: tidak ada.
+
+**Terbukti (bukti diperiksa di chat, tidak disimpan):**
+
+- Sebelum hapus: `inbox` 255 baris (lima penerima: tiga akun staf uji dan dua customer, semua bertanggal 11 sampai 18 Nov, 0 baris sejak 19 Nov), `foto_bukti` 9 baris (satu pengunggah, penjaga uji), 5 berkas di Storage (145,8 KB, semuanya punya baris, 0 yatim). Angka cocok dengan order yang dirujuk (#60 sampai #138).
+- Sesudah hapus: `inbox` 0 dan `foto_bukti` 0 (screenshot ketua, tersimpan setelah `COMMIT`); berkas di bucket `foto-bukti` 0 (hasil query cek blok A).
+
+**Belum beres:**
+
+- **LNC.01e (order dan reset nomor order)** dan **LNC.01f (akun)** belum dimulai (keduanya P0, High-Risk, butuh penjelasan dampak dan "OK" ketua). Baris induk `LNC.01` dicentang setelah keduanya selesai.
+- **Data uji yang masih ada:** `order` (dari data tadi, nomor sekitar #60 sampai #138) beserta `order_item`, `riwayat_status`, `catatan_order`, `baca_catatan`; `pelanggan_luar` uji dan 8 order wakil (#72, #76, #120 sampai #125); `langganan_push` uji; `profil` dan `alamat` customer dummy; isi uji Bantuan (BTN.04, SEC-30); akun dummy demo gelar; akun dummy di Authentication (Handoff #3). Nomor order belum direset.
+- Order dirujuk **lima akun customer pemesan**, lebih banyak dari tiga akun dummy yang disebut di Handoff #3. Ketua menyatakan semua customer dummy; daftarnya tetap dicocokkan di `LNC.01f`.
+- Order #110 sampai #138 tampaknya sisa tes batas order harian (BTO.04). Hanya dugaan dari pola waktu dan tipe; dibuktikan di sesi 01e.
+- Tiga akun staf uji rencananya **dinonaktifkan, bukan dihapus** (Handoff #1 dan #3, menunggu "OK" ketua), disebut satu per satu, dan akun asli tidak boleh ada di daftar.
+- Template hapus inbox INB.06 tahap 2 (`DELETE`) belum pernah dijalankan; tabel inbox kini kosong, jadi baru bisa diuji dengan baris asli yang berumur lebih dari 14 hari (paling cepat sekitar awal Desember 2026).
+- Logout Supabase dan GitHub di profil browser ketua belum dikonfirmasi.
+
+**Saran giliran berikutnya (LNC.01e):**
+
+1. Sesi baru. Lampirkan `AGENTS.md`, `features.md` (dengan Handoff #5), `security.md`, `database.md`, `order.md`, `menu.md`, `pemetaan-test.md`, `20261108_order.sql`, dan migration lain yang menyentuh tabel yang merujuk ke `order` (`20261108_02_order_fungsi.sql`, `20261118_order_batas_harian.sql`, `20261111_foto_bukti.sql`, `20261111_05_inbox.sql`, migration `pelanggan_luar` dan `langganan_push`). AI menyebut berkas lain yang kurang di awal sesi.
+2. Mulai dengan query **baca-saja**: jumlah dan rentang tanggal `order`, per pemesan (ID awal saja), order wakil dan `pelanggan_luar`, status, serta jumlah baris di tabel anak. Pastikan **tidak ada order sungguhan** sebelum penjelasan dampak dan "OK" ketua.
+3. Urutan hapus: tabel anak dulu (`baca_catatan`, `catatan_order`, `riwayat_status`, `order_item`; `inbox` dan `foto_bukti` sudah kosong), lalu `order`, lalu `pelanggan_luar` uji. Satu transaksi dengan pengaman jumlah, memakai pola `20261119_inbox_foto_data_uji_hapus.sql`.
+4. **Reset nomor order satu kali oleh ketua di SQL Editor**, setelah tabel `order` kosong, dengan penjelasan dampak dan "OK" (blok 8 Nov 2026). Setelah itu order sungguhan mulai dari #1.
+5. Lalu `LNC.01f` (akun), dengan penonaktifan akun staf uji seperti di atas.
+6. Sebelum push: tempel `pwd`, `git remote -v`, dan email commit terakhir, baca `git status` dan `git diff --stat` sebelum commit. Commit yang memuat `supabase/` jangan pakai `[skip ci]`.
