@@ -315,3 +315,25 @@ Kejadian di lapangan (sesi kode MGR, 20 Nov 2026). Sumber: MG15. Melengkapi buti
   5. **Butir baru untuk sheet (dari Handoff #4):** "Alihkan www ke domain utama", dikerjakan setelah MGR.20.
   6. **Dari handoff sebelumnya, masih terbuka:** Preview URLs aktif (butuh "OK" untuk mematikannya), `workers.dev` dimatikan setelah domain sendiri lulus tes (MG14), dua entri "Manually deployed" belum jelas asalnya, batas 100.000 permintaan per hari belum terbukti mencakup berkas statis, panel Traffic 0% untuk versi terbaru belum dipahami, galat CSP dari skrip tantangan Turnstile belum diselidiki.
 - **Saran giliran berikutnya:** MGR.15 (P0 High-Risk): login customer (akun asli ketua), owner, dan penjaga dari `https://kedaichata.biz.id/`, plus layar Daftar dibuka dan widget Turnstile muncul (tidak dikirim), Keluar dan Masuk normal. **Tanpa membuat order** dan tanpa akun dummy baru (MG11). Jangan ganti Site URL dan jangan bagikan alamat baru. Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`. Bukti diperiksa lewat screenshot di chat dengan email dan data pelanggan disamarkan; tanpa bukti jangan dicentang. Sesudahnya MGR.16 (SEC-33) dan MGR.17 (SEC-51).
+
+### Handoff #7 | 2026-11-20 | [KETUA]
+
+- **Tugas:** MGR.15 (tes login tiga peran dan layar Daftar dari `https://kedaichata.biz.id/`, tanpa order). **Selesai dan dicentang ketua di sheet.**
+- **File yang diubah:** tidak ada. Repo, `public/`, `wrangler.jsonc`, `pages.yml`, dan Supabase tidak disentuh.
+- **Hasil yang terbukti (screenshot diperiksa di chat, nama disamarkan):**
+  1. Layar Masuk: widget Turnstile "Berhasil!", tidak mengulang, tulisan "Sistem siap".
+  2. Layar Daftar dibuka, widget "Berhasil!" (tidak dikirim).
+  3. Customer (akun asli ketua): login, Keluar (dialog konfirmasi), layar Masuk, Masuk lagi sampai beranda CUSTOMER.
+  4. Owner: beranda OWNER dengan menu khas owner, dibuka lewat PWA. Site settings HP owner menunjukkan `https://kedaichata.biz.id` dengan data tersimpan 3,7 MB, jadi PWA terpasang dari alamat baru.
+  5. Penjaga: beranda PENJAGA di browser biasa, bilah alamat `kedaichata.biz.id` terlihat.
+  6. Tidak ada galat CORS yang terlihat di layar pada ketiga peran, jadi MGR.13 terbukti jalan dari browser.
+- **Hanya laporan lisan (tanpa screenshot):** owner dan penjaga juga mencoba Daftar (dibuka) lalu Keluar dan Masuk lagi, hasilnya jalan.
+- **Keputusan baru:** tidak ada.
+- **Belum beres:**
+  1. **MGR.16 (SEC-33) belum dikerjakan.** Bukti tab Network (status 200, preflight CORS) belum diambil. Ketua keberatan dengan syarat bukti ini; apakah dilewati atau dilonggarkan menunggu keputusan ketua. Bila dilewati, dicatat "dilewati atas keputusan ketua", bukan lulus.
+  2. **Belum dikonfirmasi:** apakah owner dan penjaga hanya membuka layar Daftar tanpa menekan tombolnya. Bila ada yang terkirim, ada akun baru yang perlu dibersihkan sebelum LNC.04 (butuh "OK").
+  3. **MGR.17 (SEC-51):** belum dikerjakan. Belum terbukti kunjungan dari alamat baru tercatat di Umami dan apakah kolom Domain ikut menyaring.
+  4. **MGR.18:** belum dikerjakan. PWA tanpa internet, update versi baru, dan notifikasi push di alamat baru belum dites (tiap HP perlu menekan "Aktifkan notifikasi" lagi).
+  5. **Dari handoff sebelumnya, masih terbuka:** butir "Alihkan www ke domain utama" (setelah MGR.20), Preview URLs aktif, `workers.dev` dimatikan setelah tes lulus (MG14), dua entri "Manually deployed" belum jelas asalnya, batas 100.000 permintaan per hari belum terbukti mencakup berkas statis, panel Traffic 0% belum dipahami, galat CSP skrip Turnstile belum diselidiki.
+  6. Site URL belum diganti dan alamat baru belum dibagikan luas (sampai MGR.19).
+- **Saran giliran berikutnya:** (1) ketua memutuskan nasib bukti SEC-33; (2) MGR.16, cukup satu screenshot tab Network (permintaan `kedai`, kolom Status) setelah login; (3) MGR.17 lalu MGR.18. Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`; untuk MGR.17 juga `analitik.md` dan screenshot Umami.
