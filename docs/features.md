@@ -588,3 +588,12 @@ Keputusan ketua (20 Nov 2026). Sumber: docs/migrasi.md. Yang paling akhir menang
 - **Peluncuran (bagian 10):** LNC.03 memakai alamat baru. LNC.04 mensyaratkan GitHub Pages sudah dimatikan dan alamat lama sudah dihapus dari Auth dan Turnstile. Tidak ada data uji baru yang dibuat (tes tanpa order).
 - **Recovery akun asli:** saran "kirim recovery sebelum LNC.03" di Handoff #8 dan #9 diubah: kirim **setelah Site URL pindah** (MGR.21), supaya linknya menuju alamat baru. Butir ini menimpa urutan lama; yang paling akhir menang.
 - **Kuota Supabase:** tidak berubah (hanya berkas statis yang pindah). Batas Cloudflare dicek di MGR.02.
+
+- **Alamat resmi sekarang `https://kedaichata.biz.id/`.** GitHub Pages dimatikan 20 Nov 2026 (MGR.23) dan alamat lama dibalas 404. Baris bagian 3 ("GitHub Pages lewat GitHub Actions") dan Handoff #2 ("tetap di GitHub Pages") tidak berlaku.
+- **HP yang memasang PWA dari alamat lama tidak bisa dibuka** sampai dipasang ulang dari alamat baru, lalu menekan "Aktifkan notifikasi" lagi (langganan push terikat alamat). Pengumuman ke tim: MGR.25, belum dikerjakan saat blok ini ditulis.
+- **Peluncuran (bagian 10):** syarat LNC.04 "GitHub Pages dimatikan dan alamat lama dihapus dari Auth dan Turnstile" **sudah terpenuhi** (MGR.22 dan MGR.23, 20 Nov). Yang tersisa sebelum LNC.04: alamat lama masih ada di `ASAL_DIIZINKAN` (`kedai`) dan `data-domains` (`index.html`), butuh "OK" tersendiri.
+- **Tes di alamat baru lulus tanpa membuat order:** login tiga peran dan layar Daftar (MGR.15), SEC-33a, SEC-51a, SEC-50a, PWA dan offline (MGR.18). Celah yang diterima ketua: push server ke HP dan update versi baru tidak teramati langsung; `infografik.webp` tidak ada di cache offline (mengubahnya = ubah `sw.js`, belum diputuskan).
+- **Recovery akun asli (MGR.21a) belum selesai:** 4 owner dan 1 penjaga, plus akun ibu ketua bila password-nya belum dipegang. Link recovery terbukti mengikuti Site URL baru (SEC-50a), jadi saran "kirim recovery sebelum LNC.03" di Handoff #8 dan #9 sudah tergantikan oleh blok 20 Nov. Yang ikut LNC.03 hanya yang sudah sempat membuat password.
+- **Sebelum LNC.04:** cek daftar user Supabase (baca-saja) soal `POST .../auth/v1/signup` 422 dan kemungkinan owner atau penjaga sempat mengirim form Daftar (butuh "OK" bila ada akun baru yang dibersihkan).
+- **Jadwal LNC.03 (Senin 23 Nov):** tetap atau mundur belum diputuskan ketua.
+- **Pertentangan dengan catatan lama:** baris 63 bagian 3 dan Handoff #2 di atas. Yang paling akhir menang.

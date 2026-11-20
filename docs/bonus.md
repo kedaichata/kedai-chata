@@ -271,4 +271,39 @@ Keputusan ketua (20 Nov 2026). Sumber: docs/analitik.md bagian 8. Nomor B dan ko
 - **Tetap kandidat di sini (belum diputuskan):** header keamanan lewat `_headers`, aturan WAF atau rate limit Cloudflare (terkait B21 dan B26), analitik web bawaan Cloudflare, email dengan alamat domain sendiri, pengalihan otomatis dari alamat lama.
 - **Payment gateway (B6):** ketentuan Cloudflare melarang memproses atau mengumpulkan data kartu kredit di situs yang memakai layanan gratis; periksa ulang sebelum B6 dikerjakan.
 
+### 2026-11-21: Kandidat versi 2: proxy Umami lewat domain sendiri dan ganti nama script
+
+**Berkas tujuan:** `docs/bonus.md`, tempel PALING BAWAH bagian 4 (di bawah blok 2026-11-20 "Pindah hosting ke Cloudflare naik ke versi 1"). Append-only. Sumber: pembahasan Umami dan pemblokir iklan (Brave Shields), 21 Nov 2026, dengan `analitik.md` dan `migrasi.md`. Keputusan ketua: dicatat sebagai **kandidat, belum diputuskan**. Nomor B dan kolom Alasan diisi saat review pemakaian (`LNC.05`); alasan pemakaian belum tercatat.
+
+- **Latar:** script Umami disalin ke `public/lib/umami.js` dan kini disajikan dari `kedaichata.biz.id` (first-party). Pengiriman data (`send`) masih ke domain Umami Cloud (third-party). Di Brave mode Standard, script first-party tidak diblok filter list, tetapi request `send` ke pihak ketiga kemungkinan besar diblok (belum ada bukti khusus untuk `gateway.umami.is`; belum dites di Brave). Bila diblok, kunjungan pengguna itu tidak tercatat dan aplikasi tetap jalan normal (AN7). Efeknya angka kunjungan sedikit lebih rendah (AN11). Audiens utama (ibu-ibu di Chrome Android atau browser dalam WA) diperkirakan jarang memakai Brave.
+- **Kandidat 1: proxy `send` lewat domain sendiri.** `data-host-url` diarahkan ke `kedaichata.biz.id` dan sebuah Worker kecil di Cloudflare meneruskan permintaan ke Umami Cloud, sehingga `send` menjadi first-party. Dokumentasi Umami menyarankan pola proxy untuk melewati pemblokir iklan.
+  - **Bertentangan dengan MG10 (`migrasi.md`):** "Cloudflare hanya menyajikan berkas statis, tanpa Worker script." Butuh keputusan baru dan "OK" ketua, serta pengecualian khusus fitur ini (pola seperti pengecualian self-host `wa-notif`).
+  - **Perlu dicek bila dikerjakan:** batas 100.000 permintaan per hari paket gratis Workers (belum terbukti, `migrasi.md` bagian 8; volume event fase 1 perkiraan kecil, AN14); `sw.js` tidak boleh mencegat atau menyimpan panggilan ke Umami (AN9, `security.md` aturan 11); proxy tidak menyimpan log atau data pengunjung dan tidak menambah data ke event (AN4); `analitik.md` perlu blok susulan karena AN6 menyebut `data-host-url` tidak diisi.
+- **Kandidat 2: ganti nama `lib/umami.js` jadi nama netral.** Murah, tetapi mengubah daftar cache `sw.js` (versi cache naik, butuh "OK") dan tag script di `index.html` (kategori login, butuh konfirmasi). Hanya membantu bila nama berkas yang diblok (misalnya Brave mode Aggressive); tidak menyelesaikan pemblokiran `send`.
+- **Cara mengukur dampaknya:** kunjungan yang diblok tidak tercatat di Umami, jadi Brave tidak bisa dihitung langsung dari dashboard. Satu-satunya patokan adalah membandingkan kunjungan Umami dengan jumlah akun baru dan order di Supabase saat review (ANL.08, AN10). Bila selisihnya terlalu besar dibanding dugaan, kandidat ini dipertimbangkan.
+- **Urutan:** tidak mengganggu LNC.03. Ditentukan setelah review pemakaian versi 1 (`LNC.05`), bersama blok 20 Nov "Kandidat versi 2 dari Analitik (fase 2)". Bila angka Umami sudah cukup sebagai gambaran kasar, kandidat ini boleh tetap menunggu.
+- **Pertentangan dengan catatan lama:** tidak ada yang dibatalkan. Blok ini hanya bersinggungan dengan MG10 (`migrasi.md`) dan AN6 (`analitik.md`); keduanya tetap berlaku sampai ada keputusan baru. Yang paling akhir menang.
+
+### 2026-11-21: Kandidat versi 2: email Auth atas nama domain sendiri
+
+**Berkas tujuan:** `docs/bonus.md`, tempel PALING BAWAH bagian 4 (di bawah blok 2026-11-21 "Kandidat versi 2: proxy Umami lewat domain sendiri dan ganti nama script"). Append-only. Sumber: pembahasan 21 Nov 2026, melengkapi butir "Email dengan alamat domain sendiri" di `migrasi.md` bagian 9 dan blok 2026-11-20 (tetap kandidat). Keputusan ketua: **kandidat, belum diputuskan, tidak urgent.** Nomor B dan kolom Alasan diisi saat review pemakaian (`LNC.05`); alasan pemakaian belum tercatat.
+
+- **Latar:** email Auth (reset password dan lainnya) sekarang dikirim lewat SMTP Gmail. Dengan domain `kedaichata.biz.id`, pengirimnya bisa berupa alamat domain sendiri (misalnya `no-reply@kedaichata.biz.id`), sehingga lebih resmi, lebih kecil kemungkinan masuk spam, dan tidak bergantung pada satu akun Gmail.
+- **Cara kasar (rincian saat dikerjakan):**
+  1. Pilih layanan pengirim email (contoh yang ada integrasinya dengan Supabase: Brevo, Resend, Bird). **Belum dipilih; batas gratis dan syaratnya belum dicek.**
+  2. Verifikasi domain di layanan itu dengan menambah record DNS (SPF, DKIM, dan sebaiknya DMARC) di Cloudflare, tempat DNS domain berada. Penyebaran record bisa memakan waktu hingga 1 sampai 2 hari.
+  3. Ganti pengaturan Custom SMTP di Supabase Auth ke host dan kredensial layanan baru. Alamat pengirim harus di domain yang sudah terverifikasi.
+  4. Tes kirim recovery ke akun sendiri sebelum dianggap selesai.
+- **Perubahan berisiko:** menyentuh Auth (login dan reset password). Butuh penjelasan dampak dan "OK" ketua (`AGENTS.md` bagian 2 butir 5). Kredensial SMTP baru adalah rahasia: tidak boleh masuk chat, repo, atau md (bagian 7). Urutan aman: tambah record DNS dan tes dulu, baru ganti di Supabase. Mundur dengan mengembalikan pengaturan SMTP Gmail.
+- **Waktu:** jangan dikerjakan sebelum MGR.21a (recovery owner dan penjaga) dan LNC.03 selesai, supaya jalur email tidak berubah di tengah peluncuran.
+- **Belum diketahui:** layanan mana yang dipilih, batas gratisnya, dan apakah balasan ke alamat pengirim perlu diterima (itu urusan terpisah dari mengirim; belum dicek).
+- **Pertentangan dengan catatan lama:** tidak ada. Butir lama tetap kandidat, blok ini hanya menambah cara kasar dan peringatan. Yang paling akhir menang.
+- **Gmail "Send as" (alias domain di Gmail) tidak dipakai:** email tanpa tanda tangan domain dan lebih mungkin masuk spam, label "via Gmail" tetap muncul. Google juga menghapus fitur "Send as" untuk akun pihak ketiga pada Januari 2027 (halaman bantuan Gmail, dibaca 21 Nov 2026). Ini **berbeda** dari SMTP Gmail dengan app password yang dipakai Supabase sekarang; yang itu tidak disebut dalam daftar penghapusan, tetapi belum ada pernyataan resmi bahwa aman. Dites kirim recovery setelah Januari 2027.
+
+- **Pindah hosting selesai** (Cloudflare Workers, GitHub Pages mati 20 Nov 2026). Blok 18 Nov dan blok 20 Nov "naik ke versi 1" kini berstatus terlaksana, bukan rencana.
+- **B24 (domain sendiri) terlaksana di versi 1:** `kedaichata.biz.id`, dibeli di **BOC**, bukan Cloudflare Registrar (`.my.id` tidak dijual di sana). Baris B24 di bagian 2 dibiarkan.
+- **"Pengalihan otomatis dari alamat lama ke alamat baru":** tetap kandidat, tetapi praktis tidak bisa lewat GitHub Pages karena Pages sudah dimatikan (alamat lama 404; bertentangan dengan MG9). Cara lain belum dikaji. HP tim dijangkau lewat pengumuman WA (MGR.25).
+- **Tidak berubah, masih kandidat:** header keamanan lewat `_headers`, WAF atau rate limit Cloudflare, analitik web bawaan Cloudflare, email dengan alamat domain sendiri, proxy Umami. Payment gateway (B6): periksa ulang ketentuan Cloudflare sebelum dikerjakan.
+- **Pertentangan dengan catatan lama:** tidak ada yang dibatalkan. Yang paling akhir menang.
+
 ---
