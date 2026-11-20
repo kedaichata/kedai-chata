@@ -180,3 +180,38 @@ Kejadian di lapangan (sesi kode MGR, 20 Nov 2026). Sumber: hasil `grep -rn "gith
 - **Tidak muncul di hasil pencarian:** `sw.js`, `manifest.json`, `config.js`, `analitik.js`, `pengenalan-isi.js`. Ini belum membuktikan aman: pencarian tidak menangkap path subfolder repo atau alamat dalam bentuk lain. Isinya tetap dibaca di MGR.12 dan MGR.14.
 - **Di luar repo (tidak terjangkau pencarian):** Auth Supabase (Site URL, Redirect URLs, template email), widget Turnstile, dashboard Umami, variabel `WA_URL_APLIKASI`, lembar Bantuan, dan panduan pasang di WA. Sudah punya butir sendiri (MGR.11, MGR.12, MGR.20, MGR.24).
 - **Catatan hasil pencarian:** keluaran dipotong 200 karakter per baris, jadi konteks baris `fondasi.md:34` tidak terlihat.
+
+### 2026-11-20: MGR.07 selesai, `wrangler.jsonc` ditambah, nama Worker `kedai-chata`
+
+Keputusan ketua (sesi kode MGR, 20 Nov 2026). Sumber: MG6, MG7. Alasan ketua selain yang tertulis di bawah belum tercatat.
+
+- **"OK" ketua tercatat** untuk tafsir `wrangler.jsonc` terhadap aturan "tanpa build tool, tanpa npm" (build berjalan di sisi Cloudflare; repo tanpa `package.json`, npm, atau dependensi). Ini menggantikan "OK belum tercatat" di MG6. Yang paling akhir menang.
+- **Nama Worker: `kedai-chata`**, sama dengan nama repo (usulan, disetujui ketua). Apakah nama di berkas harus sama dengan nama di dashboard Cloudflare: belum dicek, dicek di MGR.08 dari dokumentasi Workers Builds.
+- **Isi `wrangler.jsonc`** (akar repo): `name`, `compatibility_date` 2026-11-20, dan `assets.directory` ke `./public`. Tanpa `main` (tanpa skrip Worker, MG10).
+- **Penerbitan:** commit `e723b40` (memuat juga blok MGR.06), tanpa `[skip ci]`. Tiga cek anti-nyasar lolos sebelum push. Workflow "Terbitkan ke GitHub Pages" #160 hijau (23 detik). `pages.yml` tidak disentuh dan GitHub Pages tetap hidup (MG9).
+- **Belum tersambung:** Cloudflare belum dihubungkan ke repo, jadi berkas ini belum dipakai (MGR.08).
+- MGR.07 dicentang ketua di sheet.
+
+### Handoff #2 | 2026-11-20 | [KETUA]
+
+- **Tugas:** MGR.06 (inventaris alamat lama) dan MGR.07 (`wrangler.jsonc`). Keduanya sudah dicentang ketua di sheet.
+- **File yang diubah:** `wrangler.jsonc` (baru, akar repo) dan `docs/migrasi.md` (blok catatan). Commit `e723b40` sudah di-push; workflow Pages #160 hijau (23 detik). `pages.yml`, `public/`, dan Supabase tidak disentuh.
+- **Keputusan baru:** "OK" ketua untuk tafsir `wrangler.jsonc` terhadap "tanpa build tool, tanpa npm" (MG6), dan nama Worker `kedai-chata`. Rinciannya ada di blok MGR.07 di atas.
+- **Belum beres:**
+  1. Blok "MGR.07 selesai" dan handoff ini **belum di-commit dan belum di-push** (ditempel setelah push). Ikutkan di commit berikutnya.
+  2. Dari Handoff #1, belum ada kabar: logout Cloudflare dan BOC di profil browser terpisah; pengingat kalender 20 Okt 2027 terpasang dan harga perpanjangan BOC dicatat; hal batas 100.000 permintaan per hari untuk Workers belum dicek.
+  3. Nama Worker harus cocok dengan nama di dashboard Cloudflare atau tidak: belum dicek (MGR.08).
+  4. Temuan MGR.06 menunggu dikerjakan: `data-domains` di `index.html` (MGR.12) dan `ASAL_DIIZINKAN` di `kedai/index.ts` (MGR.13).
+- **Saran giliran berikutnya:** MGR.08 (P0 High-Risk, hubungkan repo ke Workers Builds lewat dashboard). Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`. Buka dashboard Cloudflare dan GitHub ketua di profil browser terpisah, logout setelah selesai. Baca dokumentasi Workers Builds dulu dan minta screenshot tiap layar; jangan menebak nama menu atau isian build dan deploy. Beri akses hanya ke repo ChATA, hanya cabang `main` yang diterbitkan, preview build dimatikan. Apakah `[skip ci]` dihormati Workers Builds belum dicek. Sebelum push apa pun, cek tiga hal anti-nyasar.
+
+### 2026-11-20: MGR.08 selesai, repo tersambung ke Workers Builds
+
+Kejadian di lapangan (sesi kode MGR, 20 Nov 2026). Sumber: MG6, MG7, MG14. "OK" ketua untuk penyambungan: belum tercatat.
+
+- **Tersambung:** Worker `kedai-chata` ke repo `kedaichata/kedai-chata`. App GitHub "Cloudflare Workers and Pages" dipasang dengan akses hanya ke repo itu (izin read dan write untuk code, checks, deployments, pull requests; paket standar app, tidak bisa diubah dari layar instalasi).
+- **Pengaturan:** production branch `main`, build command kosong, deploy command `npx wrangler deploy`, root `/`, tanpa variabel atau rahasia. **Preview builds mati** (diverifikasi di tab Previews Base). Watch paths: Include `*`, Exclude `docs/*` dan `AGENTS.md`.
+- **Deploy pertama:** build #aa1d3acf sukses (29 detik), 92 berkas, alamat uji `https://kedai-chata.kedaichata.workers.dev`. Token build "kedai-chata build token" dibuat otomatis oleh Cloudflare; tidak disimpan di mana pun.
+- **Peringatan di log, belum dikerjakan:** `workers_dev` dan **Preview URLs** aktif otomatis karena `wrangler.jsonc` tidak menyebutnya. Preview URLs sedikit bertentangan dengan MG14; mematikannya berarti menambah `preview_urls = false` di `wrangler.jsonc` (perubahan berisiko, butuh penjelasan dan "OK" ketua). `workers_dev` dinonaktifkan nanti setelah domain sendiri jalan.
+- **Belum terbukti:** apakah commit yang hanya mengubah docs benar-benar tidak memicu build (diuji saat commit docs berikutnya). Apakah `[skip ci]` dihormati Workers Builds: belum dicek; jangan diandalkan.
+- **Pertentangan dengan catatan lama:** hanya satu. Bagian 8 baris "Isian build dan deploy di Workers Builds" kini terjawab. Yang paling akhir menang.
+- MGR.08 dicentang ketua di sheet.
