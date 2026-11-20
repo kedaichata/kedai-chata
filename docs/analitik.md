@@ -287,3 +287,13 @@ Keputusan ketua (20 Nov 2026), disetujui seluruhnya oleh ketua. Saat blok ini di
 - Perilaku paket Hobby saat lewat 100 ribu event masih belum jelas (AN14: mendekati batas, kurangi event, jangan upgrade). Pantau usage di dashboard tiap minggu (opsi A, Handoff #2).
 
 **Saran giliran berikutnya:** tidak perlu berkas kode. Putuskan Reset Umami (disarankan sebelum LNC.03 supaya angka bersih, keputusan ketua), catat ANL.07, lalu centang. Sebelum menutup: logout, tutup jendela Incognito, pastikan dashboard Umami tidak tertinggal terbuka (aturan anti-nyasar, `AGENTS.md` bagian 8). Setelah LNC.04, kerjakan ANL.08 bersama LNC.05.
+
+### 2026-11-20: Reset data Umami dijadwalkan Minggu 22 Nov 2026
+
+Keputusan ketua (20 Nov 2026, disampaikan langsung di sesi tes ANL.06). Alasan: owner lain belum sempat mencoba login, jadi kunjungan mereka ikut terhapus sekalian dan data tes bersih sebelum LNC.03.
+
+- **Reset di Settings website Umami dilakukan Minggu 22 Nov 2026**, setelah semua owner selesai mencoba login dan **sebelum LNC.03 (Senin 23 Nov 2026)**. Reset menghapus semua statistik website, pengaturan tetap (AN12).
+- **Tanggal mulai angka dianalisis = tanggal LNC.03 (23 Nov 2026).** Tanggal tes: 20 Nov 2026 (ANL.07).
+- **Syarat:** Reset tidak boleh terlewat. Bila terlewat, data tes ikut terhitung di angka kunjungan awal dan merusak perbandingan kunjungan dengan jumlah akun baru (AN10, AN11).
+- **Dilakukan oleh ketua**, di jendela privat (`AGENTS.md` bagian 8), lalu logout dan tutup.
+- **Pertentangan dengan catatan lama:** menutup butir "kapan Reset dipakai belum diputuskan" di Handoff #3, #4, dan #5. Yang paling akhir menang.
