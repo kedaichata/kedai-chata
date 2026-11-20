@@ -368,3 +368,39 @@ Kejadian di lapangan (sesi kode MGR, 20 Nov 2026). Sumber: screenshot dashboard,
 - **Footer gateway** (`index.js`, di luar repo) diganti dari alamat lama ke `https://kedaichata.biz.id/`; baris lama dikomentari, tidak dihapus. Gateway dijalankan ulang, log sehat (server di 127.0.0.1:3000, WA terhubung tanpa scan QR). Pesan tes tanpa order (MG11) memuat footer alamat baru.
 - **Pertentangan dengan catatan lama:** baris `WA_URL_APLIKASI` di tabel bagian 4 dan teks butir MGR.20 di sheet tidak berlaku untuk bagian variabel ini. Yang paling akhir menang.
 - **Belum dikerjakan:** MGR.21 (tes link reset, SEC-50) dan recovery akun asli.
+
+### Handoff #9 | 2026-11-20 | [KETUA]
+
+- **Tugas:** MGR.19 (gerbang keputusan) dan MGR.20 (pindah resmi). Keduanya sudah dicentang ketua di sheet (MGR.20 setelah blok catatan di bawah ditempel).
+- **File yang diubah:** `docs/migrasi.md` saja (blok catatan). Di luar repo: `index.js` gateway WA (baris `FOOTER`). `public/`, `supabase/`, `wrangler.jsonc`, `pages.yml` tidak disentuh.
+- **Hasil yang terbukti:**
+  1. **MGR.19:** gerbang lulus, diputuskan ketua lebih awal dari jadwal (rencana Minggu 22 Nov malam). Dasar: semua P0 Fase D lulus dan MGR.18 selesai dengan celah yang diterima ketua (Handoff #8).
+  2. **Site URL Auth** kini `https://kedaichata.biz.id/` (notifikasi "Successfully updated site URL" dan screenshot setelah refresh). Redirect URLs tetap 2 entri, utuh.
+  3. **`WA_URL_APLIKASI` tidak ada di Custom secrets dan sengaja tidak dipasang** (`wa-notif.md`, catatan WAG.03). Tidak ada variabel yang diganti. Link di pesan WA berasal dari footer gateway.
+  4. **Footer gateway** diganti ke `https://kedaichata.biz.id/` (baris lama dikomentari). Gateway dijalankan ulang, log sehat (127.0.0.1:3000, WA terhubung tanpa scan QR). Pesan tes tanpa order memuat footer alamat baru.
+- **Keputusan baru:** "OK" ketua untuk MGR.19 dan MGR.20 (Site URL), diberikan di chat. Tidak ada keputusan lain.
+- **Pertentangan dengan catatan lama:** baris `WA_URL_APLIKASI` di tabel bagian 4 dan teks butir MGR.20 di sheet tidak berlaku untuk bagian variabel ini. Yang paling akhir menang.
+- **Belum beres:**
+  1. **MGR.21 belum dikerjakan:** tes link reset (SEC-50) dan kirim recovery akun asli. Belum diputuskan ketua: apakah akun customer asli ketua boleh dipakai untuk tes dan password-nya diganti. Belum terbukti: link reset dari dashboard mengikuti Site URL baru, dan bagian `#` atau `?` tidak tercatat di Umami.
+  2. **MGR.22 dan MGR.23** (hapus alamat lama dari Auth dan Turnstile, matikan GitHub Pages) belum dikerjakan. MGR.23 paling lambat sebelum LNC.04.
+  3. **Dari Handoff #8, masih terbuka:** `POST .../auth/v1/signup` 422 dan apakah owner atau penjaga sempat mengirim form Daftar (cek daftar user di dashboard Supabase, baca-saja, sebelum LNC.04); owner dan penjaga belum mengaktifkan notifikasi di alamat baru; push server ke HP dan update versi tidak teramati langsung; `infografik.webp` tidak ada di cache offline (ubah `sw.js`, butuh OK, belum diputuskan); data uji di Umami (Reset diputuskan di ANL.07).
+  4. **Dari handoff sebelumnya, masih terbuka:** butir "Alihkan www ke domain utama" (setelah MGR.20), Preview URLs aktif (butuh OK untuk mematikan), `workers.dev` dimatikan setelah tes lulus (MG14), dua entri "Manually deployed" belum jelas asalnya, batas 100.000 permintaan per hari belum terbukti mencakup berkas statis, panel Traffic 0% belum dipahami, galat CSP skrip Turnstile belum diselidiki.
+- **Saran giliran berikutnya:** MGR.21 (P0 High-Risk). Urutan: (1) ketua memutuskan akun mana yang dipakai untuk tes reset; (2) kirim link reset dari dashboard, buka lewat salin-tempel di tab baru (`akun.md` AK12), cek jatuh ke `kedaichata.biz.id`, layar Buat password baru muncul, dan Umami tidak mencatat `#` atau `?`; (3) baru kirim recovery akun asli satu per satu (MG12). Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`, `akun.md`, `features.md` (Handoff #8 dan #9), dan screenshot pengaturan URL Auth. Tanpa order, tanpa akun dummy baru (MG11).
+
+### Handoff #10 | 2026-11-20 | [KETUA]
+
+- **Tugas:** MGR.21 (tes link reset password dari alamat baru). Bagian tes selesai dan sudah dicentang ketua di sheet. Bagian "kirim recovery akun asli" dipisah jadi butir baru **MGR.21a** (Belum). Baris baru **SEC-50a** juga dicentang (pola huruf "a", seperti SEC-33a dan SEC-51a); SEC-50 lama tidak dibuka ulang.
+- **File yang diubah:** tidak ada. Repo, `public/`, `sw.js`, `wrangler.jsonc`, `pages.yml`, dan Supabase tidak disentuh.
+- **Hasil yang terbukti (diperiksa di chat, email disamarkan):**
+  1. Recovery dari dashboard ke akun customer asli ketua masuk Inbox. Link dibuka dengan salin-tempel di tab baru dan jatuh ke `https://kedaichata.biz.id/`: layar Buat password baru terbuka. Ini membuktikan link recovery mengikuti Site URL baru (dugaan MG12 terbukti).
+  2. **SEC-50a:** kiriman `send` ke Umami (satu-satunya bertipe fetch, filter `send` dan Preserve log aktif) berisi `url` `https://kedaichata.biz.id/` tanpa `#` maupun `?`, `referrer` kosong, tanpa id akun atau token.
+  3. Password baru tersimpan, kartu "Password berhasil dibuat" muncul, widget Turnstile "Berhasil!", masuk dengan password baru sampai beranda CUSTOMER.
+- **Keputusan baru:**
+  1. Bagian recovery dipisah ke **MGR.21a** supaya MGR.21 bisa dicentang dan MGR.22 tidak menunggu orang (keputusan ketua).
+  2. Recovery akun asli tetap lewat jalur normal AKN.10: orangnya membuat password sendiri. **Pengecualian "ketua membuat password" belum ditempel** di `akun.md`; draf ada di sesi ini, tidak berlaku sampai ditempel dan daftar inisialnya diisi.
+- **Belum beres:**
+  1. **MGR.21a:** recovery untuk 4 owner dan 1 penjaga yang belum login (akun ibu ketua juga butuh recovery baru bila password-nya belum dipegang). Menunggu kabar WA dari orangnya. Link sekali pakai, dibuka orangnya sendiri lewat salin-tempel di tab baru.
+  2. **MGR.22, MGR.23, MGR.24, MGR.25** belum dikerjakan. Catatan sheet MGR.22 masih menulis "Setelah MGR.21"; secara teknis tidak bergantung pada recovery.
+  3. **LNC.03 (Senin 23 Nov):** jadwal tetap atau mundur belum diputuskan ketua. Bila tetap, yang ikut hanya yang sudah sempat membuat password.
+  4. Dari handoff sebelumnya, masih terbuka: butir "Alihkan www ke domain utama" (setelah MGR.20), Preview URLs aktif, `workers.dev` dimatikan setelah tes lulus (MG14), dua entri "Manually deployed" belum jelas asalnya, batas 100.000 permintaan per hari belum terbukti mencakup berkas statis, panel Traffic 0% belum dipahami, galat CSP skrip Turnstile belum diselidiki, `POST .../auth/v1/signup` 422 dan akun owner/penjaga yang mungkin sempat mengirim Daftar (cek daftar user sebelum LNC.04), `infografik.webp` tidak ada di cache offline, notifikasi owner dan penjaga di alamat baru belum diaktifkan.
+- **Saran giliran berikutnya:** (1) MGR.21a begitu ada kabar WA: kirim recovery satu per satu dari dashboard, link diteruskan lewat WA ke orangnya (jangan diklik), minta screenshot beranda dengan email di-crop. (2) MGR.22 (butuh "OK" ketua): tambah dulu, hapus alamat lama belakangan, tes ulang singkat login dan layar Daftar. (3) MGR.23 paling lambat sebelum LNC.04. Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`; untuk MGR.22 juga screenshot URL Auth Supabase dan widget Turnstile.
