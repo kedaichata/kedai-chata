@@ -424,3 +424,12 @@ Keputusan ketua (sesi strategi 20 Nov 2026). Sumber: docs/migrasi.md. Alasan: ke
 - **Rahasia (bagian 7):** token akun Cloudflare, kode pemulihan 2FA, dan data pendaftar domain tidak boleh masuk chat, repo, atau md.
 - **Tes migrasi tanpa membuat order** (MG11): order tes menambah data uji dan butuh reset nomor order lagi. **Recovery password akun asli dikirim setelah Site URL final** (MG12).
 - **Pertentangan dengan catatan lama:** bagian 3 (hosting GitHub Pages), Handoff #2 di `features.md` ("tetap di GitHub Pages"), blok `bonus.md` 18 Nov ("tidak pindah di versi 1"), dan baris SEC-51 / blok Analitik 20 Nov (alamat GitHub Pages sebagai satu-satunya yang terhitung). Yang paling akhir menang.
+
+### Keputusan ketua (disampaikan lewat PIC, sesi MGR).
+
+- **Alasan (dari ketua):** (1) tim sudah terbiasa commit dan push setelah menempel handoff atau catatan, dan logout serta menutup browser sudah jadi aturan dasar yang diingatkan di grup WA tim; (2) mengungkit hal-hal itu di awal sesi membuat fokus melenceng dari pekerjaan yang lebih penting, dan sesi berikutnya jadi mempersoalkan kebiasaan yang sudah jalan.
+- **Bagian "Belum beres" hanya memuat:** pekerjaan fungsional yang belum selesai, hal yang belum terbukti, dan keputusan yang menunggu "OK".
+- **Satu pengecualian soal commit dan push:** bila ada **perubahan kode atau berkas aplikasi yang berhenti di tengah** (berkas di `public/`, `supabase/`, `.github/`, atau `wrangler.jsonc` yang sudah diubah tetapi belum di-commit atau di-push), itu **wajib disebut** lengkap dengan nama berkasnya.
+- **Tidak dimuat di handoff, dan tidak ditanyakan atau diingatkan AI di awal sesi maupun di tengah sesi** (kecuali diminta): commit dan push untuk blok catatan atau handoff, logout, menutup browser atau profil terpisah. Awal sesi langsung masuk ke tugas.
+- **Tidak berubah:** aturan 9 lainnya, aturan 8 (pengingat centang diberikan di chat saat satu butir selesai), aturan `[skip ci]` 12 Nov, dan cek anti-nyasar sebelum push (bagian 8), yang tetap dilakukan saat ada push.
+- **Handoff lama tidak disunting** (append-only). Butir "belum di-commit" atau "logout" di Handoff #1 dan #2 `migrasi.md` tidak berlaku lagi. Yang paling akhir menang.

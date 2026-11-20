@@ -215,3 +215,22 @@ Kejadian di lapangan (sesi kode MGR, 20 Nov 2026). Sumber: MG6, MG7, MG14. "OK" 
 - **Belum terbukti:** apakah commit yang hanya mengubah docs benar-benar tidak memicu build (diuji saat commit docs berikutnya). Apakah `[skip ci]` dihormati Workers Builds: belum dicek; jangan diandalkan.
 - **Pertentangan dengan catatan lama:** hanya satu. Bagian 8 baris "Isian build dan deploy di Workers Builds" kini terjawab. Yang paling akhir menang.
 - MGR.08 dicentang ketua di sheet.
+
+### Handoff #3 | 2026-11-20 | [KETUA]
+
+- **Tugas:** MGR.08 (hubungkan repo ke Workers Builds) dan MGR.09 (deploy pertama dan cek di alamat `workers.dev`). Keduanya sudah dicentang ketua di sheet.
+- **File yang diubah:** `docs/migrasi.md` saja (blok MGR.07, blok MGR.08, Handoff #2), commit `b548a3d` dengan `[skip ci]`, sudah di-push. `public/`, `wrangler.jsonc`, `pages.yml`, dan Supabase tidak disentuh.
+- **Hasil yang terbukti:**
+  1. Build pertama sukses (#aa1d3acf, 92 berkas). Alamat uji `https://kedai-chata.kedaichata.workers.dev` terbuka di jendela privat: layar Masuk, tampilan, dan Pengenalan normal, tanpa galat berkas.
+  2. Commit docs `b548a3d` tidak memicu build di Cloudflare (watch paths Exclude `docs/*` dan `AGENTS.md` bekerja) maupun workflow GitHub Pages (`[skip ci]` dihormati; tetap 160 run).
+  3. Preview builds mati (dicek di tab Previews Base). Token build terbaca normal ("kedai-chata build token"); tulisan "unavailable" sempat muncul hanya sebagai kekhasan tampilan.
+- **Keputusan baru:** tidak ada di luar blok MGR.07 dan MGR.08.
+- **Belum beres:**
+  1. **MGR.10 belum dikerjakan:** menunggu "OK" ketua untuk Custom Domain `kedaichata.biz.id`. Jalurnya: Cloudflare, proyek `kedai-chata`, Settings, Domains & Routes, Add, Custom Domain.
+  2. **Preview URLs aktif otomatis** (peringatan di log build). Mematikannya berarti menambah `preview_urls = false` di `wrangler.jsonc` (perubahan berisiko, butuh penjelasan dan "OK"). `workers_dev` dimatikan setelah domain sendiri jalan (MG14).
+  3. **Widget Turnstile gagal dan terus mengulang** di alamat `workers.dev` (galat 400 ke `challenges.cloudflare.com`, pesan ramah muncul di layar). Dugaan: hostname belum didaftarkan di widget (belum terbukti). Setelah MGR.11 galat itu harus berhenti; bila tidak, selidiki di MGR.15.
+  4. Domain yang ditambah lewat dashboard (bukan `wrangler.jsonc`): belum diketahui apakah deploy berikutnya membiarkannya utuh. Cek tab Domains setelah build berikutnya yang menyentuh `public/` atau `wrangler.jsonc`.
+  5. Batas 100.000 permintaan per hari: panel menunjukkan 0 / 100.000, tetapi apakah permintaan berkas statis ikut terhitung belum terbukti.
+  6. Dua entri "Manually deployed" di Deployments (`cf209e0a`, `ea9fc4c0`): diduga dibuat alur Create application; belum terbukti.
+  7. Dari MGR.06, masih menunggu: `data-domains` di `index.html` (MGR.12), `ASAL_DIIZINKAN` di `kedai/index.ts` (MGR.13), dan cek `sw.js`, `manifest.json`, `config.js` (MGR.14).
+- **Saran giliran berikutnya:** MGR.10 (P0). Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`. Buka dashboard Cloudflare ketua di profil browser terpisah, logout setelah selesai. Jelaskan dampak, tunggu "OK" ketua, minta screenshot sebelum klik konfirmasi. Domain yang diketik hanya `kedaichata.biz.id`, tanpa `www`. Jangan ganti Site URL dan jangan bagikan alamat baru sebelum MGR.11 sampai MGR.19 selesai. Untuk MGR.11, siapkan `akun.md`, `features.md`, dan screenshot URL Auth Supabase dan widget Turnstile.
