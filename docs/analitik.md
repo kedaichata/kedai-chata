@@ -233,3 +233,31 @@ Keputusan ketua (20 Nov 2026), disetujui seluruhnya oleh ketua. Saat blok ini di
 - ANL.06 dan ANL.07 menunggu hal-hal di atas.
 
 **Saran giliran berikutnya:** lampirkan `AGENTS.md`, `analitik.md`, `security.md`, **`akun.md`**, `public/analitik.js`, `public/sw.js`, dan `public/akun.js`. Mulai dari SEC-50 (jendela privat baru, akun customer ketua, tanpa Bypass atau Block), lalu sisa SEC-51, lalu centang ANL.06 dan catat ANL.07. Dashboard Umami dibuka hanya di jendela privat, bukan sesi adik ketua. Email dan data pribadi disamarkan sebelum ditempel ke chat.
+
+### Handoff #4 | 2026-11-20 | Ketua
+
+**Tugas:** tes SEC-50 dan sebagian SEC-51 / ANL.06. Tidak ada kode dan tidak ada berkas repo yang diubah di sesi ini. **SEC-50 lulus dan sudah dicentang di sheet.** ANL.06, ANL.07, dan SEC-51 belum dicentang.
+
+**Hasil tes (di production, jendela Incognito, bukti diperiksa di chat dan tidak disimpan):**
+
+- **SEC-50 (P0) lulus.** Link reset password asli dari akun customer ketua ditempel di tab baru (DevTools sudah terbuka sebelum link ditempel, jadi `akun.js` benar-benar membaca token). Layar "Buat password baru" tampil. Payload request `send` ke Umami: `url` = alamat aplikasi saja, tanpa `#`, `access_token`, `type=recovery`, maupun `?`; `referrer` kosong; tidak ada token, email, atau id akun. Password tidak diganti, link tidak terpakai.
+- **SEC-51, pencarian kode (hanya `.js` dan `.html` di `public/`, di luar `lib/`):** `identify` hanya muncul di dua komentar (`index.html:2380`, `analitik.js:20`), tidak ada pemanggilan. `umami` di luar `analitik.js` hanya muncul di komentar yang sama. Tidak ada layar yang memanggil Umami langsung. Event hanya nama layar (`POLA_NAMA` di `analitik.js`).
+- **SEC-51, `sw.js`:** dibaca dari berkas. Hanya menangani GET dari domain sendiri; panggilan data ke Umami (POST, lintas domain) tidak dicegat dan tidak disimpan. Yang masuk cache hanya salinan `lib/umami.js`.
+- **Mode offline (Network, Offline):** layar Masuk, Daftar, dan Pengenalan tampil normal tanpa pesan galat di layar. `umami.js` dimuat dari ServiceWorker. Request `send` gagal dengan `ERR_INTERNET_DISCONNECTED` (wajar). Tidak ada baris Console yang menyebut `analitik.js`.
+- **Layar yang sama dibuka dua kali di satu tab:** Daftar dan Pengenalan tetap 1 event (jumlah request `send` tidak bertambah). Bantuan dan Belanja **belum** dites dua kali.
+
+**Keputusan baru:** tidak ada keputusan baru dari ketua. Tes alamat selain GitHub Pages memakai server file sementara di Mac (`python3 -m http.server 8000` dari folder `public/`), sudah dimatikan (Ctrl+C). Tidak ada perubahan pada repo.
+
+**Pertentangan dengan isi lama (yang paling akhir menang):** tidak ada pertentangan baru.
+
+**Data tes di Umami:** menambah pageview dan event dari sesi ini (setelah catatan Handoff #3), sampai sekitar pukul 10:41 (jam Mac ketua). Angka akhir di dashboard tidak dicek. Tombol Reset di Settings website tersedia (AN12), **kapan dipakai belum diputuskan**. Catat di ANL.07.
+
+**Belum beres:**
+
+- **SEC-51, uji alamat selain GitHub Pages: hasilnya belum sah.** Di `http://localhost:8000/` (Daftar dan Pengenalan dibuka) tidak ada request `send`, tetapi baris `umami.js` juga tidak muncul di Network. Mungkin DevTools baru dibuka atau log dibersihkan setelah halaman termuat; mungkin script memang tidak termuat. Ulangi: buka DevTools (Network, Keep log, filter `umami`) **sebelum** membuka alamat; yang benar ada `umami.js` tetapi tidak ada `send`. Jangan login atau menekan Daftar/Masuk di localhost (tetap tersambung ke Supabase asli). Turnstile di localhost menampilkan galat dan `400 (Bad Request)` dari `challenges.cloudflare.com`: wajar, hostname localhost tidak didaftarkan di widget.
+- **Tes "Keluar dan masuk normal dengan Turnstile"** (akun customer ketua) belum dikerjakan.
+- **Bantuan dan Belanja dua kali di satu tab** belum dites (opsional; pembatas per nama per tab sudah terbukti untuk Daftar dan Pengenalan).
+- **Baris merah dan kuning di Console dari bingkai Turnstile** (`challenges.cloudflare.com`: "Fetch API cannot load data:", "OTS parsing error", "No available adapters", "Turnstile Widget seem to have hung" saat offline) tidak menyebut Umami atau `analitik.js`. Bahwa baris itu sudah ada sebelum Umami dipasang masih dugaan, belum dibandingkan.
+- ANL.06 menunggu SEC-51 dan tes Keluar-masuk. ANL.07 menunggu ANL.06.
+
+**Saran giliran berikutnya:** lampirkan `AGENTS.md`, `analitik.md`, `security.md`. Tidak perlu berkas kode kecuali ada temuan. Urutan: (1) ulangi tes localhost dengan DevTools dibuka lebih dulu; (2) Keluar lalu masuk dengan Turnstile memakai akun customer ketua (di alamat GitHub Pages asli); (3) opsional Bantuan dan Belanja dua kali. Bila semuanya lulus: SEC-51 boleh dicentang, lalu ANL.06; setelah itu ANL.07 (tanggal tes 20 Nov 2026, tanggal mulai analisis = tanggal LNC.03, dan keputusan Reset). Dashboard Umami hanya dibuka di jendela privat. Email dan data pribadi disamarkan sebelum ditempel ke chat.
