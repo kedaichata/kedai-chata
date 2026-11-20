@@ -145,3 +145,32 @@ Keputusan ketua (20 Nov 2026), disetujui seluruhnya oleh ketua. Saat blok ini di
 - **Dua tes tambahan untuk ANL.06:** satu kali buka layar harus menjadi satu event (pengamat `hidden` bisa menembak ganda); dan karena `sw.js` disentuh, cek versi cache baru muncul serta aplikasi tetap terbuka offline (`AGENTS.md` bagian 10 butir 6).
 - **Bukti** mengikuti SEC-50 dan SEC-51 (dashboard Umami atau permintaan jaringan, pencarian kode, screenshot). Email dan data pribadi disamarkan sebelum ditempel ke chat (`AGENTS.md` bagian 2 butir 11). Bukti tidak disimpan di md.
 - **Pertentangan dengan catatan lama:** kata "dummy" di ANL.06 dan SEC-50 (link reset, akun) tidak berlaku; yang dipakai akun asli di atas. Yang paling akhir menang.
+
+### Handoff #1 | 2026-11-20 | Ketua
+
+**Tugas:** ANL.01 (siapkan akun Umami Cloud dan satu website). **Selesai.** Ditulis dari sesi tanya jawab singkat dengan ketua; tidak ada kode dan tidak ada berkas repo yang diubah.
+
+**Hasil:**
+
+- Akun Umami Cloud milik ketua, dibuat di jendela privat (aturan anti-nyasar, `AGENTS.md` bagian 8). Wilayah data **United States** (tidak bisa diubah setelah dipilih), paket **Hobby**. Alasan memilih United States belum tercatat.
+- Satu website "Kedai ChATA", domain `kedaichata.github.io` (hostname saja, tanpa path). Website ID disimpan ketua di password manager, tidak di repo, md, atau chat.
+- Alamat script untuk disalin: `https://cloud.umami.is/script.js` (tanpa nomor versi, jadi isinya bisa berubah; sesuai AN6 perlu dipatok saat disalin).
+- Lewat 100 ribu event: FAQ Umami hanya menjelaskan paket berbayar (event tambahan ditagih, data tidak terputus). **Perilaku Hobby belum jelas.** AN14 tetap berlaku: mendekati batas, kurangi event, jangan upgrade.
+- Cara hitung usage menurut FAQ Umami: pageview + event kustom + tiap properti event yang disimpan.
+- Menghapus data tes: **ada tombol "Reset" di Settings website** (semua statistik terhapus, pengaturan tetap). Belum dipakai.
+
+**Keputusan baru:** tidak ada keputusan baru dari ketua di sesi ini. Pilihan Hobby sudah sesuai AN1.
+
+**Pertentangan dengan isi lama (yang paling akhir menang):**
+
+- AN12 menulis cara menghapus data tes "belum diketahui". Kini diketahui: tombol Reset di Settings website. Kapan Reset dipakai (misalnya sebelum LNC.03) belum diputuskan.
+- AN2 membatasi pelacakan ke empat layar, tetapi script Umami mencatat pageview otomatis tiap `index.html` dibuka, termasuk pengguna yang sudah login membuka aplikasi. Perkiraan "belasan ribu event per bulan" di AN14 jadi perlu dicek ulang dengan angka usage nyata di dashboard setelah jalan.
+
+**Belum beres:**
+
+- Perilaku paket Hobby saat lewat 100 ribu event.
+- Apakah Umami Cloud menerima data dari salinan script lokal di `public/lib/` (AN6), diuji di ANL.02.
+- Apakah `data-host-url` perlu diisi untuk salinan lokal, diuji di ANL.02.
+- Keputusan kapan memakai Reset untuk data tes.
+
+**Saran giliran berikutnya:** ANL.02 dan ANL.03 dikerjakan bersama (satu push). Lampirkan `AGENTS.md`, `analitik.md`, `security.md`, `public/index.html`, `public/sw.js`, dan `public/akun.js`. Salinan script dari alamat di atas dibuat ketua dengan versi dipatok, tanggal salinan dicatat. `index.html` (kategori login) dan `sw.js` tetap butuh penjelasan dampak dan "OK" ketua sebelum diubah. Website ID ditempel ke chat hanya saat dibutuhkan di ANL.02.
