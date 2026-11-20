@@ -234,3 +234,27 @@ Kejadian di lapangan (sesi kode MGR, 20 Nov 2026). Sumber: MG6, MG7, MG14. "OK" 
   6. Dua entri "Manually deployed" di Deployments (`cf209e0a`, `ea9fc4c0`): diduga dibuat alur Create application; belum terbukti.
   7. Dari MGR.06, masih menunggu: `data-domains` di `index.html` (MGR.12), `ASAL_DIIZINKAN` di `kedai/index.ts` (MGR.13), dan cek `sw.js`, `manifest.json`, `config.js` (MGR.14).
 - **Saran giliran berikutnya:** MGR.10 (P0). Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`. Buka dashboard Cloudflare ketua di profil browser terpisah, logout setelah selesai. Jelaskan dampak, tunggu "OK" ketua, minta screenshot sebelum klik konfirmasi. Domain yang diketik hanya `kedaichata.biz.id`, tanpa `www`. Jangan ganti Site URL dan jangan bagikan alamat baru sebelum MGR.11 sampai MGR.19 selesai. Untuk MGR.11, siapkan `akun.md`, `features.md`, dan screenshot URL Auth Supabase dan widget Turnstile.
+
+### Handoff #4 | 2026-11-20 | [KETUA]
+
+- **Tugas:** MGR.10 (pasang domain sendiri) dan MGR.11 (daftarkan alamat baru di Turnstile dan Auth). MGR.10 sudah dicentang ketua; MGR.11 siap dicentang.
+- **File yang diubah:** tidak ada. Repo, `public/`, `wrangler.jsonc`, `pages.yml`, dan kode Supabase tidak disentuh. Yang berubah hanya pengaturan di dashboard: Custom Domain di Cloudflare, hostname widget Turnstile, dan Redirect URLs Auth Supabase.
+- **Hasil yang terbukti:**
+  1. `kedaichata.biz.id` terpasang di Worker `kedai-chata` (tab Domains, tipe Production). Layar Masuk dan Pengenalan terbuka normal di jendela privat.
+  2. Hostname `kedaichata.biz.id` ditambah ke widget Turnstile "Kedai ChATA" (kini 2 dari 10, `kedaichata.github.io` utuh). Widget menampilkan "Berhasil!" dan POST 400 ke `challenges.cloudflare.com` berhenti. Dugaan Handoff #3 poin 3 terbukti.
+  3. Redirect URLs Auth: `https://kedaichata.biz.id/` ditambah (Total 2, entri lama utuh). **Site URL tidak diganti.**
+  4. Template email Auth: hanya Reset password yang dipakai dan dicek (bawaan, memakai `{{ .ConfirmationURL }}`, tanpa alamat tertulis). Confirm signup tidak terkirim; Invite user belum pernah dipakai dan tidak diperiksa.
+- **Keputusan baru:**
+  1. "OK" ketua untuk MGR.10, domain akar saja tanpa `www`. `www.kedaichata.biz.id` tidak punya DNS, jadi tidak terbuka. Butir baru untuk sheet: "Alihkan www ke domain utama", dikerjakan setelah MGR.20.
+  2. `kedai-chata.kedaichata.workers.dev` sengaja tidak didaftarkan di Turnstile (MG14); galat widget di sana dibiarkan.
+  3. Format entri Redirect URLs mengikuti yang lama: `https://kedaichata.biz.id/` (dengan garis miring, tanpa wildcard).
+- **Pertentangan dengan catatan lama:** jalur "Settings, Domains & Routes" di Handoff #3 sudah usang. Di dashboard sekarang jalurnya tab **Domains**, tombol **Add Domain** (Subdomain dikosongkan untuk domain akar). Yang paling akhir menang.
+- **Belum beres:**
+  1. **MGR.12:** `data-domains` di `public/index.html` baris 2385 masih alamat lama; `analitik.js` belum dibaca; domain situs di dashboard Umami belum diganti. Menyentuh `index.html` (kategori login): butuh penjelasan dampak dan "OK" ketua. Usulan: **tambah** alamat baru di samping yang lama (MG8), format `data-domains` dicek dari berkas aslinya.
+  2. **MGR.13:** `ASAL_DIIZINKAN` di `kedai/index.ts` baris 130 masih hanya alamat lama. **Selama ini belum diubah, Masuk dan semua aksi `kedai` dari `kedaichata.biz.id` diduga gagal (CORS).** Karena itu jangan tes Masuk atau Daftar di alamat baru dulu.
+  3. MGR.14 (cek `manifest.json`, `sw.js`, `config.js`, teks klik push) belum dikerjakan.
+  4. Preview URLs aktif (toggle Preview di tab Domains menyala). Mematikannya lewat `preview_urls = false` di `wrangler.jsonc` atau toggle itu: perubahan berisiko, butuh "OK". Toggle `workers.dev` dimatikan setelah domain sendiri lulus tes (MG14).
+  5. Belum terbukti: domain yang ditambah lewat dashboard tetap utuh setelah deploy berikutnya yang menyentuh `public/` atau `wrangler.jsonc`; permintaan berkas statis ikut terhitung di batas 100.000 per hari; asal dua entri "Manually deployed".
+  6. Galat CSP (`connect-src 'self'` memblokir `data:,`), "No available adapters", dan "OTS parsing error WOFF" di console berasal dari skrip tantangan Cloudflare (`normal?lang=id:1`), dugaan tidak berbahaya karena widget berhasil. Belum diselidiki asal CSP-nya; bila widget gagal di HP tertentu, dicek di MGR.15.
+  7. Alamat `kedaichata.biz.id` belum dibagikan ke siapa pun; tetap begitu sampai MGR.19.
+- **Saran giliran berikutnya:** MGR.12, lalu MGR.13 (keduanya butuh "OK" ketua dan commit tanpa `[skip ci]`, cek anti-nyasar sebelum push). Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`, `analitik.md`, `public/analitik.js`, bagian `public/index.html` sekitar baris 2385, `supabase/functions/kedai/index.ts` (bagian `ASAL_DIIZINKAN`), dan screenshot pengaturan website Umami tanpa data kunjungan nyata. Deploy `kedai` mengikuti urutan `AGENTS.md` bagian 8.
