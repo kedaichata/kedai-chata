@@ -281,3 +281,37 @@ Kejadian di lapangan (sesi kode MGR, 20 Nov 2026). Sumber: MG6, MG7, MG14. "OK" 
   4. Masih dari Handoff #4: Preview URLs aktif, `workers.dev` belum dimatikan (butuh "OK"), dua entri "Manually deployed" belum terbukti asalnya, batas 100.000 permintaan per hari belum terbukti mencakup berkas statis, galat CSP dari skrip tantangan Turnstile belum diselidiki.
   5. Login dari alamat baru belum dites. Site URL belum diganti dan alamat baru belum dibagikan (sampai MGR.19).
 - **Saran giliran berikutnya:** (1) ganti domain di Umami lalu centang MGR.12; (2) MGR.14, lampirkan `AGENTS.md`, `migrasi.md`, `security.md`, `public/config.js`, `public/manifest.json`, `public/sw.js`, `pengenalan-isi.js`, dan keluaran pencarian alamat lama di repo; (3) setelah itu Fase D (MGR.15 sampai MGR.18) tanpa membuat order. Tes Masuk dari alamat baru kini seharusnya tidak lagi terblokir CORS (MGR.13 terbukti di sisi server; SEC-33 dari browser di MGR.16).
+
+### 2026-11-20: MGR.12 selesai, domain situs di Umami diganti ke alamat baru
+
+Kejadian di lapangan (sesi kode MGR, 20 Nov 2026). Sumber: MG15. Melengkapi butir "belum beres" nomor 1 di Handoff #5. Alasan lain belum tercatat.
+
+- **Dashboard Umami:** kolom Domain di pengaturan website "Kedai ChATA" diganti dari `kedaichata.github.io` menjadi `kedaichata.biz.id`, lalu disimpan. Terkonfirmasi dari screenshot setelah refresh (judul website dan kolom Domain sama-sama menampilkan alamat baru). Website ID, Name, dan tracking code tidak berubah.
+- **Tidak bisa aditif:** kolom Domain hanya satu isian, jadi alamat lama tidak bisa dipertahankan di samping alamat baru (berbeda dari MG8). Penyaring yang memuat kedua alamat tetap `data-domains` di `public/index.html` (Handoff #5). Untuk mundur, tulis ulang domain lama di kolom itu lalu Save.
+- **Belum terbukti:** apakah kolom Domain ini ikut menyaring data atau hanya label, dan apakah kunjungan dari alamat baru benar-benar tercatat. Dibuktikan di MGR.17 (SEC-51), bukan di sini.
+- **Tidak ada berkas repo yang diubah** di langkah ini.
+- **Pertentangan dengan catatan lama:** butir "belum beres" nomor 1 di Handoff #5 (domain Umami masih alamat lama) tidak berlaku lagi. Yang paling akhir menang.
+- MGR.12 dicentang ketua di sheet.
+
+### Handoff #6 | 2026-11-20 | [KETUA]
+
+- **Tugas:** MGR.12 (domain situs di Umami) dan MGR.14 (cek `manifest.json`, `sw.js`, `config.js`, teks klik push). Keduanya sudah dicentang ketua di sheet.
+- **File yang diubah:** `docs/migrasi.md` saja (blok MGR.12 dan handoff ini). `public/`, `sw.js`, `wrangler.jsonc`, `pages.yml`, dan Supabase tidak disentuh.
+- **Hasil yang terbukti:**
+  1. **MGR.12:** kolom Domain di dashboard Umami kini `kedaichata.biz.id` (screenshot setelah refresh). Rincian di blok MGR.12 di atas.
+  2. **MGR.14, tidak ada yang perlu diubah.** Berkas yang dibaca: `manifest.json`, `sw.js`, `config.js`, `pengenalan-isi.js`.
+     - `manifest.json`: `start_url` dan `scope` sama-sama `"./"`, path ikon relatif, tanpa `id`, subfolder, atau alamat tertulis.
+     - `sw.js`: path cache dan ikon notifikasi relatif. Alamat tujuan klik notifikasi dibangun dari `self.registration.scope` (`scope + "?buka=..."`). Bentuk isi push (`judul`, `isi`, `nomor`, `tujuan`, `id`) tidak punya kolom alamat. Satu-satunya kata "GitHub Pages" ada di komentar baris 39.
+     - `config.js`: hanya URL project Supabase, kunci publishable, kunci publik VAPID, dan Sitekey Turnstile.
+     - `pengenalan-isi.js`: tidak ada alamat atau tautan aplikasi.
+     - Pencarian `github`, `http`, `biz.id`, `workers.dev` di keempat berkas hanya menemukan komentar baris 39 dan URL Supabase.
+- **Keputusan baru:** tidak ada.
+- **Pertentangan dengan catatan lama:** tidak ada. Dugaan "path aplikasi sudah relatif, kemungkinan tidak perlu diubah" (sheet MGR.14) kini terbukti.
+- **Belum beres:**
+  1. **Fase D belum dikerjakan:** MGR.15 sampai MGR.18. Site URL belum diganti dan alamat baru belum dibagikan (sampai MGR.19).
+  2. **Domain di Umami:** belum terbukti apakah kolom Domain ikut menyaring data dan apakah kunjungan dari alamat baru tercatat. Dibuktikan di MGR.17 (SEC-51).
+  3. **Pemasangan service worker di alamat baru belum terbukti.** `cache.addAll` semua-atau-gagal, jadi satu berkas 404 menggagalkan pemasangan. Dites di MGR.18. Langganan push terikat alamat, jadi tiap HP perlu mengaktifkan notifikasi lagi.
+  4. **Teks push dari `kedai` tidak dibaca ulang di sesi ini.** Dasarnya hanya hasil MGR.06 (alamat lama di `kedai` hanya di `ASAL_DIIZINKAN`) dan fakta bahwa target klik tidak bergantung pada teks push.
+  5. **Butir baru untuk sheet (dari Handoff #4):** "Alihkan www ke domain utama", dikerjakan setelah MGR.20.
+  6. **Dari handoff sebelumnya, masih terbuka:** Preview URLs aktif (butuh "OK" untuk mematikannya), `workers.dev` dimatikan setelah domain sendiri lulus tes (MG14), dua entri "Manually deployed" belum jelas asalnya, batas 100.000 permintaan per hari belum terbukti mencakup berkas statis, panel Traffic 0% untuk versi terbaru belum dipahami, galat CSP dari skrip tantangan Turnstile belum diselidiki.
+- **Saran giliran berikutnya:** MGR.15 (P0 High-Risk): login customer (akun asli ketua), owner, dan penjaga dari `https://kedaichata.biz.id/`, plus layar Daftar dibuka dan widget Turnstile muncul (tidak dikirim), Keluar dan Masuk normal. **Tanpa membuat order** dan tanpa akun dummy baru (MG11). Jangan ganti Site URL dan jangan bagikan alamat baru. Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`. Bukti diperiksa lewat screenshot di chat dengan email dan data pelanggan disamarkan; tanpa bukti jangan dicentang. Sesudahnya MGR.16 (SEC-33) dan MGR.17 (SEC-51).
