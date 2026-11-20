@@ -452,6 +452,7 @@ Keputusan ketua (sesi strategi 20 Nov 2026). Sumber: docs/migrasi.md. Alasan: ke
 
 **Berkas tujuan:** `AGENTS.md`, tempel PALING BAWAH bagian 12. Append-only. Keputusan ketua (sesi kode MGR, 21 Nov 2026). Alasan: butir yang belum beres terbawa dan disalin ulang dari handoff ke handoff, sehingga dokumen menggemuk dan sulit dibaca; ketua ingin handoff terakhir menjadi rujukan. Alasan lain belum tercatat. Yang paling akhir menang.
 
+- **Menentukan handoff terakhir:** ketua yang akan menentukan kapan handoff terakhir dibuat.
 - **Satu daftar di handoff terakhir:** tiap handoff baru memuat satu daftar lengkap butir yang masih terbuka, satu baris pendek per butir, dengan nomor butir sheet bila ada (misalnya MGR.21a). Daftar harus bisa dibaca tanpa membuka handoff sebelumnya, karena sesi berikutnya membaca handoff paling akhir (bagian 11).
 - **Memperbarui daftar:** butir yang sudah beres dicoret dari daftar dan hasilnya ditulis di "Hasil yang terbukti" handoff itu. Butir baru ditambahkan.
 - **Tanpa salin ulang:** penjelasan panjang tidak disalin dari handoff sebelumnya. Rincian tetap di handoff atau blok tempat butir itu pertama ditulis.

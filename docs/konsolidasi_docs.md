@@ -1,4 +1,4 @@
-## Prompt (tempel mulai dari sini)
+## Prompt
 
 ```
 Ini sesi STRATEGI, bukan sesi kode. Tugasmu hari ini: mengonsolidasi satu dokumen, yaitu `[NAMA_BERKAS]`, supaya isinya hanya keadaan terakhir.
@@ -33,12 +33,8 @@ Mulai dari Langkah 1.
 
 ## Blok keputusan ketua (draf, untuk `AGENTS.md` bagian 12)
 
-Tempel di **sesi kode** berikutnya (blok susulan hanya ditambah di sesi kode, aturan 7). Ketua perlu memastikan bunyinya; sebagian isinya usulan.
-
 ```markdown
 ### 2026-11-21: Keputusan ketua: dokumen `docs/` boleh dikonsolidasi di sesi strategi
-
-**Berkas tujuan:** `AGENTS.md`, tempel PALING BAWAH bagian 12. Append-only. Keputusan ketua (sesi kode MGR, 21 Nov 2026). Alasan: banyak blok susulan dan handoff saling menimpa ("yang paling akhir menang"), sehingga pembaca harus merangkai urutan blok untuk tahu keadaan terakhir; ketua ingin yang tercatat adalah yang akhir saja. Alasan lain belum tercatat.
 
 - **Jalur baru:** konsolidasi satu dokumen per sesi, **di sesi strategi**, setelah isi dokumen stabil. Aturan 7 (bagian 2) tidak berubah: sesi kode tetap tidak merapikan dokumen dan hanya menambah blok susulan.
 - **Rencana dulu:** AI menjelaskan rencana (per bagian, pertentangan, perlakuan handoff, yang dibuang) dan menunggu persetujuan ketua sebelum menulis.
