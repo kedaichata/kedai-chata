@@ -127,7 +127,12 @@ import { buatAksiBelanja } from "./belanja.ts";
 // ------------------------------------------------------------
 
 // Asal (origin) yang boleh memanggil dari peramban: hanya GitHub Pages ChATA.
-const ASAL_DIIZINKAN = ["https://kedaichata.github.io"];
+const ASAL_DIIZINKAN = [
+  "https://kedaichata.github.io",
+  // MGR.13: alamat resmi baru (domain sendiri), ditambah di samping alamat lama (MG8).
+  // Format asal permintaan: tanpa "www" dan tanpa garis miring di akhir.
+  "https://kedaichata.biz.id",
+];
 
 // Pengaturan yang aman ditampilkan ke aplikasi (selain ini tidak dikirim).
 const PENGATURAN_AMAN = ["alamat_maks"];
