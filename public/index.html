@@ -2375,6 +2375,17 @@
             async
             defer
         ></script>
+        <!-- ANL.02: skrip analitik Umami, SALINAN LOKAL di lib/ (unduhan 20 Nov 2026, bukan CDN). defer = tidak menahan layar Masuk.
+             data-exclude-hash dan data-exclude-search WAJIB: link reset password membawa token di bagian # (analitik.md AN5).
+             data-domains: hanya hostname GitHub Pages yang terhitung. Jangan tambah data-errors, data-host-url, atau umami.identify. -->
+        <script
+            defer
+            src="lib/umami.js"
+            data-website-id="e787b809-2104-4cbc-885f-70cb7a1c0124"
+            data-domains="kedaichata.github.io"
+            data-exclude-hash="true"
+            data-exclude-search="true"
+        ></script>
         <!-- Logika layar Daftar, Masuk, Keluar (AKN.05) -->
         <script src="akun.js"></script>
         <!-- Layar Lengkapi profil (AKN.06); harus setelah akun.js karena memakai window.KedaiAkun -->
@@ -2438,6 +2449,8 @@
              pengenalan-isi.js (hanya data teks) harus SEBELUM pengenalan.js (logika layar). -->
         <script src="pengenalan-isi.js"></script>
         <script src="pengenalan.js"></script>
+        <!-- ANL.02: pembungkus analitik (analitik.md AN7). Setelah semua layar, diam bila skrip Umami tidak ada. -->
+        <script src="analitik.js"></script>
         <script>
             // Mendaftarkan service worker (sw.js) supaya aplikasi bisa dipasang dan terbuka offline.
             // Path relatif (tanpa awalan /) supaya jalan di GitHub Pages.

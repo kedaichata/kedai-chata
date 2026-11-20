@@ -33,7 +33,8 @@
 // var NAMA_CACHE = "chata-v33"; // KETUA: naik dari chata-v32 karena img/onigiri-cumi-cabe-ijo.jpg masuk daftar cache
 //var NAMA_CACHE = "chata-v34"; // KETUA: naik dari chata-v33 karena enam foto menu (seblak, kerupuk bulat, olahan telur) masuk daftar cache
 // var NAMA_CACHE = "chata-v35"; // KETUA: naik dari chata-v34 karena 1 foto menu (es kristal) masuk daftar cache
-var NAMA_CACHE = "chata-v36"; // BLJ.06: naik dari chata-v35 karena belanja.js, belanja.css, belanjainput.js, dan belanjaedit.js masuk daftar cache
+// var NAMA_CACHE = "chata-v36"; // BLJ.06: naik dari chata-v35 karena belanja.js, belanja.css, belanjainput.js, dan belanjaedit.js masuk daftar cache
+var NAMA_CACHE = "chata-v37"; // ANL.03: naik dari chata-v36 karena analitik.js dan lib/umami.js masuk daftar cache
 
 // Semua path relatif (tanpa awalan /) supaya jalan di GitHub Pages.
 // Tiap berkas aplikasi baru (JS, style.css, pustaka, ikon) wajib ditambah di sini.
@@ -42,6 +43,7 @@ var DAFTAR_CACHE = [
   "index.html",
   "config.js",
   "lib/supabase.js",
+  "lib/umami.js", // ANL.03
   "manifest.json",
   "style.css",
   "game.css", // GIM.03
@@ -82,6 +84,7 @@ var DAFTAR_CACHE = [
   "belanja.js", // BLJ.06
   "belanjainput.js", // BLJ.06
   "belanjaedit.js", // BLJ.06
+  "analitik.js", // ANL.03
   "img/icon-192.png",
   "img/icon-512.png",
   "img/chata-logo.png",
