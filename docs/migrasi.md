@@ -258,3 +258,26 @@ Kejadian di lapangan (sesi kode MGR, 20 Nov 2026). Sumber: MG6, MG7, MG14. "OK" 
   6. Galat CSP (`connect-src 'self'` memblokir `data:,`), "No available adapters", dan "OTS parsing error WOFF" di console berasal dari skrip tantangan Cloudflare (`normal?lang=id:1`), dugaan tidak berbahaya karena widget berhasil. Belum diselidiki asal CSP-nya; bila widget gagal di HP tertentu, dicek di MGR.15.
   7. Alamat `kedaichata.biz.id` belum dibagikan ke siapa pun; tetap begitu sampai MGR.19.
 - **Saran giliran berikutnya:** MGR.12, lalu MGR.13 (keduanya butuh "OK" ketua dan commit tanpa `[skip ci]`, cek anti-nyasar sebelum push). Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`, `analitik.md`, `public/analitik.js`, bagian `public/index.html` sekitar baris 2385, `supabase/functions/kedai/index.ts` (bagian `ASAL_DIIZINKAN`), dan screenshot pengaturan website Umami tanpa data kunjungan nyata. Deploy `kedai` mengikuti urutan `AGENTS.md` bagian 8.
+
+### Handoff #5 | 2026-11-20 | [KETUA]
+
+- **Tugas:** MGR.13 (asal permintaan `kedai`) dan MGR.12 (analitik). MGR.13 selesai dan dicentang. **MGR.12 belum selesai:** sisi kode beres, domain di dashboard Umami belum terkonfirmasi diganti.
+- **File yang diubah** (keduanya sudah di-commit, di-push, dan live):
+  1. `supabase/functions/kedai/index.ts`: `ASAL_DIIZINKAN` kini berisi `https://kedaichata.github.io` dan `https://kedaichata.biz.id` (commit `398232a`). `kedai` sudah di-deploy sesuai urutan `AGENTS.md` bagian 8.
+  2. `public/index.html`: `data-domains` jadi `kedaichata.github.io,kedaichata.biz.id` (baris 2385) dan komentar baris 2380 disesuaikan (commit `c1368e1`).
+  - Tidak berubah: `analitik.js`, `sw.js`, `pages.yml`, `wrangler.jsonc`, pengecekan token `kedai`.
+- **Hasil yang terbukti:**
+  1. Preflight dari asal `https://kedaichata.biz.id` dibalas 204 dengan `access-control-allow-origin` berisi asal itu; asal asing dibalas 204 tanpa header itu.
+  2. Deploy `kedai` sukses, token CLI bersih setelahnya.
+  3. Workers Builds membangun kedua commit (status Ready). `curl` ke `https://kedaichata.biz.id/` menyajikan `index.html` baru. Domain sendiri tetap melayani setelah deploy yang menyentuh `public/` (menjawab butir belum terbukti di Handoff #4 poin 4 dan 5 sebagian).
+  4. `analitik.js` tidak punya penyaring alamat, jadi tidak perlu diubah. Format `data-domains` dipisah koma, maksimum 50 karakter (dokumentasi Umami, dicek 20 Nov 2026); nilai baru 38 karakter.
+  5. Workers Builds ikut membangun commit yang hanya menyentuh `supabase/` (build MGR.13). Bahan untuk butir "build watch paths" di bagian 8.
+- **Keputusan baru:** "OK" ketua untuk MGR.13 (`index.ts`) dan MGR.12 (`index.html` termasuk komentar), diberikan ketua sendiri di sesi ini (20 Nov 2026).
+- **Pertentangan dengan catatan lama:** komentar `index.html` baris 2380 dan `analitik.md` AN5 ("hostname GitHub Pages saja") kini berarti dua hostname. Yang paling akhir menang.
+- **Belum beres:**
+  1. **Domain situs di dashboard Umami** masih `kedaichata.github.io` (screenshot 20 Nov); mengganti ke `kedaichata.biz.id` belum terkonfirmasi. **MGR.12 jangan dicentang** sampai selesai. Belum terbukti apakah kolom itu hanya label atau ikut menyaring data; dibuktikan di MGR.17 (SEC-51).
+  2. **MGR.14 belum dikerjakan** (`manifest.json`, `sw.js`, `config.js`, teks klik push); berkasnya belum ditempel.
+  3. Panel Active deployment menampilkan Traffic 0% untuk versi terbaru (`e02145bb`) walau situs sudah menyajikan versi baru. Arti angka itu belum dipahami.
+  4. Masih dari Handoff #4: Preview URLs aktif, `workers.dev` belum dimatikan (butuh "OK"), dua entri "Manually deployed" belum terbukti asalnya, batas 100.000 permintaan per hari belum terbukti mencakup berkas statis, galat CSP dari skrip tantangan Turnstile belum diselidiki.
+  5. Login dari alamat baru belum dites. Site URL belum diganti dan alamat baru belum dibagikan (sampai MGR.19).
+- **Saran giliran berikutnya:** (1) ganti domain di Umami lalu centang MGR.12; (2) MGR.14, lampirkan `AGENTS.md`, `migrasi.md`, `security.md`, `public/config.js`, `public/manifest.json`, `public/sw.js`, `pengenalan-isi.js`, dan keluaran pencarian alamat lama di repo; (3) setelah itu Fase D (MGR.15 sampai MGR.18) tanpa membuat order. Tes Masuk dari alamat baru kini seharusnya tidak lagi terblokir CORS (MGR.13 terbukti di sisi server; SEC-33 dari browser di MGR.16).
