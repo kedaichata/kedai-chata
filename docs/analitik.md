@@ -261,3 +261,29 @@ Keputusan ketua (20 Nov 2026), disetujui seluruhnya oleh ketua. Saat blok ini di
 - ANL.06 menunggu SEC-51 dan tes Keluar-masuk. ANL.07 menunggu ANL.06.
 
 **Saran giliran berikutnya:** lampirkan `AGENTS.md`, `analitik.md`, `security.md`. Tidak perlu berkas kode kecuali ada temuan. Urutan: (1) ulangi tes localhost dengan DevTools dibuka lebih dulu; (2) Keluar lalu masuk dengan Turnstile memakai akun customer ketua (di alamat GitHub Pages asli); (3) opsional Bantuan dan Belanja dua kali. Bila semuanya lulus: SEC-51 boleh dicentang, lalu ANL.06; setelah itu ANL.07 (tanggal tes 20 Nov 2026, tanggal mulai analisis = tanggal LNC.03, dan keputusan Reset). Dashboard Umami hanya dibuka di jendela privat. Email dan data pribadi disamarkan sebelum ditempel ke chat.
+
+### Handoff #5 | 2026-11-20 | (Ketua)
+
+**Tugas:** tes sisa SEC-51 dan ANL.06. Tidak ada kode dan tidak ada berkas repo yang diubah di sesi ini. **ANL.06, SEC-50, dan SEC-51 sudah dicentang di sheet.** Tinggal ANL.07 dan ANL.08.
+
+**Hasil tes (di production, jendela Incognito, bukti diperiksa di chat dan tidak disimpan):**
+
+- **SEC-51, alamat selain GitHub Pages: lulus.** Di `http://localhost:8000/` (server file sementara, DevTools dibuka lebih dulu), `umami.js` termuat (200, dari ServiceWorker) tetapi tidak ada request `send` setelah Daftar dan Pengenalan dibuka. Artinya `data-domains` bekerja. Server sudah dimatikan (Ctrl+C). Baris merah 400 dan peringatan `postMessage` dari `challenges.cloudflare.com` di localhost wajar (hostname localhost tidak didaftarkan di Turnstile) dan tidak menyebut Umami atau `analitik.js`.
+- **Keluar lalu masuk dengan Turnstile: lulus.** Akun customer ketua di alamat GitHub Pages asli, dua kali masuk, Home tampil dengan badge CUSTOMER, Console kosong. Filter `umami` hanya `umami.js` dan satu `send`; login tidak memicu `send` baru (pageview hanya saat halaman dimuat).
+
+**Keputusan baru:** tidak ada keputusan baru dari ketua.
+
+**Pertentangan dengan isi lama (yang paling akhir menang):** tidak ada pertentangan baru.
+
+**Data tes di Umami:** menambah pageview dan event dari sesi ini sampai sekitar pukul 11:00 (jam Mac ketua), 20 Nov 2026. Angka akhir di dashboard tidak dicek. Tombol Reset di Settings website tersedia (AN12), **kapan dipakai belum diputuskan**.
+
+**Belum beres:**
+
+- **ANL.07** (catatan manusia, tanpa kode): tanggal tes 20 Nov 2026, tanggal mulai analisis = tanggal LNC.03 (rencana Senin 23 Nov 2026), dan keputusan kapan memakai Reset. Akun customer ketua tidak dibersihkan sebagai akun dummy, dan dibuat sebelum LNC.03 sehingga di luar rentang analisis (blok akun tes 20 Nov).
+- **ANL.08:** review 2 sampai 4 minggu bersama LNC.05, setelah LNC.04.
+- Bantuan dan Belanja dibuka dua kali di satu tab belum dites (opsional; pembatas per nama per tab sudah terbukti untuk Daftar dan Pengenalan).
+- Layar Masuk setelah Keluar tidak terlihat di screenshot, hanya laporan lisan.
+- Baris merah dan kuning di Console dari bingkai Turnstile belum dibandingkan dengan kondisi sebelum Umami dipasang (dugaan: sudah ada sebelumnya).
+- Perilaku paket Hobby saat lewat 100 ribu event masih belum jelas (AN14: mendekati batas, kurangi event, jangan upgrade). Pantau usage di dashboard tiap minggu (opsi A, Handoff #2).
+
+**Saran giliran berikutnya:** tidak perlu berkas kode. Putuskan Reset Umami (disarankan sebelum LNC.03 supaya angka bersih, keputusan ketua), catat ANL.07, lalu centang. Sebelum menutup: logout, tutup jendela Incognito, pastikan dashboard Umami tidak tertinggal terbuka (aturan anti-nyasar, `AGENTS.md` bagian 8). Setelah LNC.04, kerjakan ANL.08 bersama LNC.05.

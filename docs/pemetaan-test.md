@@ -485,3 +485,25 @@ Sisa: SEC-19 (Android), non-SEC (O22, wizard Besok, jumlah menu, Segarkan, pilih
 **Belum teruji (catatan):** baris 400 pada `auth/v1/token` yang sempat terlihat sebelum Console dibersihkan tidak diselidiki asalnya (dugaan: percobaan login lama); perangkat selain Chrome laptop tidak diulang (HP sudah di TRN.05).
 
 **Sisa:** pembersihan akun dummy (`test05`, `test06`, `+trn06`) sebelum LNC.04, butuh "OK" ketua. LNC.01 menunggu OK ketua. SEC-01, SEC-02, SEC-32 menunggu dicocokkan dengan teks barisnya di sheet.
+
+### 2026-11-20 | (KETUA): ANL.06 (Analitik), SEC-50, SEC-51
+
+**Baru terbukti** (tanpa bukti dan tanpa data pelanggan):
+
+- **SEC-50:** link reset password asli dari akun customer ketua, dibuka salin-tempel di tab baru. Kunjungan di Umami tanpa `#` dan `?`, tanpa token, email, atau id akun. Password tidak diganti.
+- **SEC-51:** pencarian kode: `identify` hanya muncul di komentar, tidak ada pemanggilan, dan tidak ada layar yang memanggil Umami langsung. `sw.js` tidak mencegat atau menyimpan panggilan ke Umami. Script diblokir dan mode offline tidak memunculkan galat di layar. Alamat selain GitHub Pages (`localhost`) memuat `umami.js` tetapi tidak mengirim `send`.
+- **ANL.06 (bagian lain):** empat event (`buka-daftar`, `buka-pengenalan`, `buka-bantuan`, `buka-belanja`) hanya berisi nama layar. Daftar dan Pengenalan dibuka dua kali di satu tab tetap 1 event. Keluar lalu masuk dua kali dengan Turnstile berhasil, tanpa galat di widget dan tanpa `send` baru.
+
+**SEC yang dicentang di sheet:** SEC-50 dan SEC-51 (20 Nov 2026). ANL.06 siap dicentang (tanggal centang oleh PIC: ...).
+
+**Tes tidak perlu diulang:** seluruh tes di atas, kecuali `analitik.js`, `lib/umami.js`, tag script di `index.html`, atau `sw.js` berubah.
+
+**Belum teruji (catatan):**
+
+- Bantuan dan Belanja dibuka dua kali di satu tab.
+- Layar Masuk setelah Keluar tidak terlihat di screenshot, hanya laporan lisan.
+- Baris merah dan kuning di Console dari bingkai Turnstile belum dibandingkan dengan kondisi sebelum Umami dipasang (dugaan: sudah ada sebelumnya).
+
+**Data tes di Umami:** sisa dari tes 20 Nov 2026. Kapan memakai Reset di Settings website belum diputuskan (dicatat di ANL.07).
+
+**Sisa:** ANL.07 (catatan manusia: tanggal tes 20 Nov 2026, tanggal mulai analisis = tanggal LNC.03, keputusan Reset). ANL.08 setelah LNC.04. Handoff #5 `analitik.md` belum dibuat.
