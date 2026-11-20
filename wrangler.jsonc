@@ -1,0 +1,16 @@
+// /wrangler.jsonc (akar repo)
+// Konfigurasi Cloudflare Workers (static assets) untuk Kedai ChATA.
+// Hanya menyajikan berkas statis dari folder public/. Tidak ada skrip Worker,
+// tidak ada rahasia, tidak ada package.json (migrasi.md MG6 dan MG10).
+{
+  // Nama Worker (migrasi.md MG6). Harus cocok dengan nama di dashboard Cloudflare (dicek di MGR.08).
+  "name": "kedai-chata",
+
+  // Tanggal kompatibilitas: diisi tanggal pembuatan berkas ini.
+  "compatibility_date": "2026-11-20",
+
+  "assets": {
+    // Folder aplikasi; path relatif terhadap akar repo.
+    "directory": "./public",
+  },
+}

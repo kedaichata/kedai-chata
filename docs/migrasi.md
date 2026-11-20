@@ -169,3 +169,14 @@ Keputusan ketua (sesi kode MGR, 20 Nov 2026). Alasan: `.my.id` tidak dijual di C
 - **Keputusan baru:** lihat blok domain di atas.
 - **Belum beres:** (1) MGR.06 belum dijalankan; perintah `grep -rn "github.io"` di repo belum dieksekusi, hasilnya jadi daftar kerja MGR.11 sampai MGR.14 dan MGR.24. (2) Logout Cloudflare dan BOC di profil browser terpisah (syarat MGR.01). (3) Pastikan pengingat kalender 20 Okt 2027 benar-benar terpasang (MGR.05) dan harga perpanjangan BOC dicatat. (4) Hal 100.000 permintaan per hari belum dicek.
 - **Saran giliran berikutnya:** jalankan MGR.06 dan tempel hasilnya. Lalu MGR.07 (`wrangler.jsonc`, perubahan berisiko: butuh penjelasan dampak dan "OK" ketua, cek anti-nyasar sebelum push, commit tanpa `[skip ci]`). Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`, dan untuk MGR.07 juga `.github/workflows/pages.yml` dan `fondasi.md`.
+
+### 2026-11-20: Hasil MGR.06, inventaris alamat GitHub Pages lama
+
+Kejadian di lapangan (sesi kode MGR, 20 Nov 2026). Sumber: hasil `grep -rn "github.io"` di repo, tanpa `.git` dan `node_modules`. Tidak ada berkas yang diubah.
+
+- **`public/index.html` baris 2385:** atribut `data-domains` Umami berisi alamat lama. Bila tidak diganti, kunjungan dari alamat baru tidak tercatat tanpa pesan galat (MG15). Dikerjakan di MGR.12. Mengubah `index.html` termasuk kategori login: butuh konfirmasi ketua.
+- **`supabase/functions/kedai/index.ts` baris 130:** `ASAL_DIIZINKAN` berisi satu alamat, yaitu alamat lama. Jadi `kedai` **punya** pembatas asal permintaan. Ini menjawab butir bagian 8 ("apakah `kedai` punya daftar asal"). Dikerjakan di MGR.13: alamat baru ditambah di samping yang lama, deploy sesuai `AGENTS.md` bagian 8, butuh "OK" ketua.
+- **`docs/`:** `fondasi.md` (baris 34 dan 191), `akun.md` (429 dan 446), `analitik.md` (156), `notifikasi.md` (468), dan `migrasi.md` (170) menyebut alamat lama sebagai riwayat atau catatan. Tidak disunting; ditangani lewat blok catatan susulan di MGR.24.
+- **Tidak muncul di hasil pencarian:** `sw.js`, `manifest.json`, `config.js`, `analitik.js`, `pengenalan-isi.js`. Ini belum membuktikan aman: pencarian tidak menangkap path subfolder repo atau alamat dalam bentuk lain. Isinya tetap dibaca di MGR.12 dan MGR.14.
+- **Di luar repo (tidak terjangkau pencarian):** Auth Supabase (Site URL, Redirect URLs, template email), widget Turnstile, dashboard Umami, variabel `WA_URL_APLIKASI`, lembar Bantuan, dan panduan pasang di WA. Sudah punya butir sendiri (MGR.11, MGR.12, MGR.20, MGR.24).
+- **Catatan hasil pencarian:** keluaran dipotong 200 karakter per baris, jadi konteks baris `fondasi.md:34` tidak terlihat.
