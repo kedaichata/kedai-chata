@@ -434,3 +434,33 @@ Kejadian di lapangan (sesi kode MGR, 20 Nov 2026). Sumber: MG8, MG14. "OK" ketua
   4. **Alamat lama masih tertinggal di dua tempat kode** (bukan bagian MGR.22): `ASAL_DIIZINKAN` di `supabase/functions/kedai/index.ts` dan `data-domains` di `public/index.html`. Mengubahnya butuh OK ketua dan penjelasan dampak; belum diputuskan.
   5. **Dari handoff sebelumnya, masih terbuka:** butir "Alihkan www ke domain utama", Preview URLs aktif dan `workers.dev` dimatikan setelah tes lulus (MG14, butuh OK), `POST .../auth/v1/signup` 422 dan apakah owner atau penjaga sempat mengirim form Daftar (cek daftar user Supabase, baca-saja, sebelum LNC.04), owner dan penjaga belum mengaktifkan notifikasi di alamat baru, push server ke HP dan update versi belum teramati langsung, `infografik.webp` tidak ada di cache offline (ubah `sw.js`, butuh OK), dua entri "Manually deployed" belum jelas asalnya, batas 100.000 permintaan per hari belum terbukti mencakup berkas statis, panel Traffic 0% belum dipahami, galat CSP skrip Turnstile belum diselidiki, data uji di Umami (Reset diputuskan di ANL.07), LNC.03 (Senin 23 Nov) jadwal tetap atau mundur belum diputuskan.
 - **Saran giliran berikutnya:** (1) Lanjutkan MGR.23 langkah 2: buka Settings, Pages, klik Unpublish site, kirim screenshot dialog sebelum konfirmasi dan hasilnya setelah refresh (Source dan Custom domain jangan diisi). Tes: alamat lama 404 di jendela privat, alamat baru normal. (2) MGR.21a begitu ada kabar WA: recovery satu per satu dari dashboard, link diteruskan lewat WA (jangan diklik), minta screenshot beranda dengan email di-crop. (3) MGR.24 dan MGR.25. Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`; untuk MGR.23 siapkan screenshot Settings, Pages; untuk MGR.24 juga `features.md` dan `bonus.md`. Buka dashboard GitHub dan Supabase ketua di profil browser terpisah.
+
+### 2026-11-20: MGR.23 selesai, GitHub Pages dimatikan
+
+Kejadian di lapangan (sesi kode MGR, 20 Nov 2026). Sumber: MG9. "OK" ketua tercatat di Handoff #11.
+
+- **Urutan:** workflow "Terbitkan ke GitHub Pages" dinonaktifkan dulu (Handoff #11), lalu Unpublish site di Settings, Pages repo `kedaichata/kedai-chata`. Dialog konfirmasi memuat nama repo yang benar.
+- **Terbukti:** setelah refresh, Settings, Pages kembali ke tampilan awal pemilihan Source (tanpa "Your site is live"). `https://kedaichata.github.io/kedai-chata/` dibalas 404 ("There isn't a GitHub Pages site here"). `https://kedaichata.biz.id/` tetap normal: layar Masuk, widget Turnstile "Berhasil!".
+- **Tidak berubah:** `pages.yml` tetap ada di repo (hanya nonaktif), Source dan Custom domain tidak diisi. `workers.dev` belum dimatikan (butir terpisah, butuh OK).
+- **Mundur:** lewat rollback Cloudflare, bukan menghidupkan lagi GitHub Pages (MG9).
+- **Pertentangan dengan catatan lama:** teks Handoff #11 "situs masih live di alamat lama" dan butir "belum beres" nomor 1 tidak berlaku lagi. Yang paling akhir menang.
+
+### Handoff #12 | 2026-11-20 | [KETUA]
+
+- **Tugas:** MGR.23 (matikan GitHub Pages) selesai dan sudah dicentang ketua di sheet. Blok catatan "MGR.23 selesai" sudah ditempel.
+- **File yang diubah:** `docs/migrasi.md` saja (blok catatan MGR.23 dan handoff ini). `public/`, `supabase/`, `wrangler.jsonc`, dan `pages.yml` tidak disentuh.
+- **Hasil yang terbukti (screenshot diperiksa di chat):**
+  1. Dialog Unpublish memuat nama repo `kedaichata/kedai-chata`. Setelah dikonfirmasi dan di-refresh, Settings, Pages kembali ke tampilan awal pemilihan Source (tanpa "Your site is live").
+  2. `https://kedaichata.github.io/kedai-chata/` dibalas 404 ("There isn't a GitHub Pages site here").
+  3. `https://kedaichata.biz.id/` tetap normal: layar Masuk dan widget Turnstile "Berhasil!".
+- **Keputusan baru:** `pages.yml` dibiarkan nonaktif, tidak dihapus. Keputusan hapus atau tidak ditunda (ketua, 20 Nov 2026). Risiko yang diketahui: bila workflow diaktifkan lagi di tab Actions, Pages bisa terbit lagi. Butir sheet "putuskan nasib pages.yml" berarti "dibiarkan dulu", bukan "sudah diputuskan hapus".
+- **Belum beres:**
+  1. **MGR.25 (paling mendesak):** alamat lama kini 404, jadi HP tim yang memasang PWA dari alamat lama tidak bisa dibuka sampai dipasang ulang dari `https://kedaichata.biz.id/`. Pengumuman ke tim belum dikirim. Tanggal pindah (20 Nov 2026) perlu dicatat untuk LNC.03 dan LNC.05.
+  2. **MGR.24:** rapikan dokumen belum dikerjakan. `pengenalan-isi.js` tidak memuat alamat (Handoff #6), jadi yang perlu dicek lembar Bantuan dan panduan pasang di WA, plus blok catatan susulan di `AGENTS.md`, `features.md`, `bonus.md`.
+  3. **MGR.21a:** recovery untuk 4 owner dan 1 penjaga (dan akun ibu ketua bila password-nya belum dipegang), menunggu kabar WA dari orangnya. Link sekali pakai, dibuka orangnya sendiri lewat salin-tempel di tab baru.
+  4. **Alamat lama masih tertinggal di dua tempat kode:** `ASAL_DIIZINKAN` di `supabase/functions/kedai/index.ts` dan `data-domains` di `public/index.html`. Mengubahnya butuh penjelasan dampak dan "OK" ketua; belum diputuskan.
+  5. **Butir sheet "Alihkan www ke domain utama"** belum dikerjakan (`www.kedaichata.biz.id` tidak punya DNS).
+  6. **Preview URLs masih aktif dan `workers.dev` belum dimatikan** (MG14, butuh "OK").
+  7. **Belum terbukti atau belum dipahami:** `POST .../auth/v1/signup` 422 dan apakah owner atau penjaga sempat mengirim form Daftar (cek daftar user Supabase, baca-saja, sebelum LNC.04); owner dan penjaga belum mengaktifkan notifikasi di alamat baru; push server ke HP dan update versi baru belum teramati langsung; `infografik.webp` tidak ada di cache offline (ubah `sw.js`, butuh "OK", belum diputuskan); dua entri "Manually deployed" belum jelas asalnya; permintaan berkas statis ikut terhitung di batas 100.000 per hari atau tidak; panel Traffic 0% belum dipahami; galat CSP dari skrip tantangan Turnstile belum diselidiki.
+  8. **Menunggu keputusan:** reset data uji Umami (ANL.07) dan jadwal LNC.03 (Senin 23 Nov) tetap atau mundur.
+- **Saran giliran berikutnya:** (1) MGR.25 dulu: kabari tim lewat WA untuk pasang ulang dari `https://kedaichata.biz.id/` dan catat tanggal pindah. (2) MGR.24. Mengubah `pengenalan-isi.js` (bila ternyata perlu) termasuk berkas aplikasi, jadi tanpa `[skip ci]`; commit yang hanya docs boleh `[skip ci]`. (3) MGR.21a begitu ada kabar WA: recovery satu per satu dari dashboard, link diteruskan lewat WA (jangan diklik), minta screenshot beranda dengan email di-crop. Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`; untuk MGR.24 juga `features.md` dan `bonus.md`.
