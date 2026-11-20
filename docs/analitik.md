@@ -202,3 +202,34 @@ Keputusan ketua (20 Nov 2026), disetujui seluruhnya oleh ketua. Saat blok ini di
 - Salah copas `index.html` ke `inbox.js` sempat terjadi di Mac; dipulihkan dengan `git restore`, tidak ikut commit.
 
 **Saran giliran berikutnya:** lampirkan `AGENTS.md`, `analitik.md`, `security.md`. Mulai tes ANL.02 dari alamat Pages asli (jendela privat, belum login): buka Daftar, Masuk, Pengenalan; cek Realtime dan Events di Umami (harus 1 kunjungan, buka-daftar 1, buka-pengenalan 1). Lalu ANL.06 sesuai blok akun tes 20 Nov.
+
+### Handoff #3 | 2026-11-20 | Ketua
+
+**Tugas:** tes ANL.02 sampai ANL.05 dan sebagian ANL.06 / SEC-51. Tidak ada kode dan tidak ada berkas repo yang diubah di sesi ini. **ANL.01 sampai ANL.05 sudah dicentang di sheet.** ANL.06, ANL.07, SEC-50, dan SEC-51 belum.
+
+**Hasil tes (di production, jendela privat, tanpa bukti disimpan):**
+
+- ANL.02: kunjungan masuk dashboard dari salinan lokal `public/lib/umami.js`. Terbukti **Umami Cloud menerima data dari salinan lokal** dan **`data-host-url` tidak perlu diisi**.
+- ANL.03: cache `chata-v37` berisi `analitik.js` dan `lib/umami.js`. Dengan Offline dicentang, aplikasi tetap terbuka dan menampilkan layar "Tidak ada internet"; setelah Offline dimatikan, aplikasi kembali normal.
+- ANL.04 dan ANL.05: keempat event muncul dengan nama layar saja: `buka-daftar`, `buka-pengenalan` (tanpa akun), `buka-bantuan` (akun customer ketua), `buka-belanja` (akun owner ibu ketua, dibuka satu kali lalu logout). Pengamat `hidden` terbukti jalan untuk Daftar, Pengenalan, dan Bantuan; pendengar klik terbukti jalan untuk Belanja.
+- Script diblokir (SEC-51, sebagian): layar Daftar dan Pengenalan tetap normal tanpa pesan galat di layar, dan tidak ada event baru masuk ke Umami. Console hanya menampilkan baris blokir DevTools dan baris CSP/font dari bingkai Turnstile; tidak ada baris yang menyebut `analitik.js`. Bahwa baris Turnstile itu sudah ada sebelum Umami dipasang adalah dugaan, belum dibandingkan.
+
+**Keputusan baru:** tidak ada keputusan baru dari ketua.
+
+**Pertentangan dengan isi lama (yang paling akhir menang):**
+
+- Butir "belum beres" Handoff #2 sudah terjawab: Umami Cloud menerima salinan lokal, `data-host-url` tidak perlu, dan asumsi atribut `hidden` benar untuk `layar-pengenalan` dan `panel-bantuan`.
+- Tes blokir script lewat DevTools **hanya mempan bila "Bypass for network" dicentang** (Application, Service workers). Tanpa itu, `sw.js` menyajikan `umami.js` dari cache, aturan Block tertulis "0 affected", dan Umami tetap mencatat satu pageview (itu sebabnya sempat ada Views 2 di tes blokir).
+- Setelah pemblokiran dimatikan, event baru (`buka-bantuan`) baru muncul **setelah halaman di-reload**.
+
+**Data tes di Umami:** sekitar 09:12 sampai 09:56 (jam dashboard), 20 Nov 2026. Posisi akhir: Visitors 2, Visits 2, Events 4. Tombol Reset di Settings website tersedia (AN12), **kapan dipakai belum diputuskan**. Catat di ANL.07.
+
+**Belum beres:**
+
+- **SEC-50 (P0) belum dikerjakan.** Dites dengan akun customer asli ketua sesuai blok akun tes 20 Nov. Langkah rinci ada di `akun.md` AK12 (salin-tempel link di tab baru).
+- Sisa SEC-51: mode pesawat; uji dari alamat selain GitHub Pages (tidak boleh terhitung); pencarian di kode memastikan `umami.identify` tidak dipanggil di mana pun; pastikan `sw.js` tidak mencegat atau menyimpan panggilan ke Umami (aturan 11, perlu membaca `sw.js`).
+- Tes "Keluar dan masuk normal dengan Turnstile" untuk ANL.06 belum dicatat hasilnya.
+- Belum diuji: membuka layar yang sama dua kali di tab yang sama harus tetap 1 event (pembatas maksimal sekali per nama per tab menutupi kemungkinan pengamat menembak ganda).
+- ANL.06 dan ANL.07 menunggu hal-hal di atas.
+
+**Saran giliran berikutnya:** lampirkan `AGENTS.md`, `analitik.md`, `security.md`, **`akun.md`**, `public/analitik.js`, `public/sw.js`, dan `public/akun.js`. Mulai dari SEC-50 (jendela privat baru, akun customer ketua, tanpa Bypass atau Block), lalu sisa SEC-51, lalu centang ANL.06 dan catat ANL.07. Dashboard Umami dibuka hanya di jendela privat, bukan sesi adik ketua. Email dan data pribadi disamarkan sebelum ditempel ke chat.
