@@ -150,3 +150,22 @@ Belum diputuskan; kandidat dicatat di `bonus.md`.
 ---
 
 _(belum ada blok)_
+
+### 2026-11-20: Domain `kedaichata.biz.id` dibeli di BOC, nameserver dipindah ke Cloudflare
+
+Keputusan ketua (sesi kode MGR, 20 Nov 2026). Alasan: `.my.id` tidak dijual di Cloudflare Registrar (layar "TLD is not supported"), jadi domain dibeli di tempat lain. Ketua memilih `.biz.id` (syarat di BOC: perorangan, organisasi, atau UMKM). Helipod digugurkan (akun dihapus ketua). Alasan lain belum tercatat.
+
+- **Domain:** `kedaichata.biz.id`, dibeli di BOC, auto-renew On, jatuh tempo 20 Nov 2027. Status Active di BOC dan di Cloudflare (paket Free). Harga tahun pertama dan perpanjangan BOC: belum tercatat.
+- **Nameserver:** diganti di panel BOC ke dua nameserver Cloudflare (butir baru MGR.04a, selesai 20 Nov 2026). Record DNS di Cloudflare kosong (0 record); tidak ada record yang dibuat manual.
+- **Pertentangan dengan teks lama:** MG3 ("beli lewat Cloudflare Registrar") dan MG4 ("cek harga di Cloudflare") tidak berlaku untuk pembelian ini. MG13: jatuh tempo dan auto-renew kini dicek di BOC. Yang paling akhir menang.
+- **Akun Cloudflare (MGR.01):** 2FA aktif lewat email (bukan aplikasi autentikator). Metode bayar tidak dicek karena domain dibeli di BOC dan Workers gratis untuk kebutuhan ini.
+- **Batas gratis Cloudflare (MGR.02, dokumentasi resmi, dibaca 20 Nov 2026):** Static Assets 20.000 berkas per versi dan 25 MiB per berkas; Workers Builds 3.000 menit build per bulan, 1 build bersamaan, batas waktu build 20 menit. Isi `public/` saat ini 94 item, sekitar 3,4 MB. **Belum dicek:** apakah permintaan berkas statis ikut terhitung di batas 100.000 permintaan per hari paket gratis Workers.
+- **Data pendaftar domain:** tidak dicatat di chat atau md (bagian 7). Pengaturan privasi WHOIS di BOC: belum tercatat.
+
+### Handoff #1 | 2026-11-20 | [KETUA]
+
+- **Tugas:** Fase A migrasi (MGR.01 sampai MGR.05) dan MGR.04a (nameserver ke Cloudflare). Dicentang ketua di sheet: MGR.01 sampai MGR.05 dan MGR.04a.
+- **File yang diubah:** tidak ada. Repo, `public/`, Supabase, dan GitHub Pages tidak disentuh.
+- **Keputusan baru:** lihat blok domain di atas.
+- **Belum beres:** (1) MGR.06 belum dijalankan; perintah `grep -rn "github.io"` di repo belum dieksekusi, hasilnya jadi daftar kerja MGR.11 sampai MGR.14 dan MGR.24. (2) Logout Cloudflare dan BOC di profil browser terpisah (syarat MGR.01). (3) Pastikan pengingat kalender 20 Okt 2027 benar-benar terpasang (MGR.05) dan harga perpanjangan BOC dicatat. (4) Hal 100.000 permintaan per hari belum dicek.
+- **Saran giliran berikutnya:** jalankan MGR.06 dan tempel hasilnya. Lalu MGR.07 (`wrangler.jsonc`, perubahan berisiko: butuh penjelasan dampak dan "OK" ketua, cek anti-nyasar sebelum push, commit tanpa `[skip ci]`). Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`, dan untuk MGR.07 juga `.github/workflows/pages.yml` dan `fondasi.md`.
