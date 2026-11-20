@@ -262,4 +262,13 @@ Keputusan ketua (20 Nov 2026). Sumber: docs/analitik.md bagian 8. Nomor B dan ko
 - **Kebijakan bila kuota 100 ribu event mendekati batas** (kurangi event, bukan paket berbayar).
 - **Hubungan dengan butir lama:** B24 (domain sendiri), B26 (pemantauan otomatis), dan blok 18 Nov "Pindah hosting ke Cloudflare Pages": angka kunjungan hanya **bahan pertimbangan**, bukan penentu. Butir lama dibiarkan.
 
+### 2026-11-20: Pindah hosting ke Cloudflare naik ke versi 1 (menggantikan blok 18 Nov)
+
+**Berkas tujuan:** `docs/bonus.md`, tempel PALING BAWAH bagian 4. Append-only. Keputusan ketua (20 Nov 2026). Sumber: docs/migrasi.md. Alasan ketua selain ketentuan GitHub Pages belum tercatat.
+
+- Blok 18 Nov "Pindah hosting ke Cloudflare Pages: bukan versi 1, dievaluasi nanti" **tidak berlaku lagi.** Pindah dikerjakan di versi 1, ke **Cloudflare Workers (static assets)**, bukan Cloudflare Pages. Patokan "2 sampai 3 bulan" dan "keadaan mendesak" di blok itu terjawab oleh ketentuan GitHub Pages.
+- **B24 (domain sendiri)** naik ke versi 1 menjadi bagian `docs/migrasi.md`. Baris B24 di bagian 2 dibiarkan; yang paling akhir menang.
+- **Tetap kandidat di sini (belum diputuskan):** header keamanan lewat `_headers`, aturan WAF atau rate limit Cloudflare (terkait B21 dan B26), analitik web bawaan Cloudflare, email dengan alamat domain sendiri, pengalihan otomatis dari alamat lama.
+- **Payment gateway (B6):** ketentuan Cloudflare melarang memproses atau mengumpulkan data kartu kredit di situs yang memakai layanan gratis; periksa ulang sebelum B6 dikerjakan.
+
 ---

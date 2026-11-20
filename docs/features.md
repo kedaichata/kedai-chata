@@ -578,3 +578,13 @@ Keputusan ketua (20 Nov 2026). Sumber: docs/analitik.md. Alasan ketua selain yan
 - **Kuota:** tidak menambah panggilan Edge Function, database, egress, atau Log Query Supabase (panggilan ke Umami, bukan ke Supabase). Kesimpulan kuota Handoff #10 tidak berubah.
 - **Jadwal:** dikejar Jumat sampai Minggu 20 sampai 22 Nov 2026 agar lulus sebelum LNC.03 (Senin 23 Nov); bersaing dengan sisa persiapan LNC.03 di Handoff #9 dan #10 (recovery lima akun asli). Bila tes belum lulus, ditunda dan LNC.03 jalan tanpa fitur ini.
 - **LNC.05 (review pemakaian):** tambah bahan: angka kunjungan dan OS dari Umami (termasuk jumlah pengguna iPhone, bahan butir iPhone di `AGENTS.md` bagian 10), dibandingkan jumlah akun customer baru dari Supabase (ANL.08).
+
+### 2026-11-20: Migrasi hosting dan domain masuk versi 1
+
+Keputusan ketua (20 Nov 2026). Sumber: docs/migrasi.md. Yang paling akhir menang.
+
+- **Layar per peran:** tidak ada layar atau tombol baru. Yang berubah hanya alamat aplikasi.
+- **Urutan versi 1:** dikerjakan sebelum LNC.03 (Senin 23 Nov 2026). Ada gerbang keputusan (MGR.19, Minggu 22 Nov malam): bila P0 belum lulus, ketua memutuskan LNC.03 mundur atau jalan sementara di alamat lama.
+- **Peluncuran (bagian 10):** LNC.03 memakai alamat baru. LNC.04 mensyaratkan GitHub Pages sudah dimatikan dan alamat lama sudah dihapus dari Auth dan Turnstile. Tidak ada data uji baru yang dibuat (tes tanpa order).
+- **Recovery akun asli:** saran "kirim recovery sebelum LNC.03" di Handoff #8 dan #9 diubah: kirim **setelah Site URL pindah** (MGR.21), supaya linknya menuju alamat baru. Butir ini menimpa urutan lama; yang paling akhir menang.
+- **Kuota Supabase:** tidak berubah (hanya berkas statis yang pindah). Batas Cloudflare dicek di MGR.02.
