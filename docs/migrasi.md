@@ -464,3 +464,36 @@ Kejadian di lapangan (sesi kode MGR, 20 Nov 2026). Sumber: MG9. "OK" ketua terca
   7. **Belum terbukti atau belum dipahami:** `POST .../auth/v1/signup` 422 dan apakah owner atau penjaga sempat mengirim form Daftar (cek daftar user Supabase, baca-saja, sebelum LNC.04); owner dan penjaga belum mengaktifkan notifikasi di alamat baru; push server ke HP dan update versi baru belum teramati langsung; `infografik.webp` tidak ada di cache offline (ubah `sw.js`, butuh "OK", belum diputuskan); dua entri "Manually deployed" belum jelas asalnya; permintaan berkas statis ikut terhitung di batas 100.000 per hari atau tidak; panel Traffic 0% belum dipahami; galat CSP dari skrip tantangan Turnstile belum diselidiki.
   8. **Menunggu keputusan:** reset data uji Umami (ANL.07) dan jadwal LNC.03 (Senin 23 Nov) tetap atau mundur.
 - **Saran giliran berikutnya:** (1) MGR.25 dulu: kabari tim lewat WA untuk pasang ulang dari `https://kedaichata.biz.id/` dan catat tanggal pindah. (2) MGR.24. Mengubah `pengenalan-isi.js` (bila ternyata perlu) termasuk berkas aplikasi, jadi tanpa `[skip ci]`; commit yang hanya docs boleh `[skip ci]`. (3) MGR.21a begitu ada kabar WA: recovery satu per satu dari dashboard, link diteruskan lewat WA (jangan diklik), minta screenshot beranda dengan email di-crop. Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`; untuk MGR.24 juga `features.md` dan `bonus.md`.
+
+### 2026-11-21: Keputusan ketua: "Alihkan www" ditunda dan MGR.21a ditunda
+
+**Berkas tujuan:** `docs/migrasi.md`, Catatan Susulan. Keputusan ketua (sesi kode MGR, 21 Nov 2026). Sumber: Handoff #4, #6, #10, #12. Alasan lain belum tercatat. Yang paling akhir menang.
+
+- **Butir "Alihkan www ke domain utama" ditunda** (sebelumnya: dikerjakan setelah MGR.20). Alasan ketua: manfaatnya dinilai kecil; orang cenderung mengetik versi pendek, dan aplikasi lazimnya dibuka dari ikon atau tautan di WA, bukan diketik. Biayanya: butuh record DNS dan aturan pengalihan di Cloudflare (perubahan konfigurasi, butuh penjelasan dampak dan "OK") dan menambah satu alamat di samping satu alamat resmi (MG14). **Dikerjakan bila ada laporan tidak bisa membuka karena mengetik `www`**, atau dibahas sekilas di LNC.05. `www.kedaichata.biz.id` tetap tanpa DNS. Apakah paket gratis Cloudflare cukup untuk aturan pengalihan: belum dicek.
+- **MGR.21a (recovery 4 owner dan 1 penjaga, plus akun ibu ketua bila password-nya belum dipegang) ditunda.** Alasan ketua: WA ketua ke mereka belum dibalas dan para owner, termasuk ibu ketua, sedang di luar kota; paling cepat 22 Nov bila mereka sempat. Aturan tidak berubah: recovery dikirim setelah Site URL final (MG12, terpenuhi), satu per satu dari dashboard, link sekali pakai dibuka orangnya sendiri lewat salin-tempel di tab baru. Tidak ada tenggat baru.
+- **Akibat ke LNC.03 (Senin 23 Nov):** yang ikut hanya yang sudah sempat membuat password. Jadwal LNC.03 tetap atau mundur **belum diputuskan ketua**.
+- **Tanggal pindah (untuk LNC.03 dan LNC.05, MGR.25):** **20 Nov 2026** (Site URL Auth diganti di MGR.20, GitHub Pages dimatikan di MGR.23). Pesan pasang ulang PWA dikirim ketua ke grup keluarga, para owner, dan penjaga (MGR.25, dicentang ketua 21 Nov). Rincian siapa saja dan hasil pasang ulang tidak dicatat di sini.
+- **Pertentangan dengan catatan lama:** teks butir sheet "Alihkan www ke domain utama" ("dikerjakan setelah MGR.20") di Handoff #4 dan #6 tidak berlaku. Saran "MGR.21a begitu ada kabar WA" di Handoff #10 sampai #12 tetap berlaku, tanpa tenggat. Yang paling akhir menang.
+
+### Handoff #13 | 2026-11-21 | [KETUA]
+
+- **Tugas:** MGR.24 (rapikan dokumen) dan MGR.25 (umumkan alamat ke tim). Keduanya sudah dicentang ketua di sheet, tanggal selesai 21 Nov.
+- **File yang diubah:** `AGENTS.md`, `docs/features.md`, `docs/bonus.md` (satu blok catatan susulan tiap berkas, 54 baris tambahan), commit `2105747` dengan `[skip ci]`, sudah di-push. Blok keputusan dan handoff ini belum ditempel saat ditulis. `public/`, `supabase/`, `wrangler.jsonc`, dan `pages.yml` tidak disentuh.
+- **Hasil yang terbukti:**
+  1. **MGR.24:** `pengenalan-isi.js` dan lembar Bantuan (`memulai-02` dan seterusnya) dicek ketua lewat pencarian kata `github` dan pembacaan isi: tidak memuat alamat lama, langkah pasang hanya menyebut "buka tautan/link aplikasi". Panduan pasang di WA belum ada. Jadi tidak ada alamat yang diganti dan tidak ada berkas aplikasi yang berubah; hanya blok catatan di tiga md.
+  2. Tiga cek anti-nyasar lolos: folder `CHATA`, remote `kedaichata/kedai-chata`, email noreply akun `kedaichata`.
+  3. **MGR.25:** pesan pasang ulang dikirim ketua ke grup keluarga, para owner, dan penjaga. Alamat baru belum disebar ke orang lain; yang tahu hanya keluarga, owner, dan penjaga.
+- **Keputusan baru:** lihat blok keputusan di atas ("www" ditunda, MGR.21a ditunda, tanggal pindah 20 Nov 2026).
+- **Belum beres:**
+  1. **MGR.21a:** menunggu kabar owner dan penjaga (lihat keputusan).
+  2. **Jadwal LNC.03 (Senin 23 Nov):** tetap atau mundur belum diputuskan ketua.
+  3. **Alamat lama masih di dua tempat kode:** `ASAL_DIIZINKAN` di `supabase/functions/kedai/index.ts` dan `data-domains` di `public/index.html`. Butuh penjelasan dampak dan "OK" ketua; paling lambat sebelum LNC.04.
+  4. **Preview URLs aktif dan `workers.dev` belum dimatikan** (MG14, butuh "OK").
+  5. **Belum terbukti:** tidak ada build Cloudflare baru untuk commit `2105747` (belum dilaporkan di tab Deployments); apakah Workers Builds menghormati `[skip ci]` (jangan diandalkan); hasil pasang ulang di tiap HP yang menerima pesan.
+  6. **Sebelum LNC.04:** cek daftar user Supabase (baca-saja) soal `POST .../auth/v1/signup` 422 dan kemungkinan owner atau penjaga sempat mengirim form Daftar.
+  7. **Dari handoff sebelumnya, masih terbuka:** owner dan penjaga belum mengaktifkan notifikasi di alamat baru; push server ke HP dan update versi baru belum teramati langsung; `infografik.webp` tidak ada di cache offline (ubah `sw.js`, butuh "OK", belum diputuskan); dua entri "Manually deployed" belum jelas asalnya; permintaan berkas statis ikut terhitung di batas 100.000 per hari atau tidak; panel Traffic 0% belum dipahami; galat CSP skrip Turnstile belum diselidiki; data uji Umami (Reset diputuskan di ANL.07).
+- **Saran giliran berikutnya:** (1) MGR.21a begitu ada kabar WA, satu per satu dari dashboard, link diteruskan lewat WA (jangan diklik), minta screenshot beranda dengan email di-crop. (2) Ketua memutuskan LNC.03. (3) Sebelum LNC.04: minta "OK" untuk membersihkan alamat lama di `ASAL_DIIZINKAN` (deploy `kedai` sesuai urutan `AGENTS.md` bagian 8) dan `data-domains`, serta mematikan Preview URLs dan `workers.dev`; cek daftar user Supabase. Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`; untuk MGR.21a juga `akun.md`, `features.md`, dan screenshot pengaturan URL Auth; untuk pembersihan alamat lama juga `supabase/functions/kedai/index.ts` (bagian `ASAL_DIIZINKAN`) dan `public/index.html` sekitar baris 2385.
+
+```
+
+```

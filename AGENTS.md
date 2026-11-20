@@ -434,6 +434,10 @@ Keputusan ketua (sesi strategi 20 Nov 2026). Sumber: docs/migrasi.md. Alasan: ke
 - **Tidak berubah:** aturan 9 lainnya, aturan 8 (pengingat centang diberikan di chat saat satu butir selesai), aturan `[skip ci]` 12 Nov, dan cek anti-nyasar sebelum push (bagian 8), yang tetap dilakukan saat ada push.
 - **Handoff lama tidak disunting** (append-only). Butir "belum di-commit" atau "logout" di Handoff #1 dan #2 `migrasi.md` tidak berlaku lagi. Yang paling akhir menang.
 
+### 2026-11-21: Hasil migrasi hosting dan domain (MGR): hosting kini Cloudflare Workers, alamat resmi `kedaichata.biz.id`
+
+**Berkas tujuan:** `AGENTS.md`, tempel PALING BAWAH bagian 12. Append-only. Sumber: `docs/migrasi.md` bagian 10 (blok catatan dan Handoff #1 sampai #12). Alasan ketua selain ketentuan GitHub Pages belum tercatat. Yang paling akhir menang.
+
 - **Bagian 3, Hosting:** menggantikan "GitHub Pages lewat GitHub Actions" dan "domain lewat Cloudflare Registrar" (blok 20 Nov). Hosting = **Cloudflare Workers (static assets)**, Worker `kedai-chata`, lewat **Workers Builds dari dashboard**, repo `kedaichata/kedai-chata`, hanya cabang `main`, folder `public/` ditunjuk `wrangler.jsonc` di akar repo. Alamat resmi: `https://kedaichata.biz.id/` (tanpa `www`).
 - **Domain:** dibeli di **BOC**, bukan Cloudflare Registrar (`.my.id` tidak dijual di Cloudflare), nameserver dipindah ke Cloudflare. Auto-renew On, jatuh tempo 20 Nov 2027, dicek di BOC (MG13). Pengingat kalender 20 Okt 2027 dan harga perpanjangan BOC: belum terkonfirmasi tercatat.
 - **GitHub Pages dimatikan 20 Nov 2026 (MGR.23).** Alamat lama dibalas 404. `.github/workflows/pages.yml` **masih ada, nonaktif lewat tab Actions, tidak dihapus** (keputusan hapus ditunda); bila diaktifkan lagi, Pages bisa terbit lagi. Mundur lewat rollback Cloudflare, bukan menghidupkan Pages.
@@ -443,3 +447,14 @@ Keputusan ketua (sesi strategi 20 Nov 2026). Sumber: docs/migrasi.md. Alasan: ke
 - **Masih tertinggal alamat lama di dua tempat kode** (belum dibersihkan, butuh penjelasan dampak dan "OK"): `ASAL_DIIZINKAN` di `supabase/functions/kedai/index.ts` dan `data-domains` di `public/index.html`.
 - **Aturan `[skip ci]` (12 Nov):** teksnya ditulis untuk GitHub Pages Actions, dan `pages.yml` kini nonaktif. Di Cloudflare, commit yang hanya mengubah docs tidak memicu build karena watch paths (terbukti commit `b548a3d`). **Apakah Workers Builds menghormati `[skip ci]`: belum dicek; jangan diandalkan.** Commit yang menyentuh `public/`, `wrangler.jsonc`, atau `supabase/` tetap tanpa `[skip ci]` (commit yang hanya menyentuh `supabase/` terbukti ikut dibangun, Handoff #5 `migrasi.md`). Aturan lain di blok 12 Nov tidak berubah.
 - **Pertentangan dengan catatan lama:** bagian 3 (hosting), bagian 6 (`pages.yml` sebagai penerbit di struktur repo), bagian 7 (kalimat "Alamat GitHub Pages didaftarkan di URL Auth Supabase" dan butir Turnstile "hostname GitHub Pages"), serta blok 20 Nov di atas ("domain lewat Cloudflare Registrar", "OK belum tercatat"). Yang paling akhir menang.
+
+### 2026-11-21: Keputusan ketua: format "Belum beres" di handoff
+
+**Berkas tujuan:** `AGENTS.md`, tempel PALING BAWAH bagian 12. Append-only. Keputusan ketua (sesi kode MGR, 21 Nov 2026). Alasan: butir yang belum beres terbawa dan disalin ulang dari handoff ke handoff, sehingga dokumen menggemuk dan sulit dibaca; ketua ingin handoff terakhir menjadi rujukan. Alasan lain belum tercatat. Yang paling akhir menang.
+
+- **Satu daftar di handoff terakhir:** tiap handoff baru memuat satu daftar lengkap butir yang masih terbuka, satu baris pendek per butir, dengan nomor butir sheet bila ada (misalnya MGR.21a). Daftar harus bisa dibaca tanpa membuka handoff sebelumnya, karena sesi berikutnya membaca handoff paling akhir (bagian 11).
+- **Memperbarui daftar:** butir yang sudah beres dicoret dari daftar dan hasilnya ditulis di "Hasil yang terbukti" handoff itu. Butir baru ditambahkan.
+- **Tanpa salin ulang:** penjelasan panjang tidak disalin dari handoff sebelumnya. Rincian tetap di handoff atau blok tempat butir itu pertama ditulis.
+- **Tidak berubah:** "Belum beres" hanya memuat pekerjaan fungsional yang belum selesai, hal yang belum terbukti, dan keputusan yang menunggu "OK", serta pengecualian perubahan kode yang berhenti di tengah (blok "Keputusan ketua, sesi MGR").
+- **Berlaku mulai handoff berikutnya.** Handoff yang sudah ditulis tidak disunting (append-only); perampingannya dilakukan lewat konsolidasi dokumen di sesi strategi.
+- **Pertentangan dengan catatan lama:** kebiasaan menyalin butir lama utuh di tiap handoff tidak berlaku lagi untuk handoff berikutnya. Yang paling akhir menang.
