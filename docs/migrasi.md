@@ -358,3 +358,13 @@ Kejadian di lapangan (sesi kode MGR, 20 Nov 2026). Sumber: MG15. Melengkapi buti
   6. **Data uji di Umami** dari tes 20 Nov masih ada; kapan Reset diputuskan di ANL.07.
   7. **Dari handoff sebelumnya, masih terbuka:** butir "Alihkan www ke domain utama" (setelah MGR.20), Preview URLs aktif, `workers.dev` dimatikan setelah tes lulus (MG14), dua entri "Manually deployed" belum jelas asalnya, batas 100.000 permintaan per hari belum terbukti mencakup berkas statis, panel Traffic 0% belum dipahami, galat CSP skrip tantangan Turnstile belum diselidiki.
 - **Saran giliran berikutnya:** (1) ketua memutuskan MGR.19 (lanjut ganti Site URL atau tahan). (2) MGR.20: ganti Site URL Auth dan `WA_URL_APLIKASI` (perubahan berisiko, butuh penjelasan dampak dan "OK" ketua; Site URL adalah titik pindah resmi). (3) MGR.21: tes link reset (SEC-50) setelah Site URL final, baru kirim recovery akun asli (MG12). Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`; untuk MGR.20 juga `wa-notif.md`, `notifikasi.md`; untuk MGR.21 juga `akun.md`, `features.md`, dan screenshot pengaturan URL Auth Supabase. Jangan bagikan alamat baru sebelum MGR.19 lewat.
+
+### 2026-11-20: MGR.20 selesai, Site URL diganti; WA_URL_APLIKASI tidak berlaku
+
+Kejadian di lapangan (sesi kode MGR, 20 Nov 2026). Sumber: screenshot dashboard, hasil grep di repo, `docs/wa-notif.md` (baris 255, 257, 293), dan pesan tes WA. "OK" ketua diberikan di chat. Alasan lain belum tercatat.
+
+- **Site URL Auth** diganti ke `https://kedaichata.biz.id/` (titik pindah resmi). Terkonfirmasi dari screenshot setelah refresh. Redirect URLs tetap 2 entri, utuh (alamat lama masih ada).
+- **`WA_URL_APLIKASI` tidak ada di daftar Custom secrets dan sengaja tidak dipasang** (`wa-notif.md`, catatan WAG.03). Link di pesan WA berasal dari footer gateway di laptop adik ketua. Tidak ada variabel yang perlu diganti.
+- **Footer gateway** (`index.js`, di luar repo) diganti dari alamat lama ke `https://kedaichata.biz.id/`; baris lama dikomentari, tidak dihapus. Gateway dijalankan ulang, log sehat (server di 127.0.0.1:3000, WA terhubung tanpa scan QR). Pesan tes tanpa order (MG11) memuat footer alamat baru.
+- **Pertentangan dengan catatan lama:** baris `WA_URL_APLIKASI` di tabel bagian 4 dan teks butir MGR.20 di sheet tidak berlaku untuk bagian variabel ini. Yang paling akhir menang.
+- **Belum dikerjakan:** MGR.21 (tes link reset, SEC-50) dan recovery akun asli.
