@@ -128,3 +128,20 @@ Urutan: ANL.01, ANL.02 bersama ANL.03, ANL.04 dan ANL.05, ANL.06, ANL.07. ANL.08
 ---
 
 _(belum ada blok)_
+
+### 2026-11-20: Akun untuk tes Umami (ANL.06, SEC-50, SEC-51)
+
+Keputusan ketua (20 Nov 2026), disetujui seluruhnya oleh ketua. Saat blok ini ditulis belum ada kode Umami dan belum ada tes Umami yang dikerjakan. Alasan ketua selain yang tertulis belum tercatat.
+
+- **Akun tes: dua akun asli, tanpa akun dummy baru.** (1) Akun customer asli milik ketua (email asli, tidak ditulis di md), **sudah dibuat 20 Nov 2026 dan login-nya sudah dicoba berhasil**. (2) Akun owner ibu ketua (sudah pernah login, recovery sudah dikirim).
+- **Tanpa order.** Fase 1 hanya melacak lima layar (AN2), jadi tes tidak membuat order. Tes juga tidak membuat catatan Belanja (data Belanja baru dibersihkan di LNC.01c); layar Belanja hanya dibuka.
+- **Pembagian tes:**
+  - Tanpa akun: Masuk, Daftar (dibuka, tidak disubmit), Pengenalan, uji dari komputer sendiri, script diblokir atau mode pesawat.
+  - Akun customer ketua: Bantuan, keluar dan masuk dengan Turnstile, link reset password (SEC-50), offline dan versi cache baru.
+  - Akun owner ibu ketua: Belanja, dibuka satu kali lalu logout.
+- **Link reset password dites dengan akun customer ketua, bukan akun owner.** Link sekali pakai, dan bila `data-exclude-hash` bocor, token yang terkirim ke Umami milik akun customer, bukan akun owner. Ini menggantikan kata "dummy" di ANL.06 dan SEC-50, karena akun dummy sudah tidak ada.
+- **Angka "yang daftar" (AN10):** akun customer ketua bukan dummy dan bukan staf, jadi tidak otomatis terkecualikan. Ia dibuat 20 Nov 2026, **sebelum LNC.03**, sehingga di luar rentang analisis (AN12). Tetap dicatat di ANL.07 agar tidak lupa bila rentang analisis berubah. Akun ini **tidak dibersihkan** sebagai akun dummy (baris "bersihkan sebelum LNC.04" di SEC-50 tidak berlaku untuknya).
+- **Data tes ikut masuk Umami** dan cara menghapusnya belum diketahui (AN12). Jumlah tes dibatasi; tanggal dan jam tiap tes dicatat.
+- **Dua tes tambahan untuk ANL.06:** satu kali buka layar harus menjadi satu event (pengamat `hidden` bisa menembak ganda); dan karena `sw.js` disentuh, cek versi cache baru muncul serta aplikasi tetap terbuka offline (`AGENTS.md` bagian 10 butir 6).
+- **Bukti** mengikuti SEC-50 dan SEC-51 (dashboard Umami atau permintaan jaringan, pencarian kode, screenshot). Email dan data pribadi disamarkan sebelum ditempel ke chat (`AGENTS.md` bagian 2 butir 11). Bukti tidak disimpan di md.
+- **Pertentangan dengan catatan lama:** kata "dummy" di ANL.06 dan SEC-50 (link reset, akun) tidak berlaku; yang dipakai akun asli di atas. Yang paling akhir menang.
