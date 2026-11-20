@@ -174,3 +174,31 @@ Keputusan ketua (20 Nov 2026), disetujui seluruhnya oleh ketua. Saat blok ini di
 - Keputusan kapan memakai Reset untuk data tes.
 
 **Saran giliran berikutnya:** ANL.02 dan ANL.03 dikerjakan bersama (satu push). Lampirkan `AGENTS.md`, `analitik.md`, `security.md`, `public/index.html`, `public/sw.js`, dan `public/akun.js`. Salinan script dari alamat di atas dibuat ketua dengan versi dipatok, tanggal salinan dicatat. `index.html` (kategori login) dan `sw.js` tetap butuh penjelasan dampak dan "OK" ketua sebelum diubah. Website ID ditempel ke chat hanya saat dibutuhkan di ANL.02.
+
+### Handoff #2 | 2026-11-20 | Ketua
+
+**Tugas:** ANL.02 dan ANL.03 (kode). Sudah di-push (commit 5d4731a, tanpa `[skip ci]`). **Tes belum dikerjakan.**
+
+**Posisi:** kode selesai dan sudah terbit. Tinggal tes ANL.02 (kunjungan dari salinan lokal muncul di dashboard), lalu ANL.06. ANL.04 dan ANL.05 kodenya ikut ada di `analitik.js` (pengamat), tetapi belum dites, jadi belum dicentang.
+
+**Berkas yang berubah:** `public/analitik.js` (baru), `public/lib/umami.js` (baru, salinan unduhan 20 Nov 2026), `public/index.html` (hanya tambah dua tag script), `public/sw.js` (cache `chata-v37`, dua berkas masuk daftar cache).
+
+**Keputusan baru:**
+
+- OK ketua untuk perubahan `index.html` (kategori login) dan `sw.js`: diberikan 20 Nov 2026 di sesi ini.
+- Opsi pembatas event dipilih A+B: (A) pantau usage di dashboard tiap minggu, (B) tiap nama event dikirim maksimal sekali per tab (di memori, bukan localStorage). Pageview otomatis Umami tidak dibatasi; opsi C (`data-auto-pageview="false"`) ada bila kelak dibutuhkan.
+- Tag Umami: `data-domains` = hostname GitHub Pages, `data-exclude-hash` dan `data-exclude-search` = true. `data-host-url` tidak diisi (bawaan script: gateway.umami.is). `data-errors` tidak dipasang (script ini punya pelacakan error; bila dinyalakan, pesan error ikut terkirim).
+
+**Pertentangan dengan isi lama (yang paling akhir menang):**
+
+- AN7 menyebut semua layar lewat pengamat `hidden`. Belanja memakai pendengar klik pada `#gim-menu-belanja`, karena layarnya baru dibuat `belanja.js` saat pertama dibuka.
+- AN3 tidak membatasi jumlah event; kini maksimal satu kali per nama per tab.
+
+**Belum beres:**
+
+- Asumsi belum terbukti: `layar-pengenalan` dan `panel-bantuan` berganti lewat atribut `hidden` (berkas `pengenalan.js`, `bantuan.js`, `kerangka.js` belum dibaca). Bila event tidak muncul di tes, kirim berkas itu.
+- Apakah Umami Cloud menerima data dari salinan lokal: belum diuji.
+- SEC-50 dan SEC-51, serta tes tambahan (satu buka layar = satu event; cache v37 muncul dan offline tetap jalan): belum.
+- Salah copas `index.html` ke `inbox.js` sempat terjadi di Mac; dipulihkan dengan `git restore`, tidak ikut commit.
+
+**Saran giliran berikutnya:** lampirkan `AGENTS.md`, `analitik.md`, `security.md`. Mulai tes ANL.02 dari alamat Pages asli (jendela privat, belum login): buka Daftar, Masuk, Pengenalan; cek Realtime dan Events di Umami (harus 1 kunjungan, buka-daftar 1, buka-pengenalan 1). Lalu ANL.06 sesuai blok akun tes 20 Nov.
