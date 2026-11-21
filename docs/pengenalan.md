@@ -233,3 +233,48 @@ Sumber: docs/analitik.md (AN3, AN4). Menimpa catatan "tanpa panggilan jaringan" 
 
 - Saat layar dibuka, `pengenalan.js` memanggil `analitik.js` untuk satu event `buka-pengenalan`, **tanpa data tambahan**. Bila script analitik tidak ada, layar berjalan normal.
 - Hanya satu baris tambahan di `pengenalan.js`. `pengenalan-isi.js` dan `pengenalan.css` tidak berubah.
+
+### 2026-11-21: Topik PWA ditaruh paling atas, daftar topik menjadi 12
+
+**Berkas tujuan:** `docs/pengenalan.md` bagian 8, tempel PALING BAWAH. Append-only. Sumber: permintaan owner lewat PIC (sesi PGN.06, 21 Nov 2026). Alasan: istilah PWA belum dikenal di lingkungan pemakai, jadi owner ingin PWA mendapat penekanan. Alasan lain belum tercatat. Yang paling akhir menang.
+
+- **Isi:** satu topik baru "Kenapa aplikasi PWA ChATA bikin lebih praktis dan tenang?" (kunci `pwa-praktis`) ditambah **paling atas** di `public/pengenalan-isi.js`. Isinya sudah disetujui owner. Penjelasan singkat arti PWA, tanpa proses pemasangan yang rumit, izin hanya notifikasi dan pilihan pemakai, data tersimpan di sistem ChATA, dan bantuan perwakilan ChATA lewat WhatsApp. Tanpa nomor WA dan tanpa angka mudah berubah (PG9, PG10).
+- **Daftar topik kini 12.** Urutan baru: 1 PWA, 2 Play Store/App Store, 3 harus dipasang, 4 Android, 5 iPhone, 6 update, 7 login tersimpan, 8 notifikasi, 9 aman, 10 ringan, 11 hapus, 12 tidak bisa daftar atau masuk.
+- **Nomor topik lama bergeser:** semua nomor di dokumen ini dan di Handoff #1 sampai #4 yang menyebut "topik N" kini berarti topik N+1. Contoh: "topik 4 dan topik 7" di PGN.05 (bagian 6) kini topik 5 (iPhone) dan topik 8 (notifikasi). "Topik ke-11" di blok 18 Nov kini topik 12. Teks lama tidak disunting.
+- **Cara kerja:** revisi hanya di `public/pengenalan-isi.js`. `pengenalan.js` dan `pengenalan.css` tidak berubah karena layar menggambar topik berurutan dari array. `sw.js` tidak berubah karena daftar berkas cache sama. Penerbitan lewat Cloudflare Workers Builds (`AGENTS.md` blok 21 Nov), bukan GitHub Pages.
+- **Disetujui ketua (21 Nov 2026)** untuk perubahan urutan ini, termasuk bahwa ia bertentangan dengan PG4. Alasan persetujuan di luar yang tertulis di atas belum tercatat.
+- **Pertentangan dengan catatan lama:** PG4 dan bagian 3 ("10 topik, urutan tetap"), bagian 4 ("daftar 10 topik"), dan blok 18 Nov ("Urutan topik 1 sampai 10 tidak berubah", "topik ke-11 paling akhir"). Yang paling akhir menang.
+
+### Handoff #5 | 2026-11-21 | [KETUA]
+
+**Tugas:** PGN.06 (isi final sudah dicek dan terbit sebelum peluncuran), dengan penekanan PWA sesuai permintaan owner. Status: selesai, sudah terbit di Cloudflare (commit `d529933`, Version ID `13aa4b63`, status Ready) dan dites di HP. PGN.06 sudah dicentang di sheet (21 Nov 2026).
+
+**File yang diubah:**
+
+- `public/pengenalan-isi.js`: ditambah satu topik `pwa-praktis` di paling atas (20 baris tambah, 3 baris hapus). Komentar kepala ditambah catatan PGN.06, dan penyebutan nomor topik di bagian STATUS DRAF diganti nama topiknya karena nomornya bergeser.
+- Tidak berubah: `pengenalan.js`, `pengenalan.css`, `index.html`, `sw.js`.
+
+**Keputusan baru:**
+
+- Topik PWA ditaruh paling atas, bukan paling akhir. Pilihan PIC atas permintaan owner, **disetujui ketua (21 Nov 2026)** (lihat blok 21 Nov di atas). Alasan persetujuan di luar itu belum tercatat.
+- **Keputusan ketua (21 Nov 2026):** karakter `<` dan `&` yang belum dibuktikan lewat layar (PGN.04) diterima cukup lewat bacaan kode (semua teks lewat `textContent`, tanpa `innerHTML`). Butir ini tidak dikejar lagi. Alasan penerimaan di luar itu belum tercatat.
+- Kalimat "tidak meminta izin apa pun" dibatasi pada saat pemasangan, dan izin notifikasi tetap disebut sebagai satu-satunya izin yang mungkin muncul, supaya tidak bertentangan dengan topik Notifikasi (PG9).
+
+**Hasil yang terbukti** (dikonfirmasi PIC di chat):
+
+- Topik PWA tampil paling atas, di bawah infografik. Tebal dan warna hijau benar, akordeon buka-tutup normal.
+- Mode pesawat di HP: layar Pengenalan terbuka dan tidak ada yang rusak, termasuk topik baru.
+- Cloudflare: deployment untuk commit PGN.06 berstatus Ready.
+- PGN.06 selesai. Dicoret dari daftar terbuka.
+
+**Belum beres** (satu daftar lengkap butir yang masih terbuka):
+
+- PGN.05: bagian iPhone (topik 5, serta iPhone di topik 3, 7, 8, dan 11) belum dites di perangkat nyata. Diasumsikan jalan, keluhan ditampung untuk LNC.05 (`AGENTS.md` bagian 10 butir 7).
+- PGN.05: belum tercatat ada ibu customer yang membaca isi Pengenalan, termasuk topik PWA yang baru.
+- Akordeon topik 12 (tidak bisa daftar atau masuk) belum dikonfirmasi eksplisit. Risiko kecil.
+- Tanpa nomor sheet: `pengenalan.js` yang dilihat di sesi ini tidak memuat panggilan analitik `buka-pengenalan`, padahal catatan 20 Nov bilang ada. Tidak diubah di sesi ini. Perlu dicek versi di repo.
+
+**Saran giliran berikutnya:**
+
+1. Tidak ada pekerjaan Pengenalan lain yang wajib sebelum peluncuran (`LNC.04`). Sisa hanya butir PGN.05 di atas, yang menunggu pemakai iPhone dan satu ibu customer.
+2. Revisi isi hanya di `public/pengenalan-isi.js`. Tanpa `[skip ci]` karena berkas di `public/` berubah. Revisi isi tidak mengubah daftar berkas, jadi `sw.js` tidak perlu diubah.
