@@ -278,4 +278,13 @@ Permintaan tim, dikerjakan di sesi kode 14 Nov 2026. Menimpa urutan tombol di bl
 - **Kode:** hanya `public/index.html` dan `public/style.css` (blok `HOM.06`, hanya tambahan). Id dan `data-aksi` tombol dipertahankan (`home-gelar`, `home-qris`, `home-bantuan`, `home-notif-bungkus`), jadi `kerangka.js`, `qris.js`, dan `notif.js` tidak berubah. `sw.js` tidak disentuh (tidak ada berkas baru). Blok tombol lama dijadikan komentar, tidak dihapus.
 - **Tes:** HP dan laptop, tiga peran, termasuk mode pesawat, sesuai. Bukti diperiksa di chat dan tidak disimpan.
 
+### 2026-11-21: Tombol lebar Bagikan di Home
+
+Sumber: `bagikan.md` SH20 dan SHR.05. Menambah (tidak menimpa) HOM.08. Rancangan disetujui ketua 21 Nov 2026, kecuali soal penjaga (K1) yang masih menunggu. Yang paling akhir menang.
+
+- **Letak:** satu tombol lebar **"Bagikan"** di Home, di bawah tombol Aktifkan notifikasi dan **di atas baris tombol bergambar**. Baris lama (customer: Gelar, QRIS, Bantuan; owner: QRIS dan Bantuan) **tidak disentuh**. Tinggi Home bertambah satu baris.
+- **Peran:** customer dan owner. **Penjaga belum diputuskan** (`bagikan.md` K1); bawaan sementara tidak melihat tombol.
+- **Home owner belum dilihat langsung:** kabar dari anggota tim, di bawah tombol Aktifkan notifikasi hanya ada 2 tombol bergambar (QRIS dan Bantuan). Sebelum `kerangka.js` diubah (SHR.05), minta screenshot Home owner dengan data dummy.
+- Tombol membuka layar baru (tab tersembunyi dengan tombol Kembali ke Home, pola layar Gelar Saya dan Ringkasan). Perubahan di `kerangka.js` dan `index.html` hanya tambahan.
+
 ---

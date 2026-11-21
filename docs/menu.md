@@ -475,3 +475,14 @@ Keputusan ketua (17 Nov 2026). Yang paling akhir menang.
 - **Perbaikan:** ketua menjalankan workflow secara manual (run #137, hijau). Tidak ada commit tambahan.
 - **Pencegahan:** aturan `AGENTS.md` blok 12 Nov 2026. `[skip ci]` hanya untuk commit yang **seluruh isinya docs/md**. Commit yang menyentuh `public/`, `supabase/`, atau `.github/` tidak boleh memakainya.
   **Masih terbuka:** `menu1.jpg` dan `esteh.jpg` sisa dummy di `DAFTAR_CACHE`; butir terbuka Handoff #13, #15, dan #16 lainnya tidak berubah. Selanjutnya LNC.01 dengan "OK" ketua.
+
+### 2026-11-21: Foto menu dipakai fitur Bagikan
+
+Sumber: `bagikan.md` SH5 sampai SH8. Rancangan disetujui ketua 21 Nov 2026, kecuali soal penjaga (K1) yang masih menunggu. Yang paling akhir menang.
+
+- **Tidak ada perubahan skema, aksi, atau layar menu.** Fitur Bagikan memakai data `menu_daftar` yang sudah ada (`{ id, nama, harga, tersedia, aktif, foto }`).
+- **Menu muncul di pilihan Bagikan bila aktif, Tersedia, dan punya foto.** Menu tanpa foto (kolom foto opsional, MN2) tidak ditampilkan di sana, dengan satu baris keterangan di layar.
+- **Foto menu dipakai apa adanya.** Ketajamannya di banner 1080 × 1350 dinilai di SHR.03 dengan 3 sampai 4 menu. Bila kurang tajam, **target ukuran foto menu diputuskan lewat blok susulan di sini**, sekaligus menjawab butir lama "target ukuran foto menu untuk zoom" (Handoff #13 dan seterusnya, belum diputuskan).
+- **Paket tetap menu sendiri** (lihat blok topping 17 Nov): satu banner = satu menu. Promo harga dibuat dengan membuat menu paketnya lebih dulu, lengkap dengan foto dan harganya.
+- **Perilaku cache yang perlu dibuktikan di SHR.03:** Handoff #13 menulis handler fetch `sw.js` menyimpan respons sukses domain sendiri, sedangkan blok 17 Nov mewajibkan foto menu didaftarkan di `DAFTAR_CACHE`. Gambar template Bagikan tidak didaftarkan (disetujui ketua, `bagikan.md` K2), jadi perilaku sebenarnya dicek.
+- Foto menu baru tetap wajib didaftarkan di `DAFTAR_CACHE` (blok 17 Nov tidak berubah).

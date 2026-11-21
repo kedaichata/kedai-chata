@@ -438,4 +438,12 @@ Sumber: docs/analitik.md (AN3, AN4).
 - Saat layar Bantuan dibuka, satu event `buka-bantuan` dikirim lewat `analitik.js`. **Pertanyaan yang dibuka atau dicari tidak dikirim.**
 - Isi Bantuan, lembar Google Sheet bantuan, dan SQL impor tidak berubah.
 
+### 2026-11-21: Isi Bantuan tentang Bagikan (SHR.09)
+
+Sumber: `bagikan.md` SHR.09. Belum dikerjakan. Yang paling akhir menang.
+
+- Isi Bantuan tentang Bagikan ditulis manual di lembar Bantuan (tidak ditarik otomatis dari berkas data fitur), dikerjakan setelah fitur jalan.
+- **Bahan penjelasan, tanpa hal yang gampang berubah:** apa itu Bagikan; hanya menu yang aktif, Tersedia, dan berfoto yang bisa dipilih; banner customer tanpa nama dan tanpa harga; owner mengisi deskripsi; tombol Bagikan, Unduh PNG, dan Salin caption; caption ditutup tautan ke aplikasi.
+- Isi Bantuan tidak memuat data pribadi atau rahasia (`security.md` aturan 21).
+
 ---

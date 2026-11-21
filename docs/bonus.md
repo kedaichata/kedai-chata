@@ -306,4 +306,54 @@ Keputusan ketua (20 Nov 2026). Sumber: docs/analitik.md bagian 8. Nomor B dan ko
 - **Tidak berubah, masih kandidat:** header keamanan lewat `_headers`, WAF atau rate limit Cloudflare, analitik web bawaan Cloudflare, email dengan alamat domain sendiri, proxy Umami. Payment gateway (B6): periksa ulang ketentuan Cloudflare sebelum dikerjakan.
 - **Pertentangan dengan catatan lama:** tidak ada yang dibatalkan. Yang paling akhir menang.
 
+### 2026-11-21: Header keamanan `_headers` ditunda ke versi 2 (nice to have)
+
+**Berkas tujuan:** `docs/bonus.md`, tempel PALING BAWAH bagian 4. Append-only. Keputusan ketua (sesi kode, 21 Nov 2026). Alasan ketua: peluncuran terbatas sudah dekat dan perubahan menit-menit akhir dikhawatirkan tidak sempat dites dengan layak; manfaatnya dinilai nice to have. Alasan lain belum tercatat. Melengkapi butir "Tetap kandidat" di blok 20 Nov dan 21 Nov. Nomor B dan kolom Alasan diisi saat review pemakaian (`LNC.05`).
+
+- **Status:** kandidat versi 2, tidak dikerjakan sebelum LNC.03. Butir sheet baru: **"Header keamanan (\_headers)"**.
+- **Keadaan saat ini:** tidak ada `public/_headers` dan tidak ada meta CSP di `public/index.html`. Penilaian sesi kode: **nice to have, bukan celah yang sedang terbuka**.
+- **Bukti (grep di `public/*.js`, 21 Nov 2026):** tidak ada `innerHTML`, `insertAdjacentHTML`, `document.write`, `outerHTML`, `eval`, `new Function`, `srcdoc`, `cssText`, atau `setAttribute("style")` di kode (hanya muncul di komentar). Tidak mencakup `lib/`, `sw.js`, dan kode Edge Function. Celah kecil yang diketahui: belum ada `frame-ancestors` (clickjacking), risikonya rendah.
+- **Bahan untuk nanti:**
+  - Berkas ditaruh di `public/_headers` (folder aset `wrangler.jsonc`). Batas Cloudflare: 100 aturan, 2.000 karakter per baris. Tidak berlaku untuk respons kode Worker (kita tidak punya, MG10).
+  - Sumber yang perlu diizinkan: script dari `'self'` dan `challenges.cloudflare.com` (juga `frame-src`); `connect-src` ke host project Supabase (nilainya di `public/config.js`) dan `gateway.umami.is` (dari `lib/umami.js`; `https://localhost` di berkas itu diduga bukan tujuan kirim, belum dibuktikan); `img-src` memakai `blob:` (`foto.js:122`, `gelar.js:549`) dan host Storage Supabase (dugaan, dibuktikan lewat Report-Only).
+  - `index.html` punya 2 blok `<script>` inline (baris 2351 dan 2454). Hash per 21 Nov 2026: `sha256-767HflOQnFvYt/ORwFTZDLi3jgxS7RIa5lvZQ1gJwLY=` dan `sha256-LCcCR3p3kBvHSAuJwclegZ9kYoPyG664kxJBm5cjfuc=`. **Hash patah bila blok itu diedit (termasuk komentar): hitung ulang.** Alternatif: pindahkan ke berkas `.js` (mengubah `index.html` kategori login dan daftar cache `sw.js`, butuh "OK").
+- **Rencana saat dikerjakan:** mulai dari CSP **Report-Only** (tidak memblokir apa pun); `frame-ancestors` dan `nosniff` sebagai header aktif terpisah. Perubahan berisiko: penjelasan dampak dan "OK" ketua, commit tanpa `[skip ci]`, tiga cek anti-nyasar, tes tanpa order (MG11) di tiga peran, lalu pesan `[Report Only]` di Console diperiksa bersama sebelum beralih ke mode blokir. `_headers` diduga tidak disajikan sebagai berkas, jadi diduga tidak perlu masuk cache `sw.js`; dicek saat dikerjakan. Mundur: hapus `_headers` lalu push, atau rollback Cloudflare.
+- **Dampak ke `security.md`:** bila dikerjakan, tambah baris SEC baru lewat blok susulan di sana (bukan sekarang).
+- **Pertentangan dengan catatan lama:** tidak ada. Yang paling akhir menang.
+
+### 2026-11-21: Bagikan ke sosmed naik jadi fitur pertama versi 2 (dokumen `bagikan.md`)
+
+Permintaan para owner (sesi strategi 21 Nov 2026). Sumber: docs/bagikan.md bagian 11. Ketua menyetujui urutan ini pada 21 Nov 2026; alasan lain belum tercatat.
+
+- **Fitur ini tidak pernah ada di daftar B1 sampai B31.** Ia langsung menjadi dokumen sendiri (`docs/bagikan.md`, prefix SHR) dan dikerjakan pertama di versi 2.
+- **Pertentangan dengan catatan lama:** kepala `bonus.md` menyebut "belum ada yang diputuskan dan belum ada urutan". Untuk butir ini, yang paling akhir menang. Kandidat lain tetap belum diurutkan.
+- **Kandidat lanjutan dari Bagikan** (belum diputuskan; nomor B dan kolom Alasan diisi saat review pemakaian `LNC.05`; alasan pemakaian belum tercatat):
+  - **Penyimpanan promo atau kampanye di database** (judul, teks, tanggal berlaku, daftar bersama antar owner). Tulis-database baru; sebaiknya lewat sesi strategi sendiri.
+  - **Customer mengetik kalimat sendiri**, atau memilih kata sifat dari daftar. Risiko klaim tidak terkontrol; keputusan versi 1 sengaja memakai wording tetap.
+  - **Nama customer di banner**, opsional dengan centang (bawaan mati).
+  - **Harga di banner customer**, **lebih dari satu menu per banner**, dan **pintasan Bagikan di sheet detail menu**.
+  - **Rasio 9:16** untuk Story, **font sendiri**, dan **foto khusus banner** (butuh kolom baru di tabel `menu`).
+  - **Template musiman otomatis** (aktif pada tanggal tertentu).
+- **Hubungan dengan butir lama:** pelacakan asal kunjungan lewat tautan bertanda sudah kandidat di blok 20 Nov "Kandidat versi 2 dari Analitik (fase 2)"; tautan di caption Bagikan sengaja **tanpa parameter** di versi 1. B28 (pengaturan dari aplikasi) bisa ikut menguntungkan bila batas teks ingin diubah owner. Butir lama dibiarkan.
+
+### 2026-11-21: Kandidat versi 2: label versi aplikasi dan banner "versi baru tersedia"
+
+**Berkas tujuan:** `docs/bonus.md`. Sumber: pembahasan sesi strategi 21 Nov 2026 dengan `sw.js` (versi `chata-v37`) dan hasil `grep` di `public/`. Keputusan ketua: **kandidat, belum diputuskan, tidak urgent, tidak mengubah apa pun sebelum atau saat peluncuran.** Nomor B dan kolom Alasan diisi saat review pemakaian (`LNC.05`); alasan pemakaian belum tercatat.
+
+- **Pertanyaan asal:** bagaimana memastikan customer memakai versi aplikasi terakhir, dan bagaimana tahu mereka di versi berapa saat ada laporan.
+- **Yang sudah terbukti dari kode (21 Nov 2026):**
+  - `sw.js` memakai network first, `skipWaiting()`, dan `clients.claim()`. Bila HP online dan aplikasi **dibuka baru** (ditutup lalu dibuka, atau dimuat ulang), berkas terbaru dipakai.
+  - **Tidak ada kode yang memaksa muat ulang** saat service worker baru aktif: `grep` pada `public/index.html` dan `public/*.js` tidak menemukan `controllerchange` maupun `.update()`. Satu-satunya pendengar pesan SW (`kerangka.js`) hanya untuk push ("segarkan" data dan "buka" layar), bukan untuk kode.
+  - **Aplikasi yang tidak pernah ditutup** tetap menjalankan JS lama sampai halaman dimuat ulang. Risiko nyatanya: **JS lama memanggil aksi `kedai` yang bentuk balasannya sudah berubah.**
+  - **Nama cache (`chata-v37`) belum bisa dipakai sebagai nomor versi aplikasi.** Menurut komentar di `sw.js`, angkanya naik hanya saat berkas baru masuk `DAFTAR_CACHE` atau `sw.js` sendiri berubah, bukan saat isi JS berubah.
+  - `cache.addAll` bersifat **semua-atau-tidak**: satu nama berkas salah atau berkas yang sudah dibuang membuat pemasangan SW baru gagal diam-diam, dan HP tertahan di SW lama. `img/menu1.jpg` dan `img/esteh.jpg` (sisa dummy) masih ada di `DAFTAR_CACHE`.
+- **Belum dibuktikan:** opsi pendaftaran SW di `public/index.html` (sekitar baris 2457) belum dibaca. Dugaan bahwa browser tidak memakai cache HTTP untuk berkas `sw.js` utama belum dites di Cloudflare. Perkiraan tambahan unduhan 2 sampai 3 MB tiap kenaikan versi cache (dari 38 foto menu dan berkas lain) belum diukur.
+- **Kandidat A: tidak mengubah apa pun.** Untuk perubahan besar, kirim pengumuman WA "tutup lalu buka lagi aplikasinya" (pola MGR.25). Nol risiko, bawaan sampai ada keluhan.
+- **Kandidat B: label versi di Pengaturan akun.** Satu konstanta di berkas JS, **bukan** nama cache, supaya customer bisa memfoto layar saat melapor. Konsekuensi: tiap perubahan `public/` harus menaikkan angka itu, jadi aturannya perlu ditulis di `AGENTS.md` saat dikerjakan. Berkas baru (bila ada) masuk `DAFTAR_CACHE` dan butuh "OK" untuk `sw.js`.
+- **Kandidat C: B plus banner "Versi baru tersedia, ketuk untuk muat ulang".** Halaman mengecek SW saat kembali ke layar dan mendengarkan SW baru aktif. **Sengaja tanpa muat ulang otomatis** supaya isian order yang sedang diketik tidak hilang. Menyentuh `public/index.html` (kategori login, konfirmasi singkat) dan `sw.js` (butuh "OK"), serta butuh tes khusus.
+- **Arah usulan (belum diputuskan):** A sekarang; B setelah LNC.03; C hanya bila muncul keluhan "tampilan masih yang lama". Bila dikerjakan, **digabung dengan perubahan `sw.js` berikutnya** (misalnya SHR.06 dari `bagikan.md`) supaya `sw.js` tidak disentuh dua kali.
+- **Perubahan berisiko:** menyentuh `sw.js` dan `index.html` (`AGENTS.md` bagian 2 butir 5 dan bagian 7): butuh penjelasan dampak dan "OK" ketua, commit tanpa `[skip ci]`, dan tiga cek anti-nyasar sebelum push.
+- **Hubungan dengan butir lama:** blok 21 Nov "Header keamanan `_headers`" (prinsip sama: tidak menyentuh `sw.js` dan `index.html` menjelang peluncuran), B26 (pemantauan otomatis), dan `bagikan.md` K2 (gambar template yang tidak didaftarkan di cache). Butir lama dibiarkan.
+- **Pertentangan dengan catatan lama:** tidak ada yang dibatalkan. Yang paling akhir menang.
+
 ---

@@ -597,3 +597,11 @@ Keputusan ketua (20 Nov 2026). Sumber: docs/migrasi.md. Yang paling akhir menang
 - **Sebelum LNC.04:** cek daftar user Supabase (baca-saja) soal `POST .../auth/v1/signup` 422 dan kemungkinan owner atau penjaga sempat mengirim form Daftar (butuh "OK" bila ada akun baru yang dibersihkan).
 - **Jadwal LNC.03 (Senin 23 Nov):** tetap atau mundur belum diputuskan ketua.
 - **Pertentangan dengan catatan lama:** baris 63 bagian 3 dan Handoff #2 di atas. Yang paling akhir menang.
+
+### 2026-11-21: Layar Bagikan (versi 2, dokumen `bagikan.md`)
+
+Sumber: `bagikan.md`. Rancangan disetujui ketua 21 Nov 2026, kecuali soal penjaga (K1) yang masih menunggu. Yang paling akhir menang.
+
+- **Layar baru untuk customer dan owner:** Bagikan (banner dan caption dari template, murni di HP). Dibuka dari tombol lebar di Home. Penjaga belum diputuskan (`bagikan.md` K1).
+- **Versi:** fitur pertama versi 2, dikerjakan setelah LNC.03 dan LNC.04. **Tidak mengubah peluncuran dan tidak menambah butir pembersihan data uji** (tanpa tulis-database).
+- **Pertentangan dengan catatan lama:** teks `features.md` dan `bonus.md` yang menyebut urutan versi 2 ditentukan setelah `LNC.05` tidak berlaku untuk fitur ini. Yang paling akhir menang.

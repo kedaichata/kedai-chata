@@ -494,6 +494,43 @@ Kejadian di lapangan (sesi kode MGR, 20 Nov 2026). Sumber: MG9. "OK" ketua terca
   7. **Dari handoff sebelumnya, masih terbuka:** owner dan penjaga belum mengaktifkan notifikasi di alamat baru; push server ke HP dan update versi baru belum teramati langsung; `infografik.webp` tidak ada di cache offline (ubah `sw.js`, butuh "OK", belum diputuskan); dua entri "Manually deployed" belum jelas asalnya; permintaan berkas statis ikut terhitung di batas 100.000 per hari atau tidak; panel Traffic 0% belum dipahami; galat CSP skrip Turnstile belum diselidiki; data uji Umami (Reset diputuskan di ANL.07).
 - **Saran giliran berikutnya:** (1) MGR.21a begitu ada kabar WA, satu per satu dari dashboard, link diteruskan lewat WA (jangan diklik), minta screenshot beranda dengan email di-crop. (2) Ketua memutuskan LNC.03. (3) Sebelum LNC.04: minta "OK" untuk membersihkan alamat lama di `ASAL_DIIZINKAN` (deploy `kedai` sesuai urutan `AGENTS.md` bagian 8) dan `data-domains`, serta mematikan Preview URLs dan `workers.dev`; cek daftar user Supabase. Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`; untuk MGR.21a juga `akun.md`, `features.md`, dan screenshot pengaturan URL Auth; untuk pembersihan alamat lama juga `supabase/functions/kedai/index.ts` (bagian `ASAL_DIIZINKAN`) dan `public/index.html` sekitar baris 2385.
 
-```
+### 2026-11-21: MGR.26 selesai, Always Use HTTPS diaktifkan di Cloudflare
 
-```
+Keputusan ketua (sesi kode MGR, 21 Nov 2026), "OK" diberikan di chat. Dasar: `curl` ke `http://kedaichata.biz.id/` dibalas 200 tanpa pengalihan, dan panel SSL/TLS Overview menunjukkan 108 request "None (not secure)" dari sekitar 4,4 ribu dalam 24 jam. Alasan lain belum tercatat.
+
+- **Perubahan:** hanya pengaturan dashboard Cloudflare (SSL/TLS, Edge Certificates, Always Use HTTPS = On). Tanpa berkas repo, tanpa deploy, Supabase tidak disentuh.
+- **Terbukti:** `curl` http dibalas 301 dengan `Location: https://kedaichata.biz.id/`; `curl` https dibalas HTTP/2 200 tanpa pengalihan berulang. Di jendela privat Chrome, alamat yang diketik `http://` berpindah dan halaman terbuka (screenshot).
+- **Dilaporkan ketua "lolos", tanpa screenshot:** login customer lalu Keluar di jendela privat, dan PWA di HP terbuka normal.
+- **Batas bukti:** Chrome bisa menaikkan http ke https sendiri, jadi bukti pengalihan oleh Cloudflare adalah hasil `curl`, bukan tes browser.
+- **Mundur:** matikan toggle, berlaku langsung. Browser bisa mengingat 301 sesaat.
+- **Kondisi lain di Edge Certificates (screenshot 21 Nov):** mode enkripsi Full (diduga tak berpengaruh karena tanpa server asal); TLS 1.3, Automatic HTTPS Rewrites, dan Opportunistic Encryption On; HSTS belum aktif; Minimum TLS Version TLS 1.0 (default); CT Monitoring Off; sertifikat edge aktif sampai 18 Feb 2027 (Managed). Lalu lintas 24 jam hanya TLS 1.2 (4) dan TLS 1.3 (sekitar 4,32 ribu), selain 108 request http.
+- **Sengaja tidak diubah:** HSTS (sulit dibatalkan), Minimum TLS, ACM, Total TLS, Cipher suites, dan "Disable Universal SSL" (menghapus sertifikat; jangan diklik). Fitur gratis lain (Bot Fight Mode, WAF, rate limit) tidak diaktifkan; penilaian sesi kode: nilainya kecil karena login dan order langsung ke Supabase, bukan lewat Cloudflare.
+- **Pertentangan dengan catatan lama:** tidak ada. Yang paling akhir menang.
+
+### Handoff #14 | 2026-11-21 | [KETUA]
+
+- **Tugas:** MGR.26 (Always Use HTTPS) selesai; dicentang ketua di sheet. Di sesi yang sama dibahas CSP dan `_headers` (ditunda ke versi 2, blok di `bonus.md`) dan fitur keamanan gratis Cloudflare.
+- **File yang diubah:** `docs/migrasi.md` (dua blok ini) dan `docs/bonus.md` (blok "Header keamanan `_headers` ditunda"). Di luar repo: satu toggle di dashboard Cloudflare. `public/`, `sw.js`, `wrangler.jsonc`, `pages.yml`, dan Supabase tidak disentuh. Tidak ada perubahan kode yang tertahan.
+- **Hasil yang terbukti:**
+  1. MGR.26: lihat blok di atas (`curl` 301 dan 200, tes browser privat; login dan PWA hanya laporan lisan).
+  2. Galat CSP di console (Handoff #4 poin 6) terjawab dari baca kode: `index.html` tanpa meta CSP dan repo tanpa `_headers`, jadi galat itu berasal dari skrip tantangan Cloudflare di iframe Turnstile, bukan situs kita.
+  3. Grep `public/*.js` (21 Nov): tidak ada `innerHTML`, `insertAdjacentHTML`, `document.write`, `outerHTML`, `eval`, `new Function`, `srcdoc`, `cssText`, atau `setAttribute("style")` di kode (hanya di komentar). Tidak mencakup `lib/`, `sw.js`, dan Edge Function.
+- **Keputusan baru:** (1) Always Use HTTPS diaktifkan (blok di atas). (2) `_headers`/CSP ditunda ke versi 2, status nice to have (alasan ketua: dekat peluncuran, perubahan menit akhir tak sempat dites); butir sheet ditambah saat versi 2.
+- **Belum beres (daftar lengkap, satu baris per butir):**
+  1. MGR.21a: recovery 4 owner dan 1 penjaga (plus akun ibu ketua bila password belum dipegang), ditunda, menunggu kabar WA.
+  2. Jadwal LNC.03 (Senin 23 Nov): tetap atau mundur, belum diputuskan.
+  3. Alamat lama masih di `ASAL_DIIZINKAN` (`kedai/index.ts`) dan `data-domains` (`index.html`): butuh penjelasan dampak dan "OK", paling lambat sebelum LNC.04.
+  4. Preview URLs aktif dan `workers.dev` belum dimatikan (MG14, butuh "OK").
+  5. Sebelum LNC.04: cek daftar user Supabase (baca-saja) soal `signup` 422 dan kemungkinan owner atau penjaga mengirim form Daftar.
+  6. Owner dan penjaga belum mengaktifkan notifikasi di alamat baru.
+  7. Belum teramati langsung: push server ke HP dan update versi baru di HP.
+  8. Belum terbukti: `[skip ci]` dihormati Workers Builds (jangan diandalkan) dan commit docs `2105747` tidak memicu build; hasil pasang ulang PWA di tiap HP penerima pesan.
+  9. `infografik.webp` tidak ada di cache offline: ubah `sw.js`, butuh "OK", belum diputuskan.
+  10. Dua entri "Manually deployed" di Deployments: asalnya belum jelas.
+  11. Belum terbukti: permintaan berkas statis ikut terhitung di batas 100.000 per hari; arti panel Traffic 0% juga belum dipahami.
+  12. Data uji Umami: Reset diputuskan di ANL.07.
+  13. "Alihkan www ke domain utama": ditunda (keputusan ketua), dikerjakan bila ada laporan tidak bisa membuka karena `www`.
+  14. Minimum TLS Version (TLS 1.0 default; kandidat naik ke 1.2), HSTS, dan CT Monitoring (opsional): belum diputuskan; saran tunggu data pemakaian dan putuskan di LNC.05.
+  15. Blok koreksi di `bonus.md`: kandidat "WAF atau rate limit Cloudflare" menyiratkan bisa membatasi login dan order, padahal keduanya lewat Supabase. Belum ditulis, menunggu jawaban ketua.
+  16. Usulan: cek sekilas sertifikat edge Cloudflare sekitar Januari 2027 (berlaku sampai 18 Feb 2027, Managed).
+- **Saran giliran berikutnya:** (1) ketua memutuskan LNC.03. (2) MGR.21a begitu ada kabar WA, satu per satu dari dashboard. (3) Sebelum LNC.04: minta "OK" untuk membersihkan alamat lama (deploy `kedai` sesuai urutan `AGENTS.md` bagian 8), mematikan Preview URLs dan `workers.dev`, lalu cek daftar user dan ulangi grep `innerHTML` (baris tanpa `//` adalah tanda bahaya). Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`; untuk pembersihan alamat lama juga `supabase/functions/kedai/index.ts` (bagian `ASAL_DIIZINKAN`) dan `public/index.html` sekitar baris 2385. Untuk CSP di versi 2: `bonus.md`, `index.html`, `config.js`, `lib/umami.js`.

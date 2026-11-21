@@ -459,3 +459,20 @@ Keputusan ketua (sesi strategi 20 Nov 2026). Sumber: docs/migrasi.md. Alasan: ke
 - **Tidak berubah:** "Belum beres" hanya memuat pekerjaan fungsional yang belum selesai, hal yang belum terbukti, dan keputusan yang menunggu "OK", serta pengecualian perubahan kode yang berhenti di tengah (blok "Keputusan ketua, sesi MGR").
 - **Berlaku mulai handoff berikutnya.** Handoff yang sudah ditulis tidak disunting (append-only); perampingannya dilakukan lewat konsolidasi dokumen di sesi strategi.
 - **Pertentangan dengan catatan lama:** kebiasaan menyalin butir lama utuh di tiap handoff tidak berlaku lagi untuk handoff berikutnya. Yang paling akhir menang.
+
+### 2026-11-21: Dokumen `bagikan.md` (prefix SHR), fitur pertama versi 2
+
+Permintaan para owner (sesi strategi 21 Nov 2026). Sumber: docs/bagikan.md. Ketua menyetujui rancangan, urutan ini, dan tiga pengecualian di bawah pada 21 Nov 2026; soal penjaga (K1) ketua masih bertanya ke owner. Alasan keputusan di luar yang tertulis belum tercatat.
+
+- **Peta Dokumentasi (bagian 5):** tambah baris `docs/bagikan.md`, isi: "Bagikan ke sosmed: banner dan caption dari template untuk customer dan owner, murni di HP", prefix sheet **SHR**.
+- **Fitur 100% frontend.** Tidak ada tabel, fungsi SQL, aksi `kedai`, tulis-database, atau baris SEC baru, dan tidak ada pengecualian baru dari aturan bagian 7. Memakai data `menu_daftar` yang sudah ada.
+- **Bagian 1, rencana versi:** fitur ini adalah yang **pertama dikerjakan di versi 2**, dikerjakan setelah LNC.03 dan LNC.04 (disetujui ketua 21 Nov 2026).
+- **Pengecualian "angka di database" (bagian 1):** batas panjang deskripsi owner, jumlah wording, dan posisi area template ada di berkas data `bagikan-isi.js`, bukan database, karena fitur tanpa server (mengikuti pola timer game).
+- **Bagian 3 dan 6, pengecualian CSS:** gaya di `public/bagikan.css` (kelas berawalan `shr-`), dimuat setelah `style.css`, mengikuti pola `game.css` dan `gelar.css`. **Disetujui ketua 21 Nov 2026.**
+- **Data di HP:** draf deskripsi owner terakhir boleh diingat di `localStorage` (hanya teks promo, tanpa data pribadi, dikosongkan saat Keluar; nama kunci ditetapkan saat kode ditulis). **Disetujui ketua 21 Nov 2026.**
+- **Kode baru di `public/`:** `bagikan.js`, `bagikan-isi.js`, `bagikan.css`, dan gambar template di `public/img/`. Ketiga berkas JS dan CSS wajib didaftarkan di cache `sw.js` (bagian 7, butuh "OK"; versi cache naik dari versi terakhir).
+- **Gambar template tidak didaftarkan di `DAFTAR_CACHE`** (diunduh saat dipakai). Ini pengecualian dari "tiap berkas aplikasi baru wajib didaftarkan" (bagian 7) dan **disetujui ketua 21 Nov 2026** (`bagikan.md` K2). Bila kelak dibatalkan, gambar template didaftarkan seperti foto menu, satu commit bersama `sw.js`.
+- **Tombol Bagikan di Home** untuk customer dan owner. **Penjaga: belum diputuskan, ketua bertanya dulu ke owner** (`bagikan.md` K1); bawaan sementara penjaga tidak melihat tombol.
+- **Commit** yang memuat `public/` atau `sw.js` tidak memakai `[skip ci]` (blok 12 Nov dan 21 Nov 2026).
+- **Lisensi elemen Canva** pada gambar latar belum dicek (`bagikan.md` K6). Repo public.
+- **Pertentangan dengan catatan lama:** bagian 1 dan kepala `bonus.md` menyebut urutan versi 2 ditentukan setelah review pemakaian (`LNC.05`). Untuk fitur ini urutannya didahulukan atas permintaan owner; butir lain tetap menunggu review. Yang paling akhir menang.
