@@ -534,3 +534,12 @@ Keputusan ketua (sesi kode MGR, 21 Nov 2026), "OK" diberikan di chat. Dasar: `cu
   15. Blok koreksi di `bonus.md`: kandidat "WAF atau rate limit Cloudflare" menyiratkan bisa membatasi login dan order, padahal keduanya lewat Supabase. Belum ditulis, menunggu jawaban ketua.
   16. Usulan: cek sekilas sertifikat edge Cloudflare sekitar Januari 2027 (berlaku sampai 18 Feb 2027, Managed).
 - **Saran giliran berikutnya:** (1) ketua memutuskan LNC.03. (2) MGR.21a begitu ada kabar WA, satu per satu dari dashboard. (3) Sebelum LNC.04: minta "OK" untuk membersihkan alamat lama (deploy `kedai` sesuai urutan `AGENTS.md` bagian 8), mematikan Preview URLs dan `workers.dev`, lalu cek daftar user dan ulangi grep `innerHTML` (baris tanpa `//` adalah tanda bahaya). Lampirkan `AGENTS.md`, `migrasi.md`, `security.md`; untuk pembersihan alamat lama juga `supabase/functions/kedai/index.ts` (bagian `ASAL_DIIZINKAN`) dan `public/index.html` sekitar baris 2385. Untuk CSP di versi 2: `bonus.md`, `index.html`, `config.js`, `lib/umami.js`.
+
+### 2026-11-21: Keputusan ketua: butir bersih-bersih dibiarkan dulu
+
+Sumber: sesi strategi pemisahan-code (21 Nov 2026). Dasar: penjelasan dampak dari AI dan cek dashboard oleh ketua. Alasan lain belum tercatat.
+
+- **ASAL_DIIZINKAN (alamat github.io) dan data-domains:** dibiarkan. GitHub Pages sudah mati (404) dan token login tetap diperiksa di server. Dibersihkan nanti, bersamaan dengan PCD.13 bila menyentuh baris yang sama.
+- **Preview URLs dan workers.dev:** dibiarkan. Cek dashboard 21 Nov: toggle Production dan Preview nyala; Deployments hanya berisi versi dari main dan Dashboard, tidak ada versi dari branch lain. Mematikannya lewat wrangler.jsonc (bukan toggle dashboard) bila suatu saat diputuskan; belum dicek apakah toggle dashboard bertahan setelah deploy.
+- **infografik.webp:** sudah ada di DAFTAR_CACHE sw.js (BTN.04a). Catatan "tidak ada di cache offline" di handoff sebelumnya sudah tidak berlaku.
+- Mengubah keputusan ini tetap butuh penjelasan dampak dan OK ketua.

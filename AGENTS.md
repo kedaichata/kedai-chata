@@ -476,3 +476,29 @@ Permintaan para owner (sesi strategi 21 Nov 2026). Sumber: docs/bagikan.md. Ketu
 - **Commit** yang memuat `public/` atau `sw.js` tidak memakai `[skip ci]` (blok 12 Nov dan 21 Nov 2026).
 - **Lisensi elemen Canva** pada gambar latar belum dicek (`bagikan.md` K6). Repo public.
 - **Pertentangan dengan catatan lama:** bagian 1 dan kepala `bonus.md` menyebut urutan versi 2 ditentukan setelah review pemakaian (`LNC.05`). Untuk fitur ini urutannya didahulukan atas permintaan owner; butir lain tetap menunggu review. Yang paling akhir menang.
+
+### 2026-11-21: Dokumen `pemisahan-code.md` (prefix PCD), branch `main` (live) dan `v2` (kerja)
+
+**Berkas tujuan:** `AGENTS.md`, bagian 12 (tempel di bawah blok terakhir). Keputusan ketua (sesi strategi 21 Nov 2026). Sumber: docs/pemisahan-code.md (PC1, PC4, PC7, PC14, PC17). Alasan ketua: tim non-IT perlu membiasakan diri dengan alur ini lebih dulu. Alasan lain belum tercatat.
+
+- **Peta Dokumentasi (bagian 5):** tambah baris `docs/pemisahan-code.md`, isi: "Pemisahan versi lewat git (tag dan branch `v2`) dan Worker uji `kedai-chata-v2`", prefix sheet **PCD**.
+- **Bagian 3, Hosting:** tambah **Worker uji `kedai-chata-v2`** (Workers Builds, hanya branch `v2`, alamat `workers.dev`, bukan alamat resmi). Worker `kedai-chata` tetap hanya membangun `main` dan satu-satunya yang melayani `kedaichata.biz.id`. Field `name` di `wrangler.jsonc` **tetap `kedai-chata`**; Worker uji memakai environment `v2`.
+- **Bagian 8, cek anti-nyasar jadi empat:** tiga cek sebelum push ditambah **nama branch aktif** sebagai cek keempat. Aturan lama tetap: salah satu tidak cocok, **berhenti, jangan push.**
+- **Aturan branch (berlaku sejak branch `v2` dibuat, PCD.03; sebelum itu semua kerja di `main`):**
+  - `main` = versi live. Push ke `main` menerbitkan ke `kedaichata.biz.id`. Perbaikan darurat v1 dikerjakan di `main`.
+  - Kode v2 (`public/`, `supabase/`, `wrangler.jsonc`) dikerjakan di branch `v2`. Dokumen (`docs/*`, `AGENTS.md`) hanya diubah di `main`.
+  - **Di awal tiap sesi kode, AI menanyakan sekali: sesi ini mengerjakan v1 (`main`) atau v2 (`v2`)?** AI tidak memberi perintah commit, push, atau gabung sebelum nama branch aktif ditempel ke chat dan cocok dengan jawaban itu.
+  - AI **tidak memberi langkah gabung `v2` ke `main`** (itu rilis) kecuali ketua menyatakan sudah waktunya dan memberi "OK". Waktunya diukur ketua dan tim; tidak ada jadwal baku di sini. AI juga tidak mengubah `name` di `wrangler.jsonc`.
+  - Deploy fungsi Supabase: `bersihkan` tidak pernah dari `v2`. `kedai` dari `main`, kecuali satu pengecualian yang disetujui ketua: entri alamat uji di `ASAL_DIIZINKAN` (PCD.13), di-deploy dari `v2`.
+- **Pertentangan dengan catatan lama:** bagian 8 butir 3 ("cek tiga hal") kini empat. Blok 21 Nov Bagikan ("dikerjakan setelah LNC.03 dan LNC.04") kini berlaku untuk **rilis ke `main`**, sedangkan **pengerjaan** di branch `v2` boleh lebih awal. Yang paling akhir menang.
+
+### 2026-11-21: Revisi aturan dokumen dan kerja serial (pemisahan-code.md, PC10, PC12, PC18)
+
+**Berkas tujuan:** `AGENTS.md`, bagian 12 (tempel di bawah blok terakhir). Keputusan ketua (sesi strategi lanjutan 21 Nov 2026). Sumber: docs/pemisahan-code.md (PC10, PC12, PC18, K5). Alasan ketua: `main` dijaga tidak berubah supaya gabungan `v2` ke `main` mulus, dan tim bekerja serial supaya tidak ada tumpang tindih. Alasan lain belum tercatat.
+
+- **Dokumen ditulis di `v2`.** Dokumen (`docs/*`, `AGENTS.md`) ditulis di branch `v2` bersama kodenya. `main` hanya disentuh untuk perbaikan darurat kode v1 dan latihan PCD.08. Blok md yang ditempel sebelum PCD.03 masuk ke `main`, sesudahnya ke `v2`.
+- **Perbaikan darurat v1:** pastikan `v2` bersih (semua sudah di-commit dan dipush), pindah ke `main`, perbaiki **kode** saja, beri tag, gabungkan `main` ke `v2`, lalu kembali ke `v2` dan tulis catatan perbaikan di md. Di sesi perbaikan darurat, lampirkan md dari `v2` (paling lengkap).
+- **Bentrok saat gabung:** AI membaca bentrokan, menjelaskan dua versinya dengan bahasa awam, dan mengusulkan pilihan. File berisiko (`sw.js`, `kedai/index.ts`, `wrangler.jsonc`): tunggu "OK" ketua sebelum memilih, dan pastikan nomor cache `sw.js` tetap lebih tinggi dari yang live. File md: AI boleh memilih lalu melaporkan. Hasil `git status` dan tampilan bentrok ditempel utuh ke chat, tidak diringkas.
+- **Kerja serial:** satu orang dan satu laptop pada satu waktu. Sebelum mulai, kirim pesan MULAI di grup Telegram dan pastikan tidak ada yang sedang bekerja. Setelah selesai, kirim pesan SELESAI. Kedua pesan memuat nama branch. Tidak ada `git pull` (tidak ada salinan lain) dan tidak ada edit lewat situs GitHub atau perangkat lain. Bila Git menolak push, itu sinyal berhenti.
+- **K5 dijawab ketua:** nama bawaan dipakai (branch `v2`, Worker `kedai-chata-v2`, environment `v2`, tag `v1.1`).
+- **Pertentangan dengan catatan lama:** butir "Dokumen (`docs/*`, `AGENTS.md`) hanya diubah di `main`" di blok pemisahan 21 Nov **tidak berlaku lagi**. Butir lain di blok itu tidak berubah. Yang paling akhir menang.
