@@ -1,9 +1,9 @@
 ## Prompt
 
 ```
-Ini sesi STRATEGI, bukan sesi kode. Tugasmu hari ini: mengonsolidasi satu dokumen, yaitu `[NAMA_BERKAS]`, supaya isinya hanya keadaan terakhir.
+Ini sesi STRATEGI, bukan sesi kode. Tugasmu hari ini: mengonsolidasi satu dokumen, yaitu `bantuan.md`, supaya isinya hanya keadaan terakhir.
 
-Latar: dokumen ini sudah menumpuk blok catatan susulan dan handoff yang saling menimpa ("yang paling akhir menang"). Pembaca harus merangkai urutan blok untuk tahu keadaan sekarang. Keputusan ketua: yang tercatat cukup yang akhir. Konsolidasi dilakukan di sesi strategi; aturan "docs/ tidak dirapikan di sesi kode" (AGENTS.md bagian 2, aturan 7) tidak berubah. Berkas asli sudah disalin ketua ke `/docs/archive/[NAMA_ARSIP]`; jangan diubah dan jangan dirujuk di dokumen baru.
+Latar: dokumen ini sudah menumpuk blok catatan susulan dan handoff yang saling menimpa ("yang paling akhir menang"). Pembaca harus merangkai urutan blok untuk tahu keadaan sekarang. Keputusan ketua: yang tercatat cukup yang akhir. Konsolidasi dilakukan di sesi strategi; aturan "docs/ tidak dirapikan di sesi kode" (AGENTS.md bagian 2, aturan 7) tidak berubah. Berkas asli sudah disalin ketua ke `/docs/archive/bantuan_20261121.md`; jangan diubah dan jangan dirujuk di dokumen baru.
 
 ATURAN KERAS
 1. Tidak ada kode, SQL, atau pengaturan yang diubah, dijalankan, atau disarankan untuk dijalankan. Hanya dokumen.
