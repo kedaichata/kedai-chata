@@ -30,14 +30,31 @@
  *     Layar Utama, Segarkan, Keluar) ditulis persis seperti di layar, tanpa padanan.
  *
  * STATUS DRAF (16 Nov 2026):
- *   - Topik 4 (iPhone) dan bagian iPhone di topik 6, 7, dan 10 BELUM dites di perangkat nyata.
+ *   - Topik iPhone (cara memasang di iPhone) dan bagian iPhone di topik harus-dipasang, notifikasi,
+ *     login-tersimpan, dan hapus BELUM dites di perangkat nyata.
  *     Perlu dicek ke pemakai iPhone (PGN.05) sebelum diandalkan.
  *   - Nama menu browser (Chrome, Safari) bisa berubah antar versi; cek ulang saat PGN.04 dan PGN.05.
  *
- * PGN.07 (18 Nov 2026): topik ke-11 "Bagaimana kalau tidak bisa daftar atau masuk?" ditambah paling akhir
- *   (keputusan ketua, docs/pengenalan.md Catatan Susulan 18 Nov 2026). Urutan topik 1 sampai 10 tidak berubah.
+ * PGN.07 (18 Nov 2026): topik "Bagaimana kalau tidak bisa daftar atau masuk?" ditambah paling akhir
+ *   (keputusan ketua, docs/pengenalan.md Catatan Susulan 18 Nov 2026).
+ *
+ * PGN.06 (21 Nov 2026): isi sudah disetujui owner. Topik "Kenapa aplikasi PWA ChATA bikin lebih praktis
+ *   dan tenang?" ditambah PALING ATAS untuk menekankan PWA, karena istilah ini belum dikenal di
+ *   lingkungan pemakai. Urutan topik lainnya tidak berubah (tergeser satu ke bawah).
  */
 window.KedaiPengenalanIsi = [
+  {
+    kunci: "pwa-praktis",
+    judul: "Kenapa aplikasi PWA ChATA bikin lebih praktis dan tenang?",
+    isi: [
+      "**PWA (Progressive Web App)** adalah aplikasi web yang bisa dipakai seperti aplikasi biasa. Dibuka lewat browser, dan bila mau, ikonnya bisa ditaruh di layar utama HP Anda. Teknologinya sudah umum, hanya saja belum banyak dikenal di sekitar kita.",
+      "**Tidak ada proses pemasangan/instalasi yang rumit.** Memasang/menginstal hanya menambahkan ikon pintasan ke layar utama supaya lebih cepat dibuka. Tidak perlu ke Play Store/App Store dan tidak ada unduhan/download besar.",
+      "**Tidak ada izin aneh-aneh.** Saat dipasang/diinstal, aplikasi tidak meminta izin apa pun. Satu-satunya izin yang mungkin muncul adalah izin notifikasi, dan itu sepenuhnya pilihan Anda.",
+      "Anda memakai tautan/link yang sama, jadi tetap bisa membukanya lewat browser atau saat berganti HP, tanpa terikat pada satu perangkat saja.",
+      "{hijau|Data Anda tidak bergantung pada satu HP.} Riwayat dan akun tersimpan di sistem ChATA, sehingga tetap aman meski Anda berganti HP atau menghapus ikon di layar utama.",
+      "Bila sewaktu-waktu Anda mengalami kendala atau bingung dengan langkahnya, perwakilan ChATA siap membantu lewat WhatsApp. Anda tidak perlu mengurusnya sendirian.",
+    ],
+  },
   {
     kunci: "play-store",
     judul: "Kok aplikasi ini tidak ada di Play Store/App Store?",
